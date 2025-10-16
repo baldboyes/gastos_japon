@@ -54,6 +54,21 @@
             <span class="text-xs font-medium">Estadísticas</span>
           </NuxtLink>
 
+          <!-- Add Expense -->
+          <NuxtLink
+            to="/add"
+            class="flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors relative"
+            :class="isActive('/add') ? 'text-teal-500' : 'text-gray-400 hover:text-gray-200'"
+          >
+            <div class="w-12 h-12 -mt-6 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                <path d="M5 12h14"/>
+                <path d="M12 5v14"/>
+              </svg>
+            </div>
+            <span class="text-xs font-medium mt-1">Agregar</span>
+          </NuxtLink>
+
           <!-- Map -->
           <NuxtLink
             to="/map"
@@ -74,6 +89,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+
 const route = useRoute()
 
 function isActive(path: string): boolean {

@@ -2,8 +2,8 @@
   <NuxtLayout name="default">
     <div class="max-w-screen-sm mx-auto p-4">
       <!-- Header -->
-      <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-slate-900"></h1>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-slate-900">{{ isEditMode ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
         <button
           class="text-slate-600 hover:text-slate-900 transition-colors"
           @click="navigateTo('/')"
@@ -229,7 +229,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ isSubmitting ? 'Guardando...' : 'Guardar Gasto' }}
+            {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar Gasto' : 'Guardar Gasto') }}
           </Button>
         </div>
       </form>
@@ -241,8 +241,13 @@
 import type { ExpenseCategory, PaymentMethod } from '~/types'
 import { getCurrentTimestamp } from '~/utils/dates'
 
-const { addExpense } = useExpenses()
+const route = useRoute()
+const { addExpense, updateExpense, getExpense } = useExpenses()
 const { getCurrentLocation, location, loading: locationLoading, error: geoError } = useGeolocation()
+
+// Check if we're in edit mode
+const isEditMode = computed(() => !!route.query.id)
+const expenseId = computed(() => route.query.id as string | undefined)
 
 // Form state
 const form = reactive({
@@ -267,11 +272,34 @@ const locationCaptured = ref(false)
 const locationError = ref('')
 const showManualLocation = ref(false)
 
-// Initialize with current date and time
+// Initialize form
 onMounted(() => {
-  const now = new Date()
-  form.date = now.toISOString().split('T')[0]
-  form.time = now.toTimeString().slice(0, 5)
+  if (isEditMode.value && expenseId.value) {
+    // Load existing expense
+    const expense = getExpense(expenseId.value)
+    if (expense) {
+      const timestamp = new Date(expense.timestamp)
+      form.amount = expense.amount.toString()
+      form.placeName = expense.placeName
+      form.category = expense.category
+      form.date = timestamp.toISOString().split('T')[0]
+      form.time = timestamp.toTimeString().slice(0, 5)
+      form.location = { ...expense.location }
+      form.paymentMethod = expense.paymentMethod
+      form.shared = expense.shared
+      form.notes = expense.notes || ''
+
+      // Mark location as captured if it exists
+      if (expense.location.city && expense.location.prefecture) {
+        locationCaptured.value = true
+      }
+    }
+  } else {
+    // New expense - initialize with current date and time
+    const now = new Date()
+    form.date = now.toISOString().split('T')[0]
+    form.time = now.toTimeString().slice(0, 5)
+  }
 })
 
 // Capture location
@@ -329,8 +357,7 @@ async function handleSubmit() {
     // Combine date and time
     const timestamp = `${form.date}T${form.time}:00`
 
-    // Add expense
-    addExpense({
+    const expenseData = {
       timestamp,
       placeName: form.placeName.trim(),
       amount: parseFloat(form.amount),
@@ -339,12 +366,24 @@ async function handleSubmit() {
       location: form.location,
       paymentMethod: form.paymentMethod,
       shared: form.shared
-    })
+    }
+
+    if (isEditMode.value && expenseId.value) {
+      // Update existing expense
+      const success = updateExpense(expenseId.value, expenseData)
+      if (!success) {
+        alert('Error al actualizar el gasto. Por favor intenta de nuevo.')
+        return
+      }
+    } else {
+      // Add new expense
+      addExpense(expenseData)
+    }
 
     // Success! Navigate back to home
     await navigateTo('/')
   } catch (error) {
-    console.error('Error adding expense:', error)
+    console.error('Error saving expense:', error)
     alert('Error al guardar el gasto. Por favor intenta de nuevo.')
   } finally {
     isSubmitting.value = false
