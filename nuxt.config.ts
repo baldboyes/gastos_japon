@@ -26,32 +26,50 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: 'autoUpdate',
+    includeAssets: ['favicon.ico', 'favicon.png', 'icon.svg', 'robots.txt'],
     manifest: {
       name: 'Gastos Japón',
       short_name: 'Gastos',
-      description: 'Expense tracker for Japan trip',
+      description: 'Gastos del viaje a Japón',
       theme_color: '#40C4AA',
       background_color: '#F8FAFC',
       display: 'standalone',
       orientation: 'portrait',
       scope: '/',
       start_url: '/',
+      lang: 'es',
+      categories: ['finance', 'travel', 'productivity'],
       icons: [
         {
           src: '/icon-192x192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'maskable'
         },
         {
           src: '/icon-512x512.png',
           sizes: '512x512',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable'
         }
       ]
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,json,vue,txt,webp}'],
+      cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/nominatim\.openstreetmap\.org\/.*/i,
@@ -61,13 +79,36 @@ export default defineNuxtConfig({
             expiration: {
               maxEntries: 100,
               maxAgeSeconds: 60 * 60 * 24 * 7 // 1 week
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
+            }
+          }
+        },
+        {
+          urlPattern: /^https:\/\/api\.mapbox\.com\/.*/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'mapbox-cache',
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
             }
           }
         }
       ]
     },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600
+    },
     devOptions: {
       enabled: true,
+      suppressWarnings: true,
+      navigateFallback: '/',
       type: 'module'
     }
   }

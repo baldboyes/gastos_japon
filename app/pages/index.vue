@@ -5,9 +5,6 @@
       <!-- Daily Budget Card -->
       <DailyBudgetCard />
 
-      <!-- Quick Stats -->
-      <QuickStats />
-
       <!-- Today's Expenses -->
       <div>
         <ExpenseList

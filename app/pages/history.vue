@@ -2,12 +2,11 @@
   <NuxtLayout name="default">
     <div class="max-w-screen-sm mx-auto px-4 py-6">
       <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Historial</h1>
-        <p class="text-sm text-slate-600">
-          {{ totalExpenses }} {{ totalExpenses === 1 ? 'gasto' : 'gastos' }} •
-          Total: {{ formatYen(totalAmount) }}
-        </p>
+      <div class="mb-6 flex items-center justify-between">
+        <div class="text-xl text-slate-600">
+          {{ totalExpenses }} {{ totalExpenses === 1 ? 'gasto' : 'gastos' }}
+        </div>
+        <div class="text-2xl font-bold text-slate-900 mb-2">{{ formatYen(totalAmount) }}</div>
       </div>
 
       <!-- Filters -->

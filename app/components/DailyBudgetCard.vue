@@ -1,35 +1,36 @@
 <template>
-  <Card class="bg-gradient-to-br from-teal-500 to-teal-600 border-0 text-white shadow-xl">
-    <CardContent class="">
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="text-4xl font-bold mb-1">
-          {{ formatYen(remaining) }}
-        </div>
-        <div class="text-xs text-teal-100">
-          {{ currentDate }}
-        </div>
-      </div>
-
-
-
-      <!-- Spent and Remaining -->
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <div class="text-xs text-teal-100 mb-1">Gastado</div>
-          <div class="text-2xl font-bold">
-            {{ formatYen(todaySpent) }}
+  <div>
+    <Card class="bg-gradient-to-br from-teal-500 to-teal-600 border-0 text-white shadow-xl">
+      <CardContent class="">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-4xl font-bold mb-1">
+            {{ formatYen(remaining) }}
+          </div>
+          <div class="text-xs text-teal-100">
+            {{ currentDate }}
           </div>
         </div>
-        <div>
-          <div class="text-xs text-teal-100 mb-1">Restante</div>
-          <div class="text-2xl font-bold" :class="remaining < 0 ? 'text-red-200' : ''">
-            {{ formatYen(budget.dailyLimit) }}
+
+
+
+<!-- Spent and Remaining 
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <div class="text-xs text-teal-100 mb-1">Gastado</div>
+            <div class="text-2xl font-bold">
+              {{ formatYen(todaySpent) }}
+            </div>
+          </div>
+          <div>
+            <div class="text-xs text-teal-100 mb-1">Restante</div>
+            <div class="text-2xl font-bold" :class="remaining < 0 ? 'text-red-200' : ''">
+              {{ formatYen(budget.dailyLimit) }}
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Progress Bar -->
+-->
+        <!-- Progress Bar -->
 
         <div class="w-full bg-teal-800/30 rounded-full h-6 overflow-hidden">
           <div
@@ -38,15 +39,23 @@
             :style="{ width: `${Math.min(percentage, 100)}%` }"
           ><span v-if="percentage > 0">{{ percentage }}%</span></div>
         </div>
-    </CardContent>
-  </Card>
+      </CardContent>
+    </Card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { formatYen, calculateBudgetPercentage } from '~/utils/currency'
-import { formatDate } from '~/utils/dates'
+import { formatYen, calculateBudgetPercentage, formatYenCompact } from '~/utils/currency'
+import { formatDate, getDaysElapsed } from '~/utils/dates'
 
-const { getTodaySpent, getTodayRemaining, budget } = useExpenses()
+
+const { getStats, getTodaySpent, getTodayRemaining, budget } = useExpenses()
+const stats = computed(() => getStats())
+const daysElapsed = computed(() => {
+  if (!budget.value.startDate) return 1
+  return getDaysElapsed(budget.value.startDate)
+})
+
 
 const todaySpent = computed(() => getTodaySpent())
 const remaining = computed(() => getTodayRemaining())
@@ -62,4 +71,5 @@ const progressBarColor = computed(() => {
 })
 
 const currentDate = computed(() => formatDate(new Date()))
+
 </script>

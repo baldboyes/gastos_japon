@@ -10,7 +10,7 @@
 
     <!-- Empty State -->
     <div
-      v-if="expenses.length === 0"
+      v-if="sortedExpenses.length === 0"
       class="text-center py-12 px-4"
     >
       <div class="text-6xl mb-4">💸</div>
@@ -21,7 +21,7 @@
     <!-- Expense Cards -->
     <div v-else class="space-y-3">
       <ExpenseCard
-        v-for="expense in expenses"
+        v-for="expense in sortedExpenses"
         :key="expense.id"
         :expense="expense"
         @click="handleExpenseClick"
@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Expense } from '~/types'
 import { formatYen } from '~/utils/currency'
 
@@ -42,7 +43,7 @@ interface Props {
   emptyMessage?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: '',
   emptyTitle: 'Sin gastos aún',
   emptyMessage: 'Comienza agregando gastos para seguir tus finanzas'
@@ -51,6 +52,13 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'expense-click': [expense: Expense]
 }>()
+
+// Ordenar gastos por timestamp (más reciente primero)
+const sortedExpenses = computed(() => {
+  return [...props.expenses].sort((a, b) => {
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  })
+})
 
 function handleExpenseClick(expense: Expense) {
   emit('expense-click', expense)
