@@ -2,7 +2,7 @@
   <div class="grid grid-cols-3 gap-3">
     <!-- Total Spent -->
     <Card class="hover:shadow-md transition-shadow">
-      <CardContent class="p-4">
+      <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">💰</div>
           <div class="text-xs text-slate-600 mb-1">Total Gastado</div>
@@ -15,7 +15,7 @@
 
     <!-- Days Elapsed -->
     <Card class="hover:shadow-md transition-shadow">
-      <CardContent class="p-4">
+      <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">📅</div>
           <div class="text-xs text-slate-600 mb-1">Días</div>
@@ -28,7 +28,7 @@
 
     <!-- Average Daily -->
     <Card class="hover:shadow-md transition-shadow">
-      <CardContent class="p-4">
+      <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">📊</div>
           <div class="text-xs text-slate-600 mb-1">Promedio/Día</div>

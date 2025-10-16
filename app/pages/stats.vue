@@ -4,9 +4,6 @@
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-2xl font-bold text-slate-900 mb-2">Estadísticas</h1>
-        <p class="text-sm text-slate-600">
-          Análisis detallado de tus gastos
-        </p>
       </div>
 
       <!-- Empty State -->

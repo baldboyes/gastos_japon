@@ -1,6 +1,6 @@
 <template>
   <Card>
-    <CardContent class="p-4">
+    <CardContent class="px-4">
       <div class="flex items-start justify-between">
         <div class="flex-1">
           <div class="text-sm text-slate-600 mb-1">{{ label }}</div>
