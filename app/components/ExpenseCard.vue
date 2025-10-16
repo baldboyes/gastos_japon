@@ -1,6 +1,6 @@
 <template>
   <Card class="hover:shadow-md transition-shadow cursor-pointer" @click="$emit('click', expense)">
-    <CardContent class="p-4">
+    <CardContent class="px-4">
       <div class="flex items-start gap-3">
         <!-- Category Icon -->
         <div

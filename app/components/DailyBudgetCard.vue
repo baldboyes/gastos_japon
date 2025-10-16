@@ -6,7 +6,7 @@
           <div class="text-4xl font-bold mb-1">
             {{ formatYen(remaining) }}
           </div>
-          <div class="text-xs text-teal-100">
+          <div class="text-xs text-gray-400">
             {{ currentDate }}
           </div>
         </div>
@@ -31,12 +31,12 @@
 -->
         <!-- Progress Bar -->
 
-        <div class="w-full bg-teal-800/30 rounded-full h-6 overflow-hidden">
+        <div class="w-full bg-teal-800/30 rounded-full h-6.5 overflow-hidden">
           <div
             class="h-full rounded-full transition-all duration-500 ease-out text-white text-center"
             :class="progressBarColor"
             :style="{ width: `${Math.min(percentage, 100)}%` }"
-          ><span v-if="percentage > 0">{{ percentage }}%</span></div>
+          ><span v-if="percentage > 0" class="text-sm">{{ percentage }}%</span></div>
         </div>
 
   </div>
