@@ -1,7 +1,6 @@
 <template>
   <div>
-    <Card class="bg-gradient-to-br from-teal-500 to-teal-600 border-0 text-white shadow-xl">
-      <CardContent class="">
+
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
           <div class="text-4xl font-bold mb-1">
@@ -34,13 +33,12 @@
 
         <div class="w-full bg-teal-800/30 rounded-full h-6 overflow-hidden">
           <div
-            class="h-full rounded-full transition-all duration-500 ease-out text-gray-900 text-center"
+            class="h-full rounded-full transition-all duration-500 ease-out text-white text-center"
             :class="progressBarColor"
             :style="{ width: `${Math.min(percentage, 100)}%` }"
           ><span v-if="percentage > 0">{{ percentage }}%</span></div>
         </div>
-      </CardContent>
-    </Card>
+
   </div>
 </template>
 
@@ -65,7 +63,7 @@ const percentage = computed(() =>
 
 const progressBarColor = computed(() => {
   const pct = percentage.value
-  if (pct <= 70) return 'bg-white'
+  if (pct <= 70) return 'bg-teal-800'
   if (pct <= 90) return 'bg-yellow-800'
   return 'bg-red-800'
 })

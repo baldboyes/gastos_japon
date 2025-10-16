@@ -26,6 +26,48 @@ export function useExpenses() {
   })
 
   /**
+   * Migrate old location format to new format with coordinates
+   */
+  function migrateLocationData(expenses: Expense[]): Expense[] {
+    return expenses.map(expense => {
+      // Check if location has old format (direct lat/lng)
+      const location = expense.location as any
+
+      if (location && typeof location.lat === 'number' && typeof location.lng === 'number' && !location.coordinates) {
+        // Old format detected - migrate to new format
+        return {
+          ...expense,
+          location: {
+            coordinates: {
+              lat: location.lat,
+              lng: location.lng
+            },
+            city: location.city || '',
+            prefecture: location.prefecture || ''
+          }
+        }
+      }
+
+      // Already in new format or needs initialization
+      if (!location.coordinates) {
+        return {
+          ...expense,
+          location: {
+            coordinates: {
+              lat: 0,
+              lng: 0
+            },
+            city: location.city || '',
+            prefecture: location.prefecture || ''
+          }
+        }
+      }
+
+      return expense
+    })
+  }
+
+  /**
    * Load data from localStorage
    */
   function loadFromStorage(): void {
@@ -34,8 +76,14 @@ export function useExpenses() {
         const stored = localStorage.getItem(STORAGE_KEY)
         if (stored) {
           const data: AppData = JSON.parse(stored)
-          expenses.value = data.expenses || []
+          // Migrate old data format to new format
+          expenses.value = migrateLocationData(data.expenses || [])
           budget.value = data.budget || budget.value
+
+          // Save migrated data back to storage
+          if (data.expenses && data.expenses.length > 0) {
+            saveToStorage()
+          }
         }
       } catch (error) {
         console.error('Error loading from localStorage:', error)
