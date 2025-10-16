@@ -7,8 +7,10 @@ export type ExpenseCategory = 'food' | 'transport' | 'accommodation' | 'entertai
 export type PaymentMethod = 'cash' | 'card'
 
 export interface Location {
-  lat: number
-  lng: number
+  coordinates: {
+    lat: number
+    lng: number
+  }
   city: string
   prefecture: string
 }

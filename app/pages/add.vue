@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="default">
-    <div class="max-w-screen-sm mx-auto p-4">
+    <div class="max-w-screen-sm mx-auto p-4 mb-4">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold text-slate-900">{{ isEditMode ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
@@ -229,7 +229,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar Gasto' : 'Guardar Gasto') }}
+            {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar Gasto' : 'Guardar gasto') }}
           </Button>
         </div>
       </form>
@@ -257,8 +257,10 @@ const form = reactive({
   date: '',
   time: '',
   location: {
-    lat: 0,
-    lng: 0,
+    coordinates: {
+      lat: 0,
+      lng: 0
+    },
     city: '',
     prefecture: ''
   },
@@ -316,8 +318,8 @@ async function captureLocation() {
     locationError.value = geoError.value
     showManualLocation.value = true
     // Set default values for manual entry
-    form.location.lat = 0
-    form.location.lng = 0
+    form.location.coordinates.lat = 0
+    form.location.coordinates.lng = 0
   }
 }
 
@@ -325,8 +327,10 @@ function resetLocation() {
   locationCaptured.value = false
   showManualLocation.value = false
   form.location = {
-    lat: 0,
-    lng: 0,
+    coordinates: {
+      lat: 0,
+      lng: 0
+    },
     city: '',
     prefecture: ''
   }

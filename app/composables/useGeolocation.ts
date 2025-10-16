@@ -47,8 +47,10 @@ export function useGeolocation() {
       const geocoded = await reverseGeocode(latitude, longitude)
 
       const newLocation: Location = {
-        lat: latitude,
-        lng: longitude,
+        coordinates: {
+          lat: latitude,
+          lng: longitude
+        },
         city: geocoded.city,
         prefecture: geocoded.prefecture
       }
@@ -129,8 +131,10 @@ export function useGeolocation() {
     prefecture: string
   ): Location {
     const manualLocation: Location = {
-      lat,
-      lng,
+      coordinates: {
+        lat,
+        lng
+      },
       city,
       prefecture
     }
