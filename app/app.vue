@@ -24,7 +24,8 @@ useHead({
   ],
   link: [
     { rel: 'icon', type: 'image/png', href: '/favicon.png' },
-    { rel: 'apple-touch-icon', href: '/icon-192x192.png' }
+    { rel: 'apple-touch-icon', href: '/icon-192x192.png' },
+    { rel: 'manifest', href: '/manifest.webmanifest' }
   ]
 })
 </script>

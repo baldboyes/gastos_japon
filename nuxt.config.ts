@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/tailwind.css'],
+  app: {
+    head: {
+      htmlAttrs: {
+        lang: 'es'
+      }
+    }
+  },
   vite: {
     plugins: [
       tailwindcss(),
@@ -26,6 +33,10 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: 'autoUpdate',
+    injectRegister: 'auto',
+    registerWebManifestInRouteRules: true,
+    base: '/',
+    scope: '/',
     includeAssets: ['favicon.ico', 'favicon.png', 'icon.svg', 'robots.txt'],
     manifest: {
       name: 'Gastos Japón',
@@ -68,7 +79,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,json,vue,txt,webp}'],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
