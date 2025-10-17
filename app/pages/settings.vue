@@ -105,8 +105,84 @@
             </div>
           </CardContent>
         </Card>
+
+        <!-- Danger Zone - Only show if there are expenses -->
+        <Card v-if="expenses.length > 0" class="border-red-200">
+          <CardHeader>
+            <CardTitle class="text-lg text-red-600">Zona de Peligro</CardTitle>
+            <CardDescription>
+              Acciones irreversibles que afectan tus datos
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AlertDialog v-model:open="showDeleteDialog">
+              <AlertDialogTrigger as-child>
+                <Button variant="destructive" class="w-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    <line x1="10" x2="10" y1="11" y2="17"/>
+                    <line x1="14" x2="14" y1="11" y2="17"/>
+                  </svg>
+                  Eliminar todos los gastos
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent class="max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle class="flex items-center gap-2 text-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+                      <path d="M12 9v4"/>
+                      <path d="M12 17h.01"/>
+                    </svg>
+                    ¿Estás completamente seguro?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción eliminará permanentemente todos tus gastos ({{ expenses.length }} {{ expenses.length === 1 ? 'gasto' : 'gastos' }}). Esta acción no se puede deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <!-- Export option within dialog -->
+                <div class="p-3 bg-teal-50 border border-teal-200 rounded-lg">
+                  <p class="text-sm font-medium text-teal-900 mb-2">💾 Guardar copia de seguridad</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="w-full border-teal-300 text-teal-700 hover:bg-teal-100"
+                    @click="handleExportBeforeDelete"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" x2="12" y1="15" y2="3"/>
+                    </svg>
+                    Descargar copia ahora
+                  </Button>
+                  <p v-if="hasExportedBeforeDelete" class="text-xs text-teal-600 mt-2 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    Copia guardada correctamente
+                  </p>
+                </div>
+
+                <AlertDialogFooter>
+                  <AlertDialogCancel @click="handleCancelDelete">Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    class="bg-red-600 hover:bg-red-700"
+                    @click="handleDeleteAll"
+                  >
+                    Sí, eliminar todo
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
+
         <div class="text-center text-sm text-gray-400">
-          <span>Versión</span> <span class="font-medium">1.0.4</span>
+          <span>Versión</span> <span class="font-medium">1.0.5</span>
         </div>
       </div>
     </div>
@@ -117,7 +193,7 @@
 import { CURRENCIES, type Currency } from '~/composables/useSettings'
 
 const { settings, setCurrency, getCurrencyInfo } = useSettings()
-const { budget, updateBudget, expenses, getTotalSpent } = useExpenses()
+const { budget, updateBudget, expenses, getTotalSpent, clearAllData, exportData } = useExpenses()
 const { markSetupComplete, isSetupComplete } = useFirstTimeSetup()
 
 const selectedCurrency = computed(() => settings.value.currency)
@@ -125,6 +201,10 @@ const currencyInfo = computed(() => getCurrencyInfo())
 const dailyLimitInput = ref(budget.value.dailyLimit > 0 ? budget.value.dailyLimit.toString() : '')
 const totalSpent = computed(() => getTotalSpent())
 const isFirstTime = ref(!isSetupComplete())
+
+// Delete dialog state
+const showDeleteDialog = ref(false)
+const hasExportedBeforeDelete = ref(false)
 
 // Watch for budget changes from external sources
 watch(() => budget.value.dailyLimit, (newLimit) => {
@@ -155,5 +235,37 @@ function formatCurrency(amount: number): string {
   const info = getCurrencyInfo()
   if (!info) return amount.toLocaleString()
   return `${info.symbol}${amount.toLocaleString()}`
+}
+
+// Export/Delete handlers
+function handleExportBeforeDelete() {
+  try {
+    const jsonData = exportData()
+    const blob = new Blob([jsonData], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `gastos-japon-backup-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    hasExportedBeforeDelete.value = true
+  } catch (error) {
+    console.error('Error exporting data:', error)
+    alert('Error al exportar los datos')
+  }
+}
+
+function handleCancelDelete() {
+  hasExportedBeforeDelete.value = false
+}
+
+function handleDeleteAll() {
+  clearAllData()
+  showDeleteDialog.value = false
+  hasExportedBeforeDelete.value = false
+  // Optionally show success message
+  alert('Todos los gastos han sido eliminados')
 }
 </script>

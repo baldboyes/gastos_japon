@@ -331,7 +331,7 @@ export function useExpenses() {
   function clearAllData(): void {
     expenses.value = []
     budget.value = {
-      dailyLimit: DEFAULT_DAILY_LIMIT,
+      dailyLimit: 0,
       startDate: new Date().toISOString()
     }
     saveToStorage()

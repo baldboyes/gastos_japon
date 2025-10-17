@@ -26,6 +26,7 @@
               id="amount"
               v-model="form.amount"
               type="number"
+              inputmode="decimal"
               placeholder="1,200"
               class="pl-10 text-2xl h-14"
               required
