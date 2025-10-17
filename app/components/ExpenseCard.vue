@@ -17,7 +17,7 @@
               {{ expense.placeName }}
             </h3>
             <div class="flex-shrink-0 font-bold text-gray-900">
-              {{ formatYen(expense.amount) }}
+              {{ formatAmount(expense.amount) }}
             </div>
           </div>
           <div class="flex items-center gap-2 justify-between">
@@ -71,8 +71,9 @@
 <script setup lang="ts">
 import type { Expense } from '~/types'
 import { getCategoryInfo } from '~/types'
-import { formatYen } from '~/utils/currency'
 import { formatTime } from '~/utils/dates'
+
+const { formatAmount } = useCurrency()
 
 interface Props {
   expense: Expense

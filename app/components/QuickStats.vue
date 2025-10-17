@@ -7,7 +7,7 @@
           <div class="text-2xl mb-1">💰</div>
           <div class="text-xs text-gray-600 mb-1">Total Gastado</div>
           <div class="text-lg font-bold text-gray-900">
-            {{ formatYenCompact(stats.totalSpent) }}
+            {{ formatAmountCompact(stats.totalSpent) }}
           </div>
         </div>
       </CardContent>
@@ -33,7 +33,7 @@
           <div class="text-2xl mb-1">📊</div>
           <div class="text-xs text-gray-600 mb-1">Promedio/Día</div>
           <div class="text-lg font-bold text-gray-900">
-            {{ formatYenCompact(stats.averageDaily) }}
+            {{ formatAmountCompact(stats.averageDaily) }}
           </div>
         </div>
       </CardContent>
@@ -42,10 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { formatYenCompact } from '~/utils/currency'
 import { getDaysElapsed } from '~/utils/dates'
 
 const { getStats, budget } = useExpenses()
+const { formatAmountCompact } = useCurrency()
 
 const stats = computed(() => getStats())
 

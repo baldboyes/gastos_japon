@@ -19,9 +19,9 @@
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Amount -->
         <div>
-          <Label for="amount" class="text-base">Gasto (¥) *</Label>
+          <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
           <div class="relative mt-2">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">¥</span>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">{{ currencySymbol }}</span>
             <Input
               id="amount"
               v-model="form.amount"
@@ -254,6 +254,7 @@
 import type { ExpenseCategory, PaymentMethod } from '~/types'
 import { getCurrentTimestamp } from '~/utils/dates'
 
+const { currencySymbol } = useCurrency()
 const route = useRoute()
 const { addExpense, updateExpense, getExpense } = useExpenses()
 const { getCurrentLocation, location, loading: locationLoading, error: geoError } = useGeolocation()

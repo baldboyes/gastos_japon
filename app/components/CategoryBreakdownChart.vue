@@ -30,7 +30,7 @@
             </div>
           </div>
           <div class="text-right">
-            <div class="text-sm font-semibold text-gray-900">{{ formatYen(item.total) }}</div>
+            <div class="text-sm font-semibold text-gray-900">{{ formatAmount(item.total) }}</div>
             <div class="text-xs text-gray-500">{{ item.percentage }}%</div>
           </div>
         </div>
@@ -50,7 +50,8 @@ import {
 } from 'chart.js'
 import type { Expense, ExpenseCategory } from '~/types'
 import { getCategoryInfo } from '~/types'
-import { formatYen } from '~/utils/currency'
+
+const { formatAmount } = useCurrency()
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -133,7 +134,7 @@ const chartOptions: ChartOptions<'doughnut'> = {
         label: (context) => {
           const value = context.parsed
           const percentage = categoryBreakdown.value[context.dataIndex]?.percentage || 0
-          return ` ${formatYen(value)} (${percentage}%)`
+          return ` ${formatAmount(value)} (${percentage}%)`
         }
       }
     }

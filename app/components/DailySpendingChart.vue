@@ -14,15 +14,15 @@
         <div class="grid grid-cols-3 gap-3 pt-4 border-t">
           <div class="text-center">
             <div class="text-xs text-gray-600 mb-1">Promedio</div>
-            <div class="text-lg font-bold text-gray-900">{{ formatYen(averageDaily) }}</div>
+            <div class="text-lg font-bold text-gray-900">{{ formatAmount(averageDaily) }}</div>
           </div>
           <div class="text-center">
             <div class="text-xs text-gray-600 mb-1">Día Mayor</div>
-            <div class="text-lg font-bold text-orange-600">{{ formatYen(maxDaily) }}</div>
+            <div class="text-lg font-bold text-orange-600">{{ formatAmount(maxDaily) }}</div>
           </div>
           <div class="text-center">
             <div class="text-xs text-gray-600 mb-1">Día Menor</div>
-            <div class="text-lg font-bold text-teal-600">{{ formatYen(minDaily) }}</div>
+            <div class="text-lg font-bold text-teal-600">{{ formatAmount(minDaily) }}</div>
           </div>
         </div>
       </div>
@@ -49,8 +49,9 @@ import {
   type ChartOptions
 } from 'chart.js'
 import type { Expense } from '~/types'
-import { formatYen } from '~/utils/currency'
 import { formatDate, groupByDate } from '~/utils/dates'
+
+const { formatAmount, currencySymbol } = useCurrency()
 
 ChartJS.register(
   CategoryScale,
@@ -171,7 +172,7 @@ const chartOptions: ChartOptions<'line'> = {
         label: (context) => {
           const label = context.dataset.label || ''
           const value = context.parsed.y
-          return `${label}: ${formatYen(value)}`
+          return `${label}: ${formatAmount(value)}`
         }
       }
     }
@@ -180,7 +181,7 @@ const chartOptions: ChartOptions<'line'> = {
     y: {
       beginAtZero: true,
       ticks: {
-        callback: (value) => `¥${value.toLocaleString()}`
+        callback: (value) => `${currencySymbol.value}${value.toLocaleString()}`
       }
     },
     x: {

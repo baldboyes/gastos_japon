@@ -6,7 +6,6 @@ import type { AppData, Budget, Expense, ExpenseCategory } from '~/types'
 import { getDateString, getStartOfDay, getEndOfDay, sortByTimestamp } from '~/utils/dates'
 
 const STORAGE_KEY = 'gastos-japon'
-const DEFAULT_DAILY_LIMIT = 8000
 
 /**
  * Generate a simple UUID
@@ -21,7 +20,7 @@ function generateId(): string {
 export function useExpenses() {
   const expenses = ref<Expense[]>([])
   const budget = ref<Budget>({
-    dailyLimit: DEFAULT_DAILY_LIMIT,
+    dailyLimit: 0,
     startDate: new Date().toISOString()
   })
 

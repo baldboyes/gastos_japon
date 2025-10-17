@@ -13,7 +13,7 @@
               class="text-6xl font-bold mb-1 -mt-1"
               :class="showRemaining && remaining < 0 ? 'text-red-600' : 'text-gray-900'"
             >
-              {{ formatYen(showRemaining ? remaining : todaySpent) }}
+              {{ formatAmount(showRemaining ? remaining : todaySpent) }}
             </div>
           </div>
         </div>
@@ -50,11 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { formatYen, calculateBudgetPercentage } from '~/utils/currency'
+import { calculateBudgetPercentage } from '~/utils/currency'
 
 const STORAGE_KEY = 'daily-budget-display-mode'
 
 const { getStats, getTodaySpent, getTodayRemaining, budget } = useExpenses()
+const { formatAmount } = useCurrency()
 
 // Load preference from localStorage
 const showRemaining = ref(true)

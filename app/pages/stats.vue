@@ -27,28 +27,28 @@
         <div class="grid grid-cols-2 gap-4">
           <StatsCard
             label="Total Gastado"
-            :value="formatYen(totalSpent)"
+            :value="formatAmount(totalSpent)"
             :subtitle="`${expenses.length} ${expenses.length === 1 ? 'gasto' : 'gastos'}`"
             icon="💰"
             icon-bg-class="bg-teal-100"
           />
           <StatsCard
             label="Promedio Diario"
-            :value="formatYen(averageDaily)"
+            :value="formatAmount(averageDaily)"
             :subtitle="`${tripDays} ${tripDays === 1 ? 'día' : 'días'} con gastos`"
             icon="📅"
             icon-bg-class="bg-blue-100"
           />
           <StatsCard
             label="Gasto Mayor"
-            :value="formatYen(maxExpense?.amount || 0)"
+            :value="formatAmount(maxExpense?.amount || 0)"
             :subtitle="maxExpense?.placeName"
             icon="📈"
             icon-bg-class="bg-orange-100"
           />
           <StatsCard
             label="Gasto Menor"
-            :value="formatYen(minExpense?.amount || 0)"
+            :value="formatAmount(minExpense?.amount || 0)"
             :subtitle="minExpense?.placeName"
             icon="📉"
             icon-bg-class="bg-green-100"
@@ -87,7 +87,7 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-sm font-semibold text-gray-900">{{ formatYen(location.total) }}</div>
+                  <div class="text-sm font-semibold text-gray-900">{{ formatAmount(location.total) }}</div>
                   <div class="text-xs text-gray-500">{{ location.count }} {{ location.count === 1 ? 'gasto' : 'gastos' }}</div>
                 </div>
               </div>
@@ -119,7 +119,7 @@
                   <div class="text-xs text-gray-600">{{ formatDate(expense.timestamp) }}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-sm font-bold text-gray-900">{{ formatYen(expense.amount) }}</div>
+                  <div class="text-sm font-bold text-gray-900">{{ formatAmount(expense.amount) }}</div>
                 </div>
               </div>
             </div>
@@ -142,8 +142,8 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-lg font-bold text-gray-900">{{ formatYen(sharedTotal) }}</div>
-                  <div class="text-xs text-gray-600">Tu parte: {{ formatYen(Math.round(sharedTotal / 2)) }}</div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatAmount(sharedTotal) }}</div>
+                  <div class="text-xs text-gray-600">Tu parte: {{ formatAmount(Math.round(sharedTotal / 2)) }}</div>
                 </div>
               </div>
             </div>
@@ -151,7 +151,7 @@
         </Card>
       </div>
 
-      <\!-- Expense Detail Dialog -->
+      <!-- Expense Detail Dialog -->
       <ExpenseDetailDialog
         v-model="showExpenseDetail"
         :expense="selectedExpense"
@@ -164,9 +164,9 @@
 <script setup lang="ts">
 import type { Expense } from '~/types'
 import { getCategoryInfo } from '~/types'
-import { formatYen } from '~/utils/currency'
 import { formatDate, formatTime, groupByDate } from '~/utils/dates'
 
+const { formatAmount } = useCurrency()
 const { expenses, budget } = useExpenses()
 
 // Dialog state

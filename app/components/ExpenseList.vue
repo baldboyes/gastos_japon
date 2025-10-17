@@ -4,7 +4,7 @@
     <div v-if="title" class="flex items-center justify-between px-1">
       <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
       <div v-if="total !== undefined" class="text-sm font-medium text-gray-600">
-        Total: {{ formatYen(total) }}
+        Total: {{ formatAmount(total) }}
       </div>
     </div>
 
@@ -33,7 +33,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Expense } from '~/types'
-import { formatYen } from '~/utils/currency'
+
+const { formatAmount } = useCurrency()
 
 interface Props {
   expenses: Expense[]

@@ -12,7 +12,7 @@
           </span>
         </div>
         <div class="text-sm font-bold text-gray-900">
-          {{ formatYen(getTotalForDate(expensesForDate)) }}
+          {{ formatAmount(getTotalForDate(expensesForDate)) }}
         </div>
       </div>
 
@@ -38,8 +38,9 @@
 
 <script setup lang="ts">
 import type { Expense } from '~/types'
-import { formatYen } from '~/utils/currency'
 import { formatDate, getRelativeDayLabel, groupByDate, getDateString } from '~/utils/dates'
+
+const { formatAmount } = useCurrency()
 
 interface Props {
   expenses: Expense[]

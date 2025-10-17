@@ -43,7 +43,7 @@
         <div class="text-xl text-gray-600">
           {{ totalExpenses }} {{ totalExpenses === 1 ? 'gasto' : 'gastos' }}
         </div>
-        <div class="text-2xl font-bold text-gray-900 mb-2">{{ formatYen(totalAmount) }}</div>
+        <div class="text-2xl font-bold text-gray-900 mb-2">{{ formatAmount(totalAmount) }}</div>
       </div>
 
       <!-- Filters -->
@@ -59,7 +59,7 @@
       <div v-if="hasFilters && filteredExpenses.length > 0" class="mb-4">
         <div class="text-sm text-gray-600 bg-teal-50 px-4 py-2 rounded-lg">
           Mostrando {{ filteredExpenses.length }} {{ filteredExpenses.length === 1 ? 'resultado' : 'resultados' }}
-          • Total: {{ formatYen(filteredTotal) }}
+          • Total: {{ formatAmount(filteredTotal) }}
         </div>
       </div>
 
@@ -86,6 +86,7 @@
 import { useRouter } from 'vue-router'
 import type { Expense } from '~/types'
 
+const { formatAmount } = useCurrency()
 const router = useRouter()
 const { expenses, deleteExpense, exportData, importData } = useExpenses()
 

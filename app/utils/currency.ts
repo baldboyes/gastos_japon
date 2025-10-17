@@ -1,14 +1,41 @@
 /**
- * Currency formatting utilities for Japanese Yen
+ * Currency formatting utilities
  */
 
+import type { Currency } from '~/composables/useSettings'
+
 /**
- * Format amount as Japanese Yen
+ * Get currency symbol
+ */
+function getCurrencySymbol(currency: Currency): string {
+  const symbols: Record<Currency, string> = {
+    'JPY': '¥',
+    'CNY': '¥',
+    'KRW': '₩',
+    'EUR': '€',
+    'USD': '$'
+  }
+  return symbols[currency]
+}
+
+/**
+ * Format amount with current currency setting
+ * @param amount - Amount to format
+ * @param currency - Currency code (optional, defaults to JPY for backwards compatibility)
+ * @returns Formatted string (e.g., "¥1,200")
+ */
+export function formatCurrency(amount: number, currency: Currency = 'JPY'): string {
+  const symbol = getCurrencySymbol(currency)
+  return `${symbol}${amount.toLocaleString()}`
+}
+
+/**
+ * Format amount as Japanese Yen (backwards compatibility)
  * @param amount - Amount in yenes
  * @returns Formatted string (e.g., "¥1,200")
  */
 export function formatYen(amount: number): string {
-  return `¥${amount.toLocaleString('ja-JP')}`
+  return formatCurrency(amount, 'JPY')
 }
 
 /**

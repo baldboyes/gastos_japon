@@ -16,7 +16,7 @@
             <div class="text-2xl">💴</div>
             <div class="flex-1">
               <div class="text-xs text-gray-600">Efectivo</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatYen(cashTotal) }}</div>
+              <div class="text-lg font-bold text-gray-900">{{ formatAmount(cashTotal) }}</div>
               <div class="text-xs text-gray-500">{{ cashCount }} {{ cashCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
@@ -25,7 +25,7 @@
             <div class="text-2xl">💳</div>
             <div class="flex-1">
               <div class="text-xs text-gray-600">Tarjeta</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatYen(cardTotal) }}</div>
+              <div class="text-lg font-bold text-gray-900">{{ formatAmount(cardTotal) }}</div>
               <div class="text-xs text-gray-500">{{ cardCount }} {{ cardCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
@@ -34,7 +34,7 @@
             <div class="text-2xl">🎫</div>
             <div class="flex-1">
               <div class="text-xs text-gray-600">IC</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatYen(icTotal) }}</div>
+              <div class="text-lg font-bold text-gray-900">{{ formatAmount(icTotal) }}</div>
               <div class="text-xs text-gray-500">{{ icCount }} {{ icCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
@@ -61,7 +61,8 @@ import {
   type ChartOptions
 } from 'chart.js'
 import type { Expense } from '~/types'
-import { formatYen } from '~/utils/currency'
+
+const { formatAmount, currencySymbol } = useCurrency()
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -129,7 +130,7 @@ const chartOptions: ChartOptions<'bar'> = {
       callbacks: {
         label: (context) => {
           const value = context.parsed.y
-          return ` ${formatYen(value)}`
+          return ` ${formatAmount(value)}`
         }
       }
     }
@@ -138,7 +139,7 @@ const chartOptions: ChartOptions<'bar'> = {
     y: {
       beginAtZero: true,
       ticks: {
-        callback: (value) => `¥${value.toLocaleString()}`
+        callback: (value) => `${currencySymbol.value}${value.toLocaleString()}`
       }
     }
   }

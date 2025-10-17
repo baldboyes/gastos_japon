@@ -7,7 +7,8 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Expense } from '~/types'
 import { getCategoryInfo } from '~/types'
-import { formatYen } from '~/utils/currency'
+
+const { formatAmount } = useCurrency()
 
 interface Props {
   expenses: Expense[]
@@ -149,7 +150,7 @@ function addMarkers() {
           </div>
         </div>
         <div style="font-size: 16px; font-weight: 700; color: #14b8a6; margin-bottom: 4px;">
-          ${formatYen(expense.amount)}
+          ${formatAmount(expense.amount)}
         </div>
         <div style="font-size: 12px; color: #64748b;">
           📍 ${expense.location.city}, ${expense.location.prefecture}

@@ -14,7 +14,7 @@
         <!-- Amount -->
         <div>
           <div class="text-sm font-medium text-gray-600 mb-1">Cantidad</div>
-          <div class="text-2xl font-bold text-teal-600">{{ formatYen(expense.amount) }}</div>
+          <div class="text-2xl font-bold text-teal-600">{{ formatAmount(expense.amount) }}</div>
         </div>
 
         <!-- Date & Time -->
@@ -128,7 +128,7 @@
         <div class="text-sm text-gray-700">
           <div class="font-semibold">{{ expense.placeName }}</div>
           <div class="text-2xl font-bold text-gray-900 mt-1">
-            {{ formatYen(expense.amount) }}
+            {{ formatAmount(expense.amount) }}
           </div>
         </div>
       </div>
@@ -150,8 +150,9 @@
 <script setup lang="ts">
 import type { Expense } from '~/types'
 import { getCategoryInfo } from '~/types'
-import { formatYen } from '~/utils/currency'
 import { formatDate, formatTime } from '~/utils/dates'
+
+const { formatAmount } = useCurrency()
 
 interface Props {
   modelValue: boolean
