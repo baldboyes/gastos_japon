@@ -18,12 +18,13 @@ function generateId(): string {
  * Main composable for expense management
  */
 export function useExpenses() {
-  const expenses = ref<Expense[]>([])
-  const budget = ref<Budget>({
+  // Use Nuxt's useState for global reactive state
+  const expenses = useState<Expense[]>('expenses', () => [])
+  const budget = useState<Budget>('budget', () => ({
     dailyLimit: 0,
     startDate: new Date().toISOString(),
     currency: null
-  })
+  }))
 
   /**
    * Migrate old settings currency to budget
@@ -159,11 +160,18 @@ export function useExpenses() {
     const index = expenses.value.findIndex(e => e.id === id)
     if (index === -1) return false
 
+    const currentExpense = expenses.value[index]!
     expenses.value[index] = {
-      ...expenses.value[index],
+      ...currentExpense,
       ...updates,
-      id // Preserve original ID
-    }
+      id, // Preserve original ID
+      timestamp: updates.timestamp ?? currentExpense.timestamp,
+      placeName: updates.placeName ?? currentExpense.placeName,
+      amount: updates.amount ?? currentExpense.amount,
+      category: updates.category ?? currentExpense.category,
+      location: updates.location ?? currentExpense.location,
+      paymentMethod: updates.paymentMethod ?? currentExpense.paymentMethod
+    } as Expense
     saveToStorage()
     return true
   }
@@ -394,8 +402,8 @@ export function useExpenses() {
 
   return {
     // State
-    expenses: readonly(expenses),
-    budget: readonly(budget),
+    expenses,
+    budget,
 
     // CRUD operations
     addExpense,
