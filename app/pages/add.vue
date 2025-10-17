@@ -29,7 +29,7 @@
                 type="number"
                 inputmode="decimal"
                 placeholder="1,200"
-                class="pl-6 text-xl h-14"
+                class="pl-6 text-xl h-14 bg-white"
                 required
                 step="1"
                 min="1"
@@ -91,7 +91,7 @@
             v-model="form.placeName"
             type="text"
             placeholder="Ej: Ichiran Ramen"
-            class="mt-2 h-14 text-xl"
+            class="mt-2 h-14 text-xl bg-white"
             required
           />
         </div>
@@ -107,7 +107,7 @@
               id="date"
               v-model="form.date"
               type="date"
-              class="mt-2 h-14 text-xl"
+              class="mt-2 h-14 text-xl bg-white"
               required
             />
           </div>
@@ -117,7 +117,7 @@
               id="time"
               v-model="form.time"
               type="time"
-              class="mt-2 h-14 text-xl"
+              class="mt-2 h-14 text-xl bg-white"
               required
             />
           </div>
@@ -181,7 +181,7 @@
                       v-model="form.location.city"
                       type="text"
                       placeholder="Kobe"
-                      class="mt-1"
+                      class="mt-1 bg-white"
                       required
                     />
                   </div>
@@ -192,7 +192,7 @@
                       v-model="form.location.prefecture"
                       type="text"
                       placeholder="Hyogo"
-                      class="mt-1"
+                      class="mt-1 bg-white"
                       required
                     />
                   </div>
@@ -209,7 +209,7 @@
             id="notes"
             v-model="form.notes"
             placeholder="Agrega detalles adicionales sobre este gasto..."
-            class="mt-2 min-h-[100px]"
+            class="mt-2 min-h-[100px] bg-white"
           />
         </div>
         <!-- Shared -->
@@ -217,6 +217,7 @@
           <Checkbox
             id="shared"
             v-model:checked="form.shared"
+            class="bg-white"
           />
           <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
             <span>👥</span>

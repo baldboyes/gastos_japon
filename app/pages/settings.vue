@@ -88,6 +88,7 @@
                       type="number"
                       min="0"
                       step="100"
+                      class="bg-white h-14 text-xl"
                       :class="currencyInfo ? 'pl-10 text-lg' : 'text-lg'"
                       :placeholder="currencyInfo ? '8000' : 'Selecciona una moneda primero'"
                       :disabled="!currencyInfo"

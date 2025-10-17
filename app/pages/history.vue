@@ -52,6 +52,7 @@
           @search-change="handleSearchChange"
           @category-change="handleCategoryChange"
           @payment-change="handlePaymentChange"
+          @shared-change="handleSharedChange"
         />
       </div>
 
@@ -94,6 +95,7 @@ const { expenses, deleteExpense, exportData, importData } = useExpenses()
 const searchQuery = ref('')
 const selectedCategory = ref('all')
 const selectedPayment = ref('all')
+const showSharedOnly = ref(false)
 
 // Dialog state
 const showExpenseDetail = ref(false)
@@ -122,11 +124,16 @@ const filteredExpenses = computed(() => {
     result = result.filter(e => e.paymentMethod === selectedPayment.value)
   }
 
+  // Shared filter
+  if (showSharedOnly.value) {
+    result = result.filter(e => e.shared === true)
+  }
+
   return result
 })
 
 const hasFilters = computed(() =>
-  searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all'
+  searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all' || showSharedOnly.value
 )
 
 const totalExpenses = computed(() => expenses.value.length)
@@ -150,6 +157,10 @@ function handleCategoryChange(category: string) {
 
 function handlePaymentChange(payment: string) {
   selectedPayment.value = payment
+}
+
+function handleSharedChange(showShared: boolean) {
+  showSharedOnly.value = showShared
 }
 
 function handleExpenseClick(expense: Expense) {
