@@ -3,7 +3,7 @@
     <div class="max-w-screen-sm mx-auto p-4 mb-4">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar gasto' : 'Nuevo gasto' }}</h1>
         <button
           class="text-gray-600 hover:text-gray-900 transition-colors"
           @click="navigateTo('/')"
@@ -17,22 +17,69 @@
 
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- Amount -->
-        <div>
-          <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
-          <div class="relative mt-2">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">{{ currencySymbol }}</span>
-            <Input
-              id="amount"
-              v-model="form.amount"
-              type="number"
-              inputmode="decimal"
-              placeholder="1,200"
-              class="pl-10 text-2xl h-14"
-              required
-              step="1"
-              min="1"
-            />
+        <div class=" flex items-start justify-between gap-4">
+          <!-- Amount -->
+          <div class="w-1/3">
+            <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
+            <div class="relative mt-2">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">{{ currencySymbol }}</span>
+              <Input
+                id="amount"
+                v-model="form.amount"
+                type="number"
+                inputmode="decimal"
+                placeholder="1,200"
+                class="pl-10 text-2xl h-14"
+                required
+                step="1"
+                min="1"
+              />
+            </div>
+          </div>
+          <!-- Payment Method -->
+          <div class="w-2/3">
+            <Label class="text-base mb-3 block">Método de Pago *</Label>
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                :class="[
+                  form.paymentMethod === 'cash'
+                    ? 'border-teal-500 bg-teal-50'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                ]"
+                @click="form.paymentMethod = 'cash'"
+              >
+                <span class="text-2xl">💴</span>
+                <span class="text-sm font-medium">Efectivo</span>
+              </button>
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                :class="[
+                  form.paymentMethod === 'card'
+                    ? 'border-teal-500 bg-teal-50'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                ]"
+                @click="form.paymentMethod = 'card'"
+              >
+                <span class="text-2xl">💳</span>
+                <span class="text-sm font-medium">Tarjeta</span>
+              </button>
+              <button
+                type="button"
+                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                :class="[
+                  form.paymentMethod === 'ic'
+                    ? 'border-teal-500 bg-teal-50'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                ]"
+                @click="form.paymentMethod = 'ic'"
+              >
+                <span class="text-2xl">🎫</span>
+                <span class="text-sm font-medium">IC</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -153,52 +200,6 @@
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <!-- Payment Method -->
-        <div>
-          <Label class="text-base mb-3 block">Método de Pago *</Label>
-          <div class="grid grid-cols-3 gap-3">
-            <button
-              type="button"
-              class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all"
-              :class="[
-                form.paymentMethod === 'cash'
-                  ? 'border-teal-500 bg-teal-50'
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
-              ]"
-              @click="form.paymentMethod = 'cash'"
-            >
-              <span class="text-2xl">💴</span>
-              <span class="font-medium">Efectivo</span>
-            </button>
-            <button
-              type="button"
-              class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all"
-              :class="[
-                form.paymentMethod === 'card'
-                  ? 'border-teal-500 bg-teal-50'
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
-              ]"
-              @click="form.paymentMethod = 'card'"
-            >
-              <span class="text-2xl">💳</span>
-              <span class="font-medium">Tarjeta</span>
-            </button>
-            <button
-              type="button"
-              class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all"
-              :class="[
-                form.paymentMethod === 'ic'
-                  ? 'border-teal-500 bg-teal-50'
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
-              ]"
-              @click="form.paymentMethod = 'ic'"
-            >
-              <span class="text-2xl">🎫</span>
-              <span class="font-medium">IC</span>
-            </button>
-          </div>
         </div>
 
         <!-- Shared -->
