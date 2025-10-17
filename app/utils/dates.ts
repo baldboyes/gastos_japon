@@ -11,7 +11,7 @@ import type { Expense } from '~/types'
  */
 export function formatDate(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleDateString('en-GB', {
+  return d.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -25,7 +25,7 @@ export function formatDate(date: string | Date): string {
  */
 export function formatTime(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleTimeString('en-GB', {
+  return d.toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit'
   })
@@ -47,7 +47,7 @@ export function formatDateTime(date: string | Date): string {
  */
 export function formatDateShort(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleDateString('en-GB', {
+  return d.toLocaleDateString('es-ES', {
     day: '2-digit',
     month: '2-digit',
     year: '2-digit'
@@ -83,8 +83,8 @@ export function isYesterday(date: string | Date): boolean {
  * @returns Relative label
  */
 export function getRelativeDayLabel(date: string | Date): string {
-  if (isToday(date)) return 'Today'
-  if (isYesterday(date)) return 'Yesterday'
+  if (isToday(date)) return 'Hoy'
+  if (isYesterday(date)) return 'Ayer'
   return formatDate(date)
 }
 
@@ -108,7 +108,7 @@ export function getDaysElapsed(startDate: string): number {
  */
 export function getDateString(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toISOString().split('T')[0]
+  return d.toISOString().split('T')[0] || ''
 }
 
 /**

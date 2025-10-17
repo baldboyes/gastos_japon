@@ -15,7 +15,7 @@
         @click="$emit('update:modelValue', category.key)"
       >
         <div class="text-3xl">{{ category.icon }}</div>
-        <div class="text-xs font-medium text-center text-slate-700">
+        <div class="text-xs font-medium text-center text-gray-700">
           {{ category.label }}
         </div>
       </button>

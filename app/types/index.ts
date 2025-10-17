@@ -4,7 +4,7 @@
 
 export type ExpenseCategory = 'food' | 'transport' | 'accommodation' | 'entertainment' | 'shopping' | 'other'
 
-export type PaymentMethod = 'cash' | 'card'
+export type PaymentMethod = 'cash' | 'card' | 'ic'
 
 export interface Location {
   coordinates: {

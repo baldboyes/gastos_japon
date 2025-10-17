@@ -3,9 +3,9 @@
     <CardContent class="px-4">
       <div class="flex items-start justify-between">
         <div class="flex-1">
-          <div class="text-sm text-slate-600 mb-1">{{ label }}</div>
-          <div class="text-2xl font-bold text-slate-900">{{ displayValue }}</div>
-          <div v-if="subtitle" class="text-xs text-slate-500 mt-1">{{ subtitle }}</div>
+          <div class="text-sm text-gray-600 mb-1">{{ label }}</div>
+          <div class="text-2xl font-bold text-gray-900">{{ displayValue }}</div>
+          <div v-if="subtitle" class="text-xs text-gray-500 mt-1">{{ subtitle }}</div>
         </div>
         <div
           v-if="icon"
@@ -48,7 +48,7 @@
         >
           <path d="m6 9 6 6 6-6"/>
         </svg>
-        <span :class="trend > 0 ? 'text-red-600' : trend < 0 ? 'text-green-600' : 'text-slate-600'">
+        <span :class="trend > 0 ? 'text-red-600' : trend < 0 ? 'text-green-600' : 'text-gray-600'">
           {{ trendText }}
         </span>
       </div>

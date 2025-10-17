@@ -6,8 +6,8 @@
         <div class="max-w-screen-sm mx-auto">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <h1 class="text-xl font-bold text-slate-900">Mapa de Gastos</h1>
-              <p class="text-xs text-slate-600">{{ validExpensesCount }} {{ validExpensesCount === 1 ? 'ubicación' : 'ubicaciones' }}</p>
+              <h1 class="text-xl font-bold text-gray-900">Mapa de Gastos</h1>
+              <p class="text-xs text-gray-600">{{ validExpensesCount }} {{ validExpensesCount === 1 ? 'ubicación' : 'ubicaciones' }}</p>
             </div>
             <Button
               v-if="validExpensesCount > 0"
@@ -32,7 +32,7 @@
           <div v-if="validExpensesCount > 0" class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <button
               @click="selectedCategory = 'all'"
-              :class="selectedCategory === 'all' ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-700'"
+              :class="selectedCategory === 'all' ? 'bg-teal-500 text-white' : 'bg-slate-100 text-gray-700'"
               class="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
             >
               Todas ({{ validExpenses.length }})
@@ -41,7 +41,7 @@
               v-for="category in categoriesWithExpenses"
               :key="category.key"
               @click="selectedCategory = category.key"
-              :class="selectedCategory === category.key ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-700'"
+              :class="selectedCategory === category.key ? 'bg-teal-500 text-white' : 'bg-slate-100 text-gray-700'"
               class="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
             >
               {{ category.icon }} {{ category.label }} ({{ category.count }})
@@ -54,8 +54,8 @@
       <div v-if="validExpensesCount === 0" class="flex-1 flex items-center justify-center px-4">
         <div class="text-center">
           <div class="text-6xl mb-4">🗺️</div>
-          <h2 class="text-xl font-semibold text-slate-900 mb-2">Sin Ubicaciones</h2>
-          <p class="text-slate-600 mb-6 max-w-sm">
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">Sin Ubicaciones</h2>
+          <p class="text-gray-600 mb-6 max-w-sm">
             Los gastos con ubicación aparecerán aquí en el mapa
           </p>
           <Button @click="navigateTo('/add')" class="bg-gradient-to-br from-teal-500 to-teal-600">

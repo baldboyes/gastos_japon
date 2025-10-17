@@ -13,7 +13,7 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
         >
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.3-4.3"/>
@@ -56,6 +56,7 @@
           <SelectItem value="all">Todos</SelectItem>
           <SelectItem value="cash">💴 Efectivo</SelectItem>
           <SelectItem value="card">💳 Tarjeta</SelectItem>
+          <SelectItem value="ic">🎫 IC</SelectItem>
         </SelectContent>
       </Select>
 
@@ -99,7 +100,7 @@
       </Badge>
 
       <Badge v-if="selectedPayment !== 'all'" variant="secondary" class="gap-1">
-        {{ selectedPayment === 'cash' ? '💴 Efectivo' : '💳 Tarjeta' }}
+        {{ selectedPayment === 'cash' ? '💴 Efectivo' : selectedPayment === 'card' ? '💳 Tarjeta' : '🎫 IC' }}
         <button @click="selectedPayment = 'all'; handlePaymentChange()" class="ml-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 6 6 18"/>

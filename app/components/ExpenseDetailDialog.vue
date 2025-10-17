@@ -7,24 +7,24 @@
       <div v-if="expense" class="space-y-4">
         <!-- Place Name -->
         <div>
-          <div class="text-sm font-medium text-slate-600 mb-1">Lugar</div>
+          <div class="text-sm font-medium text-gray-600 mb-1">Lugar</div>
           <div class="text-lg font-semibold">{{ expense.placeName }}</div>
         </div>
 
         <!-- Amount -->
         <div>
-          <div class="text-sm font-medium text-slate-600 mb-1">Cantidad</div>
+          <div class="text-sm font-medium text-gray-600 mb-1">Cantidad</div>
           <div class="text-2xl font-bold text-teal-600">{{ formatYen(expense.amount) }}</div>
         </div>
 
         <!-- Date & Time -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <div class="text-sm font-medium text-slate-600 mb-1">Fecha</div>
+            <div class="text-sm font-medium text-gray-600 mb-1">Fecha</div>
             <div>{{ formatDate(expense.timestamp) }}</div>
           </div>
           <div>
-            <div class="text-sm font-medium text-slate-600 mb-1">Hora</div>
+            <div class="text-sm font-medium text-gray-600 mb-1">Hora</div>
             <div>{{ formatTime(expense.timestamp) }}</div>
           </div>
         </div>
@@ -32,22 +32,22 @@
         <!-- Category & Payment -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <div class="text-sm font-medium text-slate-600 mb-1">Categoría</div>
+            <div class="text-sm font-medium text-gray-600 mb-1">Categoría</div>
             <Badge :class="categoryInfo.color">
               {{ categoryInfo.icon }} {{ categoryInfo.label }}
             </Badge>
           </div>
           <div>
-            <div class="text-sm font-medium text-slate-600 mb-1">Pago</div>
+            <div class="text-sm font-medium text-gray-600 mb-1">Pago</div>
             <Badge variant="outline">
-              {{ expense.paymentMethod === 'cash' ? '💴 Efectivo' : '💳 Tarjeta' }}
+              {{ expense.paymentMethod === 'cash' ? '💴 Efectivo' : expense.paymentMethod === 'card' ? '💳 Tarjeta' : '🎫 IC' }}
             </Badge>
           </div>
         </div>
 
         <!-- Location -->
         <div>
-          <div class="text-sm font-medium text-slate-600 mb-1">Ubicación</div>
+          <div class="text-sm font-medium text-gray-600 mb-1">Ubicación</div>
           <div class="flex items-start gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
@@ -55,8 +55,8 @@
             </svg>
             <div>
               <div>{{ expense.location.city }}</div>
-              <div class="text-sm text-slate-600">{{ expense.location.prefecture }}</div>
-              <div v-if="showCoordinates && expense.location.coordinates.lat !== 0" class="text-xs text-slate-500 mt-1">
+              <div class="text-sm text-gray-600">{{ expense.location.prefecture }}</div>
+              <div v-if="showCoordinates && expense.location.coordinates.lat !== 0" class="text-xs text-gray-500 mt-1">
                 {{ expense.location.coordinates.lat.toFixed(6) }}, {{ expense.location.coordinates.lng.toFixed(6) }}
               </div>
             </div>
@@ -65,8 +65,8 @@
 
         <!-- Notes -->
         <div v-if="expense.notes">
-          <div class="text-sm font-medium text-slate-600 mb-1">Notas</div>
-          <p class="text-sm text-slate-700">{{ expense.notes }}</p>
+          <div class="text-sm font-medium text-gray-600 mb-1">Notas</div>
+          <p class="text-sm text-gray-700">{{ expense.notes }}</p>
         </div>
 
         <!-- Shared -->
@@ -125,9 +125,9 @@
         </DialogDescription>
       </DialogHeader>
       <div v-if="expense" class="py-4">
-        <div class="text-sm text-slate-700">
+        <div class="text-sm text-gray-700">
           <div class="font-semibold">{{ expense.placeName }}</div>
-          <div class="text-2xl font-bold text-slate-900 mt-1">
+          <div class="text-2xl font-bold text-gray-900 mt-1">
             {{ formatYen(expense.amount) }}
           </div>
         </div>

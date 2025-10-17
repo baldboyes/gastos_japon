@@ -2,8 +2,8 @@
   <div class="space-y-3">
     <!-- Header -->
     <div v-if="title" class="flex items-center justify-between px-1">
-      <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
-      <div v-if="total !== undefined" class="text-sm font-medium text-slate-600">
+      <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+      <div v-if="total !== undefined" class="text-sm font-medium text-gray-600">
         Total: {{ formatYen(total) }}
       </div>
     </div>
@@ -14,8 +14,8 @@
       class="text-center py-12 px-4"
     >
       <div class="text-6xl mb-4">💸</div>
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">{{ emptyTitle }}</h3>
-      <p class="text-sm text-slate-600">{{ emptyMessage }}</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ emptyTitle }}</h3>
+      <p class="text-sm text-gray-600">{{ emptyMessage }}</p>
     </div>
 
     <!-- Expense Cards -->

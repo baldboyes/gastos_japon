@@ -3,9 +3,9 @@
     <div class="max-w-screen-sm mx-auto p-4 mb-4">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-slate-900">{{ isEditMode ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
         <button
-          class="text-slate-600 hover:text-slate-900 transition-colors"
+          class="text-gray-600 hover:text-gray-900 transition-colors"
           @click="navigateTo('/')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -21,7 +21,7 @@
         <div>
           <Label for="amount" class="text-base">Gasto (¥) *</Label>
           <div class="relative mt-2">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-slate-600">¥</span>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">¥</span>
             <Input
               id="amount"
               v-model="form.amount"
@@ -102,20 +102,20 @@
               </div>
 
               <div v-if="locationCaptured" class="space-y-3">
-                <div class="flex items-start gap-2 text-sm text-slate-700 bg-teal-50 p-3 rounded-lg">
+                <div class="flex items-start gap-2 text-sm text-gray-700 bg-teal-50 p-3 rounded-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-teal-600">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                   <div>
                     <div class="font-medium">{{ form.location.city }}</div>
-                    <div class="text-xs text-slate-600">{{ form.location.prefecture }}</div>
+                    <div class="text-xs text-gray-600">{{ form.location.prefecture }}</div>
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  class="text-sm text-slate-600 hover:text-slate-900"
+                  class="text-sm text-gray-600 hover:text-gray-900"
                   @click="resetLocation"
                 >
                   Cambiar ubicación
@@ -124,7 +124,7 @@
 
               <!-- Manual Location (fallback) -->
               <div v-if="showManualLocation" class="space-y-3 pt-3 border-t">
-                <div class="text-sm text-slate-600 mb-2">O ingresar manualmente:</div>
+                <div class="text-sm text-gray-600 mb-2">O ingresar manualmente:</div>
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <Label for="city" class="text-sm">Ciudad</Label>
@@ -157,7 +157,7 @@
         <!-- Payment Method -->
         <div>
           <Label class="text-base mb-3 block">Método de Pago *</Label>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-3 gap-3">
             <button
               type="button"
               class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all"
@@ -183,6 +183,19 @@
             >
               <span class="text-2xl">💳</span>
               <span class="font-medium">Tarjeta</span>
+            </button>
+            <button
+              type="button"
+              class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all"
+              :class="[
+                form.paymentMethod === 'ic'
+                  ? 'border-teal-500 bg-teal-50'
+                  : 'border-gray-200 hover:border-gray-300 bg-white'
+              ]"
+              @click="form.paymentMethod = 'ic'"
+            >
+              <span class="text-2xl">🎫</span>
+              <span class="font-medium">IC</span>
             </button>
           </div>
         </div>

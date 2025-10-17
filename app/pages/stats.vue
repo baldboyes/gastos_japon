@@ -3,14 +3,14 @@
     <div class="max-w-screen-sm mx-auto px-4 py-6">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Estadísticas</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Estadísticas</h1>
       </div>
 
       <!-- Empty State -->
       <div v-if="expenses.length === 0" class="text-center py-12">
         <div class="text-6xl mb-4">📊</div>
-        <h2 class="text-xl font-semibold text-slate-900 mb-2">Sin Estadísticas</h2>
-        <p class="text-slate-600 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-2">Sin Estadísticas</h2>
+        <p class="text-gray-600 mb-6">
           Agrega algunos gastos para ver tus estadísticas
         </p>
         <Button @click="navigateTo('/add')" class="bg-gradient-to-br from-teal-500 to-teal-600">
@@ -82,13 +82,13 @@
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
                   <div>
-                    <div class="text-sm font-medium text-slate-900">{{ location.city }}</div>
-                    <div class="text-xs text-slate-600">{{ location.prefecture }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ location.city }}</div>
+                    <div class="text-xs text-gray-600">{{ location.prefecture }}</div>
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-sm font-semibold text-slate-900">{{ formatYen(location.total) }}</div>
-                  <div class="text-xs text-slate-500">{{ location.count }} {{ location.count === 1 ? 'gasto' : 'gastos' }}</div>
+                  <div class="text-sm font-semibold text-gray-900">{{ formatYen(location.total) }}</div>
+                  <div class="text-xs text-gray-500">{{ location.count }} {{ location.count === 1 ? 'gasto' : 'gastos' }}</div>
                 </div>
               </div>
             </div>
@@ -108,18 +108,18 @@
                 class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
                 @click="handleExpenseClick(expense)"
               >
-                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
+                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-sm font-semibold text-gray-700">
                   {{ index + 1 }}
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center gap-2">
                     <span>{{ getCategoryInfo(expense.category).icon }}</span>
-                    <span class="text-sm font-medium text-slate-900">{{ expense.placeName }}</span>
+                    <span class="text-sm font-medium text-gray-900">{{ expense.placeName }}</span>
                   </div>
-                  <div class="text-xs text-slate-600">{{ formatDate(expense.timestamp) }}</div>
+                  <div class="text-xs text-gray-600">{{ formatDate(expense.timestamp) }}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-sm font-bold text-slate-900">{{ formatYen(expense.amount) }}</div>
+                  <div class="text-sm font-bold text-gray-900">{{ formatYen(expense.amount) }}</div>
                 </div>
               </div>
             </div>
@@ -137,13 +137,13 @@
                 <div class="flex items-center gap-2">
                   <span class="text-2xl">👥</span>
                   <div>
-                    <div class="text-sm font-medium text-slate-900">Total Compartido</div>
-                    <div class="text-xs text-slate-600">{{ sharedExpenses.length }} {{ sharedExpenses.length === 1 ? 'gasto' : 'gastos' }}</div>
+                    <div class="text-sm font-medium text-gray-900">Total Compartido</div>
+                    <div class="text-xs text-gray-600">{{ sharedExpenses.length }} {{ sharedExpenses.length === 1 ? 'gasto' : 'gastos' }}</div>
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-lg font-bold text-slate-900">{{ formatYen(sharedTotal) }}</div>
-                  <div class="text-xs text-slate-600">Tu parte: {{ formatYen(Math.round(sharedTotal / 2)) }}</div>
+                  <div class="text-lg font-bold text-gray-900">{{ formatYen(sharedTotal) }}</div>
+                  <div class="text-xs text-gray-600">Tu parte: {{ formatYen(Math.round(sharedTotal / 2)) }}</div>
                 </div>
               </div>
             </div>

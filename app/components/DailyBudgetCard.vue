@@ -1,13 +1,20 @@
 <template>
   <div>
-
         <!-- Header -->
-        <div class="flex items-center justify-between mb-4">
-          <div class="text-4xl font-bold mb-1">
-            {{ formatYen(remaining) }}
-          </div>
-          <div class="text-xs text-gray-400">
-            {{ currentDate }}
+        <div
+          class="flex items-center justify-between mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+          @click="toggleDisplay"
+        >
+          <div class="flex-1 space-y-0">
+            <div class="text-xs text-gray-400 font-normal">
+              {{ showRemaining ? 'Restante hoy' : 'Gastado hoy' }}
+            </div>
+            <div
+              class="text-6xl font-bold mb-1 -mt-1"
+              :class="showRemaining && remaining < 0 ? 'text-red-600' : 'text-gray-900'"
+            >
+              {{ formatYen(showRemaining ? remaining : todaySpent) }}
+            </div>
           </div>
         </div>
 
@@ -30,7 +37,7 @@
         </div>
 -->
         <!-- Progress Bar -->
-
+        
         <div class="w-full bg-teal-800/30 rounded-full h-6.5 overflow-hidden">
           <div
             class="h-full rounded-full transition-all duration-500 ease-out text-white text-center"
@@ -43,17 +50,23 @@
 </template>
 
 <script setup lang="ts">
-import { formatYen, calculateBudgetPercentage, formatYenCompact } from '~/utils/currency'
-import { formatDate, getDaysElapsed } from '~/utils/dates'
+import { formatYen, calculateBudgetPercentage } from '~/utils/currency'
 
+const STORAGE_KEY = 'daily-budget-display-mode'
 
 const { getStats, getTodaySpent, getTodayRemaining, budget } = useExpenses()
-const stats = computed(() => getStats())
-const daysElapsed = computed(() => {
-  if (!budget.value.startDate) return 1
-  return getDaysElapsed(budget.value.startDate)
-})
 
+// Load preference from localStorage
+const showRemaining = ref(true)
+
+onMounted(() => {
+  if (import.meta.client) {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored !== null) {
+      showRemaining.value = stored === 'remaining'
+    }
+  }
+})
 
 const todaySpent = computed(() => getTodaySpent())
 const remaining = computed(() => getTodayRemaining())
@@ -68,6 +81,12 @@ const progressBarColor = computed(() => {
   return 'bg-red-800'
 })
 
-const currentDate = computed(() => formatDate(new Date()))
+function toggleDisplay() {
+  showRemaining.value = !showRemaining.value
 
+  // Save preference to localStorage
+  if (import.meta.client) {
+    localStorage.setItem(STORAGE_KEY, showRemaining.value ? 'remaining' : 'spent')
+  }
+}
 </script>

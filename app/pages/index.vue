@@ -9,7 +9,7 @@
       <div>
         <ExpenseList
           :expenses="todayExpenses"
-          title="Gastos de hoy"
+          :title="currentDate"
           :total="todayTotal"
           empty-title="Sin gastos hoy"
           empty-message="Toca el botón + abajo para agregar tu primer gasto"
@@ -31,10 +31,11 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import type { Expense } from '~/types'
+import { formatDate } from '~/utils/dates'
 
 const router = useRouter()
 const { getTodayExpenses, deleteExpense } = useExpenses()
-
+const currentDate = computed(() => formatDate(new Date()))
 const todayExpenses = computed(() => getTodayExpenses())
 const todayTotal = computed(() =>
   todayExpenses.value.reduce((sum, exp) => sum + exp.amount, 0)

@@ -4,14 +4,14 @@
       <!-- Date Header -->
       <div class="flex items-center justify-between px-2 py-2 bg-gray-100 rounded-lg sticky top-0 z-10">
         <div class="flex items-center gap-2">
-          <span class="text-sm font-semibold text-slate-900">
+          <span class="text-sm font-semibold text-gray-900">
             {{ getRelativeDayLabel(date) }}
           </span>
-          <span class="text-xs text-slate-600">
+          <span class="text-xs text-gray-600">
             {{ formatDate(date) }}
           </span>
         </div>
-        <div class="text-sm font-bold text-slate-900">
+        <div class="text-sm font-bold text-gray-900">
           {{ formatYen(getTotalForDate(expensesForDate)) }}
         </div>
       </div>
@@ -30,8 +30,8 @@
     <!-- Empty state -->
     <div v-if="Object.keys(groupedExpenses).length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">📝</div>
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">{{ emptyTitle }}</h3>
-      <p class="text-sm text-slate-600">{{ emptyMessage }}</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ emptyTitle }}</h3>
+      <p class="text-sm text-gray-600">{{ emptyMessage }}</p>
     </div>
   </div>
 </template>

@@ -5,8 +5,8 @@
       <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">💰</div>
-          <div class="text-xs text-slate-600 mb-1">Total Gastado</div>
-          <div class="text-lg font-bold text-slate-900">
+          <div class="text-xs text-gray-600 mb-1">Total Gastado</div>
+          <div class="text-lg font-bold text-gray-900">
             {{ formatYenCompact(stats.totalSpent) }}
           </div>
         </div>
@@ -18,8 +18,8 @@
       <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">📅</div>
-          <div class="text-xs text-slate-600 mb-1">Días</div>
-          <div class="text-lg font-bold text-slate-900">
+          <div class="text-xs text-gray-600 mb-1">Días</div>
+          <div class="text-lg font-bold text-gray-900">
             {{ daysElapsed }}
           </div>
         </div>
@@ -31,8 +31,8 @@
       <CardContent class="px-4">
         <div class="text-center">
           <div class="text-2xl mb-1">📊</div>
-          <div class="text-xs text-slate-600 mb-1">Promedio/Día</div>
-          <div class="text-lg font-bold text-slate-900">
+          <div class="text-xs text-gray-600 mb-1">Promedio/Día</div>
+          <div class="text-lg font-bold text-gray-900">
             {{ formatYenCompact(stats.averageDaily) }}
           </div>
         </div>

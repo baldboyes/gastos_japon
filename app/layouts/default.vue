@@ -84,14 +84,14 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+  import { useRoute } from 'vue-router'
 
-const route = useRoute()
+  const route = useRoute()
 
-function isActive(path: string): boolean {
-  if (path === '/') {
-    return route.path === '/'
+  function isActive(path: string): boolean {
+    if (path === '/') {
+      return route.path === '/'
+    }
+    return route.path.startsWith(path)
   }
-  return route.path.startsWith(path)
-}
 </script>
