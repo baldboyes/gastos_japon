@@ -16,20 +16,20 @@
       </div>
 
       <!-- Form -->
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <form @submit.prevent="handleSubmit" class="space-y-4">
         <div class=" flex items-start justify-between gap-4">
           <!-- Amount -->
           <div class="w-1/3">
             <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
             <div class="relative mt-2">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-600">{{ currencySymbol }}</span>
+              <span class="absolute left-2 top-4 text-lg text-gray-600">{{ currencySymbol }}</span>
               <Input
                 id="amount"
                 v-model="form.amount"
                 type="number"
                 inputmode="decimal"
                 placeholder="1,200"
-                class="pl-10 text-2xl h-14"
+                class="pl-6 text-xl h-14"
                 required
                 step="1"
                 min="1"
@@ -39,10 +39,10 @@
           <!-- Payment Method -->
           <div class="w-2/3">
             <Label class="text-base mb-3 block">Método de Pago *</Label>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="flex items-center gap-2 w-full justify-between -mt-1">
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
                 :class="[
                   form.paymentMethod === 'cash'
                     ? 'border-teal-500 bg-teal-50'
@@ -51,11 +51,11 @@
                 @click="form.paymentMethod = 'cash'"
               >
                 <span class="text-2xl">💴</span>
-                <span class="text-sm font-medium">Efectivo</span>
+                <span class="text-xs font-medium text-gray-500">Efectivo</span>
               </button>
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
                 :class="[
                   form.paymentMethod === 'card'
                     ? 'border-teal-500 bg-teal-50'
@@ -64,11 +64,11 @@
                 @click="form.paymentMethod = 'card'"
               >
                 <span class="text-2xl">💳</span>
-                <span class="text-sm font-medium">Tarjeta</span>
+                <span class="text-xs font-medium text-gray-500">Tarjeta</span>
               </button>
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-2 rounded-xl border-2 transition-all"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
                 :class="[
                   form.paymentMethod === 'ic'
                     ? 'border-teal-500 bg-teal-50'
@@ -77,7 +77,7 @@
                 @click="form.paymentMethod = 'ic'"
               >
                 <span class="text-2xl">🎫</span>
-                <span class="text-sm font-medium">IC</span>
+                <span class="text-xs font-medium text-gray-500">IC</span>
               </button>
             </div>
           </div>
@@ -91,7 +91,7 @@
             v-model="form.placeName"
             type="text"
             placeholder="Ej: Ichiran Ramen"
-            class="mt-2"
+            class="mt-2 h-14 text-xl"
             required
           />
         </div>
@@ -107,7 +107,7 @@
               id="date"
               v-model="form.date"
               type="date"
-              class="mt-2"
+              class="mt-2 h-14 text-xl"
               required
             />
           </div>
@@ -117,7 +117,7 @@
               id="time"
               v-model="form.time"
               type="time"
-              class="mt-2"
+              class="mt-2 h-14 text-xl"
               required
             />
           </div>
@@ -127,7 +127,7 @@
         <div>
           <Label class="text-base mb-2 block">Ubicación *</Label>
           <Card>
-            <CardContent class="p-4 space-y-3">
+            <CardContent class="py-0 px-4 space-y-2">
               <button
                 v-if="!locationCaptured"
                 type="button"
@@ -142,7 +142,7 @@
                 <svg v-else class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                 </svg>
-                <span>{{ locationLoading ? 'Obteniendo ubicación...' : 'Capturar Ubicación Actual' }}</span>
+                <span>{{ locationLoading ? 'Obteniendo ubicación...' : 'Capturar ubicación actual' }}</span>
               </button>
 
               <div v-if="locationError" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
@@ -180,7 +180,7 @@
                       id="city"
                       v-model="form.location.city"
                       type="text"
-                      placeholder="Tokyo"
+                      placeholder="Kobe"
                       class="mt-1"
                       required
                     />
@@ -191,7 +191,7 @@
                       id="prefecture"
                       v-model="form.location.prefecture"
                       type="text"
-                      placeholder="Tokyo"
+                      placeholder="Hyogo"
                       class="mt-1"
                       required
                     />
@@ -200,18 +200,6 @@
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <!-- Shared -->
-        <div class="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
-          <Checkbox
-            id="shared"
-            v-model:checked="form.shared"
-          />
-          <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
-            <span>👥</span>
-            <span>Gasto compartido</span>
-          </Label>
         </div>
 
         <!-- Notes -->
@@ -224,20 +212,32 @@
             class="mt-2 min-h-[100px]"
           />
         </div>
+        <!-- Shared -->
+        <div class="flex items-center space-x-3 p-0 bg-gray-50 rounded-xl">
+          <Checkbox
+            id="shared"
+            v-model:checked="form.shared"
+          />
+          <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
+            <span>👥</span>
+            <span>Gasto compartido</span>
+          </Label>
+        </div>
+
 
         <!-- Submit Button -->
         <div class="flex gap-3 pt-4">
           <Button
             type="button"
             variant="outline"
-            class="flex-1"
+            class="w-1/3 h-14"
             @click="navigateTo('/')"
           >
             Cancelar
           </Button>
           <Button
             type="submit"
-            class="flex-1 bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+            class="flex-1 bg-teal-600 hover:from-teal-600 hover:to-teal-700 h-14"
             :disabled="!isFormValid || isSubmitting"
           >
             <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

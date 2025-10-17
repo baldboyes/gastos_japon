@@ -15,7 +15,13 @@
     >
       <div class="text-6xl mb-4">💸</div>
       <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ emptyTitle }}</h3>
-      <p class="text-sm text-gray-600">{{ emptyMessage }}</p>
+      <p class="text-sm text-gray-600 mb-6">{{ emptyMessage }}</p>
+      <Button @click="navigateTo('/add')" class="bg-teal-600 h-14 text-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M12 5v14"/><path d="M5 12h14"/>
+        </svg>
+        Agregar gasto
+      </Button>
     </div>
 
     <!-- Expense Cards -->

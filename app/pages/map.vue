@@ -58,7 +58,7 @@
           <p class="text-gray-600 mb-6 max-w-sm">
             Los gastos con ubicación aparecerán aquí en el mapa
           </p>
-          <Button @click="navigateTo('/add')" class="bg-gradient-to-br from-teal-500 to-teal-600">
+          <Button @click="navigateTo('/add')" class="bg-teal-600">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
               <path d="M12 5v14"/><path d="M5 12h14"/>
             </svg>

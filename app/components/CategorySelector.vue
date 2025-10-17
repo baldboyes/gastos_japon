@@ -1,12 +1,12 @@
 <template>
   <div>
     <Label class="text-base mb-3 block">Categoría *</Label>
-    <div class="grid grid-cols-3 gap-3">
+    <div class="grid grid-cols-3 gap-2">
       <button
         v-for="category in CATEGORIES"
         :key="category.key"
         type="button"
-        class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all"
+        class="flex flex-col items-center gap-2 p-2 rounded-xl border-2 transition-all"
         :class="[
           selected === category.key
             ? 'border-teal-500 bg-teal-50'
