@@ -182,7 +182,7 @@
         </Card>
 
         <div class="text-center text-sm text-gray-400">
-          <span>Versión</span> <span class="font-medium">1.5.0</span>
+          <span>Versión</span> <span class="font-medium">1.6.0</span>
         </div>
       </div>
     </div>
@@ -190,7 +190,8 @@
 </template>
 
 <script setup lang="ts">
-import { CURRENCIES, type Currency } from '~/composables/useSettings'
+import { CURRENCIES } from '~/composables/useSettings'
+import type { Currency } from '~/types'
 
 const { settings, setCurrency, getCurrencyInfo } = useSettings()
 const { budget, updateBudget, expenses, getTotalSpent, clearAllData, exportData } = useExpenses()

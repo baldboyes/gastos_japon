@@ -28,9 +28,12 @@ export interface Expense {
   photo?: string // Optional base64 or URL
 }
 
+export type Currency = 'JPY' | 'CNY' | 'KRW' | 'EUR' | 'USD' | 'GBP'
+
 export interface Budget {
   dailyLimit: number // Default: 8000 yenes
   startDate: string // ISO date string - trip start date
+  currency: Currency | null // Selected currency
 }
 
 export interface AppData {

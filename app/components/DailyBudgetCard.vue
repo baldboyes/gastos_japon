@@ -1,8 +1,9 @@
 <template>
   <div>
+    <div class="flex items-center justify-between mt-12 mb-4">
         <!-- Header -->
         <div
-          class="flex items-center justify-between mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+          class="flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity"
           @click="toggleDisplay"
         >
           <div class="flex-1 space-y-0">
@@ -18,34 +19,43 @@
           </div>
         </div>
 
-
-
-<!-- Spent and Remaining 
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <div class="text-xs text-teal-100 mb-1">Gastado</div>
-            <div class="text-2xl font-bold">
-              {{ formatYen(todaySpent) }}
-            </div>
-          </div>
-          <div>
-            <div class="text-xs text-teal-100 mb-1">Restante</div>
-            <div class="text-2xl font-bold" :class="remaining < 0 ? 'text-red-200' : ''">
-              {{ formatYen(budget.dailyLimit) }}
+        <!-- Donut Chart -->
+        <div v-if="showRemaining" class="flex justify-center opacity-90">
+          <div class="relative w-18 h-18">
+            <!-- SVG Donut -->
+            <svg class="transform -rotate-90 w-18 h-18" viewBox="0 0 120 120">
+              <!-- Background circle -->
+              <circle
+                cx="60"
+                cy="60"
+                r="50"
+                fill="none"
+                stroke="#e5e7eb"
+                stroke-width="20"
+              />
+              <!-- Progress circle -->
+              <circle
+                cx="60"
+                cy="60"
+                r="50"
+                fill="none"
+                :stroke="donutColor"
+                stroke-width="20"
+                :stroke-dasharray="`${circumference} ${circumference}`"
+                :stroke-dashoffset="strokeDashoffset"
+                stroke-linecap="round"
+                class="transition-all duration-500 ease-out"
+              />
+            </svg>
+            <!-- Percentage text in center -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-sm font-bold" :class="percentage > 100 ? 'text-red-600' : 'text-gray-900'">
+                {{ percentage }}%
+              </span>
             </div>
           </div>
         </div>
--->
-        <!-- Progress Bar -->
-        
-        <div class="w-full bg-teal-800/30 rounded-full h-6.5 overflow-hidden">
-          <div
-            class="h-full rounded-full transition-all duration-500 ease-out text-white text-center"
-            :class="progressBarColor"
-            :style="{ width: `${Math.min(percentage, 100)}%` }"
-          ><span v-if="percentage > 0" class="text-sm">{{ percentage }}%</span></div>
-        </div>
-
+    </div>
   </div>
 </template>
 
@@ -75,11 +85,20 @@ const percentage = computed(() =>
   calculateBudgetPercentage(todaySpent.value, budget.value.dailyLimit)
 )
 
-const progressBarColor = computed(() => {
+// Donut chart calculations
+const radius = 50
+const circumference = 2 * Math.PI * radius
+
+const strokeDashoffset = computed(() => {
+  const progress = Math.min(percentage.value, 100) / 100
+  return circumference * (1 - progress)
+})
+
+const donutColor = computed(() => {
   const pct = percentage.value
-  if (pct <= 70) return 'bg-teal-800'
-  if (pct <= 90) return 'bg-yellow-800'
-  return 'bg-red-800'
+  if (pct <= 70) return '#115e59' // teal-800
+  if (pct <= 90) return '#854d0e' // yellow-800
+  return '#991b1b' // red-800
 })
 
 function toggleDisplay() {

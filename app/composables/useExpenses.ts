@@ -21,8 +21,42 @@ export function useExpenses() {
   const expenses = ref<Expense[]>([])
   const budget = ref<Budget>({
     dailyLimit: 0,
-    startDate: new Date().toISOString()
+    startDate: new Date().toISOString(),
+    currency: null
   })
+
+  /**
+   * Migrate old settings currency to budget
+   */
+  function migrateCurrencyToBudget(budgetData: Budget): Budget {
+    // Check if budget already has currency
+    if (budgetData.currency) {
+      return budgetData
+    }
+
+    // Try to load from old settings storage
+    if (import.meta.client) {
+      try {
+        const oldSettings = localStorage.getItem('app-settings')
+        if (oldSettings) {
+          const parsed = JSON.parse(oldSettings)
+          if (parsed.currency) {
+            return {
+              ...budgetData,
+              currency: parsed.currency
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error migrating currency:', error)
+      }
+    }
+
+    return {
+      ...budgetData,
+      currency: null
+    }
+  }
 
   /**
    * Migrate old location format to new format with coordinates
@@ -77,12 +111,10 @@ export function useExpenses() {
           const data: AppData = JSON.parse(stored)
           // Migrate old data format to new format
           expenses.value = migrateLocationData(data.expenses || [])
-          budget.value = data.budget || budget.value
+          budget.value = migrateCurrencyToBudget(data.budget || budget.value)
 
           // Save migrated data back to storage
-          if (data.expenses && data.expenses.length > 0) {
-            saveToStorage()
-          }
+          saveToStorage()
         }
       } catch (error) {
         console.error('Error loading from localStorage:', error)
@@ -332,7 +364,8 @@ export function useExpenses() {
     expenses.value = []
     budget.value = {
       dailyLimit: 0,
-      startDate: new Date().toISOString()
+      startDate: new Date().toISOString(),
+      currency: budget.value.currency // Preserve currency when clearing
     }
     saveToStorage()
   }

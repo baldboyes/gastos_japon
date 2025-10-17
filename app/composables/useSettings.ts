@@ -1,8 +1,9 @@
 /**
- * Composable for managing app settings with localStorage persistence
+ * Composable for managing app settings
+ * Now uses budget.currency instead of separate storage
  */
 
-export type Currency = 'JPY' | 'CNY' | 'KRW' | 'EUR' | 'USD' | 'GBP'
+import type { Currency } from '~/types'
 
 export interface CurrencyInfo {
   code: Currency
@@ -20,54 +21,21 @@ export const CURRENCIES: CurrencyInfo[] = [
   { code: 'GBP', name: 'Libra Esterlina', symbol: '£', flag: '🇬🇧' }
 ]
 
-const STORAGE_KEY = 'app-settings'
-
-export interface AppSettings {
-  currency: Currency | null
-}
-
 /**
  * Composable for settings management
  */
 export function useSettings() {
-  const settings = ref<AppSettings>({ currency: null })
+  const { budget, updateBudget } = useExpenses()
 
-  /**
-   * Load settings from localStorage
-   */
-  function loadSettings(): void {
-    if (import.meta.client) {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        if (stored) {
-          const parsed = JSON.parse(stored) as AppSettings
-          settings.value = parsed
-        }
-      } catch (error) {
-        console.error('Error loading settings:', error)
-      }
-    }
-  }
-
-  /**
-   * Save settings to localStorage
-   */
-  function saveSettings(): void {
-    if (import.meta.client) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings.value))
-      } catch (error) {
-        console.error('Error saving settings:', error)
-      }
-    }
-  }
+  const settings = computed(() => ({
+    currency: budget.value.currency
+  }))
 
   /**
    * Update currency setting
    */
   function setCurrency(currency: Currency): void {
-    settings.value.currency = currency
-    saveSettings()
+    updateBudget({ currency })
   }
 
   /**
@@ -78,19 +46,12 @@ export function useSettings() {
     return CURRENCIES.find(c => c.code === settings.value.currency) || null
   }
 
-  // Auto-load on mount
-  onMounted(() => {
-    loadSettings()
-  })
-
   return {
     // State
-    settings: readonly(settings),
+    settings,
 
     // Methods
     setCurrency,
-    getCurrencyInfo,
-    loadSettings,
-    saveSettings
+    getCurrencyInfo
   }
 }
