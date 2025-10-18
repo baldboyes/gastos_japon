@@ -135,7 +135,7 @@
         </div>
 
         <!-- Location -->
-        <div>
+        <div v-if="!form.location.city">
           <Label class="text-base mb-2 block">Ubicación *</Label>
           <Card>
             <CardContent class="py-0 px-4 space-y-2">
