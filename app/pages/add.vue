@@ -7,11 +7,11 @@
           <h1 class="text-2xl font-bold text-gray-900">Editar gasto</h1>
         </div>
         <div v-else class="flex items-center gap-2">
-          <div class="font-bold flex items-center gap-2">
-            <span class="text-lg text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
-            <span class="text-sm text-gray-800 bg-gray-100 py-1 px-2 rounded-md">{{ form.time }}</span>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
+            <span class="text-base text-gray-800">{{ form.time }}</span>
           </div>
-          <div v-if="form.location.city" class="text-sm text-gray-600"> | {{ form.location.city }}</div>
+          <div v-if="form.location.city" class="text-base text-gray-600"> | {{ form.location.city }}</div>
         </div>
 
         
@@ -28,32 +28,48 @@
 
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class=" flex items-start justify-between gap-4">
-          <!-- Amount -->
-          <div class="w-1/3">
-            <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
-            <div class="relative mt-2">
-              <span class="absolute left-2 top-4 text-lg text-gray-600">{{ currencySymbol }}</span>
+        <div class="flex items-start justify-between gap-4">
+          
+          <div class="w-3/4 space-y-4 ">
+            <!-- Amount -->
+            <div>
+              <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
+              <div class="relative mt-2">
+                <span class="absolute left-2 top-4 text-lg text-gray-600">{{ currencySymbol }}</span>
+                <Input
+                  id="amount"
+                  v-model="form.amount"
+                  type="number"
+                  inputmode="decimal"
+                  placeholder="1,200"
+                  class="pl-6 text-xl h-14 bg-white"
+                  required
+                  step="1"
+                  min="1"
+                />
+              </div>
+            </div>
+            <!-- Place Name -->
+            <div>
+              <Label for="placeName" class="text-base">Nombre del Lugar *</Label>
               <Input
-                id="amount"
-                v-model="form.amount"
-                type="number"
-                inputmode="decimal"
-                placeholder="1,200"
-                class="pl-6 text-xl h-14 bg-white"
+                id="placeName"
+                v-model="form.placeName"
+                type="text"
+                placeholder="Ej: Ichiran Ramen"
+                class="mt-2 h-14 text-xl bg-white"
                 required
-                step="1"
-                min="1"
               />
             </div>
+
           </div>
           <!-- Payment Method -->
-          <div class="w-2/3">
-            <Label class="text-base mb-3 block">Método de Pago *</Label>
-            <div class="flex items-center gap-2 w-full justify-between -mt-1">
+          <div class="w-1/4">
+            <Label class="text-base mb-3 block">Pago *</Label>
+            <div class="flex flex-col items-center gap-2 w-full justify-between -mt-1">
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-12 w-full"
                 :class="[
                   form.paymentMethod === 'cash'
                     ? 'border-teal-500 bg-teal-50'
@@ -62,11 +78,10 @@
                 @click="form.paymentMethod = 'cash'"
               >
                 <span class="text-2xl">💴</span>
-                <span class="text-xs font-medium text-gray-500">Efectivo</span>
               </button>
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-12 w-full"
                 :class="[
                   form.paymentMethod === 'card'
                     ? 'border-teal-500 bg-teal-50'
@@ -75,11 +90,10 @@
                 @click="form.paymentMethod = 'card'"
               >
                 <span class="text-2xl">💳</span>
-                <span class="text-xs font-medium text-gray-500">Tarjeta</span>
               </button>
               <button
                 type="button"
-                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-14 w-full"
+                class="flex flex-col items-center justify-center gap-0 p-0 rounded-lg border-2 transition-all h-12 w-full"
                 :class="[
                   form.paymentMethod === 'ic'
                     ? 'border-teal-500 bg-teal-50'
@@ -87,25 +101,13 @@
                 ]"
                 @click="form.paymentMethod = 'ic'"
               >
-                <span class="text-2xl">🎫</span>
-                <span class="text-xs font-medium text-gray-500">IC</span>
+                <img src="/ic.webp" alt="IC" class="w-6 h-6" />
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Place Name -->
-        <div>
-          <Label for="placeName" class="text-base">Nombre del Lugar *</Label>
-          <Input
-            id="placeName"
-            v-model="form.placeName"
-            type="text"
-            placeholder="Ej: Ichiran Ramen"
-            class="mt-2 h-14 text-xl bg-white"
-            required
-          />
-        </div>
+
 
         <!-- Category -->
         <CategorySelector v-model="form.category" />

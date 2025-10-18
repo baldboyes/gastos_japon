@@ -21,7 +21,7 @@
         <Input
           v-model="searchQuery"
           type="text"
-          placeholder="Buscar por lugar..."
+          placeholder="Buscar..."
           class="pl-10 bg-white"
           @input="handleSearchChange"
         />
@@ -56,7 +56,7 @@
           <SelectItem value="all">Todos</SelectItem>
           <SelectItem value="cash">💴 Efectivo</SelectItem>
           <SelectItem value="card">💳 Tarjeta</SelectItem>
-          <SelectItem value="ic">🎫 IC</SelectItem>
+          <SelectItem value="ic" class="flex items-center gap-0"><img src="/ic.webp" alt="IC" class="w-5 h-5" /> IC</SelectItem>
         </SelectContent>
       </Select>
 
@@ -115,7 +115,11 @@
       </Badge>
 
       <Badge v-if="selectedPayment !== 'all'" variant="secondary" class="gap-1">
-        {{ selectedPayment === 'cash' ? '💴 Efectivo' : selectedPayment === 'card' ? '💳 Tarjeta' : '🎫 IC' }}
+        <template v-if="selectedPayment === 'cash'">💴 Efectivo</template>
+        <template v-else-if="selectedPayment === 'card'">💳 Tarjeta</template>
+        <template v-else>
+          <div class="flex items-center gap-1"><img src="/ic.webp" alt="IC" class="w-4 h-4 inline-block" /> IC</div>
+        </template>
         <button @click="selectedPayment = 'all'; handlePaymentChange()" class="ml-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 6 6 18"/>

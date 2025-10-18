@@ -31,7 +31,7 @@
           </div>
 
           <div class="flex flex-col items-center gap-1 p-2 bg-orange-50 rounded-lg">
-            <div class="text-2xl">🎫</div>
+            <div class="text-2xl"><img src="/ic.webp" alt="IC" class="w-8 h-8" /></div>
             <div class="flex-1">
               <div class="text-xs text-gray-600">IC</div>
               <div class="text-lg font-bold text-gray-900">{{ formatAmount(icTotal) }}</div>
