@@ -3,7 +3,18 @@
     <div class="max-w-screen-sm mx-auto p-4 mb-4">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar gasto' : 'Nuevo gasto' }}</h1>
+        <div v-if="isEditMode">
+          <h1 class="text-2xl font-bold text-gray-900">Editar gasto</h1>
+        </div>
+        <div v-else class="flex items-center gap-2">
+          <div class="font-bold flex items-center gap-2">
+            <span class="text-lg text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
+            <span class="text-sm text-gray-800 bg-gray-100 py-1 px-2 rounded-md">{{ form.time }}</span>
+          </div>
+          <div v-if="form.location.city" class="text-sm text-gray-600"> | {{ form.location.city }}</div>
+        </div>
+
+        
         <button
           class="text-gray-600 hover:text-gray-900 transition-colors"
           @click="navigateTo('/')"
@@ -100,7 +111,7 @@
         <CategorySelector v-model="form.category" />
 
         <!-- Date and Time -->
-        <div class="grid grid-cols-2 gap-4">
+        <div v-if="isEditMode" class="grid grid-cols-2 gap-4">
           <div>
             <Label for="date" class="text-base">Fecha *</Label>
             <Input
@@ -255,7 +266,7 @@
 
 <script setup lang="ts">
 import type { ExpenseCategory, PaymentMethod } from '~/types'
-import { getCurrentTimestamp } from '~/utils/dates'
+import { getCurrentTimestamp, formatDate } from '~/utils/dates'
 
 const { currencySymbol } = useCurrency()
 const route = useRoute()
@@ -292,7 +303,7 @@ const locationError = ref('')
 const showManualLocation = ref(false)
 
 // Initialize form
-onMounted(() => {
+onMounted(async () => {
   if (isEditMode.value && expenseId.value) {
     // Load existing expense
     const expense = getExpense(expenseId.value)
@@ -318,6 +329,9 @@ onMounted(() => {
     const now = new Date()
     form.date = now.toISOString().split('T')[0]
     form.time = now.toTimeString().slice(0, 5)
+
+    // Auto-capture location for new expenses
+    await captureLocation()
   }
 })
 
