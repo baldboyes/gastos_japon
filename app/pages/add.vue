@@ -127,7 +127,7 @@
 
         <!-- Date and Time -->
         <div v-if="isEditMode || showDateTimeEdit" class="grid grid-cols-2 gap-4">
-          <div>
+          <div class="w-full overflow-hidden">
             <Label for="date" class="text-base">Fecha *</Label>
             <Input
               id="date"
@@ -137,7 +137,7 @@
               required
             />
           </div>
-          <div>
+          <div class="w-full overflow-hidden">
             <Label for="time" class="text-base">Hora *</Label>
             <Input
               id="time"
