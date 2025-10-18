@@ -7,11 +7,24 @@
           <h1 class="text-2xl font-bold text-gray-900">Editar gasto</h1>
         </div>
         <div v-else class="flex items-center gap-2">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-base text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
-            <span class="text-base text-gray-800">{{ form.time }}</span>
-          </div>
-          <div v-if="form.location.city" class="text-base text-gray-600"> | {{ form.location.city }}</div>
+          <button
+            type="button"
+            @click="showDateTimeEdit = true"
+            class=" hover:text-teal-600 transition-colors flex items-center gap-2 cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-base text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
+              <span class="text-base text-gray-800">{{ form.time }}</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+
+          <div v-if="form.location.city" class="text-base font-bold text-gray-900"> | {{ form.location.city }}</div>
+
+
         </div>
 
         
@@ -113,7 +126,7 @@
         <CategorySelector v-model="form.category" />
 
         <!-- Date and Time -->
-        <div v-if="isEditMode" class="grid grid-cols-2 gap-4">
+        <div v-if="isEditMode || showDateTimeEdit" class="grid grid-cols-2 gap-4">
           <div>
             <Label for="date" class="text-base">Fecha *</Label>
             <Input
@@ -303,6 +316,7 @@ const isSubmitting = ref(false)
 const locationCaptured = ref(false)
 const locationError = ref('')
 const showManualLocation = ref(false)
+const showDateTimeEdit = ref(false)
 
 // Initialize form
 onMounted(async () => {
