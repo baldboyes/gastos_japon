@@ -30,6 +30,7 @@ export interface Expense {
 
 export interface PlannedExpense {
   id: string
+  plannedDate: string // ISO date string (YYYY-MM-DD)
   placeName: string
   amount: number // Amount in yenes
   category: ExpenseCategory

@@ -67,9 +67,11 @@
       <!-- Expenses List -->
       <ExpensesByDate
         :expenses="filteredExpenses"
+        :planned-expenses="filteredPlannedExpenses"
         empty-title="Sin gastos"
         empty-message="No se encontraron gastos con los filtros aplicados"
         @expense-click="handleExpenseClick"
+        @planned-expense-click="handlePlannedExpenseClick"
       />
 
       <!-- Expense Detail Dialog -->
@@ -85,11 +87,11 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import type { Expense } from '~/types'
+import type { Expense, PlannedExpense } from '~/types'
 
 const { formatAmount } = useCurrency()
 const router = useRouter()
-const { expenses, deleteExpense, exportData, importData } = useExpenses()
+const { expenses, plannedExpenses, deleteExpense, addExpense, deletePlannedExpense, exportData, importData } = useExpenses()
 
 // Filters
 const searchQuery = ref('')
@@ -107,6 +109,34 @@ const fileInput = ref<HTMLInputElement | null>(null)
 // Filtered expenses
 const filteredExpenses = computed(() => {
   let result = [...expenses.value]
+
+  // Search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(e => e.placeName.toLowerCase().includes(query))
+  }
+
+  // Category filter
+  if (selectedCategory.value !== 'all') {
+    result = result.filter(e => e.category === selectedCategory.value)
+  }
+
+  // Payment method filter
+  if (selectedPayment.value !== 'all') {
+    result = result.filter(e => e.paymentMethod === selectedPayment.value)
+  }
+
+  // Shared filter
+  if (showSharedOnly.value) {
+    result = result.filter(e => e.shared === true)
+  }
+
+  return result
+})
+
+// Filtered planned expenses (same filters as regular expenses)
+const filteredPlannedExpenses = computed(() => {
+  let result = [...plannedExpenses.value]
 
   // Search filter
   if (searchQuery.value) {
@@ -176,6 +206,28 @@ function handleEdit(expense: Expense) {
 function handleDelete(expense: Expense) {
   deleteExpense(expense.id)
   selectedExpense.value = null
+}
+
+// Handle planned expense click - convert to real expense
+function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
+  // Create a real expense from the planned expense
+  const now = new Date()
+  const expenseData = {
+    timestamp: now.toISOString(),
+    placeName: plannedExpense.placeName,
+    amount: plannedExpense.amount,
+    category: plannedExpense.category,
+    notes: plannedExpense.notes,
+    location: plannedExpense.location,
+    paymentMethod: plannedExpense.paymentMethod,
+    shared: plannedExpense.shared
+  }
+
+  // Add as real expense
+  addExpense(expenseData)
+
+  // Delete from planned expenses
+  deletePlannedExpense(plannedExpense.id)
 }
 
 // Export/Import handlers

@@ -71,7 +71,7 @@
           for="sharedFilter"
           class="text-sm font-medium cursor-pointer flex items-center gap-1.5"
         >
-          <span class="text-lg">👥</span>
+          <span class="text-lg">⭐</span>
         </Label>
       </div>
 
@@ -129,7 +129,7 @@
       </Badge>
 
       <Badge v-if="showSharedOnly" variant="secondary" class="gap-1">
-        👥 Compartidos
+        ⭐ Destacados
         <button @click="showSharedOnly = false; handleSharedToggle(false)" class="ml-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 6 6 18"/>

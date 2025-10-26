@@ -45,8 +45,8 @@
               >
                 {{ plannedExpense.paymentMethod === 'cash' ? '💴 Cash' : plannedExpense.paymentMethod === 'card' ? '💳 Card' : '🎫 IC' }}
               </Badge>
-              <Badge v-if="plannedExpense.shared" variant="outline" class="text-xs border-purple-300 text-purple-700 opacity-80">
-                👥
+              <Badge v-if="plannedExpense.shared" variant="outline" class="text-xs border-yellow-400 text-yellow-600 opacity-80">
+                ⭐
               </Badge>
             </div>
           </div>

@@ -16,6 +16,16 @@
         </div>
       </div>
 
+      <!-- Planned expenses for this date -->
+      <div v-if="plannedExpensesForDate[date]" class="space-y-3">
+        <PlannedExpenseCard
+          v-for="planned in plannedExpensesForDate[date]"
+          :key="planned.id"
+          :planned-expense="planned"
+          @click="$emit('planned-expense-click', planned)"
+        />
+      </div>
+
       <!-- Expenses for this date -->
       <div class="space-y-3">
         <ExpenseCard
@@ -37,24 +47,27 @@
 </template>
 
 <script setup lang="ts">
-import type { Expense } from '~/types'
+import type { Expense, PlannedExpense } from '~/types'
 import { formatDate, getRelativeDayLabel, groupByDate, getDateString } from '~/utils/dates'
 
 const { formatAmount } = useCurrency()
 
 interface Props {
   expenses: Expense[]
+  plannedExpenses?: PlannedExpense[]
   emptyTitle?: string
   emptyMessage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  plannedExpenses: () => [],
   emptyTitle: 'Sin gastos',
   emptyMessage: 'No hay gastos para mostrar'
 })
 
 defineEmits<{
   'expense-click': [expense: Expense]
+  'planned-expense-click': [plannedExpense: PlannedExpense]
 }>()
 
 const groupedExpenses = computed(() => {
@@ -72,7 +85,23 @@ const groupedExpenses = computed(() => {
   return result
 })
 
+const plannedExpensesForDate = computed(() => {
+  // Group planned expenses by their plannedDate
+  const grouped: Record<string, PlannedExpense[]> = {}
+
+  props.plannedExpenses.forEach(planned => {
+    const dateKey = planned.plannedDate
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = []
+    }
+    grouped[dateKey].push(planned)
+  })
+
+  return grouped
+})
+
 function getTotalForDate(expenses: Expense[]): number {
+  // Only count real expenses, not planned expenses
   return expenses.reduce((sum, expense) => sum + expense.amount, 0)
 }
 </script>

@@ -246,8 +246,8 @@
             class="bg-white"
           />
           <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
-            <span>👥</span>
-            <span>Gasto compartido</span>
+            <span>⭐</span>
+            <span>Gasto destacado</span>
           </Label>
         </div>
 
@@ -460,6 +460,7 @@ async function handleSavePlanned() {
 
   try {
     const plannedExpenseData = {
+      plannedDate: form.date, // Use the date from the form
       placeName: form.placeName.trim(),
       amount: parseFloat(form.amount),
       category: form.category,

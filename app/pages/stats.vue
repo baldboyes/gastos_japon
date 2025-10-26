@@ -128,15 +128,15 @@
         <!-- Shared Expenses -->
         <Card v-if="sharedExpenses.length > 0">
           <CardHeader>
-            <CardTitle class="text-lg">Gastos Compartidos</CardTitle>
+            <CardTitle class="text-lg">Gastos Destacados</CardTitle>
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div class="flex items-center justify-between py-2 px-3 bg-purple-50 rounded-lg">
+              <div class="flex items-center justify-between py-2 px-3 bg-yellow-50 rounded-lg">
                 <div class="flex items-center gap-2">
-                  <span class="text-2xl">👥</span>
+                  <span class="text-2xl">⭐</span>
                   <div>
-                    <div class="text-sm font-medium text-gray-900">Total Compartido</div>
+                    <div class="text-sm font-medium text-gray-900">Total Destacado</div>
                     <div class="text-xs text-gray-600">{{ sharedExpenses.length }} {{ sharedExpenses.length === 1 ? 'gasto' : 'gastos' }}</div>
                   </div>
                 </div>

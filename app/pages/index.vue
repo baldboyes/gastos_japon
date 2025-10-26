@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import type { Expense, PlannedExpense } from '~/types'
-import { formatDate } from '~/utils/dates'
+import { formatDate, getDateString } from '~/utils/dates'
 
 const router = useRouter()
 const { getTodayExpenses, deleteExpense, plannedExpenses, addExpense, deletePlannedExpense } = useExpenses()
@@ -60,8 +60,14 @@ const todayTotal = computed(() =>
   todayExpenses.value.reduce((sum, exp) => sum + exp.amount, 0)
 )
 
-// Planned expenses list
-const plannedExpensesList = computed(() => plannedExpenses.value)
+// Planned expenses list - only show today's planned expenses
+const plannedExpensesList = computed(() => {
+  const todayStr = getDateString(new Date())
+
+  return plannedExpenses.value.filter(planned => {
+    return planned.plannedDate === todayStr
+  })
+})
 
 // Expense detail dialog
 const showExpenseDetail = ref(false)
