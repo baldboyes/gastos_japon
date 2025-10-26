@@ -2,7 +2,7 @@
  * Composable for managing expenses with localStorage persistence
  */
 
-import type { AppData, Budget, Expense, ExpenseCategory } from '~/types'
+import type { AppData, Budget, Expense, ExpenseCategory, PlannedExpense } from '~/types'
 import { getDateString, getStartOfDay, getEndOfDay, sortByTimestamp } from '~/utils/dates'
 
 const STORAGE_KEY = 'gastos-japon'
@@ -20,6 +20,7 @@ function generateId(): string {
 export function useExpenses() {
   // Use Nuxt's useState for global reactive state
   const expenses = useState<Expense[]>('expenses', () => [])
+  const plannedExpenses = useState<PlannedExpense[]>('plannedExpenses', () => [])
   const budget = useState<Budget>('budget', () => ({
     dailyLimit: 0,
     startDate: new Date().toISOString(),
@@ -112,6 +113,7 @@ export function useExpenses() {
           const data: AppData = JSON.parse(stored)
           // Migrate old data format to new format
           expenses.value = migrateLocationData(data.expenses || [])
+          plannedExpenses.value = data.plannedExpenses || []
           budget.value = migrateCurrencyToBudget(data.budget || budget.value)
 
           // Save migrated data back to storage
@@ -131,7 +133,8 @@ export function useExpenses() {
       try {
         const data: AppData = {
           budget: budget.value,
-          expenses: expenses.value
+          expenses: expenses.value,
+          plannedExpenses: plannedExpenses.value
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       } catch (error) {
@@ -395,6 +398,38 @@ export function useExpenses() {
     }
   }
 
+  /**
+   * Add a new planned expense
+   */
+  function addPlannedExpense(plannedExpense: Omit<PlannedExpense, 'id'>): PlannedExpense {
+    const newPlannedExpense: PlannedExpense = {
+      ...plannedExpense,
+      id: generateId()
+    }
+    plannedExpenses.value.push(newPlannedExpense)
+    saveToStorage()
+    return newPlannedExpense
+  }
+
+  /**
+   * Delete a planned expense
+   */
+  function deletePlannedExpense(id: string): boolean {
+    const index = plannedExpenses.value.findIndex(e => e.id === id)
+    if (index === -1) return false
+
+    plannedExpenses.value.splice(index, 1)
+    saveToStorage()
+    return true
+  }
+
+  /**
+   * Get a single planned expense by ID
+   */
+  function getPlannedExpense(id: string): PlannedExpense | undefined {
+    return plannedExpenses.value.find(e => e.id === id)
+  }
+
   // Auto-load on mount
   onMounted(() => {
     loadFromStorage()
@@ -403,6 +438,7 @@ export function useExpenses() {
   return {
     // State
     expenses,
+    plannedExpenses,
     budget,
 
     // CRUD operations
@@ -410,6 +446,11 @@ export function useExpenses() {
     updateExpense,
     deleteExpense,
     getExpense,
+
+    // Planned expenses CRUD
+    addPlannedExpense,
+    deletePlannedExpense,
+    getPlannedExpense,
 
     // Queries
     getExpensesByDate,

@@ -252,9 +252,20 @@
         </div>
 
 
-        <!-- Submit Button -->
+        <!-- Submit Buttons -->
         <div class="flex gap-3 pt-4">
           <Button
+            v-if="!isEditMode"
+            type="button"
+            variant="outline"
+            class="w-1/3 h-14"
+            @click="handleSavePlanned"
+            :disabled="!isFormValid || isSubmitting"
+          >
+            Previsto
+          </Button>
+          <Button
+            v-else
             type="button"
             variant="outline"
             class="w-1/3 h-14"
@@ -271,7 +282,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar Gasto' : 'Guardar gasto') }}
+            {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Añadir') }}
           </Button>
         </div>
       </form>
@@ -285,7 +296,7 @@ import { getCurrentTimestamp, formatDate } from '~/utils/dates'
 
 const { currencySymbol } = useCurrency()
 const route = useRoute()
-const { addExpense, updateExpense, getExpense } = useExpenses()
+const { addExpense, updateExpense, getExpense, addPlannedExpense } = useExpenses()
 const { getCurrentLocation, location, loading: locationLoading, error: geoError } = useGeolocation()
 
 // Check if we're in edit mode
@@ -436,6 +447,35 @@ async function handleSubmit() {
   } catch (error) {
     console.error('Error saving expense:', error)
     alert('Error al guardar el gasto. Por favor intenta de nuevo.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// Save as planned expense handler
+async function handleSavePlanned() {
+  if (!isFormValid.value || isSubmitting.value) return
+
+  isSubmitting.value = true
+
+  try {
+    const plannedExpenseData = {
+      placeName: form.placeName.trim(),
+      amount: parseFloat(form.amount),
+      category: form.category,
+      notes: form.notes.trim(),
+      location: form.location,
+      paymentMethod: form.paymentMethod,
+      shared: form.shared
+    }
+
+    addPlannedExpense(plannedExpenseData)
+
+    // Success! Navigate back to home
+    await navigateTo('/')
+  } catch (error) {
+    console.error('Error saving planned expense:', error)
+    alert('Error al guardar el gasto previsto. Por favor intenta de nuevo.')
   } finally {
     isSubmitting.value = false
   }

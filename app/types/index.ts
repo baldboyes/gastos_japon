@@ -28,6 +28,17 @@ export interface Expense {
   photo?: string // Optional base64 or URL
 }
 
+export interface PlannedExpense {
+  id: string
+  placeName: string
+  amount: number // Amount in yenes
+  category: ExpenseCategory
+  notes: string
+  location: Location
+  paymentMethod: PaymentMethod
+  shared: boolean
+}
+
 export type Currency = 'JPY' | 'CNY' | 'KRW' | 'EUR' | 'USD' | 'GBP'
 
 export interface Budget {
@@ -39,6 +50,7 @@ export interface Budget {
 export interface AppData {
   budget: Budget
   expenses: Expense[]
+  plannedExpenses: PlannedExpense[]
 }
 
 /**
@@ -64,5 +76,6 @@ export const CATEGORIES: CategoryInfo[] = [
  * Get category info by key
  */
 export function getCategoryInfo(category: ExpenseCategory): CategoryInfo {
-  return CATEGORIES.find(c => c.key === category) || CATEGORIES[CATEGORIES.length - 1]
+  const found = CATEGORIES.find(c => c.key === category)
+  return found || CATEGORIES[CATEGORIES.length - 1]!
 }
