@@ -83,12 +83,11 @@
                   </svg>
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ location.city }}</div>
-                    <div class="text-xs text-gray-600">{{ location.prefecture }}</div>
+                    <div class="text-xs text-gray-500">{{ location.count }} {{ location.count === 1 ? 'gasto' : 'gastos' }}</div>
                   </div>
                 </div>
                 <div class="text-right">
                   <div class="text-sm font-semibold text-gray-900">{{ formatAmount(location.total) }}</div>
-                  <div class="text-xs text-gray-500">{{ location.count }} {{ location.count === 1 ? 'gasto' : 'gastos' }}</div>
                 </div>
               </div>
             </div>
