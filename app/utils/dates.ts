@@ -102,33 +102,36 @@ export function getDaysElapsed(startDate: string): number {
 }
 
 /**
- * Get date string in YYYY-MM-DD format
+ * Get date string in YYYY-MM-DD format (local timezone)
  * @param date - Date object or string
  * @returns Date in YYYY-MM-DD format
  */
 export function getDateString(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date
-  return d.toISOString().split('T')[0] || ''
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 /**
- * Get start of day timestamp
+ * Get start of day timestamp (local timezone)
  * @param date - Date object or string
  * @returns ISO string at start of day
  */
 export function getStartOfDay(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  const d = typeof date === 'string' ? new Date(date) : new Date(date)
   d.setHours(0, 0, 0, 0)
   return d.toISOString()
 }
 
 /**
- * Get end of day timestamp
+ * Get end of day timestamp (local timezone)
  * @param date - Date object or string
  * @returns ISO string at end of day
  */
 export function getEndOfDay(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  const d = typeof date === 'string' ? new Date(date) : new Date(date)
   d.setHours(23, 59, 59, 999)
   return d.toISOString()
 }

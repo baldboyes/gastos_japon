@@ -55,7 +55,7 @@ export const CATEGORIES: CategoryInfo[] = [
   { key: 'food', label: 'Comida y Bebida', icon: '🍜', color: 'bg-orange-500' },
   { key: 'transport', label: 'Transporte', icon: '🚇', color: 'bg-blue-500' },
   { key: 'accommodation', label: 'Alojamiento', icon: '🏨', color: 'bg-purple-500' },
-  { key: 'entertainment', label: 'Entretenimiento', icon: '🎭', color: 'bg-pink-500' },
+  { key: 'entertainment', label: 'Entradas', icon: '⛩️', color: 'bg-pink-500' },
   { key: 'shopping', label: 'Compras', icon: '🛍️', color: 'bg-green-500' },
   { key: 'other', label: 'Otros', icon: '📦', color: 'bg-gray-500' },
 ]
