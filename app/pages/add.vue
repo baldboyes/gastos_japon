@@ -292,7 +292,7 @@
 
 <script setup lang="ts">
 import type { ExpenseCategory, PaymentMethod } from '~/types'
-import { getCurrentTimestamp, formatDate } from '~/utils/dates'
+import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeString } from '~/utils/dates'
 
 const { currencySymbol } = useCurrency()
 const route = useRoute()
@@ -352,10 +352,9 @@ onMounted(async () => {
       }
     }
   } else {
-    // New expense - initialize with current date and time
-    const now = new Date()
-    form.date = now.toISOString().split('T')[0]
-    form.time = now.toTimeString().slice(0, 5)
+    // New expense - initialize with current date and time (local timezone)
+    form.date = getCurrentDateString()
+    form.time = getCurrentTimeString()
 
     // Auto-capture location for new expenses
     await captureLocation()

@@ -115,6 +115,30 @@ export function getDateString(date: string | Date): string {
 }
 
 /**
+ * Get current date string in YYYY-MM-DD format (local timezone)
+ * This ensures the date is correct for the user's current timezone
+ * @returns Current date in YYYY-MM-DD format
+ */
+export function getCurrentDateString(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * Get current time string in HH:MM format (local timezone)
+ * @returns Current time in HH:MM format
+ */
+export function getCurrentTimeString(): string {
+  const now = new Date()
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/**
  * Get start of day timestamp (local timezone)
  * @param date - Date object or string
  * @returns ISO string at start of day

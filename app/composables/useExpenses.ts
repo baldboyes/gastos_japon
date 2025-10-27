@@ -173,7 +173,9 @@ export function useExpenses() {
       amount: updates.amount ?? currentExpense.amount,
       category: updates.category ?? currentExpense.category,
       location: updates.location ?? currentExpense.location,
-      paymentMethod: updates.paymentMethod ?? currentExpense.paymentMethod
+      paymentMethod: updates.paymentMethod ?? currentExpense.paymentMethod,
+      shared: updates.shared ?? currentExpense.shared,
+      notes: updates.notes ?? currentExpense.notes
     } as Expense
     saveToStorage()
     return true
