@@ -215,12 +215,13 @@ export function useExpenses() {
    * Get expenses in a date range
    */
   function getExpensesInRange(start: string | Date, end: string | Date): Expense[] {
-    const startTime = new Date(getStartOfDay(start)).getTime()
-    const endTime = new Date(getEndOfDay(end)).getTime()
+    const startStr = getStartOfDay(start)
+    const endStr = getEndOfDay(end)
 
     return expenses.value.filter(expense => {
-      const expenseTime = new Date(expense.timestamp).getTime()
-      return expenseTime >= startTime && expenseTime <= endTime
+      // For string comparison with our format "YYYY-MM-DD HH:MM"
+      // we can compare directly since the format is lexicographically sortable
+      return expense.timestamp >= startStr && expense.timestamp <= endStr
     })
   }
 

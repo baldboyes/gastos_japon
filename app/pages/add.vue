@@ -242,7 +242,8 @@
         <div class="flex items-center space-x-3 p-0 bg-gray-50 rounded-xl">
           <Checkbox
             id="shared"
-            v-model:checked="form.shared"
+            :checked="form.shared"
+            @update:checked="(checked) => form.shared = checked === true || checked === 'true'"
             class="bg-white"
           />
           <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
@@ -292,7 +293,7 @@
 
 <script setup lang="ts">
 import type { ExpenseCategory, PaymentMethod } from '~/types'
-import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeString } from '~/utils/dates'
+import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeString, getDateString, getTimeString } from '~/utils/dates'
 
 const { currencySymbol } = useCurrency()
 const route = useRoute()
@@ -335,12 +336,11 @@ onMounted(async () => {
     // Load existing expense
     const expense = getExpense(expenseId.value)
     if (expense) {
-      const timestamp = new Date(expense.timestamp)
       form.amount = expense.amount.toString()
       form.placeName = expense.placeName
       form.category = expense.category
-      form.date = timestamp.toISOString().split('T')[0]
-      form.time = timestamp.toTimeString().slice(0, 5)
+      form.date = getDateString(expense.timestamp)
+      form.time = getTimeString(expense.timestamp)
       form.location = { ...expense.location }
       form.paymentMethod = expense.paymentMethod
       form.shared = expense.shared
@@ -415,8 +415,9 @@ async function handleSubmit() {
   isSubmitting.value = true
 
   try {
-    // Combine date and time
-    const timestamp = `${form.date}T${form.time}:00`
+    // Store date and time as a simple string without timezone conversion
+    // Format: "YYYY-MM-DD HH:MM" (not ISO format to avoid timezone issues)
+    const timestamp = `${form.date} ${form.time}`
 
     const expenseData = {
       timestamp,

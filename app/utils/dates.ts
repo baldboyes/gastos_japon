@@ -6,12 +6,34 @@ import type { Expense } from '~/types'
 
 /**
  * Format date in readable format (e.g., "18 May 2025")
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param date - Date string or Date object
  * @returns Formatted date string
  */
 export function formatDate(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleDateString('es-ES', {
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      const datePart = date.split(' ')[0]
+      // Parse manually to avoid timezone conversion
+      const [year, month, day] = datePart!.split('-').map(Number)
+      const d = new Date(year!, month! - 1, day)
+      return d.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    return d.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+  }
+  // Handle Date object
+  return date.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -20,12 +42,26 @@ export function formatDate(date: string | Date): string {
 
 /**
  * Format time in readable format (e.g., "14:30")
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param date - Date string or Date object
  * @returns Formatted time string
  */
 export function formatTime(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d.toLocaleTimeString('es-ES', {
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      const timePart = date.split(' ')[1]
+      return timePart || '00:00'
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    return d.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+  // Handle Date object
+  return date.toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit'
   })
@@ -56,25 +92,50 @@ export function formatDateShort(date: string | Date): string {
 
 /**
  * Check if date is today
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param date - Date string or Date object
  * @returns True if date is today
  */
 export function isToday(date: string | Date): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date
-  const today = new Date()
-  return d.toDateString() === today.toDateString()
+  const today = getCurrentDateString()
+
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      const datePart = date.split(' ')[0]
+      return datePart === today
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    return getDateString(d) === today
+  }
+  // Handle Date object
+  return getDateString(date) === today
 }
 
 /**
  * Check if date is yesterday
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param date - Date string or Date object
  * @returns True if date is yesterday
  */
 export function isYesterday(date: string | Date): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
-  return d.toDateString() === yesterday.toDateString()
+  const yesterdayStr = getDateString(yesterday)
+
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      const datePart = date.split(' ')[0]
+      return datePart === yesterdayStr
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    return getDateString(d) === yesterdayStr
+  }
+  // Handle Date object
+  return getDateString(date) === yesterdayStr
 }
 
 /**
@@ -102,15 +163,28 @@ export function getDaysElapsed(startDate: string): number {
 }
 
 /**
- * Get date string in YYYY-MM-DD format (local timezone)
- * @param date - Date object or string
+ * Get date string in YYYY-MM-DD format from timestamp
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
+ * @param date - Date object or string timestamp
  * @returns Date in YYYY-MM-DD format
  */
 export function getDateString(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      return date.split(' ')[0] || date
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  // Handle Date object
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
 
@@ -139,25 +213,48 @@ export function getCurrentTimeString(): string {
 }
 
 /**
+ * Get time string from a timestamp in HH:MM format
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
+ * @param date - Date object or string timestamp
+ * @returns Time in HH:MM format
+ */
+export function getTimeString(date: string | Date): string {
+  if (typeof date === 'string') {
+    // Check if it's our custom format "YYYY-MM-DD HH:MM"
+    if (date.includes(' ') && !date.includes('T')) {
+      const timePart = date.split(' ')[1]
+      return timePart || '00:00'
+    }
+    // Handle ISO format or other string formats
+    const d = new Date(date)
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
+  }
+  // Handle Date object
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/**
  * Get start of day timestamp (local timezone)
  * @param date - Date object or string
- * @returns ISO string at start of day
+ * @returns Timestamp string in our format "YYYY-MM-DD 00:00"
  */
 export function getStartOfDay(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d.toISOString()
+  const dateStr = getDateString(date)
+  return `${dateStr} 00:00`
 }
 
 /**
  * Get end of day timestamp (local timezone)
  * @param date - Date object or string
- * @returns ISO string at end of day
+ * @returns Timestamp string in our format "YYYY-MM-DD 23:59"
  */
 export function getEndOfDay(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : new Date(date)
-  d.setHours(23, 59, 59, 999)
-  return d.toISOString()
+  const dateStr = getDateString(date)
+  return `${dateStr} 23:59`
 }
 
 /**
@@ -178,13 +275,22 @@ export function groupByDate(expenses: Expense[]): Record<string, Expense[]> {
 
 /**
  * Sort expenses by timestamp (newest first)
+ * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param expenses - Array of expenses
  * @returns Sorted array
  */
 export function sortByTimestamp(expenses: Expense[]): Expense[] {
-  return [...expenses].sort((a, b) =>
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  )
+  return [...expenses].sort((a, b) => {
+    // Convert timestamps to comparable format
+    const timeA = a.timestamp.includes(' ') && !a.timestamp.includes('T')
+      ? a.timestamp.replace(' ', 'T') + ':00' // Convert to ISO-like format for comparison
+      : a.timestamp
+    const timeB = b.timestamp.includes(' ') && !b.timestamp.includes('T')
+      ? b.timestamp.replace(' ', 'T') + ':00'
+      : b.timestamp
+
+    return new Date(timeB).getTime() - new Date(timeA).getTime()
+  })
 }
 
 /**

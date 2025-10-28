@@ -17,7 +17,7 @@ export interface Location {
 
 export interface Expense {
   id: string
-  timestamp: string // ISO datetime string
+  timestamp: string // Format: "YYYY-MM-DD HH:MM" (no timezone, shows exactly what was entered)
   placeName: string
   amount: number // Amount in yenes
   category: ExpenseCategory
