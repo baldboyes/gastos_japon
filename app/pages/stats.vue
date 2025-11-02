@@ -124,30 +124,6 @@
             </div>
           </CardContent>
         </Card>
-
-        <!-- Shared Expenses -->
-        <Card v-if="sharedExpenses.length > 0">
-          <CardHeader>
-            <CardTitle class="text-lg">Gastos Destacados</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between py-2 px-3 bg-yellow-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                  <span class="text-2xl">⭐</span>
-                  <div>
-                    <div class="text-sm font-medium text-gray-900">Total Destacado</div>
-                    <div class="text-xs text-gray-600">{{ sharedExpenses.length }} {{ sharedExpenses.length === 1 ? 'gasto' : 'gastos' }}</div>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <div class="text-lg font-bold text-gray-900">{{ formatAmount(sharedTotal) }}</div>
-                  <div class="text-xs text-gray-600">Tu parte: {{ formatAmount(Math.round(sharedTotal / 2)) }}</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <!-- Expense Detail Dialog -->
@@ -236,10 +212,6 @@ const topLocations = computed<LocationStats[]>(() => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 5)
 })
-
-// Shared expenses
-const sharedExpenses = computed(() => expenses.value.filter(e => e.shared))
-const sharedTotal = computed(() => sharedExpenses.value.reduce((sum, e) => sum + e.amount, 0))
 
 // Handlers
 function handleExpenseClick(expense: Expense) {

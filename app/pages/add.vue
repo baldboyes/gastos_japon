@@ -239,14 +239,27 @@
           />
         </div>
         <!-- Shared -->
-        <div class="flex items-center space-x-3 p-0 bg-gray-50 rounded-xl">
-          <Checkbox
-            id="shared"
-            :checked="form.shared"
-            @update:checked="(checked) => form.shared = checked === true || checked === 'true'"
-            class="bg-white"
-          />
-          <Label for="shared" class="text-base cursor-pointer flex items-center gap-2">
+        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl cursor-pointer" @click="toggleShared">
+          <div
+            class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
+            :class="form.shared ? 'bg-teal-600 border-teal-600' : 'bg-white border-gray-300'"
+          >
+            <svg
+              v-if="form.shared"
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <Label class="text-base cursor-pointer flex items-center gap-2 pointer-events-none select-none">
             <span>⭐</span>
             <span>Gasto destacado</span>
           </Label>
@@ -391,6 +404,11 @@ function resetLocation() {
     city: '',
     prefecture: ''
   }
+}
+
+// Toggle shared/destacado
+function toggleShared() {
+  form.shared = !form.shared
 }
 
 // Form validation

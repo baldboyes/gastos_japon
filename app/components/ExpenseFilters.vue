@@ -61,18 +61,29 @@
       </Select>
 
       <!-- Shared Filter Checkbox -->
-      <div class="flex items-center space-x-2 px-3 py-1 rounded-md border bg-white hover:bg-gray-50 transition-colors">
-        <Checkbox
-          id="sharedFilter"
-          :checked="showSharedOnly"
-          @update:checked="handleSharedToggle"
-        />
-        <Label
-          for="sharedFilter"
-          class="text-sm font-medium cursor-pointer flex items-center gap-1.5"
+      <div class="flex items-center space-x-2 px-3 py-1 rounded-md border bg-white hover:bg-gray-50 transition-colors cursor-pointer" @click="toggleSharedFilter">
+        <div
+          class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
+          :class="showSharedOnly ? 'bg-teal-600 border-teal-600' : 'bg-white border-gray-300'"
         >
+          <svg
+            v-if="showSharedOnly"
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="text-sm font-medium flex items-center gap-1.5 pointer-events-none select-none">
           <span class="text-lg">⭐</span>
-        </Label>
+        </div>
       </div>
 
       <!-- Clear Filters -->
@@ -176,6 +187,11 @@ function handlePaymentChange() {
 function handleSharedToggle(checked: boolean | string) {
   // Handle both boolean and string (from checkbox component)
   showSharedOnly.value = checked === true || checked === 'true'
+  emit('shared-change', showSharedOnly.value)
+}
+
+function toggleSharedFilter() {
+  showSharedOnly.value = !showSharedOnly.value
   emit('shared-change', showSharedOnly.value)
 }
 

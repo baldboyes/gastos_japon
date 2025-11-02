@@ -1,5 +1,9 @@
 <template>
-  <Card class="hover:shadow-md transition-shadow cursor-pointer" @click="$emit('click', expense)">
+  <Card
+    class="hover:shadow-md transition-shadow cursor-pointer relative"
+    :class="{ 'border-l-[4px] border-l-yellow-400': expense.shared }"
+    @click="$emit('click', expense)"
+  >
     <CardContent class="px-4">
       <div class="flex items-start gap-3">
         <!-- Category Icon -->
@@ -52,9 +56,6 @@
                 }"
               >
                 {{ expense.paymentMethod === 'cash' ? '💴 Cash' : expense.paymentMethod === 'card' ? '💳 Card' : '🎫 IC' }}
-              </Badge>
-              <Badge v-if="expense.shared" variant="outline" class="text-xs border-yellow-400 text-yellow-600">
-                ⭐
               </Badge>
             </div>
           </div>

@@ -71,8 +71,8 @@
 
         <!-- Shared -->
         <div v-if="expense.shared">
-          <Badge variant="outline" class="border-purple-300 text-purple-700">
-            👥 Gasto compartido
+          <Badge variant="outline" class="border-yellow-400 bg-yellow-50 text-yellow-700">
+            ⭐ Gasto destacado
           </Badge>
         </div>
       </div>
