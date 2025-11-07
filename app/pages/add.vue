@@ -150,12 +150,13 @@
         </div>
 
         <!-- Location -->
-        <div v-if="!form.location.city">
+        <div>
           <Label class="text-base mb-2 block">Ubicación *</Label>
           <Card>
             <CardContent class="py-0 px-4 space-y-2">
+              <!-- Add Mode: Capture Location Button -->
               <button
-                v-if="!locationCaptured"
+                v-if="!isEditMode && !locationCaptured"
                 type="button"
                 class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 @click="captureLocation"
@@ -175,25 +176,44 @@
                 {{ locationError }}
               </div>
 
-              <div v-if="locationCaptured" class="space-y-3">
+              <!-- Show location info if captured OR in edit mode -->
+              <div v-if="locationCaptured || isEditMode" class="space-y-3">
                 <div class="flex items-start gap-2 text-sm text-gray-700 bg-teal-50 p-3 rounded-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-teal-600">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                   <div>
-                    <div class="font-medium">{{ form.location.city }}</div>
-                    <div class="text-xs text-gray-600">{{ form.location.prefecture }}</div>
+                    <div class="font-medium">{{ form.location.city || 'Sin ubicación' }}</div>
+                    <div class="text-xs text-gray-600">{{ form.location.prefecture || 'Sin prefectura' }}</div>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  class="text-sm text-gray-600 hover:text-gray-900"
-                  @click="resetLocation"
-                >
-                  Cambiar ubicación
-                </button>
+                <div class="flex gap-2">
+                  <!-- Add Mode: Reset button -->
+                  <button
+                    v-if="!isEditMode"
+                    type="button"
+                    class="text-sm text-gray-600 hover:text-gray-900"
+                    @click="resetLocation"
+                  >
+                    Cambiar ubicación
+                  </button>
+
+                  <!-- Edit Mode: Map editor button (always visible) -->
+                  <button
+                    v-if="isEditMode"
+                    type="button"
+                    class="text-sm text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1"
+                    @click="showMapEditor = true"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    Editar en el mapa
+                  </button>
+                </div>
               </div>
 
               <!-- Manual Location (fallback) -->
@@ -300,6 +320,30 @@
           </Button>
         </div>
       </form>
+
+      <!-- Map Editor Dialog (Edit Mode Only) -->
+      <Dialog v-model:open="showMapEditor">
+        <DialogContent class="max-w-4xl h-[85vh] flex flex-col p-0">
+          <DialogHeader class="px-6 pt-6 pb-4 shrink-0">
+            <DialogTitle>Editar ubicación en el Mapa</DialogTitle>
+            <DialogDescription>
+              Toca en el mapa para cambiar la ubicación del gasto
+            </DialogDescription>
+          </DialogHeader>
+          <div class="flex-1 px-6 min-h-0">
+            <EditableMap
+              :latitude="form.location.coordinates.lat"
+              :longitude="form.location.coordinates.lng"
+              @location-change="handleLocationChange"
+            />
+          </div>
+          <DialogFooter class="px-6 pb-6 pt-4 shrink-0">
+            <Button variant="outline" @click="showMapEditor = false">
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   </NuxtLayout>
 </template>
@@ -342,6 +386,7 @@ const locationCaptured = ref(false)
 const locationError = ref('')
 const showManualLocation = ref(false)
 const showDateTimeEdit = ref(false)
+const showMapEditor = ref(false)
 
 // Initialize form
 onMounted(async () => {
@@ -404,6 +449,15 @@ function resetLocation() {
     city: '',
     prefecture: ''
   }
+}
+
+// Handle location change from map editor
+function handleLocationChange(data: { lat: number; lng: number; city: string; prefecture: string }) {
+  form.location.coordinates.lat = data.lat
+  form.location.coordinates.lng = data.lng
+  form.location.city = data.city
+  form.location.prefecture = data.prefecture
+  locationCaptured.value = true
 }
 
 // Toggle shared/destacado
