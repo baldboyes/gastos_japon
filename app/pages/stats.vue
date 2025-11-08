@@ -26,33 +26,35 @@
         <!-- Overview Cards -->
         <div class="grid grid-cols-2 gap-4">
           <StatsCard
-            label="Total Gastado"
+            label="Total"
             :value="formatAmount(totalSpent)"
             :subtitle="`${expenses.length} ${expenses.length === 1 ? 'gasto' : 'gastos'}`"
             icon="💰"
             icon-bg-class="bg-teal-100"
           />
           <StatsCard
-            label="Promedio Diario"
+            label="Promedio Día"
             :value="formatAmount(averageDaily)"
             :subtitle="`${tripDays} ${tripDays === 1 ? 'día' : 'días'} con gastos`"
             icon="📅"
             icon-bg-class="bg-blue-100"
           />
+          <!-- 
           <StatsCard
-            label="Gasto Mayor"
+            label="Gasto mayor"
             :value="formatAmount(maxExpense?.amount || 0)"
             :subtitle="maxExpense?.placeName"
             icon="📈"
             icon-bg-class="bg-orange-100"
           />
           <StatsCard
-            label="Gasto Menor"
+            label="Gasto menor"
             :value="formatAmount(minExpense?.amount || 0)"
             :subtitle="minExpense?.placeName"
             icon="📉"
             icon-bg-class="bg-green-100"
           />
+          -->
         </div>
 
         <!-- Daily Spending Chart -->
