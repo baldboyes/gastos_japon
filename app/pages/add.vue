@@ -154,27 +154,19 @@
           <Label class="text-base mb-2 block">Ubicación *</Label>
           <Card>
             <CardContent class="py-0 px-4 space-y-2">
-              <!-- Add Mode: Capture Location Button -->
+              <!-- Button to open map when no location is set -->
               <button
-                v-if="!isEditMode && !locationCaptured"
+                v-if="!locationCaptured && !isEditMode"
                 type="button"
-                class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                @click="captureLocation"
-                :disabled="locationLoading"
+                class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+                @click="showMapEditor = true"
               >
-                <svg v-if="!locationLoading" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                <svg v-else class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-                </svg>
-                <span>{{ locationLoading ? 'Obteniendo ubicación...' : 'Capturar ubicación actual' }}</span>
+                <span>Seleccionar ubicación en el mapa</span>
               </button>
-
-              <div v-if="locationError" class="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-                {{ locationError }}
-              </div>
 
               <!-- Show location info if captured OR in edit mode -->
               <div v-if="locationCaptured || isEditMode" class="space-y-3">
@@ -190,19 +182,8 @@
                 </div>
 
                 <div class="flex gap-2">
-                  <!-- Add Mode: Reset button -->
+                  <!-- Map editor button (always visible when location is set) -->
                   <button
-                    v-if="!isEditMode"
-                    type="button"
-                    class="text-sm text-gray-600 hover:text-gray-900"
-                    @click="resetLocation"
-                  >
-                    Cambiar ubicación
-                  </button>
-
-                  <!-- Edit Mode: Map editor button (always visible) -->
-                  <button
-                    v-if="isEditMode"
                     type="button"
                     class="text-sm text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1"
                     @click="showMapEditor = true"
@@ -211,37 +192,8 @@
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                       <circle cx="12" cy="10" r="3"/>
                     </svg>
-                    Editar en el mapa
+                    Cambiar ubicación
                   </button>
-                </div>
-              </div>
-
-              <!-- Manual Location (fallback) -->
-              <div v-if="showManualLocation" class="space-y-3 pt-3 border-t">
-                <div class="text-sm text-gray-600 mb-2">O ingresar manualmente:</div>
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label for="city" class="text-sm">Ciudad</Label>
-                    <Input
-                      id="city"
-                      v-model="form.location.city"
-                      type="text"
-                      placeholder="Kobe"
-                      class="mt-1 bg-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label for="prefecture" class="text-sm">Prefectura</Label>
-                    <Input
-                      id="prefecture"
-                      v-model="form.location.prefecture"
-                      type="text"
-                      placeholder="Hyogo"
-                      class="mt-1 bg-white"
-                      required
-                    />
-                  </div>
                 </div>
               </div>
             </CardContent>
@@ -355,7 +307,6 @@ import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeSt
 const { currencySymbol } = useCurrency()
 const route = useRoute()
 const { addExpense, updateExpense, getExpense, addPlannedExpense } = useExpenses()
-const { getCurrentLocation, location, loading: locationLoading, error: geoError } = useGeolocation()
 
 // Check if we're in edit mode
 const isEditMode = computed(() => !!route.query.id)
@@ -383,13 +334,11 @@ const form = reactive({
 
 const isSubmitting = ref(false)
 const locationCaptured = ref(false)
-const locationError = ref('')
-const showManualLocation = ref(false)
 const showDateTimeEdit = ref(false)
 const showMapEditor = ref(false)
 
 // Initialize form
-onMounted(async () => {
+onMounted(() => {
   if (isEditMode.value && expenseId.value) {
     // Load existing expense
     const expense = getExpense(expenseId.value)
@@ -413,43 +362,8 @@ onMounted(async () => {
     // New expense - initialize with current date and time (local timezone)
     form.date = getCurrentDateString()
     form.time = getCurrentTimeString()
-
-    // Auto-capture location for new expenses
-    await captureLocation()
   }
 })
-
-// Capture location
-async function captureLocation() {
-  locationError.value = ''
-  showManualLocation.value = false
-
-  const result = await getCurrentLocation()
-
-  if (result) {
-    form.location = { ...result }
-    locationCaptured.value = true
-  } else if (geoError.value) {
-    locationError.value = geoError.value
-    showManualLocation.value = true
-    // Set default values for manual entry
-    form.location.coordinates.lat = 0
-    form.location.coordinates.lng = 0
-  }
-}
-
-function resetLocation() {
-  locationCaptured.value = false
-  showManualLocation.value = false
-  form.location = {
-    coordinates: {
-      lat: 0,
-      lng: 0
-    },
-    city: '',
-    prefecture: ''
-  }
-}
 
 // Handle location change from map editor
 function handleLocationChange(data: { lat: number; lng: number; city: string; prefecture: string }) {
