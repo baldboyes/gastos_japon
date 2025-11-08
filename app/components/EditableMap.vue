@@ -68,10 +68,10 @@ onMounted(() => {
     // Update marker position
     addMarker(lng, lat)
 
-    // Reverse geocode to get city and prefecture
+    // Reverse geocode to get city and prefecture (in English)
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&language=ja`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&language=en`
       )
       const data = await response.json()
 
