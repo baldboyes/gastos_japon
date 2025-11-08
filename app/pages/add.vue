@@ -307,6 +307,7 @@ import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeSt
 const { currencySymbol } = useCurrency()
 const route = useRoute()
 const { addExpense, updateExpense, getExpense, addPlannedExpense } = useExpenses()
+const { getCurrentLocation } = useGeolocation()
 
 // Check if we're in edit mode
 const isEditMode = computed(() => !!route.query.id)
@@ -338,7 +339,7 @@ const showDateTimeEdit = ref(false)
 const showMapEditor = ref(false)
 
 // Initialize form
-onMounted(() => {
+onMounted(async () => {
   if (isEditMode.value && expenseId.value) {
     // Load existing expense
     const expense = getExpense(expenseId.value)
@@ -362,6 +363,13 @@ onMounted(() => {
     // New expense - initialize with current date and time (local timezone)
     form.date = getCurrentDateString()
     form.time = getCurrentTimeString()
+
+    // Auto-capture location for new expenses
+    const result = await getCurrentLocation()
+    if (result) {
+      form.location = { ...result }
+      locationCaptured.value = true
+    }
   }
 })
 
