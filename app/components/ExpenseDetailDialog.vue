@@ -48,7 +48,7 @@
         <!-- Location -->
         <div>
           <div class="text-sm font-medium text-gray-600 mb-1">Ubicación</div>
-          <div class="flex items-start gap-2">
+          <div class="flex items-start gap-2 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
               <circle cx="12" cy="10" r="3"/>
@@ -60,6 +60,14 @@
                 {{ expense.location.coordinates.lat.toFixed(6) }}, {{ expense.location.coordinates.lng.toFixed(6) }}
               </div>
             </div>
+          </div>
+          <!-- Map -->
+          <div v-if="expense.location.coordinates.lat !== 0 && expense.location.coordinates.lng !== 0" class="w-full h-48 rounded-lg border border-gray-200 overflow-hidden">
+            <LocationMap
+              :latitude="expense.location.coordinates.lat"
+              :longitude="expense.location.coordinates.lng"
+              :place-name="expense.placeName"
+            />
           </div>
         </div>
 

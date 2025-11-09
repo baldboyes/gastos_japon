@@ -183,7 +183,7 @@
         </Card>
 
         <div class="text-center text-sm text-gray-400">
-          <span>Versión</span> <span class="font-medium">2.0.5</span>
+          <span>Versión</span> <span class="font-medium">2.1.0</span>
         </div>
       </div>
     </div>
