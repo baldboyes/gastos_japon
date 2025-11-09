@@ -88,20 +88,6 @@ function addMarker() {
   marker = new mapboxgl.Marker(el)
     .setLngLat([props.longitude, props.latitude])
     .addTo(map)
-
-  // Add popup if placeName is provided
-  if (props.placeName) {
-    const popup = new mapboxgl.Popup({
-      offset: 25,
-      closeButton: false
-    }).setHTML(`
-      <div style="padding: 8px; font-size: 14px; font-weight: 600;">
-        ${props.placeName}
-      </div>
-    `)
-    marker.setPopup(popup)
-    popup.addTo(map)
-  }
 }
 
 // Watch for prop changes
