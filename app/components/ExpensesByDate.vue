@@ -47,13 +47,12 @@
       </div>
 
       <!-- Load more button if there are more items -->
-      <div v-if="hasMoreItems" class="flex justify-center mt-6">
+      <div v-if="hasMoreItems" class="flex justify-center mt-6 mb-4">
         <Button
-          variant="outline"
           @click="loadMore"
-          class="w-full max-w-xs"
+          class="w-full max-w-xs bg-teal-600 hover:bg-teal-700 text-white"
         >
-          Cargar más ({{ remainingCount }} restantes)
+          Cargar más ({{ remainingCount }} {{ remainingCount === 1 ? 'día' : 'días' }})
         </Button>
       </div>
     </div>
