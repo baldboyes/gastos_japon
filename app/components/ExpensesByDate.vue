@@ -44,6 +44,7 @@
             @click="$emit('expense-click', expense)"
           />
         </div>
+        <br />
       </div>
 
       <!-- Load more button if there are more items -->
