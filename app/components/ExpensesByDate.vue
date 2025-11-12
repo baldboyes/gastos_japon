@@ -46,6 +46,16 @@
         </div>
       </div>
 
+      <!-- Debug Info -->
+      <div class="mt-4 p-3 bg-gray-100 rounded-lg text-xs space-y-1">
+        <div><strong>Total días:</strong> {{ Object.keys(groupedExpenses).length }}</div>
+        <div><strong>Días visibles:</strong> {{ Object.keys(visibleGroupedExpenses).length }}</div>
+        <div><strong>Página actual:</strong> {{ currentPage }}</div>
+        <div><strong>Items por página:</strong> {{ ITEMS_PER_PAGE }}</div>
+        <div><strong>Hay más items:</strong> {{ hasMoreItems ? 'Sí' : 'No' }}</div>
+        <div><strong>Días restantes:</strong> {{ remainingCount }}</div>
+      </div>
+
       <!-- Load more button if there are more items -->
       <div v-if="hasMoreItems" class="flex justify-center mt-6 mb-4">
         <Button
@@ -54,6 +64,9 @@
         >
           Cargar más ({{ remainingCount }} {{ remainingCount === 1 ? 'día' : 'días' }})
         </Button>
+      </div>
+      <div v-else class="text-center mt-6 mb-4 text-sm text-gray-500">
+        Todos los días cargados
       </div>
     </div>
   </div>
@@ -123,6 +136,14 @@ const visibleGroupedExpenses = computed(() => {
   const endIndex = currentPage.value * ITEMS_PER_PAGE
   const visibleDates = allDates.slice(0, endIndex)
 
+  console.log('📊 Paginación:', {
+    totalDates: allDates.length,
+    currentPage: currentPage.value,
+    itemsPerPage: ITEMS_PER_PAGE,
+    endIndex,
+    visibleDatesCount: visibleDates.length
+  })
+
   const result: Record<string, Expense[]> = {}
   visibleDates.forEach(date => {
     const expenses = groupedExpenses.value[date]
@@ -138,7 +159,15 @@ const visibleGroupedExpenses = computed(() => {
 const hasMoreItems = computed(() => {
   const totalDates = Object.keys(groupedExpenses.value).length
   const visibleDates = Object.keys(visibleGroupedExpenses.value).length
-  return visibleDates < totalDates
+  const hasMore = visibleDates < totalDates
+
+  console.log('🔍 hasMoreItems:', {
+    totalDates,
+    visibleDates,
+    hasMore
+  })
+
+  return hasMore
 })
 
 // Calculate remaining items count
@@ -150,6 +179,7 @@ const remainingCount = computed(() => {
 
 // Load more items
 function loadMore() {
+  console.log('🔄 Cargando más... Página actual:', currentPage.value, '→', currentPage.value + 1)
   currentPage.value++
 }
 
