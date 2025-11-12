@@ -24,12 +24,19 @@ let marker: mapboxgl.Marker | null = null
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiYmFsZGJveSIsImEiOiJhMzBzeklzIn0.buJ1PP9-a9JkqNWGHW-H0g'
 const MAPBOX_STYLE = 'mapbox://styles/baldboy/ckqpgqc2u62da18n921ft241q'
 
-// Initialize map
+// Initialize map only when mounted and coordinates are valid
 onMounted(() => {
+  initializeMap()
+})
+
+function initializeMap() {
   if (!mapContainer.value) return
 
   // Only show map if coordinates are valid
   if (props.latitude === 0 && props.longitude === 0) return
+
+  // Avoid re-initializing if already exists
+  if (map) return
 
   mapboxgl.accessToken = MAPBOX_TOKEN
 
@@ -53,7 +60,7 @@ onMounted(() => {
 
   // Add marker
   addMarker()
-})
+}
 
 // Add marker to map
 function addMarker() {
