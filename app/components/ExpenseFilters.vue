@@ -28,6 +28,11 @@
       </div>
     </div>
 
+    <!-- Date Filter -->
+    <div>
+      <DateRangeFilter @date-change="handleDateChange" />
+    </div>
+
     <!-- Filters Row -->
     <div class="flex items-center gap-2 overflow-x-auto pb-2">
       <!-- Category Filter -->
@@ -148,6 +153,16 @@
           </svg>
         </button>
       </Badge>
+
+      <Badge v-if="dateRange.start !== null" variant="secondary" class="gap-1">
+        📅 {{ formatDateBadge() }}
+        <button @click="dateRange = { start: null, end: null }; handleDateChange({ start: null, end: null })" class="ml-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </Badge>
     </div>
   </div>
 </template>
@@ -155,21 +170,24 @@
 <script setup lang="ts">
 import type { ExpenseCategory } from '~/types'
 import { CATEGORIES, getCategoryInfo } from '~/types'
+import type { DateFilterRange } from './DateRangeFilter.vue'
 
 const searchQuery = ref('')
 const selectedCategory = ref('all')
 const selectedPayment = ref('all')
 const showSharedOnly = ref(false)
+const dateRange = ref<DateFilterRange>({ start: null, end: null })
 
 const emit = defineEmits<{
   'search-change': [query: string]
   'category-change': [category: string]
   'payment-change': [payment: string]
   'shared-change': [showShared: boolean]
+  'date-change': [range: DateFilterRange]
 }>()
 
 const hasActiveFilters = computed(() => {
-  return searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all' || showSharedOnly.value
+  return searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all' || showSharedOnly.value || dateRange.value.start !== null
 })
 
 function handleSearchChange() {
@@ -182,6 +200,11 @@ function handleCategoryChange() {
 
 function handlePaymentChange() {
   emit('payment-change', selectedPayment.value)
+}
+
+function handleDateChange(range: DateFilterRange) {
+  dateRange.value = range
+  emit('date-change', range)
 }
 
 function handleSharedToggle(checked: boolean | string) {
@@ -200,9 +223,29 @@ function clearFilters() {
   selectedCategory.value = 'all'
   selectedPayment.value = 'all'
   showSharedOnly.value = false
+  dateRange.value = { start: null, end: null }
   emit('search-change', '')
   emit('category-change', 'all')
   emit('payment-change', 'all')
   emit('shared-change', false)
+  emit('date-change', { start: null, end: null })
+}
+
+function formatDateBadge(): string {
+  if (!dateRange.value.start) return ''
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(date)
+  }
+
+  if (!dateRange.value.end || dateRange.value.start.getTime() === dateRange.value.end.getTime()) {
+    return formatDate(dateRange.value.start)
+  }
+
+  return `${formatDate(dateRange.value.start)} - ${formatDate(dateRange.value.end)}`
 }
 </script>

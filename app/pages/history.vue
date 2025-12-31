@@ -20,6 +20,7 @@
           @category-change="handleCategoryChange"
           @payment-change="handlePaymentChange"
           @shared-change="handleSharedChange"
+          @date-change="handleDateChange"
         />
       </div>
 
@@ -56,6 +57,11 @@
 import { useRouter } from 'vue-router'
 import type { Expense, PlannedExpense } from '~/types'
 
+interface DateFilterRange {
+  start: Date | null
+  end: Date | null
+}
+
 const { formatAmount } = useCurrency()
 const router = useRouter()
 const { expenses, plannedExpenses, deleteExpense, addExpense, deletePlannedExpense } = useExpenses()
@@ -65,6 +71,7 @@ const searchQuery = ref('')
 const selectedCategory = ref('all')
 const selectedPayment = ref('all')
 const showSharedOnly = ref(false)
+const dateRange = ref<DateFilterRange>({ start: null, end: null })
 
 // Dialog state
 const showExpenseDetail = ref(false)
@@ -95,10 +102,18 @@ const filteredExpenses = computed(() => {
     result = result.filter(e => e.shared === true)
   }
 
+  // Date filter
+  if (dateRange.value.start && dateRange.value.end) {
+    result = result.filter(e => {
+      const expenseDate = new Date(e.timestamp)
+      return expenseDate >= dateRange.value.start! && expenseDate <= dateRange.value.end!
+    })
+  }
+
   return result
 })
 
-// Filtered planned expenses (same filters as regular expenses)
+// Filtered planned expenses (same filters as regular expenses, except date)
 const filteredPlannedExpenses = computed(() => {
   let result = [...plannedExpenses.value]
 
@@ -123,11 +138,13 @@ const filteredPlannedExpenses = computed(() => {
     result = result.filter(e => e.shared === true)
   }
 
+  // Note: Planned expenses don't have timestamps, so we don't filter by date
+
   return result
 })
 
 const hasFilters = computed(() =>
-  searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all' || showSharedOnly.value
+  searchQuery.value !== '' || selectedCategory.value !== 'all' || selectedPayment.value !== 'all' || showSharedOnly.value || dateRange.value.start !== null
 )
 
 const totalExpenses = computed(() => expenses.value.length)
@@ -155,6 +172,10 @@ function handlePaymentChange(payment: string) {
 
 function handleSharedChange(showShared: boolean) {
   showSharedOnly.value = showShared
+}
+
+function handleDateChange(range: DateFilterRange) {
+  dateRange.value = range
 }
 
 function handleExpenseClick(expense: Expense) {
