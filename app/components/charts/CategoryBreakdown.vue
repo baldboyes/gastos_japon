@@ -4,7 +4,7 @@
       <CardTitle class="text-lg">Gastos por Categoría</CardTitle>
     </CardHeader>
     <CardContent>
-      <div v-if="hasData" class="relative">
+      <div v-if="hasData" class="relative w-[80%] mx-auto">
         <Doughnut :data="chartData" :options="chartOptions" />
       </div>
       <div v-else class="py-12 text-center text-gray-500">

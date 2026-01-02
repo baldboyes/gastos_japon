@@ -39,9 +39,7 @@
           </div>
           <div>
             <div class="text-sm font-medium text-gray-600 mb-1">Pago</div>
-            <Badge variant="outline">
-              {{ expense.paymentMethod === 'cash' ? '💴 Efectivo' : expense.paymentMethod === 'card' ? '💳 Tarjeta' : '🎫 IC' }}
-            </Badge>
+            <CommonPaymentMethodBadge :method="expense.paymentMethod" />
           </div>
         </div>
 
@@ -63,7 +61,7 @@
           </div>
           <!-- Map -->
           <div v-if="expense.location.coordinates.lat !== 0 && expense.location.coordinates.lng !== 0" class="w-full h-48 rounded-lg border border-gray-200 overflow-hidden">
-            <LocationMap
+            <MapsLocation
               :latitude="expense.location.coordinates.lat"
               :longitude="expense.location.coordinates.lng"
               :place-name="expense.placeName"

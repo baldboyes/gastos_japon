@@ -79,6 +79,12 @@ onMounted(() => {
       bounds.extend([expense.location.coordinates.lng, expense.location.coordinates.lat])
     })
     map?.fitBounds(bounds, { padding: 50, maxZoom: 14 })
+  } else if (validExpenses.length === 1) {
+    // Center on the single expense
+    map?.flyTo({
+      center: [validExpenses[0].location.coordinates.lng, validExpenses[0].location.coordinates.lat],
+      zoom: 14
+    })
   }
 })
 
@@ -105,6 +111,9 @@ function addMarkers() {
     el.style.width = '40px'
     el.style.height = '40px'
     el.style.cursor = 'pointer'
+    el.style.display = 'flex'
+    el.style.alignItems = 'center'
+    el.style.justifyContent = 'center'
     el.style.transition = 'transform 0.2s'
     el.innerHTML = `
       <div style="
@@ -123,17 +132,10 @@ function addMarkers() {
           transform: rotate(45deg);
           font-size: 20px;
           display: block;
+          line-height: 1;
         ">${categoryInfo.icon}</span>
       </div>
     `
-
-    // Hover effect
-    el.addEventListener('mouseenter', () => {
-      el.style.transform = 'scale(1.2)'
-    })
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = 'scale(1)'
-    })
 
     // Create popup
     const popup = new mapboxgl.Popup({
@@ -179,6 +181,22 @@ function addMarkers() {
 // Watch for expense changes
 watch(() => props.expenses, () => {
   addMarkers()
+  
+  // Re-fit bounds when expenses change
+  const validExpenses = props.expenses.filter(e => e.location.coordinates.lat !== 0 && e.location.coordinates.lng !== 0)
+  
+  if (map && validExpenses.length > 1) {
+    const bounds = new mapboxgl.LngLatBounds()
+    validExpenses.forEach(expense => {
+      bounds.extend([expense.location.coordinates.lng, expense.location.coordinates.lat])
+    })
+    map.fitBounds(bounds, { padding: 50, maxZoom: 14 })
+  } else if (map && validExpenses.length === 1) {
+    map.flyTo({
+      center: [validExpenses[0].location.coordinates.lng, validExpenses[0].location.coordinates.lat],
+      zoom: 14
+    })
+  }
 }, { deep: true })
 
 // Highlight selected marker

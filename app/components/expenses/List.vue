@@ -26,7 +26,7 @@
 
     <!-- Expense Cards -->
     <div v-else class="space-y-3">
-      <ExpenseCard
+      <ExpensesCard
         v-for="expense in sortedExpenses"
         :key="expense.id"
         :expense="expense"

@@ -3,7 +3,7 @@
     <div class="max-w-screen-sm mx-auto p-4 space-y-6">
 
       <!-- Daily Budget Card -->
-      <DailyBudgetCard />
+      <DashboardDailyBudget />
 
       <!-- Planned Expenses -->
       <div v-if="plannedExpensesList.length > 0">
@@ -15,7 +15,7 @@
           </h2>
         </div>
         <div class="space-y-2">
-          <PlannedExpenseCard
+          <ExpensesPlannedCard
             v-for="planned in plannedExpensesList"
             :key="planned.id"
             :planned-expense="planned"
@@ -26,7 +26,7 @@
 
       <!-- Today's Expenses -->
       <div>
-        <ExpenseList
+        <ExpensesList
           :expenses="todayExpenses"
           :title="currentDate"
           :total="todayTotal"
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Expense Detail Dialog -->
-    <ExpenseDetailDialog
+    <ExpensesDetailDialog
       v-model="showExpenseDetail"
       :expense="selectedExpense"
       @edit="handleEdit"

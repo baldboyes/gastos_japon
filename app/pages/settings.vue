@@ -15,15 +15,92 @@
       </div>
 
       <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Ajustes</h1>
-        <p class="text-sm text-slate-600">
-          Configura la aplicación según tus preferencias
-        </p>
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 mb-2">Ajustes</h1>
+          <p class="text-sm text-slate-600">
+            Configura la aplicación según tus preferencias
+          </p>
+        </div>
+        
+        <!-- User Profile -->
+        <SignedIn>
+          <div class="flex flex-col items-center gap-1 px-4 py-2 justify-center min-h-[44px]">
+            <div v-if="user?.imageUrl" class="w-8 h-8 rounded-full overflow-hidden">
+              <img :src="user.imageUrl" alt="Perfil" class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </SignedIn>
       </div>
 
       <!-- Settings Sections -->
       <div class="space-y-6">
+        <!-- Account Settings -->
+        <Card>
+          <CardHeader>
+            <CardTitle class="text-lg">Cuenta</CardTitle>
+            <CardDescription>
+              Gestiona tu sesión y perfil
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <!-- Signed In State -->
+            <SignedIn>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <div class="font-medium text-slate-900">Sesión iniciada</div>
+                    <div class="text-sm text-slate-500">
+                      {{ user?.firstName || 'Usuario' }} {{ user?.lastName || '' }}<br />
+                      <pre>{{ user?.emailAddresses?.[0]?.emailAddress || 'No email' }}</pre>
+                    </div>
+                  </div>
+                </div>
+                
+                <SignOutButton>
+                  <Button variant="outline" class="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" x2="9" y1="12" y2="12"/>
+                    </svg>
+                    Cerrar sesión
+                  </Button>
+                </SignOutButton>
+              </div>
+            </SignedIn>
+
+            <!-- Signed Out State -->
+            <SignedOut>
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-slate-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">No has iniciado sesión</div>
+                    <div class="text-sm text-slate-500">Inicia sesión para sincronizar tus datos</div>
+                  </div>
+                </div>
+                
+                <SignInButton mode="modal">
+                  <Button class="bg-teal-600 hover:bg-teal-700 text-white w-full sm:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                      <polyline points="10 17 15 12 10 7"/>
+                      <line x1="15" x2="3" y1="12" y2="12"/>
+                    </svg>
+                    Iniciar sesión
+                  </Button>
+                </SignInButton>
+              </div>
+            </SignedOut>
+          </CardContent>
+        </Card>
+
         <!-- Currency Setting -->
         <Card>
           <CardHeader>
@@ -247,7 +324,7 @@
         </Card>
 
         <div class="text-center text-sm text-gray-400">
-          <span>Versión</span> <span class="font-medium">2.6.0</span>
+          <span>Versión</span> <span class="font-medium">2.6.5</span>
         </div>
       </div>
     </div>
@@ -257,7 +334,7 @@
 <script setup lang="ts">
 import { CURRENCIES } from '~/composables/useSettings'
 import type { Currency } from '~/types'
-
+const { user } = useUser()
 const { settings, setCurrency, getCurrencyInfo } = useSettings()
 const { budget, updateBudget, expenses, getTotalSpent, clearAllData, exportData, importData } = useExpenses()
 const { markSetupComplete, isSetupComplete } = useFirstTimeSetup()

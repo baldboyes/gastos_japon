@@ -46,17 +46,7 @@
 
             <!-- Tags -->
             <div class="flex items-center gap-2 flex-wrap">
-              <Badge
-                variant="outline"
-                class="text-xs"
-                :class="{
-                  'border-green-300 text-green-700': expense.paymentMethod === 'cash',
-                  'border-blue-300 text-blue-700': expense.paymentMethod === 'card',
-                  'border-orange-300 text-orange-700': expense.paymentMethod === 'ic'
-                }"
-              >
-                {{ expense.paymentMethod === 'cash' ? '💴 Cash' : expense.paymentMethod === 'card' ? '💳 Card' : '🎫 IC' }}
-              </Badge>
+              <CommonPaymentMethodBadge :method="expense.paymentMethod" />
             </div>
           </div>
           <!-- Notes (if present) -->

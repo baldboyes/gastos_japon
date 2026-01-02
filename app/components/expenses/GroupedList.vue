@@ -27,7 +27,7 @@
 
         <!-- Planned expenses for this date -->
         <div v-if="plannedExpensesForDate[date]" class="space-y-3">
-          <PlannedExpenseCard
+          <ExpensesPlannedCard
             v-for="planned in plannedExpensesForDate[date]"
             :key="planned.id"
             :planned-expense="planned"
@@ -37,7 +37,7 @@
 
         <!-- Expenses for this date -->
         <div class="space-y-3">
-          <ExpenseCard
+          <ExpensesCard
             v-for="expense in expensesForDate"
             :key="expense.id"
             :expense="expense"
@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import type { Expense, PlannedExpense } from '~/types'
-import { formatDate, getRelativeDayLabel, groupByDate, getDateString } from '~/utils/dates'
+import { formatDate, getRelativeDayLabel } from '~/utils/dates'
 
 const { formatAmount } = useCurrency()
 
@@ -87,20 +87,14 @@ defineEmits<{
   'planned-expense-click': [plannedExpense: PlannedExpense]
 }>()
 
-const groupedExpenses = computed(() => {
-  // Group and sort by date (newest first)
-  const grouped = groupByDate(props.expenses)
-  const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a))
-
-  const result: Record<string, Expense[]> = {}
-  sortedDates.forEach(date => {
-    result[date] = grouped[date].sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    )
-  })
-
-  return result
-})
+const {
+  groupedExpenses,
+  visibleGroupedExpenses,
+  hasMoreItems,
+  remainingCount,
+  loadMore,
+  getTotalForDate
+} = useGroupedExpenses(toRef(props, 'expenses'))
 
 const plannedExpensesForDate = computed(() => {
   // Group planned expenses by their plannedDate
@@ -116,54 +110,4 @@ const plannedExpensesForDate = computed(() => {
 
   return grouped
 })
-
-// Pagination state
-const ITEMS_PER_PAGE = 10 // Number of date groups to show at a time
-const currentPage = ref(1)
-
-// Compute visible grouped expenses based on pagination
-const visibleGroupedExpenses = computed(() => {
-  const allDates = Object.keys(groupedExpenses.value)
-  const endIndex = currentPage.value * ITEMS_PER_PAGE
-  const visibleDates = allDates.slice(0, endIndex)
-
-  const result: Record<string, Expense[]> = {}
-  visibleDates.forEach(date => {
-    const expenses = groupedExpenses.value[date]
-    if (expenses) {
-      result[date] = expenses
-    }
-  })
-
-  return result
-})
-
-// Check if there are more items to load
-const hasMoreItems = computed(() => {
-  const totalDates = Object.keys(groupedExpenses.value).length
-  const visibleDates = Object.keys(visibleGroupedExpenses.value).length
-  return visibleDates < totalDates
-})
-
-// Calculate remaining items count
-const remainingCount = computed(() => {
-  const totalDates = Object.keys(groupedExpenses.value).length
-  const visibleDates = Object.keys(visibleGroupedExpenses.value).length
-  return totalDates - visibleDates
-})
-
-// Load more items
-function loadMore() {
-  currentPage.value++
-}
-
-// Reset pagination when expenses length changes (not just any change)
-watch(() => props.expenses.length, () => {
-  currentPage.value = 1
-})
-
-function getTotalForDate(expenses: Expense[]): number {
-  // Only count real expenses, not planned expenses
-  return expenses.reduce((sum, expense) => sum + expense.amount, 0)
-}
 </script>

@@ -24,8 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ExpenseCategory } from '~/types'
 import { CATEGORIES } from '~/types'
+import { Label } from '~/components/ui/label'
 
 interface Props {
   modelValue: ExpenseCategory

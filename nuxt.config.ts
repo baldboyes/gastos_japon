@@ -18,7 +18,8 @@ export default defineNuxtConfig({
   },
   modules: [
     'shadcn-nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@clerk/nuxt'
   ],
   shadcn: {
     /**

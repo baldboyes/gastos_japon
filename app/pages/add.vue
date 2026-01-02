@@ -123,7 +123,7 @@
 
 
         <!-- Category -->
-        <CategorySelector v-model="form.category" />
+        <CategorySelector :model-value="form.category" @update:model-value="form.category = $event" />
 
         <!-- Date and Time -->
         <div v-if="isEditMode || showDateTimeEdit" class="grid grid-cols-2 gap-4">
@@ -283,7 +283,7 @@
             </DialogDescription>
           </DialogHeader>
           <div class="flex-1 px-6 min-h-0">
-            <EditableMap
+            <MapsEditable
               :latitude="form.location.coordinates.lat"
               :longitude="form.location.coordinates.lng"
               @location-change="handleLocationChange"
@@ -303,6 +303,7 @@
 <script setup lang="ts">
 import type { ExpenseCategory, PaymentMethod } from '~/types'
 import { getCurrentTimestamp, formatDate, getCurrentDateString, getCurrentTimeString, getDateString, getTimeString } from '~/utils/dates'
+import CategorySelector from '~/components/common/CategorySelector.vue'
 
 const { currencySymbol } = useCurrency()
 const route = useRoute()
