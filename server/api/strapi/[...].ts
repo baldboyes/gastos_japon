@@ -1,4 +1,4 @@
-import { strapiClient } from '~/server/utils/strapi'
+import { strapiClient } from '../../utils/strapi'
 
 export default defineEventHandler(async (event) => {
   // Obtener ruta relativa después de /api/strapi/

@@ -1,4 +1,4 @@
-import { strapiClient } from '~/server/utils/strapi'
+import { strapiClient } from '../utils/strapi'
 
 export default defineEventHandler(async () => {
   const config = useRuntimeConfig()
