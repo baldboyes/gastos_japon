@@ -322,7 +322,6 @@
             </AlertDialog>
           </CardContent>
         </Card>
-
         <div class="text-center text-sm text-gray-400">
           <span>Versión</span> <span class="font-medium">2.6.5</span>
         </div>
