@@ -21,6 +21,10 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@clerk/nuxt'
   ],
+  nitro: {
+    preset: 'vercel',
+    debug: true,
+  },
   shadcn: {
     /**
      * Prefix for all the imported component
