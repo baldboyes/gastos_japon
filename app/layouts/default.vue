@@ -8,7 +8,7 @@
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 z-50">
       <div class="max-w-screen-sm mx-auto">
-        <div class="flex items-center justify-around pt-0 pb-4">
+        <div class="flex items-center justify-around pt-2 pb-4">
           <!-- Home -->
           <NuxtLink
             to="/"

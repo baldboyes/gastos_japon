@@ -11,6 +11,13 @@ export default defineNuxtConfig({
       }
     }
   },
+  runtimeConfig: {
+    strapiUrl: process.env.NUXT_STRAPI_URL || 'https://api.mevoyajapon.com',
+    strapiKey: process.env.NUXT_STRAPI_KEY,
+    public: {
+      // Public variables here
+    }
+  },
   vite: {
     plugins: [
       tailwindcss(),
