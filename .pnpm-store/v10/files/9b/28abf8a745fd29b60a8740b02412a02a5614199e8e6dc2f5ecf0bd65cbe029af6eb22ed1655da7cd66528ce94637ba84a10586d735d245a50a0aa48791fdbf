@@ -1,0 +1,197 @@
+import {
+  assertSingleChild,
+  export_helper_default,
+  normalizeWithDefaultValue,
+  useAuth,
+  useClerk
+} from "./chunk-4UMNT7O3.js";
+import "./chunk-Q3ZTPL6B.js";
+
+// src/components/SubscriptionDetailsButton.vue
+import { defineComponent as _defineComponent } from "vue";
+import { useAttrs, useSlots } from "vue";
+import { renderSlot as _renderSlot, resolveDynamicComponent as _resolveDynamicComponent, mergeProps as _mergeProps, withCtx as _withCtx, openBlock as _openBlock, createBlock as _createBlock } from "vue";
+var _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "SubscriptionDetailsButton",
+  props: {
+    for: { type: String, required: false },
+    subscriptionDetailsProps: { type: Object, required: false }
+  },
+  emits: ["subscription-cancel"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const { userId, orgId } = useAuth();
+    const slots = useSlots();
+    const attrs = useAttrs();
+    if (userId.value === null) {
+      throw new Error("Ensure that `<SubscriptionDetailsButton />` is rendered inside a `<SignedIn />` component.");
+    }
+    if (orgId.value === null && props.for === "organization") {
+      throw new Error('Wrap `<SubscriptionDetailsButton for="organization" />` with a check for an active organization.');
+    }
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Subscription details");
+      return assertSingleChild(children, "SubscriptionDetailsButton");
+    }
+    const emit = __emit;
+    function clickHandler() {
+      if (!clerk.value) {
+        return;
+      }
+      return clerk.value.__internal_openSubscriptionDetails({
+        for: props.for,
+        ...props.subscriptionDetailsProps,
+        onSubscriptionCancel: () => emit("subscription-cancel")
+      });
+    }
+    const __returned__ = { props, clerk, userId, orgId, slots, attrs, getChildComponent, emit, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock(), _createBlock(
+    _resolveDynamicComponent($setup.getChildComponent),
+    _mergeProps($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx(() => [
+        _renderSlot(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var SubscriptionDetailsButton_default = /* @__PURE__ */ export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/SubscriptionDetailsButton.vue"]]);
+
+// src/components/CheckoutButton.vue
+import { defineComponent as _defineComponent2 } from "vue";
+import { useAttrs as useAttrs2, useSlots as useSlots2 } from "vue";
+import { renderSlot as _renderSlot2, resolveDynamicComponent as _resolveDynamicComponent2, mergeProps as _mergeProps2, withCtx as _withCtx2, openBlock as _openBlock2, createBlock as _createBlock2 } from "vue";
+var _sfc_main2 = /* @__PURE__ */ _defineComponent2({
+  __name: "CheckoutButton",
+  props: {
+    planId: { type: String, required: true },
+    planPeriod: { type: String, required: false },
+    for: { type: String, required: false },
+    checkoutProps: { type: Object, required: false },
+    newSubscriptionRedirectUrl: { type: String, required: false }
+  },
+  emits: ["subscription-complete"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const { userId, orgId } = useAuth();
+    const slots = useSlots2();
+    const attrs = useAttrs2();
+    if (userId.value === null) {
+      throw new Error("Ensure that `<CheckoutButton />` is rendered inside a `<SignedIn />` component.");
+    }
+    if (orgId.value === null && props.for === "organization") {
+      throw new Error('Wrap `<CheckoutButton for="organization" />` with a check for an active organization.');
+    }
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Checkout");
+      return assertSingleChild(children, "CheckoutButton");
+    }
+    const emit = __emit;
+    function clickHandler() {
+      if (!clerk.value) {
+        return;
+      }
+      return clerk.value.__internal_openCheckout({
+        planId: props.planId,
+        planPeriod: props.planPeriod,
+        for: props.for,
+        newSubscriptionRedirectUrl: props.newSubscriptionRedirectUrl,
+        ...props.checkoutProps,
+        onSubscriptionComplete: () => emit("subscription-complete")
+      });
+    }
+    const __returned__ = { props, clerk, userId, orgId, slots, attrs, getChildComponent, emit, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render2(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock2(), _createBlock2(
+    _resolveDynamicComponent2($setup.getChildComponent),
+    _mergeProps2($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx2(() => [
+        _renderSlot2(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var CheckoutButton_default = /* @__PURE__ */ export_helper_default(_sfc_main2, [["render", _sfc_render2], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/CheckoutButton.vue"]]);
+
+// src/components/PlanDetailsButton.vue
+import { defineComponent as _defineComponent3 } from "vue";
+import { useAttrs as useAttrs3, useSlots as useSlots3 } from "vue";
+import { renderSlot as _renderSlot3, resolveDynamicComponent as _resolveDynamicComponent3, mergeProps as _mergeProps3, withCtx as _withCtx3, openBlock as _openBlock3, createBlock as _createBlock3 } from "vue";
+var _sfc_main3 = /* @__PURE__ */ _defineComponent3({
+  __name: "PlanDetailsButton",
+  props: {
+    planId: { type: null, required: false },
+    plan: { type: null, required: false },
+    initialPlanPeriod: { type: String, required: false },
+    planDetailsProps: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const slots = useSlots3();
+    const attrs = useAttrs3();
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Plan details");
+      return assertSingleChild(children, "PlanDetailsButton");
+    }
+    function clickHandler() {
+      if (!clerk.value) {
+        return;
+      }
+      return clerk.value.__internal_openPlanDetails({
+        plan: props.plan,
+        planId: props.planId,
+        initialPlanPeriod: props.initialPlanPeriod,
+        ...props.planDetailsProps
+      });
+    }
+    const __returned__ = { props, clerk, slots, attrs, getChildComponent, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render3(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock3(), _createBlock3(
+    _resolveDynamicComponent3($setup.getChildComponent),
+    _mergeProps3($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx3(() => [
+        _renderSlot3(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var PlanDetailsButton_default = /* @__PURE__ */ export_helper_default(_sfc_main3, [["render", _sfc_render3], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/PlanDetailsButton.vue"]]);
+export {
+  CheckoutButton_default as CheckoutButton,
+  PlanDetailsButton_default as PlanDetailsButton,
+  SubscriptionDetailsButton_default as SubscriptionDetailsButton
+};
+//# sourceMappingURL=experimental.js.map

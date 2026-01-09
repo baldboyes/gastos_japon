@@ -1,0 +1,5 @@
+import * as nuxt_app from 'nuxt/app';
+
+declare const _default: nuxt_app.Plugin<Record<string, unknown>> & nuxt_app.ObjectPlugin<Record<string, unknown>>;
+
+export { _default as default };

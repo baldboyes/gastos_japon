@@ -1,0 +1,9 @@
+import { SessionAuthObject } from '@clerk/backend';
+import { H3Event } from 'h3';
+
+/**
+ * @deprecated Use `event.context.auth()` instead.
+ */
+declare function getAuth(event: H3Event): SessionAuthObject;
+
+export { getAuth };

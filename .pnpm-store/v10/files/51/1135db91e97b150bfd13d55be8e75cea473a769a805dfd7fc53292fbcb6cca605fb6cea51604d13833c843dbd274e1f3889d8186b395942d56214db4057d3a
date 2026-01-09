@@ -1,0 +1,59 @@
+import { AuthStatus, constants, getAuthObjectForAcceptedToken } from "@clerk/backend/internal";
+import { deprecated } from "@clerk/shared/deprecated";
+import { handleNetlifyCacheInDevInstance } from "@clerk/shared/netlifyCacheHandler";
+import { createError, eventHandler, setResponseHeader } from "h3";
+import { clerkClient } from "./clerkClient";
+import { createInitialState, toWebRequest } from "./utils";
+function parseHandlerAndOptions(args) {
+  return [
+    typeof args[0] === "function" ? args[0] : void 0,
+    (args.length === 2 ? args[1] : typeof args[0] === "function" ? {} : args[0]) || {}
+  ];
+}
+const clerkMiddleware = (...args) => {
+  const [handler, options] = parseHandlerAndOptions(args);
+  return eventHandler(async (event) => {
+    const clerkRequest = toWebRequest(event);
+    const requestState = await clerkClient(event).authenticateRequest(clerkRequest, {
+      ...options,
+      acceptsToken: "any"
+    });
+    const locationHeader = requestState.headers.get(constants.Headers.Location);
+    if (locationHeader) {
+      handleNetlifyCacheInDevInstance({
+        locationHeader,
+        requestStateHeaders: requestState.headers,
+        publishableKey: requestState.publishableKey
+      });
+      return new Response(null, { status: 307, headers: requestState.headers });
+    }
+    if (requestState.status === AuthStatus.Handshake) {
+      throw createError("Clerk: handshake status without redirect");
+    }
+    if (requestState.headers) {
+      requestState.headers.forEach((value, key) => {
+        setResponseHeader(event, key, value);
+      });
+    }
+    const authObjectFn = (opts) => requestState.toAuth(opts);
+    const authHandler = ((options2) => {
+      return getAuthObjectForAcceptedToken({ authObject: authObjectFn(options2), acceptsToken: options2?.acceptsToken });
+    });
+    const auth = new Proxy(authHandler, {
+      get(target, prop, receiver) {
+        deprecated("event.context.auth", "Use `event.context.auth()` as a function instead.");
+        if (prop in target) {
+          return Reflect.get(target, prop, receiver);
+        }
+        return authObjectFn()?.[prop];
+      }
+    });
+    event.context.auth = auth;
+    event.context.__clerk_initial_state = createInitialState(authObjectFn());
+    await handler?.(event);
+  });
+};
+export {
+  clerkMiddleware
+};
+//# sourceMappingURL=clerkMiddleware.js.map

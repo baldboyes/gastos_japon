@@ -1,0 +1,11 @@
+import { AuthObject } from '@clerk/backend';
+import { InitialState } from '@clerk/types';
+import { H3Event } from 'h3';
+
+/**
+ * Converts an H3 event into a Fetch Request object.
+ */
+declare function toWebRequest(event: H3Event): Request;
+declare function createInitialState(auth: AuthObject): InitialState;
+
+export { createInitialState, toWebRequest };

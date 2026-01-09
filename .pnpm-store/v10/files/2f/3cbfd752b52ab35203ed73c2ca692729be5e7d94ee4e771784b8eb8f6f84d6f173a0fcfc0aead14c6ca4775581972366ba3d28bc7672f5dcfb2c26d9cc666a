@@ -1,0 +1,9 @@
+import { createPathMatcher } from "@clerk/shared/pathMatcher";
+const createRouteMatcher = (routes) => {
+  const matcher = createPathMatcher(routes);
+  return (to) => matcher(to.path);
+};
+export {
+  createRouteMatcher
+};
+//# sourceMappingURL=routeMatcher.js.map

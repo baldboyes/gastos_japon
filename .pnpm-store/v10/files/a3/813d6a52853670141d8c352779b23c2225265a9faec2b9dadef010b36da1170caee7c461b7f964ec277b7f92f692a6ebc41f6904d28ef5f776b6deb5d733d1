@@ -1,0 +1,1701 @@
+import {
+  ClerkInjectionKey,
+  OrganizationProfileInjectionKey,
+  UserButtonInjectionKey,
+  UserButtonMenuItemsInjectionKey,
+  UserProfileInjectionKey,
+  assertSingleChild,
+  customLinkWrongProps,
+  customPageWrongProps,
+  export_helper_default,
+  normalizeWithDefaultValue,
+  organizationProfileLinkRenderedError,
+  organizationProfilePageRenderedError,
+  toComputedRefs,
+  useAuth,
+  useClerk,
+  useClerkContext,
+  userButtonMenuActionRenderedError,
+  userButtonMenuItemActionWrongProps,
+  userButtonMenuItemLinkWrongProps,
+  userButtonMenuItemsRenderedError,
+  userButtonMenuLinkRenderedError,
+  userProfileLinkRenderedError,
+  userProfilePageRenderedError
+} from "./chunk-4UMNT7O3.js";
+import {
+  errorThrower,
+  setErrorThrowerOptions
+} from "./chunk-Q3ZTPL6B.js";
+
+// src/index.ts
+import { setClerkJsLoadingErrorPackageName } from "@clerk/shared/loadClerkJsScript";
+
+// src/components/ui-components/SignIn.vue
+import { defineComponent as _defineComponent } from "vue";
+
+// src/components/ClerkHostRenderer.ts
+import { defineComponent as defineComponent2, h, onUnmounted, ref, watch as watch5, watchEffect } from "vue";
+
+// src/components/controlComponents.ts
+import { deprecated } from "@clerk/shared/deprecated";
+import { defineComponent } from "vue";
+
+// src/utils/useClerkLoaded.ts
+import { watch as watch4 } from "vue";
+
+// src/composables/useUser.ts
+import { computed } from "vue";
+var useUser = () => {
+  const { userCtx } = useClerkContext("useUser");
+  const result = computed(() => {
+    if (userCtx.value === void 0) {
+      return { isLoaded: false, isSignedIn: void 0, user: void 0 };
+    }
+    if (userCtx.value === null) {
+      return { isLoaded: true, isSignedIn: false, user: null };
+    }
+    return { isLoaded: true, isSignedIn: true, user: userCtx.value };
+  });
+  return toComputedRefs(result);
+};
+
+// src/composables/useSession.ts
+import { computed as computed2 } from "vue";
+var useSession = () => {
+  const { sessionCtx, clerk } = useClerkContext("useSession");
+  const result = computed2(() => {
+    if (sessionCtx.value === void 0) {
+      return { isLoaded: false, isSignedIn: void 0, session: void 0 };
+    }
+    const isSignedOut = sessionCtx.value === null;
+    if (isSignedOut) {
+      return { isLoaded: true, isSignedIn: false, session: null };
+    }
+    return { isLoaded: true, isSignedIn: !!clerk.value?.isSignedIn, session: sessionCtx.value };
+  });
+  return toComputedRefs(result);
+};
+
+// src/composables/useSignIn.ts
+import { eventMethodCalled } from "@clerk/shared/telemetry";
+import { computed as computed3, watch } from "vue";
+var useSignIn = () => {
+  const { clerk, clientCtx } = useClerkContext("useSignIn");
+  const unwatch = watch(clerk, (value) => {
+    if (value) {
+      value.telemetry?.record(eventMethodCalled("useSignIn"));
+      unwatch();
+    }
+  });
+  const result = computed3(() => {
+    if (!clerk.value || !clientCtx.value) {
+      return { isLoaded: false, signIn: void 0, setActive: void 0 };
+    }
+    return {
+      isLoaded: true,
+      signIn: clientCtx.value.signIn,
+      setActive: clerk.value.setActive
+    };
+  });
+  return toComputedRefs(result);
+};
+
+// src/composables/useSignUp.ts
+import { eventMethodCalled as eventMethodCalled2 } from "@clerk/shared/telemetry";
+import { computed as computed4, watch as watch2 } from "vue";
+var useSignUp = () => {
+  const { clerk, clientCtx } = useClerkContext("useSignUp");
+  const unwatch = watch2(clerk, (value) => {
+    if (value) {
+      value.telemetry?.record(eventMethodCalled2("useSignUp"));
+      unwatch();
+    }
+  });
+  const result = computed4(() => {
+    if (!clerk.value || !clientCtx.value) {
+      return { isLoaded: false, signUp: void 0, setActive: void 0 };
+    }
+    return {
+      isLoaded: true,
+      signUp: clientCtx.value.signUp,
+      setActive: clerk.value.setActive
+    };
+  });
+  return toComputedRefs(result);
+};
+
+// src/composables/useSessionList.ts
+import { computed as computed5 } from "vue";
+var useSessionList = () => {
+  const { clerk, clientCtx } = useClerkContext("useSessionList");
+  const result = computed5(() => {
+    if (!clientCtx.value) {
+      return { isLoaded: false, sessions: void 0, setActive: void 0 };
+    }
+    return {
+      isLoaded: true,
+      sessions: clientCtx.value.sessions,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setActive: clerk.value.setActive
+    };
+  });
+  return toComputedRefs(result);
+};
+
+// src/composables/useOrganization.ts
+import { getCurrentOrganizationMembership } from "@clerk/shared/organization";
+import { computed as computed6, watch as watch3 } from "vue";
+var useOrganization = () => {
+  const { clerk, organizationCtx } = useClerkContext("useOrganization");
+  const { session } = useSession();
+  const unwatch = watch3(
+    clerk,
+    (value) => {
+      if (value) {
+        value.__internal_attemptToEnableEnvironmentSetting?.({
+          for: "organizations",
+          caller: "useOrganization"
+        });
+        unwatch();
+      }
+    },
+    { immediate: true }
+  );
+  const result = computed6(() => {
+    if (organizationCtx.value === void 0) {
+      return { isLoaded: false, organization: void 0, membership: void 0 };
+    }
+    if (organizationCtx.value === null) {
+      return { isLoaded: true, organization: null, membership: null };
+    }
+    if (!clerk.value?.loaded) {
+      return {
+        isLoaded: true,
+        organization: organizationCtx.value,
+        membership: void 0
+      };
+    }
+    return {
+      isLoaded: clerk.value.loaded,
+      organization: organizationCtx.value,
+      membership: getCurrentOrganizationMembership(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        session.value.user.organizationMemberships,
+        organizationCtx.value.id
+      )
+    };
+  });
+  return toComputedRefs(result);
+};
+
+// src/utils/useClerkLoaded.ts
+var useClerkLoaded = (callback) => {
+  const clerk = useClerk();
+  watch4(
+    clerk,
+    (unwrappedClerk) => {
+      if (!unwrappedClerk?.loaded) {
+        return;
+      }
+      callback(unwrappedClerk);
+    },
+    { immediate: true }
+  );
+};
+
+// src/utils/updateClerkOptions.ts
+function updateClerkOptions(options) {
+  if (!window.Clerk) {
+    throw new Error("Missing Clerk instance");
+  }
+  void window.Clerk.__unstable__updateProps({
+    options: {
+      localization: options.localization
+    },
+    appearance: options.appearance
+  });
+}
+
+// src/components/controlComponents.ts
+var SignedIn = defineComponent(({ treatPendingAsSignedOut }, { slots }) => {
+  const { userId } = useAuth({ treatPendingAsSignedOut });
+  return () => userId.value ? slots.default?.() : null;
+});
+Object.defineProperty(SignedIn, "props", {
+  value: ["treatPendingAsSignedOut"]
+});
+var SignedOut = defineComponent(({ treatPendingAsSignedOut }, { slots }) => {
+  const { userId } = useAuth({ treatPendingAsSignedOut });
+  return () => userId.value === null ? slots.default?.() : null;
+});
+Object.defineProperty(SignedOut, "props", {
+  value: ["treatPendingAsSignedOut"]
+});
+var ClerkLoaded = defineComponent((_, { slots }) => {
+  const clerk = useClerk();
+  return () => clerk.value?.loaded ? slots.default?.() : null;
+});
+var ClerkLoading = defineComponent((_, { slots }) => {
+  const clerk = useClerk();
+  return () => !clerk.value?.loaded ? slots.default?.() : null;
+});
+var RedirectToSignIn = defineComponent((props) => {
+  const { sessionCtx, clientCtx } = useClerkContext("RedirectToSignIn");
+  useClerkLoaded((clerk) => {
+    const hasSignedInSessions = clientCtx.value?.signedInSessions && clientCtx.value.signedInSessions.length > 0;
+    if (sessionCtx.value === null && hasSignedInSessions) {
+      void clerk.redirectToAfterSignOut();
+    } else {
+      void clerk.redirectToSignIn(props);
+    }
+  });
+  return () => null;
+});
+Object.defineProperty(RedirectToSignIn, "props", {
+  value: ["signInForceRedirectUrl", "signInFallbackRedirectUrl", "signUpForceRedirectUrl", "signUpFallbackRedirectUrl", "afterSignInUrl", "afterSignUpUrl", "redirectUrl"]
+});
+var RedirectToSignUp = defineComponent((props) => {
+  useClerkLoaded((clerk) => {
+    void clerk.redirectToSignUp(props);
+  });
+  return () => null;
+});
+Object.defineProperty(RedirectToSignUp, "props", {
+  value: ["signInForceRedirectUrl", "signInFallbackRedirectUrl", "signUpForceRedirectUrl", "signUpFallbackRedirectUrl", "afterSignInUrl", "afterSignUpUrl", "redirectUrl"]
+});
+var RedirectToTasks = defineComponent((props) => {
+  useClerkLoaded((clerk) => {
+    void clerk.redirectToTasks(props);
+  });
+  return () => null;
+});
+Object.defineProperty(RedirectToTasks, "props", {
+  value: ["signInForceRedirectUrl", "signInFallbackRedirectUrl", "signUpForceRedirectUrl", "signUpFallbackRedirectUrl", "afterSignInUrl", "afterSignUpUrl", "redirectUrl"]
+});
+var RedirectToUserProfile = defineComponent(() => {
+  useClerkLoaded((clerk) => {
+    deprecated("RedirectToUserProfile", "Use the `redirectToUserProfile()` method instead.");
+    void clerk.redirectToUserProfile();
+  });
+  return () => null;
+});
+var RedirectToOrganizationProfile = defineComponent(() => {
+  useClerkLoaded((clerk) => {
+    deprecated("RedirectToOrganizationProfile", "Use the `redirectToOrganizationProfile()` method instead.");
+    void clerk.redirectToOrganizationProfile();
+  });
+  return () => null;
+});
+var RedirectToCreateOrganization = defineComponent(() => {
+  useClerkLoaded((clerk) => {
+    deprecated("RedirectToCreateOrganization", "Use the `redirectToCreateOrganization()` method instead.");
+    void clerk.redirectToCreateOrganization();
+  });
+  return () => null;
+});
+var AuthenticateWithRedirectCallback = defineComponent((props) => {
+  useClerkLoaded((clerk) => {
+    void clerk.handleRedirectCallback(props);
+  });
+  return () => null;
+});
+Object.defineProperty(AuthenticateWithRedirectCallback, "props", {
+  value: ["transferable", "signInForceRedirectUrl", "signInFallbackRedirectUrl", "signUpForceRedirectUrl", "signUpFallbackRedirectUrl", "afterSignInUrl", "afterSignUpUrl", "redirectUrl", "signInUrl", "signUpUrl", "firstFactorUrl", "secondFactorUrl", "resetPasswordUrl", "continueSignUpUrl", "verifyEmailAddressUrl", "verifyPhoneNumberUrl", "reloadResource"]
+});
+var Protect = defineComponent((props, { slots }) => {
+  const { isLoaded, has, userId } = useAuth({ treatPendingAsSignedOut: props.treatPendingAsSignedOut });
+  return () => {
+    if (!isLoaded.value) {
+      return null;
+    }
+    if (!userId.value) {
+      return slots.fallback?.();
+    }
+    if (typeof props.condition === "function") {
+      if (props.condition(has.value)) {
+        return slots.default?.();
+      }
+      return slots.fallback?.();
+    }
+    if (props.role || props.permission || props.feature || props.plan) {
+      if (has.value?.(props)) {
+        return slots.default?.();
+      }
+      return slots.fallback?.();
+    }
+    return slots.default?.();
+  };
+});
+Object.defineProperty(Protect, "props", {
+  value: ["condition", "role", "permission", "feature", "plan", "treatPendingAsSignedOut"]
+});
+
+// src/components/ClerkHostRenderer.ts
+var CustomPortalsRenderer = defineComponent2((props) => {
+  return () => [...props?.customPagesPortals ?? [], ...props?.customMenuItemsPortals ?? []];
+});
+Object.defineProperty(CustomPortalsRenderer, "props", {
+  value: ["customPagesPortals", "customMenuItemsPortals"]
+});
+var ClerkHostRenderer = defineComponent2({
+  props: {
+    mount: {
+      type: Function,
+      required: false
+    },
+    unmount: {
+      type: Function,
+      required: false
+    },
+    open: {
+      type: Function,
+      required: false
+    },
+    close: {
+      type: Function,
+      required: false
+    },
+    updateProps: {
+      type: Function,
+      required: false
+    },
+    props: {
+      type: Object,
+      required: false,
+      default: () => ({})
+    }
+  },
+  setup(props) {
+    const portalRef = ref(null);
+    let isPortalMounted = false;
+    watchEffect(() => {
+      if (!portalRef.value || isPortalMounted) {
+        return;
+      }
+      if (props.mount) {
+        props.mount(portalRef.value, props.props);
+      }
+      if (props.open) {
+        props.open(props.props);
+      }
+      isPortalMounted = true;
+    });
+    watch5(
+      () => props.props,
+      (newProps) => {
+        if (isPortalMounted && props.updateProps && portalRef.value) {
+          props.updateProps({ node: portalRef.value, props: newProps });
+        }
+      },
+      { deep: true }
+    );
+    onUnmounted(() => {
+      if (isPortalMounted && portalRef.value) {
+        if (props.unmount) {
+          props.unmount(portalRef.value);
+        }
+        if (props.close) {
+          props.close();
+        }
+      }
+    });
+    return () => h(ClerkLoaded, () => h("div", { ref: portalRef }));
+  }
+});
+
+// src/components/ui-components/SignIn.vue
+import { openBlock as _openBlock, createBlock as _createBlock } from "vue";
+var _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "SignIn",
+  props: {
+    path: { type: null, required: false },
+    routing: { type: String, required: false },
+    forceRedirectUrl: { type: [String, null], required: false },
+    fallbackRedirectUrl: { type: [String, null], required: false },
+    signInUrl: { type: String, required: false },
+    signUpUrl: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    initialValues: { type: Object, required: false },
+    __experimental: { type: Object, required: false },
+    waitlistUrl: { type: String, required: false },
+    unsafeMetadata: { type: null, required: false },
+    withSignUp: { type: Boolean, required: false, default: void 0 },
+    oauthFlow: { type: String, required: false },
+    oidcPrompt: { type: String, required: false },
+    transferable: { type: Boolean, required: false, default: void 0 },
+    signUpForceRedirectUrl: { type: [String, null], required: false },
+    signUpFallbackRedirectUrl: { type: [String, null], required: false },
+    afterSignInUrl: { type: [String, null], required: false },
+    afterSignUpUrl: { type: [String, null], required: false },
+    redirectUrl: { type: [String, null], required: false },
+    afterSignOutUrl: { type: [String, null], required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock(), _createBlock($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountSignIn,
+    unmount: $setup.clerk?.unmountSignIn,
+    props: $setup.props,
+    "update-props": $setup.clerk?.__unstable__updateProps
+  }, null, 8, ["mount", "unmount", "update-props"]);
+}
+var SignIn_default = /* @__PURE__ */ export_helper_default(_sfc_main, [["render", _sfc_render], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/SignIn.vue"]]);
+
+// src/components/ui-components/SignUp.vue
+import { defineComponent as _defineComponent2 } from "vue";
+import { openBlock as _openBlock2, createBlock as _createBlock2 } from "vue";
+var _sfc_main2 = /* @__PURE__ */ _defineComponent2({
+  __name: "SignUp",
+  props: {
+    path: { type: null, required: false },
+    routing: { type: String, required: false },
+    forceRedirectUrl: { type: [String, null], required: false },
+    fallbackRedirectUrl: { type: [String, null], required: false },
+    signInUrl: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    unsafeMetadata: { type: null, required: false },
+    initialValues: { type: Object, required: false },
+    __experimental: { type: Object, required: false },
+    waitlistUrl: { type: String, required: false },
+    oauthFlow: { type: String, required: false },
+    oidcPrompt: { type: String, required: false },
+    signInFallbackRedirectUrl: { type: [String, null], required: false },
+    signInForceRedirectUrl: { type: [String, null], required: false },
+    afterSignInUrl: { type: [String, null], required: false },
+    afterSignUpUrl: { type: [String, null], required: false },
+    redirectUrl: { type: [String, null], required: false },
+    afterSignOutUrl: { type: [String, null], required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render2(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock2(), _createBlock2($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountSignUp,
+    unmount: $setup.clerk?.unmountSignUp,
+    props: $setup.props,
+    "update-props": $setup.clerk?.__unstable__updateProps
+  }, null, 8, ["mount", "unmount", "props", "update-props"]);
+}
+var SignUp_default = /* @__PURE__ */ export_helper_default(_sfc_main2, [["render", _sfc_render2], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/SignUp.vue"]]);
+
+// src/components/ui-components/GoogleOneTap.vue
+import { defineComponent as _defineComponent3 } from "vue";
+import { openBlock as _openBlock3, createBlock as _createBlock3 } from "vue";
+var _sfc_main3 = /* @__PURE__ */ _defineComponent3({
+  __name: "GoogleOneTap",
+  props: {
+    signInForceRedirectUrl: { type: [String, null], required: false },
+    signUpForceRedirectUrl: { type: [String, null], required: false },
+    cancelOnTapOutside: { type: Boolean, required: false, default: true },
+    itpSupport: { type: Boolean, required: false, default: true },
+    fedCmSupport: { type: Boolean, required: false, default: true },
+    appearance: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render3(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock3(), _createBlock3($setup["ClerkHostRenderer"], {
+    open: $setup.clerk?.openGoogleOneTap,
+    close: $setup.clerk?.closeGoogleOneTap,
+    props: $setup.props
+  }, null, 8, ["open", "close"]);
+}
+var GoogleOneTap_default = /* @__PURE__ */ export_helper_default(_sfc_main3, [["render", _sfc_render3], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/GoogleOneTap.vue"]]);
+
+// src/components/ui-components/Waitlist.vue
+import { defineComponent as _defineComponent4 } from "vue";
+import { openBlock as _openBlock4, createBlock as _createBlock4 } from "vue";
+var _sfc_main4 = /* @__PURE__ */ _defineComponent4({
+  __name: "Waitlist",
+  props: {
+    afterJoinWaitlistUrl: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    signInUrl: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render4(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock4(), _createBlock4($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountWaitlist,
+    unmount: $setup.clerk?.unmountWaitlist,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var Waitlist_default = /* @__PURE__ */ export_helper_default(_sfc_main4, [["render", _sfc_render4], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/Waitlist.vue"]]);
+
+// src/components/ui-components/CreateOrganization.vue
+import { defineComponent as _defineComponent5 } from "vue";
+import { openBlock as _openBlock5, createBlock as _createBlock5 } from "vue";
+var _sfc_main5 = /* @__PURE__ */ _defineComponent5({
+  __name: "CreateOrganization",
+  props: {
+    path: { type: null, required: false },
+    routing: { type: String, required: false },
+    afterCreateOrganizationUrl: { type: [Function, Object], required: false, skipCheck: true },
+    skipInvitationScreen: { type: Boolean, required: false },
+    appearance: { type: Object, required: false },
+    hideSlug: { type: Boolean, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock5(), _createBlock5($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountCreateOrganization,
+    unmount: $setup.clerk?.unmountCreateOrganization,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var CreateOrganization_default = /* @__PURE__ */ export_helper_default(_sfc_main5, [["render", _sfc_render5], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/CreateOrganization.vue"]]);
+
+// src/components/ui-components/OrganizationList.vue
+import { defineComponent as _defineComponent6 } from "vue";
+import { openBlock as _openBlock6, createBlock as _createBlock6 } from "vue";
+var _sfc_main6 = /* @__PURE__ */ _defineComponent6({
+  __name: "OrganizationList",
+  props: {
+    afterCreateOrganizationUrl: { type: [Function, Object], required: false, skipCheck: true },
+    afterSelectOrganizationUrl: { type: [Function, Object], required: false, skipCheck: true },
+    appearance: { type: Object, required: false },
+    skipInvitationScreen: { type: Boolean, required: false },
+    hidePersonal: { type: Boolean, required: false },
+    afterSelectPersonalUrl: { type: [Function, Object], required: false, skipCheck: true },
+    hideSlug: { type: Boolean, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock6(), _createBlock6($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountOrganizationList,
+    unmount: $setup.clerk?.unmountOrganizationList,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var OrganizationList_default = /* @__PURE__ */ export_helper_default(_sfc_main6, [["render", _sfc_render6], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/OrganizationList.vue"]]);
+
+// src/components/ui-components/PricingTable.vue
+import { defineComponent as _defineComponent7 } from "vue";
+import { openBlock as _openBlock7, createBlock as _createBlock7 } from "vue";
+var _sfc_main7 = /* @__PURE__ */ _defineComponent7({
+  __name: "PricingTable",
+  props: {
+    for: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    checkoutProps: { type: Object, required: false },
+    ctaPosition: { type: String, required: false },
+    collapseFeatures: { type: Boolean, required: false },
+    newSubscriptionRedirectUrl: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock7(), _createBlock7($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountPricingTable,
+    unmount: $setup.clerk?.unmountPricingTable,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var PricingTable_default = /* @__PURE__ */ export_helper_default(_sfc_main7, [["render", _sfc_render7], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/PricingTable.vue"]]);
+
+// src/components/ui-components/APIKeys.vue
+import { defineComponent as _defineComponent8 } from "vue";
+import { openBlock as _openBlock8, createBlock as _createBlock8 } from "vue";
+var _sfc_main8 = /* @__PURE__ */ _defineComponent8({
+  __name: "APIKeys",
+  props: {
+    perPage: { type: Number, required: false },
+    appearance: { type: Object, required: false },
+    showDescription: { type: Boolean, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock8(), _createBlock8($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountAPIKeys,
+    unmount: $setup.clerk?.unmountAPIKeys,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var APIKeys_default = /* @__PURE__ */ export_helper_default(_sfc_main8, [["render", _sfc_render8], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/APIKeys.vue"]]);
+
+// src/components/ui-components/UserProfile/index.ts
+import { defineComponent as defineComponent4, inject as inject2 } from "vue";
+
+// src/components/ui-components/UserProfile/UserProfile.vue
+import { defineComponent as _defineComponent10 } from "vue";
+import { computed as computed9, provide as provide2 } from "vue";
+
+// src/utils/useCustomPages.ts
+import { logErrorInDevMode } from "@clerk/shared/utils";
+import { ref as ref3 } from "vue";
+
+// src/components/ui-components/OrganizationProfile/index.ts
+import { defineComponent as defineComponent3, inject } from "vue";
+
+// src/components/ui-components/OrganizationProfile/OrganizationProfile.vue
+import { defineComponent as _defineComponent9 } from "vue";
+import { computed as computed7, provide } from "vue";
+import { createVNode as _createVNode, renderSlot as _renderSlot, Fragment as _Fragment, openBlock as _openBlock9, createElementBlock as _createElementBlock } from "vue";
+var _sfc_main9 = /* @__PURE__ */ _defineComponent9({
+  __name: "OrganizationProfile",
+  props: {
+    path: { type: null, required: false },
+    routing: { type: String, required: false },
+    afterLeaveOrganizationUrl: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    __experimental_startPath: { type: String, required: false },
+    apiKeysProps: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const { customPages, customPagesPortals, addCustomPage } = useOrganizationProfileCustomPages();
+    const finalProps = computed7(() => ({
+      ...props,
+      customPages: customPages.value
+    }));
+    provide(OrganizationProfileInjectionKey, {
+      addCustomPage
+    });
+    const __returned__ = { props, clerk, customPages, customPagesPortals, addCustomPage, finalProps, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    }, get CustomPortalsRenderer() {
+      return CustomPortalsRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock9(), _createElementBlock(
+    _Fragment,
+    null,
+    [
+      _createVNode($setup["ClerkHostRenderer"], {
+        mount: $setup.clerk?.mountOrganizationProfile,
+        unmount: $setup.clerk?.unmountOrganizationProfile,
+        props: $setup.finalProps,
+        "update-props": $setup.clerk?.__unstable__updateProps
+      }, null, 8, ["mount", "unmount", "props", "update-props"]),
+      _createVNode($setup["CustomPortalsRenderer"], { "custom-pages-portals": $setup.customPagesPortals }, null, 8, ["custom-pages-portals"]),
+      _renderSlot(_ctx.$slots, "default")
+    ],
+    64
+    /* STABLE_FRAGMENT */
+  );
+}
+var OrganizationProfile_default = /* @__PURE__ */ export_helper_default(_sfc_main9, [["render", _sfc_render9], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/OrganizationProfile/OrganizationProfile.vue"]]);
+
+// src/components/ui-components/OrganizationProfile/index.ts
+var OrganizationProfilePage = defineComponent3(
+  (props, { slots }) => {
+    const ctx = inject(OrganizationProfileInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(organizationProfilePageRenderedError);
+    }
+    ctx.addCustomPage({
+      props,
+      slots,
+      component: OrganizationProfilePage
+    });
+    return () => null;
+  },
+  { name: "OrganizationProfilePage" }
+);
+Object.defineProperty(OrganizationProfilePage, "props", {
+  value: ["label", "url"]
+});
+var OrganizationProfileLink = defineComponent3(
+  (props, { slots }) => {
+    const ctx = inject(OrganizationProfileInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(organizationProfileLinkRenderedError);
+    }
+    ctx.addCustomPage({
+      props,
+      slots,
+      component: OrganizationProfileLink
+    });
+    return () => null;
+  },
+  { name: "OrganizationProfileLink" }
+);
+Object.defineProperty(OrganizationProfileLink, "props", {
+  value: ["url", "label"]
+});
+var OrganizationProfile = Object.assign(OrganizationProfile_default, {
+  Page: OrganizationProfilePage,
+  Link: OrganizationProfileLink
+});
+
+// src/utils/componentValidation.ts
+var isThatComponent = (v, component) => {
+  return !!v && isRenderFunction(v) && v.name === component.name;
+};
+var isRenderFunction = (v) => {
+  return "name" in v && "setup" in v;
+};
+
+// src/utils/useCustomElementPortal.ts
+import { computed as computed8, h as h2, ref as ref2, Teleport } from "vue";
+function generateElementIdentifier() {
+  return Math.random().toString(36).substring(2, 7);
+}
+var useCustomElementPortal = () => {
+  const rawPortals = ref2([]);
+  const portals = computed8(() => {
+    return rawPortals.value.map((item) => {
+      return h2(Teleport, { to: item.el }, item.slot());
+    });
+  });
+  const mount = (el, slot) => {
+    const id = generateElementIdentifier();
+    el.setAttribute("data-clerk-mount-id", id);
+    rawPortals.value.push({
+      id,
+      el,
+      slot
+    });
+  };
+  const unmount = (el) => {
+    const id = el?.getAttribute("data-clerk-mount-id");
+    if (id) {
+      const index = rawPortals.value.findIndex((portal) => portal.id === id);
+      if (index !== -1) {
+        rawPortals.value.splice(index, 1);
+      }
+    }
+  };
+  return {
+    portals,
+    mount,
+    unmount
+  };
+};
+
+// src/utils/useCustomPages.ts
+var useUserProfileCustomPages = () => {
+  const { customPages, customPagesPortals, addCustomPage } = useCustomPages({
+    reorderItemsLabels: ["account", "security", "billing", "apiKeys"],
+    PageComponent: UserProfilePage,
+    LinkComponent: UserProfileLink,
+    componentName: "UserProfile"
+  });
+  const addUserProfileCustomPage = (params) => {
+    return addCustomPage(params);
+  };
+  return {
+    customPages,
+    customPagesPortals,
+    addCustomPage: addUserProfileCustomPage
+  };
+};
+var useOrganizationProfileCustomPages = () => {
+  const { customPages, customPagesPortals, addCustomPage } = useCustomPages({
+    reorderItemsLabels: ["general", "members", "billing", "apiKeys"],
+    PageComponent: OrganizationProfilePage,
+    LinkComponent: OrganizationProfileLink,
+    componentName: "OrganizationProfile"
+  });
+  const addOrganizationProfileCustomPage = (params) => {
+    return addCustomPage(params);
+  };
+  return {
+    customPages,
+    customPagesPortals,
+    addCustomPage: addOrganizationProfileCustomPage
+  };
+};
+var useCustomPages = (customPagesParams) => {
+  const customPages = ref3([]);
+  const { portals: customPagesPortals, mount, unmount } = useCustomElementPortal();
+  const { PageComponent, LinkComponent, reorderItemsLabels, componentName } = customPagesParams;
+  const addCustomPage = (params) => {
+    const { props, slots, component } = params;
+    const { label, url } = props;
+    if (isThatComponent(component, PageComponent)) {
+      if (isReorderItem(props, slots, reorderItemsLabels)) {
+        customPages.value.push({ label });
+      } else if (isCustomPage(props, slots)) {
+        customPages.value.push({
+          label,
+          url,
+          mountIcon(el) {
+            mount(el, slots.labelIcon);
+          },
+          unmountIcon: unmount,
+          mount(el) {
+            mount(el, slots.default);
+          },
+          unmount
+        });
+      } else {
+        logErrorInDevMode(customPageWrongProps(componentName));
+        return;
+      }
+    }
+    if (isThatComponent(component, LinkComponent)) {
+      if (isExternalLink(props, slots)) {
+        customPages.value.push({
+          label,
+          url,
+          mountIcon(el) {
+            mount(el, slots.labelIcon);
+          },
+          unmountIcon: unmount
+        });
+      } else {
+        logErrorInDevMode(customLinkWrongProps(componentName));
+        return;
+      }
+    }
+  };
+  return {
+    customPages,
+    customPagesPortals,
+    addCustomPage
+  };
+};
+var isReorderItem = (props, slots, validItems) => {
+  const { label, url } = props;
+  const { default: defaultSlot, labelIcon } = slots;
+  return !defaultSlot && !url && !labelIcon && validItems.some((v) => v === label);
+};
+var isCustomPage = (props, slots) => {
+  const { label, url } = props;
+  const { default: defaultSlot, labelIcon } = slots;
+  return !!defaultSlot && !!url && !!labelIcon && !!label;
+};
+var isExternalLink = (props, slots) => {
+  const { label, url } = props;
+  const { default: defaultSlot, labelIcon } = slots;
+  return !defaultSlot && !!url && !!labelIcon && !!label;
+};
+
+// src/components/ui-components/UserProfile/UserProfile.vue
+import { createVNode as _createVNode2, renderSlot as _renderSlot2, Fragment as _Fragment2, openBlock as _openBlock10, createElementBlock as _createElementBlock2 } from "vue";
+var _sfc_main10 = /* @__PURE__ */ _defineComponent10({
+  __name: "UserProfile",
+  props: {
+    path: { type: null, required: false },
+    routing: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    additionalOAuthScopes: { type: Object, required: false },
+    __experimental_startPath: { type: String, required: false },
+    apiKeysProps: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const { customPages, customPagesPortals, addCustomPage } = useUserProfileCustomPages();
+    const finalProps = computed9(() => ({
+      ...props,
+      customPages: customPages.value
+    }));
+    provide2(UserProfileInjectionKey, {
+      addCustomPage
+    });
+    const __returned__ = { props, clerk, customPages, customPagesPortals, addCustomPage, finalProps, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    }, get CustomPortalsRenderer() {
+      return CustomPortalsRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock10(), _createElementBlock2(
+    _Fragment2,
+    null,
+    [
+      _createVNode2($setup["ClerkHostRenderer"], {
+        mount: $setup.clerk?.mountUserProfile,
+        unmount: $setup.clerk?.unmountUserProfile,
+        props: $setup.finalProps,
+        "update-props": $setup.clerk?.__unstable__updateProps
+      }, null, 8, ["mount", "unmount", "props", "update-props"]),
+      _createVNode2($setup["CustomPortalsRenderer"], { "custom-pages-portals": $setup.customPagesPortals }, null, 8, ["custom-pages-portals"]),
+      _renderSlot2(_ctx.$slots, "default")
+    ],
+    64
+    /* STABLE_FRAGMENT */
+  );
+}
+var UserProfile_default = /* @__PURE__ */ export_helper_default(_sfc_main10, [["render", _sfc_render10], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/UserProfile/UserProfile.vue"]]);
+
+// src/components/ui-components/UserProfile/index.ts
+var UserProfilePage = defineComponent4(
+  (props, { slots }) => {
+    const ctx = inject2(UserProfileInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(userProfilePageRenderedError);
+    }
+    ctx.addCustomPage({
+      props,
+      slots,
+      component: UserProfilePage
+    });
+    return () => null;
+  },
+  { name: "UserProfilePage" }
+);
+Object.defineProperty(UserProfilePage, "props", {
+  value: ["label", "url"]
+});
+var UserProfileLink = defineComponent4(
+  (props, { slots }) => {
+    const ctx = inject2(UserProfileInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(userProfileLinkRenderedError);
+    }
+    ctx.addCustomPage({
+      props,
+      slots,
+      component: UserProfileLink
+    });
+    return () => null;
+  },
+  { name: "UserProfileLink" }
+);
+Object.defineProperty(UserProfileLink, "props", {
+  value: ["url", "label"]
+});
+var UserProfile = Object.assign(UserProfile_default, {
+  Page: UserProfilePage,
+  Link: UserProfileLink
+});
+
+// src/components/ui-components/OrganizationSwitcher/OrganizationSwitcher.vue
+import { defineComponent as _defineComponent11 } from "vue";
+import { computed as computed10, provide as provide3 } from "vue";
+import { createVNode as _createVNode3, renderSlot as _renderSlot3, Fragment as _Fragment3, openBlock as _openBlock11, createElementBlock as _createElementBlock3 } from "vue";
+var _sfc_main11 = /* @__PURE__ */ _defineComponent11({
+  __name: "OrganizationSwitcher",
+  props: {
+    createOrganizationUrl: { type: null, required: false },
+    createOrganizationMode: { type: String, required: false },
+    organizationProfileUrl: { type: null, required: false },
+    organizationProfileMode: { type: String, required: false },
+    defaultOpen: { type: Boolean, required: false },
+    hidePersonal: { type: Boolean, required: false },
+    afterSwitchOrganizationUrl: { type: String, required: false },
+    afterCreateOrganizationUrl: { type: [Function, Object], required: false, skipCheck: true },
+    afterSelectOrganizationUrl: { type: [Function, Object], required: false, skipCheck: true },
+    afterSelectPersonalUrl: { type: [Function, Object], required: false, skipCheck: true },
+    afterLeaveOrganizationUrl: { type: String, required: false },
+    skipInvitationScreen: { type: Boolean, required: false },
+    hideSlug: { type: Boolean, required: false },
+    appearance: { type: Object, required: false },
+    organizationProfileProps: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const { customPages, customPagesPortals, addCustomPage } = useOrganizationProfileCustomPages();
+    const finalProps = computed10(() => ({
+      ...props,
+      organizationProfileProps: {
+        ...props.organizationProfileProps || {},
+        customPages: customPages.value
+      }
+    }));
+    provide3(OrganizationProfileInjectionKey, {
+      addCustomPage
+    });
+    const __returned__ = { clerk, props, customPages, customPagesPortals, addCustomPage, finalProps, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    }, get CustomPortalsRenderer() {
+      return CustomPortalsRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock11(), _createElementBlock3(
+    _Fragment3,
+    null,
+    [
+      _createVNode3($setup["ClerkHostRenderer"], {
+        mount: $setup.clerk?.mountOrganizationSwitcher,
+        unmount: $setup.clerk?.unmountOrganizationSwitcher,
+        "update-props": $setup.clerk?.__unstable__updateProps,
+        props: $setup.finalProps
+      }, null, 8, ["mount", "unmount", "update-props", "props"]),
+      _createVNode3($setup["CustomPortalsRenderer"], { "custom-pages-portals": $setup.customPagesPortals }, null, 8, ["custom-pages-portals"]),
+      _renderSlot3(_ctx.$slots, "default")
+    ],
+    64
+    /* STABLE_FRAGMENT */
+  );
+}
+var OrganizationSwitcher_default = /* @__PURE__ */ export_helper_default(_sfc_main11, [["render", _sfc_render11], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/OrganizationSwitcher/OrganizationSwitcher.vue"]]);
+
+// src/components/ui-components/OrganizationSwitcher/index.ts
+var OrganizationSwitcher = Object.assign(OrganizationSwitcher_default, {
+  OrganizationProfilePage,
+  OrganizationProfileLink
+});
+
+// src/components/ui-components/UserAvatar.vue
+import { defineComponent as _defineComponent12 } from "vue";
+import { openBlock as _openBlock12, createBlock as _createBlock9 } from "vue";
+var _sfc_main12 = /* @__PURE__ */ _defineComponent12({
+  __name: "UserAvatar",
+  props: {
+    appearance: { type: Object, required: false },
+    rounded: { type: Boolean, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const clerk = useClerk();
+    const props = __props;
+    const __returned__ = { clerk, props, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock12(), _createBlock9($setup["ClerkHostRenderer"], {
+    mount: $setup.clerk?.mountUserAvatar,
+    unmount: $setup.clerk?.unmountUserAvatar,
+    "update-props": $setup.clerk?.__unstable__updateProps,
+    props: $setup.props
+  }, null, 8, ["mount", "unmount", "update-props", "props"]);
+}
+var UserAvatar_default = /* @__PURE__ */ export_helper_default(_sfc_main12, [["render", _sfc_render12], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/UserAvatar.vue"]]);
+
+// src/components/ui-components/UserButton/index.ts
+import { defineComponent as defineComponent5, inject as inject3, provide as provide5 } from "vue";
+
+// src/components/ui-components/UserButton/UserButton.vue
+import { defineComponent as _defineComponent13 } from "vue";
+import { computed as computed11, provide as provide4 } from "vue";
+
+// src/utils/useCustomMenuItems.ts
+import { logErrorInDevMode as logErrorInDevMode2 } from "@clerk/shared/utils";
+import { ref as ref4 } from "vue";
+var useUserButtonCustomMenuItems = () => {
+  const customMenuItems = ref4([]);
+  const { portals: customMenuItemsPortals, mount, unmount } = useCustomElementPortal();
+  const reorderItemsLabels = ["manageAccount", "signOut"];
+  function addCustomMenuItem(params) {
+    const { props, component, slots } = params;
+    const { label, onClick, open, href } = props;
+    if (isThatComponent(component, MenuAction)) {
+      if (isReorderItem2(props, slots, reorderItemsLabels)) {
+        customMenuItems.value.push({ label });
+      } else if (isCustomMenuItem(props, slots)) {
+        const baseItem = {
+          label,
+          mountIcon(el) {
+            mount(el, slots.labelIcon);
+          },
+          unmountIcon: unmount
+        };
+        if (onClick !== void 0) {
+          customMenuItems.value.push({
+            ...baseItem,
+            onClick,
+            open
+          });
+        } else if (open !== void 0) {
+          customMenuItems.value.push({
+            ...baseItem,
+            open: open.startsWith("/") ? open : `/${open}`
+          });
+        } else {
+          logErrorInDevMode2("Custom menu item must have either onClick or open property");
+          return;
+        }
+      } else {
+        logErrorInDevMode2(userButtonMenuItemActionWrongProps);
+        return;
+      }
+    }
+    if (isThatComponent(component, MenuLink)) {
+      if (isExternalLink2(props, slots)) {
+        customMenuItems.value.push({
+          label,
+          href,
+          mountIcon(el) {
+            mount(el, slots.labelIcon);
+          },
+          unmountIcon: unmount
+        });
+      } else {
+        logErrorInDevMode2(userButtonMenuItemLinkWrongProps);
+        return;
+      }
+    }
+  }
+  return {
+    customMenuItems,
+    customMenuItemsPortals,
+    addCustomMenuItem
+  };
+};
+var isReorderItem2 = (props, slots, validItems) => {
+  const { label, onClick } = props;
+  const { labelIcon } = slots;
+  return !onClick && !labelIcon && validItems.some((v) => v === label);
+};
+var isCustomMenuItem = (props, slots) => {
+  const { label, onClick, open } = props;
+  const { labelIcon } = slots;
+  return !!labelIcon && !!label && (typeof onClick === "function" || typeof open === "string");
+};
+var isExternalLink2 = (props, slots) => {
+  const { label, href } = props;
+  const { labelIcon } = slots;
+  return !!href && !!labelIcon && !!label;
+};
+
+// src/components/ui-components/UserButton/UserButton.vue
+import { createVNode as _createVNode4, renderSlot as _renderSlot4, Fragment as _Fragment4, openBlock as _openBlock13, createElementBlock as _createElementBlock4 } from "vue";
+var _sfc_main13 = /* @__PURE__ */ _defineComponent13({
+  __name: "UserButton",
+  props: {
+    userProfileUrl: { type: null, required: false },
+    userProfileMode: { type: String, required: false },
+    showName: { type: Boolean, required: false },
+    defaultOpen: { type: Boolean, required: false },
+    __experimental_asStandalone: { type: [Boolean, Function], required: false },
+    afterSignOutUrl: { type: String, required: false },
+    afterMultiSessionSingleSignOutUrl: { type: String, required: false },
+    signInUrl: { type: String, required: false },
+    afterSwitchSessionUrl: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    userProfileProps: { type: Object, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const { customMenuItems, customMenuItemsPortals, addCustomMenuItem } = useUserButtonCustomMenuItems();
+    const { customPages, customPagesPortals, addCustomPage } = useUserProfileCustomPages();
+    const finalProps = computed11(() => ({
+      ...props,
+      userProfileProps: {
+        ...props.userProfileProps || {},
+        customPages: customPages.value
+      },
+      customMenuItems: customMenuItems.value
+    }));
+    provide4(UserButtonInjectionKey, {
+      addCustomMenuItem
+    });
+    provide4(UserProfileInjectionKey, {
+      addCustomPage
+    });
+    const __returned__ = { props, clerk, customMenuItems, customMenuItemsPortals, addCustomMenuItem, customPages, customPagesPortals, addCustomPage, finalProps, get ClerkHostRenderer() {
+      return ClerkHostRenderer;
+    }, get CustomPortalsRenderer() {
+      return CustomPortalsRenderer;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock13(), _createElementBlock4(
+    _Fragment4,
+    null,
+    [
+      _createVNode4($setup["ClerkHostRenderer"], {
+        mount: $setup.clerk?.mountUserButton,
+        unmount: $setup.clerk?.unmountUserButton,
+        props: $setup.finalProps,
+        "update-props": $setup.clerk?.__unstable__updateProps
+      }, null, 8, ["mount", "unmount", "props", "update-props"]),
+      _createVNode4($setup["CustomPortalsRenderer"], {
+        "custom-pages-portals": $setup.customPagesPortals,
+        "custom-menu-items-portals": $setup.customMenuItemsPortals
+      }, null, 8, ["custom-pages-portals", "custom-menu-items-portals"]),
+      _renderSlot4(_ctx.$slots, "default")
+    ],
+    64
+    /* STABLE_FRAGMENT */
+  );
+}
+var UserButton_default = /* @__PURE__ */ export_helper_default(_sfc_main13, [["render", _sfc_render13], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/ui-components/UserButton/UserButton.vue"]]);
+
+// src/components/ui-components/UserButton/index.ts
+var MenuItems = defineComponent5((_, { slots }) => {
+  const ctx = inject3(UserButtonInjectionKey);
+  if (!ctx) {
+    return errorThrower.throw(userButtonMenuItemsRenderedError);
+  }
+  provide5(UserButtonMenuItemsInjectionKey, ctx);
+  return () => slots.default?.();
+});
+var MenuAction = defineComponent5(
+  (props, { slots }) => {
+    const ctx = inject3(UserButtonMenuItemsInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(userButtonMenuActionRenderedError);
+    }
+    ctx.addCustomMenuItem({
+      props,
+      slots,
+      component: MenuAction
+    });
+    return () => null;
+  },
+  { name: "MenuAction" }
+);
+Object.defineProperty(MenuAction, "props", {
+  value: ["label", "onClick", "open"]
+});
+var MenuLink = defineComponent5(
+  (props, { slots }) => {
+    const ctx = inject3(UserButtonMenuItemsInjectionKey);
+    if (!ctx) {
+      return errorThrower.throw(userButtonMenuLinkRenderedError);
+    }
+    ctx.addCustomMenuItem({
+      props,
+      slots,
+      component: MenuLink
+    });
+    return () => null;
+  },
+  { name: "MenuLink" }
+);
+Object.defineProperty(MenuLink, "props", {
+  value: ["href", "label"]
+});
+var UserButton = Object.assign(UserButton_default, {
+  MenuItems,
+  Action: MenuAction,
+  Link: MenuLink,
+  UserProfilePage,
+  UserProfileLink
+});
+
+// src/components/SignInButton.vue
+import { defineComponent as _defineComponent14 } from "vue";
+import { useAttrs, useSlots } from "vue";
+import { renderSlot as _renderSlot5, resolveDynamicComponent as _resolveDynamicComponent, mergeProps as _mergeProps, withCtx as _withCtx, openBlock as _openBlock14, createBlock as _createBlock10 } from "vue";
+var _sfc_main14 = /* @__PURE__ */ _defineComponent14({
+  __name: "SignInButton",
+  props: {
+    mode: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    fallbackRedirectUrl: { type: [String, null], required: false },
+    forceRedirectUrl: { type: [String, null], required: false },
+    signUpForceRedirectUrl: { type: [String, null], required: false },
+    signUpFallbackRedirectUrl: { type: [String, null], required: false },
+    initialValues: { type: Object, required: false },
+    withSignUp: { type: Boolean, required: false },
+    oauthFlow: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const slots = useSlots();
+    const attrs = useAttrs();
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Sign in");
+      return assertSingleChild(children, "SignInButton");
+    }
+    function clickHandler() {
+      const { mode, ...opts } = props;
+      if (mode === "modal") {
+        return clerk.value?.openSignIn({ ...opts, appearance: props.appearance });
+      }
+      const { withSignUp, ...redirectOpts } = opts;
+      void clerk.value?.redirectToSignIn({
+        ...redirectOpts,
+        signInFallbackRedirectUrl: props.fallbackRedirectUrl,
+        signInForceRedirectUrl: props.forceRedirectUrl
+      });
+    }
+    const __returned__ = { props, clerk, slots, attrs, getChildComponent, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock14(), _createBlock10(
+    _resolveDynamicComponent($setup.getChildComponent),
+    _mergeProps($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx(() => [
+        _renderSlot5(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var SignInButton_default = /* @__PURE__ */ export_helper_default(_sfc_main14, [["render", _sfc_render14], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/SignInButton.vue"]]);
+
+// src/components/SignUpButton.vue
+import { defineComponent as _defineComponent15 } from "vue";
+import { useAttrs as useAttrs2, useSlots as useSlots2 } from "vue";
+import { renderSlot as _renderSlot6, resolveDynamicComponent as _resolveDynamicComponent2, mergeProps as _mergeProps2, withCtx as _withCtx2, openBlock as _openBlock15, createBlock as _createBlock11 } from "vue";
+var _sfc_main15 = /* @__PURE__ */ _defineComponent15({
+  __name: "SignUpButton",
+  props: {
+    mode: { type: String, required: false },
+    appearance: { type: Object, required: false },
+    unsafeMetadata: { type: null, required: false },
+    fallbackRedirectUrl: { type: [String, null], required: false },
+    forceRedirectUrl: { type: [String, null], required: false },
+    signInForceRedirectUrl: { type: [String, null], required: false },
+    signInFallbackRedirectUrl: { type: [String, null], required: false },
+    initialValues: { type: Object, required: false },
+    oauthFlow: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const slots = useSlots2();
+    const attrs = useAttrs2();
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Sign up");
+      return assertSingleChild(children, "SignUpButton");
+    }
+    function clickHandler() {
+      const { mode, ...opts } = props;
+      if (mode === "modal") {
+        return clerk.value?.openSignUp({ ...opts, appearance: props.appearance });
+      }
+      void clerk.value?.redirectToSignUp({
+        ...opts,
+        signUpFallbackRedirectUrl: props.fallbackRedirectUrl,
+        signUpForceRedirectUrl: props.forceRedirectUrl
+      });
+    }
+    const __returned__ = { props, clerk, slots, attrs, getChildComponent, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock15(), _createBlock11(
+    _resolveDynamicComponent2($setup.getChildComponent),
+    _mergeProps2($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx2(() => [
+        _renderSlot6(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var SignUpButton_default = /* @__PURE__ */ export_helper_default(_sfc_main15, [["render", _sfc_render15], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/SignUpButton.vue"]]);
+
+// src/components/SignOutButton.vue
+import { defineComponent as _defineComponent16 } from "vue";
+import { useAttrs as useAttrs3, useSlots as useSlots3 } from "vue";
+import { renderSlot as _renderSlot7, resolveDynamicComponent as _resolveDynamicComponent3, mergeProps as _mergeProps3, withCtx as _withCtx3, openBlock as _openBlock16, createBlock as _createBlock12 } from "vue";
+var _sfc_main16 = /* @__PURE__ */ _defineComponent16({
+  __name: "SignOutButton",
+  props: {
+    signOutOptions: { type: Object, required: false },
+    sessionId: { type: String, required: false },
+    redirectUrl: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const slots = useSlots3();
+    const attrs = useAttrs3();
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Sign out");
+      return assertSingleChild(children, "SignOutButton");
+    }
+    function clickHandler() {
+      const signOutOptions = {
+        redirectUrl: props.signOutOptions?.redirectUrl ?? props.redirectUrl,
+        sessionId: props.signOutOptions?.sessionId ?? props.sessionId
+      };
+      void clerk.value?.signOut(signOutOptions);
+    }
+    const __returned__ = { props, clerk, slots, attrs, getChildComponent, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock16(), _createBlock12(
+    _resolveDynamicComponent3($setup.getChildComponent),
+    _mergeProps3($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx3(() => [
+        _renderSlot7(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var SignOutButton_default = /* @__PURE__ */ export_helper_default(_sfc_main16, [["render", _sfc_render16], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/SignOutButton.vue"]]);
+
+// src/components/SignInWithMetamaskButton.vue
+import { defineComponent as _defineComponent17 } from "vue";
+import { useAttrs as useAttrs4, useSlots as useSlots4 } from "vue";
+import { renderSlot as _renderSlot8, resolveDynamicComponent as _resolveDynamicComponent4, mergeProps as _mergeProps4, withCtx as _withCtx4, openBlock as _openBlock17, createBlock as _createBlock13 } from "vue";
+var _sfc_main17 = /* @__PURE__ */ _defineComponent17({
+  __name: "SignInWithMetamaskButton",
+  props: {
+    redirectUrl: { type: [String, null], required: false },
+    mode: { type: String, required: false }
+  },
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const props = __props;
+    const clerk = useClerk();
+    const slots = useSlots4();
+    const attrs = useAttrs4();
+    function getChildComponent() {
+      const children = normalizeWithDefaultValue(slots.default?.({}), "Sign in with Metamask");
+      return assertSingleChild(children, "SignInWithMetamaskButton");
+    }
+    function clickHandler() {
+      void clerk.value?.authenticateWithMetamask({ redirectUrl: props.redirectUrl || void 0 });
+    }
+    const __returned__ = { props, clerk, slots, attrs, getChildComponent, clickHandler };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+function _sfc_render17(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock17(), _createBlock13(
+    _resolveDynamicComponent4($setup.getChildComponent),
+    _mergeProps4($setup.attrs, { onClick: $setup.clickHandler }),
+    {
+      default: _withCtx4(() => [
+        _renderSlot8(_ctx.$slots, "default")
+      ]),
+      _: 3
+      /* FORWARDED */
+    },
+    16
+    /* FULL_PROPS */
+  );
+}
+var SignInWithMetamaskButton_default = /* @__PURE__ */ export_helper_default(_sfc_main17, [["render", _sfc_render17], ["__file", "/home/runner/work/javascript/javascript/packages/vue/src/components/SignInWithMetamaskButton.vue"]]);
+
+// src/plugin.ts
+import { inBrowser } from "@clerk/shared/browser";
+import { deriveState } from "@clerk/shared/deriveState";
+import { loadClerkJsScript } from "@clerk/shared/loadClerkJsScript";
+import { computed as computed12, ref as ref5, shallowRef, triggerRef } from "vue";
+var SDK_METADATA = {
+  name: "@clerk/vue",
+  version: "1.17.6",
+  environment: process.env.NODE_ENV
+};
+var clerkPlugin = {
+  install(app, pluginOptions) {
+    const { initialState } = pluginOptions || {};
+    const loaded = shallowRef(false);
+    const clerk = shallowRef(null);
+    const resources = ref5({
+      client: void 0,
+      session: void 0,
+      user: void 0,
+      organization: void 0
+    });
+    const options = {
+      ...pluginOptions,
+      sdkMetadata: pluginOptions.sdkMetadata || SDK_METADATA
+    };
+    if (inBrowser()) {
+      void loadClerkJsScript(options).then(async () => {
+        if (!window.Clerk) {
+          throw new Error("Failed to download latest ClerkJS. Contact support@clerk.com.");
+        }
+        clerk.value = window.Clerk;
+        await window.Clerk.load(options);
+        loaded.value = true;
+        clerk.value.addListener((payload) => {
+          resources.value = payload;
+        });
+        triggerRef(clerk);
+      });
+    }
+    const derivedState = computed12(() => deriveState(loaded.value, resources.value, initialState));
+    const authCtx = computed12(() => {
+      const {
+        sessionId,
+        userId,
+        orgId,
+        actor,
+        orgRole,
+        orgSlug,
+        orgPermissions,
+        sessionStatus,
+        sessionClaims,
+        factorVerificationAge
+      } = derivedState.value;
+      return {
+        sessionId,
+        userId,
+        actor,
+        orgId,
+        orgRole,
+        orgSlug,
+        orgPermissions,
+        sessionStatus,
+        sessionClaims,
+        factorVerificationAge
+      };
+    });
+    const clientCtx = computed12(() => resources.value.client);
+    const userCtx = computed12(() => derivedState.value.user);
+    const sessionCtx = computed12(() => derivedState.value.session);
+    const organizationCtx = computed12(() => derivedState.value.organization);
+    app.provide(ClerkInjectionKey, {
+      clerk,
+      authCtx,
+      clientCtx,
+      sessionCtx,
+      userCtx,
+      organizationCtx
+    });
+  }
+};
+
+// src/index.ts
+setErrorThrowerOptions({ packageName: "@clerk/vue" });
+setClerkJsLoadingErrorPackageName("@clerk/vue");
+export {
+  APIKeys_default as APIKeys,
+  AuthenticateWithRedirectCallback,
+  ClerkLoaded,
+  ClerkLoading,
+  CreateOrganization_default as CreateOrganization,
+  GoogleOneTap_default as GoogleOneTap,
+  OrganizationList_default as OrganizationList,
+  OrganizationProfile,
+  OrganizationSwitcher,
+  PricingTable_default as PricingTable,
+  Protect,
+  RedirectToCreateOrganization,
+  RedirectToOrganizationProfile,
+  RedirectToSignIn,
+  RedirectToSignUp,
+  RedirectToTasks,
+  RedirectToUserProfile,
+  SignIn_default as SignIn,
+  SignInButton_default as SignInButton,
+  SignInWithMetamaskButton_default as SignInWithMetamaskButton,
+  SignOutButton_default as SignOutButton,
+  SignUp_default as SignUp,
+  SignUpButton_default as SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserAvatar_default as UserAvatar,
+  UserButton,
+  UserProfile,
+  Waitlist_default as Waitlist,
+  clerkPlugin,
+  updateClerkOptions,
+  useAuth,
+  useClerk,
+  useOrganization,
+  useSession,
+  useSessionList,
+  useSignIn,
+  useSignUp,
+  useUser
+};
+//# sourceMappingURL=index.js.map

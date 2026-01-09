@@ -1,0 +1,28 @@
+import * as _nuxt_schema from '@nuxt/schema';
+import { Without } from '@clerk/types';
+import { PluginOptions } from '@clerk/vue';
+
+type ModuleOptions = Without<PluginOptions, 'routerPush' | 'routerReplace' | 'publishableKey' | 'initialState'> & {
+    publishableKey?: string;
+    /**
+     * Skip the automatic server middleware registration. When enabled, you'll need to
+     * register the middleware manually in your application.
+     *
+     * @default false
+     *
+     * @example
+     *
+     * ```ts
+     * // server/middleware/clerk.ts
+     * import { clerkMiddleware } from '@clerk/nuxt/server'
+     *
+     * export default clerkMiddleware((event) => {
+     *   console.log('auth', event.context.auth())
+     * })
+     * ```
+     */
+    skipServerMiddleware?: boolean;
+};
+declare const _default: _nuxt_schema.NuxtModule<ModuleOptions, ModuleOptions, false>;
+
+export { type ModuleOptions, _default as default };

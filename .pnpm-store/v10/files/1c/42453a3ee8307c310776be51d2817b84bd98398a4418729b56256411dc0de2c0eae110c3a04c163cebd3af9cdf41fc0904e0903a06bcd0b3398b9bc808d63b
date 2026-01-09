@@ -1,0 +1,10 @@
+import { GetAuthFnNoRequest, AuthenticateRequestOptions } from '@clerk/backend/internal';
+import { PendingSessionOptions } from '@clerk/types';
+
+type AuthOptions = PendingSessionOptions & Pick<AuthenticateRequestOptions, 'acceptsToken'>;
+/**
+ * @internal This type is used to define the `auth` function in the event context.
+ */
+type AuthFn = GetAuthFnNoRequest;
+
+export type { AuthFn, AuthOptions };

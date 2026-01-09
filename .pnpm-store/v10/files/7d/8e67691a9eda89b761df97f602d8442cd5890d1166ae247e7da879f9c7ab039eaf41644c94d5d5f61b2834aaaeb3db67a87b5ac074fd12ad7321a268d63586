@@ -1,0 +1,33 @@
+import type { HandleOAuthCallbackParams, PendingSessionOptions, ProtectProps as _ProtectProps, RedirectOptions } from '@clerk/shared/types';
+export declare const SignedIn: import("vue").DefineSetupFnComponent<PendingSessionOptions, {}, {}, PendingSessionOptions & {}, import("vue").PublicProps>;
+export declare const SignedOut: import("vue").DefineSetupFnComponent<PendingSessionOptions, {}, {}, PendingSessionOptions & {}, import("vue").PublicProps>;
+export declare const ClerkLoaded: import("vue").DefineSetupFnComponent<Record<string, any>, {}, {}, Record<string, any> & {}, import("vue").PublicProps>;
+export declare const ClerkLoading: import("vue").DefineSetupFnComponent<Record<string, any>, {}, {}, Record<string, any> & {}, import("vue").PublicProps>;
+export declare const RedirectToSignIn: import("vue").DefineSetupFnComponent<RedirectOptions, {}, {}, import("@clerk/shared/types").SignInForceRedirectUrl & import("@clerk/shared/types").SignInFallbackRedirectUrl & import("@clerk/shared/types").SignUpForceRedirectUrl & import("@clerk/shared/types").SignUpFallbackRedirectUrl & import("@clerk/shared/types").LegacyRedirectProps & {}, import("vue").PublicProps>;
+export declare const RedirectToSignUp: import("vue").DefineSetupFnComponent<RedirectOptions, {}, {}, import("@clerk/shared/types").SignInForceRedirectUrl & import("@clerk/shared/types").SignInFallbackRedirectUrl & import("@clerk/shared/types").SignUpForceRedirectUrl & import("@clerk/shared/types").SignUpFallbackRedirectUrl & import("@clerk/shared/types").LegacyRedirectProps & {}, import("vue").PublicProps>;
+export declare const RedirectToTasks: import("vue").DefineSetupFnComponent<RedirectOptions, {}, {}, import("@clerk/shared/types").SignInForceRedirectUrl & import("@clerk/shared/types").SignInFallbackRedirectUrl & import("@clerk/shared/types").SignUpForceRedirectUrl & import("@clerk/shared/types").SignUpFallbackRedirectUrl & import("@clerk/shared/types").LegacyRedirectProps & {}, import("vue").PublicProps>;
+/**
+ * @deprecated Use [`redirectToUserProfile()`](https://clerk.com/docs/reference/javascript/clerk/redirect-methods#redirect-to-user-profile) instead.
+ */
+export declare const RedirectToUserProfile: import("vue").DefineSetupFnComponent<Record<string, any>, {}, {}, Record<string, any> & {}, import("vue").PublicProps>;
+/**
+ * @deprecated Use [`redirectToOrganizationProfile()`](https://clerk.com/docs/reference/javascript/clerk/redirect-methods#redirect-to-organization-profile) instead.
+ */
+export declare const RedirectToOrganizationProfile: import("vue").DefineSetupFnComponent<Record<string, any>, {}, {}, Record<string, any> & {}, import("vue").PublicProps>;
+/**
+ * @deprecated Use [`redirectToCreateOrganization()`](https://clerk.com/docs/reference/javascript/clerk/redirect-methods#redirect-to-create-organization) instead.
+ */
+export declare const RedirectToCreateOrganization: import("vue").DefineSetupFnComponent<Record<string, any>, {}, {}, Record<string, any> & {}, import("vue").PublicProps>;
+export declare const AuthenticateWithRedirectCallback: import("vue").DefineSetupFnComponent<HandleOAuthCallbackParams, {}, {}, import("@clerk/shared/types").TransferableOption & import("@clerk/shared/types").SignInForceRedirectUrl & import("@clerk/shared/types").SignInFallbackRedirectUrl & import("@clerk/shared/types").SignUpForceRedirectUrl & import("@clerk/shared/types").SignUpFallbackRedirectUrl & import("@clerk/shared/types").LegacyRedirectProps & {
+    signInUrl?: string;
+    signUpUrl?: string;
+    firstFactorUrl?: string;
+    secondFactorUrl?: string;
+    resetPasswordUrl?: string;
+    continueSignUpUrl?: string | null;
+    verifyEmailAddressUrl?: string | null;
+    verifyPhoneNumberUrl?: string | null;
+    reloadResource?: "signIn" | "signUp";
+} & {}, import("vue").PublicProps>;
+export type ProtectProps = _ProtectProps & PendingSessionOptions;
+export declare const Protect: import("vue").DefineSetupFnComponent<ProtectProps, {}, {}, ProtectProps & {}, import("vue").PublicProps>;

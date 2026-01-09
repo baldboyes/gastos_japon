@@ -1,0 +1,65 @@
+import { AuthenticateRequestOptions } from '@clerk/backend/internal';
+import { EventHandler, eventHandler } from 'h3';
+
+interface ClerkMiddleware {
+    /**
+     * @example
+     * export default clerkMiddleware((event) => { ... }, options);
+     */
+    (handler: EventHandler, options?: AuthenticateRequestOptions): ReturnType<typeof eventHandler>;
+    /**
+     * @example
+     * export default clerkMiddleware(options);
+     */
+    (options?: AuthenticateRequestOptions): ReturnType<typeof eventHandler>;
+}
+/**
+ * Middleware for Nuxt that handles authentication and authorization with Clerk.
+ *
+ * @example
+ * Basic usage with options:
+ * ```ts
+ * export default clerkMiddleware({
+ *   authorizedParties: ['https://example.com']
+ * })
+ * ```
+ *
+ * @example
+ * With custom handler:
+ * ```ts
+ * export default clerkMiddleware((event) => {
+ *   // Access auth data from the event context
+ *   const { auth } = event.context
+ *
+ *   // Example: Require authentication for all API routes
+ *   if (!auth.userId && event.path.startsWith('/api')) {
+ *     throw createError({
+ *       statusCode: 401,
+ *       message: 'Unauthorized'
+ *     })
+ *   }
+ * })
+ * ```
+ *
+ * @example
+ * With custom handler and options:
+ * ```ts
+ * export default clerkMiddleware((event) => {
+ *   // Access auth data from the event context
+ *   const { auth } = event.context
+ *
+ *   // Example: Require authentication for all API routes
+ *   if (!auth.userId && event.path.startsWith('/api')) {
+ *     throw createError({
+ *       statusCode: 401,
+ *       message: 'Unauthorized'
+ *     })
+ *   }
+ * }, {
+ *   authorizedParties: ['https://example.com']
+ * })
+ * ```
+ */
+declare const clerkMiddleware: ClerkMiddleware;
+
+export { clerkMiddleware };

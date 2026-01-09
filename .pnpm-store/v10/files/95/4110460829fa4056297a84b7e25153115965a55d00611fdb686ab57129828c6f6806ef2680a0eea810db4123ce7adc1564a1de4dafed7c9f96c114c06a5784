@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/runtime/composables/index.ts"],"sourcesContent":["export { useAuth, useUser, useSession, useClerk, useSignIn, useSignUp, useOrganization } from '@clerk/vue';\n"],"mappings":"AAAA,SAAS,SAAS,SAAS,YAAY,UAAU,WAAW,WAAW,uBAAuB;","names":[]}

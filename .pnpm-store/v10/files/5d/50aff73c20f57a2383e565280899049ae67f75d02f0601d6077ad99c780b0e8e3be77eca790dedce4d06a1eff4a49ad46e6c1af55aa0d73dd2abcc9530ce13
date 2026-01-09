@@ -1,0 +1,10 @@
+export * from '@clerk/backend';
+export { clerkClient } from './clerkClient.js';
+export { clerkMiddleware } from './clerkMiddleware.js';
+export { createRouteMatcher } from './routeMatcher.js';
+export { getAuth } from './getAuth.js';
+export { AuthFn } from './types.js';
+import 'h3';
+import '@clerk/backend/internal';
+import '@clerk/shared/pathMatcher';
+import '@clerk/types';

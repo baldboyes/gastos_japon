@@ -1,0 +1,12 @@
+export * from "@clerk/backend";
+import { clerkClient } from "./clerkClient";
+import { clerkMiddleware } from "./clerkMiddleware";
+import { createRouteMatcher } from "./routeMatcher";
+import { getAuth } from "./getAuth";
+export {
+  clerkClient,
+  clerkMiddleware,
+  createRouteMatcher,
+  getAuth
+};
+//# sourceMappingURL=index.js.map

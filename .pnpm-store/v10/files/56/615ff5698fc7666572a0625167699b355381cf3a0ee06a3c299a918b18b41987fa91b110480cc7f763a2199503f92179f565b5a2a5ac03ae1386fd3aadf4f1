@@ -1,0 +1,17 @@
+import {
+  isClerkAPIResponseError,
+  isClerkRuntimeError,
+  isEmailLinkError,
+  isKnownError,
+  isMetamaskError,
+  EmailLinkErrorCodeStatus
+} from "@clerk/vue/errors";
+export {
+  EmailLinkErrorCodeStatus,
+  isClerkAPIResponseError,
+  isClerkRuntimeError,
+  isEmailLinkError,
+  isKnownError,
+  isMetamaskError
+};
+//# sourceMappingURL=errors.js.map

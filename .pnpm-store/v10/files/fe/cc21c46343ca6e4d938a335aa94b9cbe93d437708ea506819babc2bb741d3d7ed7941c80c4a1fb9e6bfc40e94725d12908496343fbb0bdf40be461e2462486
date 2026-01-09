@@ -1,0 +1,9 @@
+import type { ErrorThrowerOptions } from '@clerk/shared/error';
+declare const errorThrower: import("@clerk/shared/error-BN1GdoFe").ErrorThrower;
+export { errorThrower };
+/**
+ * Overrides options of the internal errorThrower (eg setting packageName prefix).
+ *
+ * @internal
+ */
+export declare function setErrorThrowerOptions(options: ErrorThrowerOptions): void;

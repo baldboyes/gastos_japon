@@ -1,0 +1,139 @@
+import {
+  addComponent,
+  addImports,
+  addImportsDir,
+  addPlugin,
+  addServerHandler,
+  addTypeTemplate,
+  createResolver,
+  defineNuxtModule,
+  updateRuntimeConfig
+} from "@nuxt/kit";
+var module_default = defineNuxtModule({
+  meta: {
+    name: "@clerk/nuxt",
+    version: "1.13.10",
+    configKey: "clerk",
+    compatibility: {
+      nuxt: ">=3.0.0"
+    }
+  },
+  setup(options, nuxt) {
+    void updateRuntimeConfig({
+      // Public keys exposed to client and shared with the server
+      public: {
+        clerk: {
+          ...options,
+          publishableKey: options.publishableKey,
+          signInUrl: options.signInUrl,
+          signInFallbackRedirectUrl: options.signInFallbackRedirectUrl,
+          signUpFallbackRedirectUrl: options.signUpFallbackRedirectUrl,
+          signInForceRedirectUrl: options.signInForceRedirectUrl,
+          signUpForceRedirectUrl: options.signUpForceRedirectUrl,
+          signUpUrl: options.signUpUrl,
+          domain: options.domain,
+          clerkJSUrl: options.clerkJSUrl,
+          clerkJSVariant: options.clerkJSVariant,
+          clerkJSVersion: options.clerkJSVersion,
+          isSatellite: options.isSatellite,
+          // Backend specific variables that are safe to share.
+          // We want them to be overridable like the other public keys (e.g NUXT_PUBLIC_CLERK_PROXY_URL)
+          proxyUrl: options.proxyUrl,
+          apiUrl: "https://api.clerk.com",
+          apiVersion: "v1"
+        }
+      },
+      // Private keys available only on within server-side
+      clerk: {
+        secretKey: void 0,
+        machineSecretKey: void 0,
+        jwtKey: void 0,
+        webhookSigningSecret: void 0
+      }
+    });
+    const resolver = createResolver(import.meta.url);
+    nuxt.options.build.transpile.push(resolver.resolve("./runtime"));
+    nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {};
+    nuxt.options.vite.optimizeDeps.include = nuxt.options.vite.optimizeDeps.include || [];
+    nuxt.options.vite.optimizeDeps.include.push("@clerk/vue");
+    addPlugin(resolver.resolve("./runtime/plugin"));
+    if (!options.skipServerMiddleware) {
+      addServerHandler({
+        middleware: true,
+        handler: resolver.resolve("./runtime/server/middleware")
+      });
+    }
+    addTypeTemplate(
+      {
+        filename: "types/clerk.d.ts",
+        getContents: () => `import type { SessionAuthObject } from '@clerk/backend';
+          import type { AuthFn } from '@clerk/nuxt/server';
+
+          declare module 'h3' {
+            interface H3EventContext {
+              auth: SessionAuthObject & AuthFn;
+            }
+          }
+        `
+      },
+      { nitro: true }
+    );
+    addImportsDir(resolver.resolve("./runtime/composables"));
+    addImports([
+      {
+        name: "createRouteMatcher",
+        from: resolver.resolve("./runtime/client")
+      },
+      {
+        name: "updateClerkOptions",
+        from: resolver.resolve("./runtime/client")
+      }
+    ]);
+    const components = [
+      // Authentication Components
+      "SignIn",
+      "SignUp",
+      "GoogleOneTap",
+      // Unstyled Components
+      "SignInButton",
+      "SignOutButton",
+      "SignUpButton",
+      "SignInWithMetamaskButton",
+      // User Components
+      "UserButton",
+      "UserProfile",
+      // Organization Components
+      "CreateOrganization",
+      "OrganizationProfile",
+      "OrganizationSwitcher",
+      "OrganizationList",
+      // Billing Components
+      "PricingTable",
+      // Control Components
+      "ClerkLoaded",
+      "ClerkLoading",
+      "Protect",
+      "RedirectToSignIn",
+      "RedirectToSignUp",
+      "RedirectToUserProfile",
+      "RedirectToOrganizationProfile",
+      "RedirectToCreateOrganization",
+      "SignedIn",
+      "SignedOut",
+      "Waitlist",
+      // API Keys Components
+      "APIKeys"
+    ];
+    components.forEach((component) => {
+      void addComponent({
+        name: component,
+        export: component,
+        filePath: "@clerk/vue"
+      });
+    });
+  }
+});
+export {
+  module_default as default
+};
+//# sourceMappingURL=module.js.map

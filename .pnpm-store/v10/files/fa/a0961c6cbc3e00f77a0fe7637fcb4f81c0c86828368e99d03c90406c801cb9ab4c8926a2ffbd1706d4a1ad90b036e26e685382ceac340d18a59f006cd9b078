@@ -1,0 +1,16 @@
+import { verifyWebhook as verifyWebhookBase } from "@clerk/backend/webhooks";
+import { toWebRequest } from "h3";
+import { useRuntimeConfig } from "#imports";
+export * from "@clerk/backend/webhooks";
+async function verifyWebhook(event, options) {
+  const webRequest = toWebRequest(event);
+  const runtimeConfig = useRuntimeConfig(event);
+  const secret = options?.signingSecret ?? runtimeConfig.clerk.webhookSigningSecret;
+  return verifyWebhookBase(webRequest, {
+    signingSecret: secret
+  });
+}
+export {
+  verifyWebhook
+};
+//# sourceMappingURL=webhooks.js.map

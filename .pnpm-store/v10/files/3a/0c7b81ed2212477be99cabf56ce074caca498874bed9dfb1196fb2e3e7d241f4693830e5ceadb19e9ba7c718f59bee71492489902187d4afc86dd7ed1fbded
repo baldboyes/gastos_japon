@@ -1,0 +1,28 @@
+import { setClerkJsLoadingErrorPackageName } from "@clerk/shared/loadClerkJsScript";
+import { clerkPlugin } from "@clerk/vue";
+import { setErrorThrowerOptions } from "@clerk/vue/internal";
+import { defineNuxtPlugin, navigateTo, useRuntimeConfig, useState } from "nuxt/app";
+setErrorThrowerOptions({ packageName: "@clerk/nuxt" });
+setClerkJsLoadingErrorPackageName("@clerk/nuxt");
+var plugin_default = defineNuxtPlugin((nuxtApp) => {
+  const initialState = useState("clerk-initial-state", () => void 0);
+  if (import.meta.server) {
+    initialState.value = nuxtApp.ssrContext?.event.context.__clerk_initial_state;
+  }
+  const runtimeConfig = useRuntimeConfig();
+  nuxtApp.vueApp.use(clerkPlugin, {
+    ...runtimeConfig.public.clerk ?? {},
+    sdkMetadata: {
+      name: "@clerk/nuxt",
+      version: "1.13.10",
+      environment: process.env.NODE_ENV
+    },
+    routerPush: (to) => navigateTo(to),
+    routerReplace: (to) => navigateTo(to, { replace: true }),
+    initialState: initialState.value
+  });
+});
+export {
+  plugin_default as default
+};
+//# sourceMappingURL=plugin.js.map

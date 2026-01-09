@@ -1,0 +1,14 @@
+export declare const multipleChildrenInButtonComponent: (name: string) => string;
+export declare const invalidStateError = "Invalid state. Feel free to submit a bug or reach out to support here: https://clerk.com/support";
+export declare const useAuthHasRequiresRoleOrPermission = "Missing parameters. `has` from `useAuth` requires a permission or role key to be passed. Example usage: `has({permission: \"org:posts:edit\"})`";
+export declare const userButtonMenuActionRenderedError = "<UserButton.Action /> component needs to be a direct child of `<UserButton.MenuItems />`.";
+export declare const userButtonMenuLinkRenderedError = "<UserButton.Link /> component needs to be a direct child of `<UserButton.MenuItems />`.";
+export declare const userButtonMenuItemLinkWrongProps = "Missing requirements. <UserButton.Link /> component requires props: href, label and slots: labelIcon.";
+export declare const userButtonMenuItemActionWrongProps = "Missing requirements. <UserButton.Action /> component requires props: label and slots: labelIcon.";
+export declare const userButtonMenuItemsRenderedError = "<UserButton.MenuItems /> component needs to be a direct child of `<UserButton />`.";
+export declare const customPageWrongProps: (componentName: string) => string;
+export declare const customLinkWrongProps: (componentName: string) => string;
+export declare const userProfilePageRenderedError = "<UserProfile.Page /> component needs to be a direct child of `<UserProfile />` or `<UserButton />`.";
+export declare const userProfileLinkRenderedError = "<UserProfile.Link /> component needs to be a direct child of `<UserProfile />` or `<UserButton />`.";
+export declare const organizationProfilePageRenderedError = "<OrganizationProfile.Page /> component needs to be a direct child of `<OrganizationProfile />` or `<OrganizationSwitcher />`.";
+export declare const organizationProfileLinkRenderedError = "<OrganizationProfile.Link /> component needs to be a direct child of `<OrganizationProfile />` or `<OrganizationSwitcher />`.";

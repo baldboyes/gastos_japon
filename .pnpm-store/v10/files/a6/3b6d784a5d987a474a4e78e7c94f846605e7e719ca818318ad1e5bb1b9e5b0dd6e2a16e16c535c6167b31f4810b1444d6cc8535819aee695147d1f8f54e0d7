@@ -1,0 +1,20 @@
+import { makeAuthObjectSerializable, stripPrivateDataFromObject } from "@clerk/backend/internal";
+import { getRequestHeaders, getRequestProtocol } from "h3";
+function toWebRequest(event) {
+  const headers = getRequestHeaders(event);
+  const protocol = getRequestProtocol(event);
+  const dummyOriginReqUrl = new URL(event.node.req.url || "", `${protocol}://clerk-dummy`);
+  return new Request(dummyOriginReqUrl, {
+    method: event.method,
+    headers: new Headers(headers)
+  });
+}
+function createInitialState(auth) {
+  const initialState = makeAuthObjectSerializable(stripPrivateDataFromObject(auth));
+  return initialState;
+}
+export {
+  createInitialState,
+  toWebRequest
+};
+//# sourceMappingURL=utils.js.map

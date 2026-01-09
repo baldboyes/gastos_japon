@@ -1,0 +1,9 @@
+import * as h3 from 'h3';
+
+/**
+ * This middleware is automatically installed when adding the @clerk/nuxt module.
+ * It can be disabled by setting the skipServerMiddleware option in the config.
+ */
+declare const _default: h3.EventHandler<h3.EventHandlerRequest, unknown>;
+
+export { _default as default };

@@ -1,0 +1,6 @@
+import * as _clerk_backend from '@clerk/backend';
+import { H3Event } from 'h3';
+
+declare function clerkClient(event: H3Event): _clerk_backend.ClerkClient;
+
+export { clerkClient };

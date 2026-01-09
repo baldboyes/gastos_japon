@@ -1,0 +1,13 @@
+import { createPathMatcher } from "@clerk/shared/pathMatcher";
+import { getRequestURL } from "h3";
+const createRouteMatcher = (routes) => {
+  const matcher = createPathMatcher(routes);
+  return (event) => {
+    const url = getRequestURL(event);
+    return matcher(new URL(url).pathname);
+  };
+};
+export {
+  createRouteMatcher
+};
+//# sourceMappingURL=routeMatcher.js.map

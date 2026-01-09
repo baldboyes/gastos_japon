@@ -1,0 +1,4 @@
+export { createRouteMatcher } from './routeMatcher.js';
+export { updateClerkOptions } from '@clerk/vue';
+import '@clerk/shared/pathMatcher';
+import 'nuxt/app';

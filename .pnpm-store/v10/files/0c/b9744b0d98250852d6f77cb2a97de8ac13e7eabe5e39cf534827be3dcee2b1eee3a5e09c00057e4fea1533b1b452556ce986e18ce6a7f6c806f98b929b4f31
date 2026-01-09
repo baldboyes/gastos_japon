@@ -1,0 +1,2 @@
+export { EmailLinkErrorCodeStatus, isClerkAPIResponseError, isClerkRuntimeError, isEmailLinkError, isKnownError, isMetamaskError } from '@clerk/vue/errors';
+import '@clerk/vue';

@@ -1,0 +1,31 @@
+import { createClerkClient } from "@clerk/backend";
+import { isTruthy } from "@clerk/shared/underscore";
+import { useRuntimeConfig } from "#imports";
+function clerkClient(event) {
+  const runtimeConfig = useRuntimeConfig(event);
+  return createClerkClient({
+    publishableKey: runtimeConfig.public.clerk.publishableKey,
+    apiUrl: runtimeConfig.public.clerk.apiUrl,
+    apiVersion: runtimeConfig.public.clerk.apiVersion,
+    proxyUrl: runtimeConfig.public.clerk.proxyUrl,
+    domain: runtimeConfig.public.clerk.domain,
+    isSatellite: runtimeConfig.public.clerk.isSatellite,
+    secretKey: runtimeConfig.clerk.secretKey,
+    machineSecretKey: runtimeConfig.clerk.machineSecretKey,
+    jwtKey: runtimeConfig.clerk.jwtKey,
+    telemetry: {
+      disabled: isTruthy(runtimeConfig.public.clerk.telemetry?.disabled),
+      debug: isTruthy(runtimeConfig.public.clerk.telemetry?.debug)
+    },
+    userAgent: `${"@clerk/nuxt"}@${"1.13.10"}`,
+    sdkMetadata: {
+      name: "@clerk/nuxt",
+      version: "1.13.10",
+      environment: process.env.NODE_ENV
+    }
+  });
+}
+export {
+  clerkClient
+};
+//# sourceMappingURL=clerkClient.js.map

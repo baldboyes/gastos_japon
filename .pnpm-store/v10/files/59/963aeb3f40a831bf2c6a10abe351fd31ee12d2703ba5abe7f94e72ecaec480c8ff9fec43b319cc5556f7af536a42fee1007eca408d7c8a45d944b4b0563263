@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/runtime/client/index.ts"],"sourcesContent":["export { createRouteMatcher } from './routeMatcher';\nexport { updateClerkOptions } from '@clerk/vue';\n"],"mappings":"AAAA,SAAS,0BAA0B;AACnC,SAAS,0BAA0B;","names":[]}

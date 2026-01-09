@@ -1,0 +1,7 @@
+import { createRouteMatcher } from "./routeMatcher";
+import { updateClerkOptions } from "@clerk/vue";
+export {
+  createRouteMatcher,
+  updateClerkOptions
+};
+//# sourceMappingURL=index.js.map

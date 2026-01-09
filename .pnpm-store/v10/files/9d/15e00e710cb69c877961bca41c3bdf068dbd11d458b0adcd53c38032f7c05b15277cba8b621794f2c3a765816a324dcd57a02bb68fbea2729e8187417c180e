@@ -1,0 +1,6 @@
+import { clerkMiddleware } from "./clerkMiddleware";
+var middleware_default = clerkMiddleware();
+export {
+  middleware_default as default
+};
+//# sourceMappingURL=middleware.js.map

@@ -1,0 +1,18 @@
+import type { SignOutOptions } from '@clerk/shared/types';
+interface SignOutButtonProps {
+    signOutOptions?: SignOutOptions;
+    sessionId?: string;
+    redirectUrl?: string;
+}
+declare var __VLS_10: {};
+type __VLS_Slots = {} & {
+    default?: (props: typeof __VLS_10) => any;
+};
+declare const __VLS_component: import("vue").DefineComponent<SignOutButtonProps, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<SignOutButtonProps> & Readonly<{}>, {}, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
+declare const _default: __VLS_WithSlots<typeof __VLS_component, __VLS_Slots>;
+export default _default;
+type __VLS_WithSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};
