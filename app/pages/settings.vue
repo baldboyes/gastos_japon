@@ -333,6 +333,12 @@
 <script setup lang="ts">
 import { CURRENCIES } from '~/composables/useSettings'
 import type { Currency } from '~/types'
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '~/components/ui/alert-dialog'
+
 const { user } = useUser()
 const { settings, setCurrency, getCurrencyInfo } = useSettings()
 const { budget, updateBudget, expenses, getTotalSpent, clearAllData, exportData, importData } = useExpenses()
@@ -441,7 +447,7 @@ function triggerImport() {
 function handleImport(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-
+  
   if (!file) return
 
   const reader = new FileReader()

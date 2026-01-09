@@ -47,6 +47,12 @@ export function formatDate(date: string | Date): string {
  * @returns Formatted time string
  */
 export function formatTime(date: string | Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false // Ensure consistency across app
+  }
+
   if (typeof date === 'string') {
     // Check if it's our custom format "YYYY-MM-DD HH:MM"
     if (date.includes(' ') && !date.includes('T')) {
@@ -55,16 +61,10 @@ export function formatTime(date: string | Date): string {
     }
     // Handle ISO format or other string formats
     const d = new Date(date)
-    return d.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    return d.toLocaleTimeString('es-ES', options)
   }
   // Handle Date object
-  return date.toLocaleTimeString('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return date.toLocaleTimeString('es-ES', options)
 }
 
 /**
@@ -160,6 +160,20 @@ export function getDaysElapsed(startDate: string): number {
   const diffTime = today.getTime() - start.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return Math.max(1, diffDays) // At least 1 day
+}
+
+/**
+ * Get difference in days between two dates, returned as a signed string (e.g. "+5")
+ * @param start - Start date ISO string
+ * @param end - End date ISO string
+ * @returns Formatted string (e.g. "+5") or null if invalid/no difference
+ */
+export const getDayDiff = (start?: string, end?: string) => {
+  if (!start || !end) return null
+  const d1 = new Date(start); d1.setHours(0,0,0,0)
+  const d2 = new Date(end); d2.setHours(0,0,0,0)
+  const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+  return diff > 0 ? `+${diff}` : null
 }
 
 /**

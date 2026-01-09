@@ -1,0 +1,6129 @@
+{
+  "budget": {
+    "dailyLimit": 8000,
+    "startDate": "2025-10-23T10:05:12.156Z",
+    "currency": "JPY"
+  },
+  "expenses": [
+    {
+      "timestamp": "2025-10-24 15:59",
+      "placeName": "Tren",
+      "amount": 970,
+      "category": "transport",
+      "notes": "Tren aeropuerto a osaka",
+      "location": {
+        "coordinates": {
+          "lat": 34.64202988867119,
+          "lng": 135.49659030967427
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761289211547-mgqnuln3f"
+    },
+    {
+      "timestamp": "2025-10-24 16:23",
+      "placeName": "Lawson",
+      "amount": 1200,
+      "category": "food",
+      "notes": "Comida, agua, cepillo y pasta de dientes, patatas",
+      "location": {
+        "coordinates": {
+          "lat": 34.641801845976275,
+          "lng": 135.4957608672065
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761290679089-mflvcak9f"
+    },
+    {
+      "timestamp": "2025-10-24 21:25",
+      "placeName": "Tonkatsu",
+      "amount": 1600,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64436623456044,
+          "lng": 135.49693962524708
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761308724143-i4o14b1vv"
+    },
+    {
+      "timestamp": "2025-10-24 21:25",
+      "placeName": "Desayuno",
+      "amount": 471,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64386971516434,
+          "lng": 135.49619929717431
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761308759902-q0rflmpys"
+    },
+    {
+      "timestamp": "2025-10-25 08:03",
+      "placeName": "Transporte",
+      "amount": 650,
+      "category": "transport",
+      "notes": "Metro y tren de Osaka a Arashiyama",
+      "location": {
+        "coordinates": {
+          "lat": 35.0103224696427,
+          "lng": 135.68157688863323
+        },
+        "city": "Nishikyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761347049476-syndc26a1"
+    },
+    {
+      "timestamp": "2025-10-25 10:24",
+      "placeName": "Seiryōji (Saga Shakadō) Temple",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02354585088105,
+          "lng": 135.67432207932364
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761355468635-sg9y9c2rh"
+    },
+    {
+      "timestamp": "2025-10-25 10:41",
+      "placeName": "Adashino Nenbutsuji Temple",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02685928243507,
+          "lng": 135.6645379361401
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761356503715-s1yqtztsm"
+    },
+    {
+      "timestamp": "2025-10-25 11:18",
+      "placeName": "Templo Giouji",
+      "amount": 300,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02352235152415,
+          "lng": 135.66679120870714
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761358730062-5sc4wks2m"
+    },
+    {
+      "timestamp": "2025-10-25T12:17:00",
+      "placeName": "Arashiyama - Kurama",
+      "amount": 1130,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.011287243389106,
+          "lng": 135.7415549873567
+        },
+        "city": "Kyoto",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761362249903-cnepa4als"
+    },
+    {
+      "timestamp": "2025-10-25T14:01:00",
+      "placeName": "Comida kurama",
+      "amount": 1000,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.11436949630683,
+          "lng": 135.7727889973561
+        },
+        "city": "Kyoto",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761368501328-m9et38xke"
+    },
+    {
+      "timestamp": "2025-10-25T14:01:00",
+      "placeName": "Entrada kurama",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.11439198209575,
+          "lng": 135.7728022357742
+        },
+        "city": "Kyoto",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761368519792-sghpmg69w"
+    },
+    {
+      "timestamp": "2025-10-25T17:59:00",
+      "placeName": "Kibune - Osaka",
+      "amount": 1220,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69774150495189,
+          "lng": 135.5338267545469
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761382825180-ikbkuh2cp"
+    },
+    {
+      "timestamp": "2025-10-25T20:43:00",
+      "placeName": "Kura cena",
+      "amount": 1690,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64215520385652,
+          "lng": 135.4966063781208
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1761435840381-9x5tbqmkw"
+    },
+    {
+      "timestamp": "2025-10-26T10:27:00",
+      "placeName": "Osaka - katsuoji",
+      "amount": 1480,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.832039590882495,
+          "lng": 135.49092153885792
+        },
+        "city": "Minoh",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761442104345-xwvnqvjl0"
+    },
+    {
+      "timestamp": "2025-10-26T12:26:00",
+      "placeName": "Katsuoji",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.864378882373636,
+          "lng": 135.49282036223238
+        },
+        "city": "Minoh",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761449195419-3pwkhb32v"
+    },
+    {
+      "timestamp": "2025-10-26T12:30:00",
+      "placeName": "Katsuoji - Dotonbori",
+      "amount": 1330,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.864400685608146,
+          "lng": 135.49279228498335
+        },
+        "city": "Minoh",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761449450657-qs39d826q"
+    },
+    {
+      "timestamp": "2025-10-26T14:33:00",
+      "placeName": "Ramen Tendo",
+      "amount": 1300,
+      "category": "food",
+      "notes": "Estaba bueno",
+      "location": {
+        "coordinates": {
+          "lat": 34.66632876409238,
+          "lng": 135.50593649820627
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1761456831114-eb21rdqxw"
+    },
+    {
+      "timestamp": "2025-10-26T16:41:00",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64213853472283,
+          "lng": 135.49656518337653
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761464533774-h7nwn06v7"
+    },
+    {
+      "timestamp": "2025-10-26T16:42:00",
+      "placeName": "Cena FamilyMark",
+      "amount": 734,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64213853472283,
+          "lng": 135.49656518337653
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1761464578253-az1gvz85k"
+    },
+    {
+      "timestamp": "2025-10-27T12:44:00",
+      "placeName": "Umeda",
+      "amount": 2000,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.704654480519146,
+          "lng": 135.49122916940013
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1761536713780-18j6s0xqi"
+    },
+    {
+      "timestamp": "2025-10-27T12:45:00",
+      "placeName": "Taquilla",
+      "amount": 300,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.704536456309604,
+          "lng": 135.49135090546736
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1761536746920-pq0s0vl6k"
+    },
+    {
+      "timestamp": "2025-10-27T12:46:00",
+      "placeName": "Hotel - Umeda",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.70456165925956,
+          "lng": 135.49221910000233
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1761536824215-c432oaep3"
+    },
+    {
+      "timestamp": "2025-10-26T06:31:00",
+      "placeName": "Kuroneko",
+      "amount": 2672,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.70183345284935,
+          "lng": 135.49646196482766
+        },
+        "city": "Osaka",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1761600686753-0u7opedp0"
+    },
+    {
+      "timestamp": "2025-10-28 08:13",
+      "placeName": "Doutor",
+      "amount": 950,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.7102768359501,
+          "lng": 139.79157763392175
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761606812531-365ibklh3"
+    },
+    {
+      "timestamp": "2025-10-28 08:49",
+      "placeName": "Tasas agora",
+      "amount": 900,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.709444954347916,
+          "lng": 139.79156017754545
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761609004033-fzmhxu6k3"
+    },
+    {
+      "timestamp": "2025-10-28 11:43",
+      "placeName": "Transporte a Narita",
+      "amount": 1180,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.77354395406852,
+          "lng": 140.3870072886603
+        },
+        "city": "Narita",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761619438039-eyjkmvaqy"
+    },
+    {
+      "timestamp": "2025-10-28 11:46",
+      "placeName": "Agua",
+      "amount": 108,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.77361009013896,
+          "lng": 140.38758048407306
+        },
+        "city": "Narita",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761619607418-exi1lcgn0"
+    },
+    {
+      "timestamp": "2025-10-28 16:56",
+      "placeName": "Tasas",
+      "amount": 1200,
+      "category": "accommodation",
+      "notes": "Tasas 3 dobles",
+      "location": {
+        "coordinates": {
+          "lat": 35.70917187246107,
+          "lng": 139.79108699519878
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761638205850-dy4a47b9t"
+    },
+    {
+      "timestamp": "2025-10-28 16:56",
+      "placeName": "Tasas",
+      "amount": 600,
+      "category": "accommodation",
+      "notes": "Tasas twin",
+      "location": {
+        "coordinates": {
+          "lat": 35.70915530117169,
+          "lng": 139.79106918230264
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761638227358-1oz1jq2gd"
+    },
+    {
+      "timestamp": "2025-10-28 16:58",
+      "placeName": "Narita - Ueno",
+      "amount": 1180,
+      "category": "transport",
+      "notes": "Trayecto de narita a ueno",
+      "location": {
+        "coordinates": {
+          "lat": 35.7091606205142,
+          "lng": 139.7910361488043
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761638358136-4rq3hkziz"
+    },
+    {
+      "timestamp": "2025-10-28 16:59",
+      "placeName": "Ueno-Tawaramachi",
+      "amount": 180,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70910943403617,
+          "lng": 139.79106280621303
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1761638381598-pxsmy5enu"
+    },
+    {
+      "timestamp": "2025-10-28 20:48",
+      "placeName": "Fuji Ramen",
+      "amount": 1600,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.709162672418884,
+          "lng": 139.79100198186225
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761652159202-wk5mjvktu"
+    },
+    {
+      "timestamp": "2025-10-28 20:49",
+      "placeName": "Desayuno Family",
+      "amount": 568,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70906897299678,
+          "lng": 139.79099887332953
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761652207656-2hni42o35"
+    },
+    {
+      "timestamp": "2025-10-30 10:41",
+      "placeName": "Zetteria",
+      "amount": 990,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.670436291625286,
+          "lng": 139.7064622367497
+        },
+        "city": "Shibuya",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761788517733-k49a3g3uq"
+    },
+    {
+      "timestamp": "2025-10-29 10:50",
+      "placeName": "Pase 72h metro",
+      "amount": 1500,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.670415628171455,
+          "lng": 139.7064794188286
+        },
+        "city": "Shibuya",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761789078128-skzluk2ah"
+    },
+    {
+      "timestamp": "2025-10-29 10:51",
+      "placeName": "Cena grupo",
+      "amount": 2000,
+      "category": "food",
+      "notes": "Cena con el grupo en ikebukuro",
+      "location": {
+        "coordinates": {
+          "lat": 35.67041073511651,
+          "lng": 139.706489987135
+        },
+        "city": "Shibuya",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761789120820-vmuu4bwo8"
+    },
+    {
+      "timestamp": "2025-10-29 10:52",
+      "placeName": "Skytree",
+      "amount": 2500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.67040246479879,
+          "lng": 139.7065016620282
+        },
+        "city": "Shibuya",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761789153386-3fyivartt"
+    },
+    {
+      "timestamp": "2025-10-31 18:58",
+      "placeName": "Desayuno FamilyMark",
+      "amount": 588,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761904731173-j6jirypfm"
+    },
+    {
+      "timestamp": "2025-10-31 18:59",
+      "placeName": "Sushi Shimabata",
+      "amount": 646,
+      "category": "food",
+      "notes": "Antes de imabata",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761904802302-tlgpo08u1"
+    },
+    {
+      "timestamp": "2025-10-31 19:01",
+      "placeName": "Café Doutor",
+      "amount": 350,
+      "category": "food",
+      "notes": "Estación de Tokio",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761904886175-45q47nqll"
+    },
+    {
+      "timestamp": "2025-10-31 19:02",
+      "placeName": "Ichiran Ramen",
+      "amount": 1850,
+      "category": "food",
+      "notes": "Al lado de la estación de Ueno",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761904974137-irdn1pl7k"
+    },
+    {
+      "timestamp": "2025-10-30 19:06",
+      "placeName": "Freshness Burguer",
+      "amount": 1180,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761905228304-om2ky1ofc"
+    },
+    {
+      "timestamp": "2025-10-30 19:17",
+      "placeName": "FamilyMark",
+      "amount": 727,
+      "category": "food",
+      "notes": "Desayuno para el día siguiente",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1761905876763-erjrd3x10"
+    },
+    {
+      "timestamp": "2025-10-31 21:21",
+      "placeName": "Kura Asakusa",
+      "amount": 1430,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761913319179-g0ksnzy7m"
+    },
+    {
+      "timestamp": "2025-10-31 20:27",
+      "placeName": "Detergente",
+      "amount": 382,
+      "category": "other",
+      "notes": "Detergente lavadora",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761946127752-m9zj6wzvk"
+    },
+    {
+      "timestamp": "2025-10-31 20:28",
+      "placeName": "Lavadora",
+      "amount": 500,
+      "category": "other",
+      "notes": "Lavado y secado",
+      "location": {
+        "coordinates": {
+          "lat": 35.708923371806755,
+          "lng": 139.79094459528466
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761946167676-lfw5yzdxh"
+    },
+    {
+      "timestamp": "2025-11-01 20:47",
+      "placeName": "Cafe",
+      "amount": 195,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708906026644215,
+          "lng": 139.79090789892285
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1761997658759-akn0v9zro"
+    },
+    {
+      "timestamp": "2025-11-01 20:47",
+      "placeName": "Tonkatsu Akihabara",
+      "amount": 3550,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70890590099793,
+          "lng": 139.79090799215143
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1761997746215-1lgh881f7"
+    },
+    {
+      "timestamp": "2025-11-01 20:49",
+      "placeName": "Cena y desayuno",
+      "amount": 881,
+      "category": "food",
+      "notes": "Cena y desayuno del siguiente dia",
+      "location": {
+        "coordinates": {
+          "lat": 35.70890584138058,
+          "lng": 139.79090803396937
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1761997785726-7dbm9zokq"
+    },
+    {
+      "timestamp": "2025-11-02 18:37",
+      "placeName": "Templo Nikko",
+      "amount": 1600,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.35849494845512,
+          "lng": 139.83292104239754
+        },
+        "city": "Oyama",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762076292121-xe9l99khw"
+    },
+    {
+      "timestamp": "2025-11-02 18:38",
+      "placeName": "Ueno Nikko",
+      "amount": 2640,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.353875040132024,
+          "lng": 139.83025880779732
+        },
+        "city": "Oyama",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762076315838-qbcs10s58"
+    },
+    {
+      "timestamp": "2025-11-02 18:38",
+      "placeName": "Nikko Ueno",
+      "amount": 2640,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.34870262561116,
+          "lng": 139.82724233638248
+        },
+        "city": "Oyama",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762076335864-rzu5bnsly"
+    },
+    {
+      "timestamp": "2025-11-02 18:39",
+      "placeName": "Comida en Nikko",
+      "amount": 1300,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.34227687397141,
+          "lng": 139.82348202108437
+        },
+        "city": "Oyama",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762076362896-6l91ymspl"
+    },
+    {
+      "timestamp": "2025-11-02 07:35",
+      "placeName": "Desayuno",
+      "amount": 280,
+      "category": "food",
+      "notes": "Desayuno antes del tren",
+      "location": {
+        "coordinates": {
+          "lat": 36.28003626494107,
+          "lng": 139.78023860866824
+        },
+        "city": "Oyama",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762076816158-nk8d6udii"
+    },
+    {
+      "timestamp": "2025-11-02 20:35",
+      "placeName": "Cena YayoKen",
+      "amount": 1130,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70895675593165,
+          "lng": 139.7909415134234
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762083349437-tpevqg060"
+    },
+    {
+      "timestamp": "2025-11-03 21:55",
+      "placeName": "Jardines Hamarikyu",
+      "amount": 300,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708904459163435,
+          "lng": 139.79091444805388
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762174583122-zik625nqx"
+    },
+    {
+      "timestamp": "2025-11-03 21:56",
+      "placeName": "Comida Aguacity",
+      "amount": 2100,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70894249880804,
+          "lng": 139.79089314399855
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762174611962-v0mm4zuta"
+    },
+    {
+      "timestamp": "2025-11-03 21:58",
+      "placeName": "Transportes de hoy",
+      "amount": 1393,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70890831774886,
+          "lng": 139.7909081743614
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762174715606-3ydq1x9ay"
+    },
+    {
+      "timestamp": "2025-11-03 21:59",
+      "placeName": "Cena y desayuno",
+      "amount": 1042,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.708908064323246,
+          "lng": 139.79090726786936
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762174773438-ec3uabi00"
+    },
+    {
+      "timestamp": "2025-11-03 22:02",
+      "placeName": "Kuroneko a Osaka",
+      "amount": 2680,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70890824550064,
+          "lng": 139.79090835299107
+        },
+        "city": "Taito",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762174953588-5ywkux2hz"
+    },
+    {
+      "timestamp": "2025-11-04 13:31",
+      "placeName": "Ramen",
+      "amount": 1210,
+      "category": "food",
+      "notes": "Dos tickets",
+      "location": {
+        "coordinates": {
+          "lat": 35.32026349168222,
+          "lng": 139.55217683156084
+        },
+        "city": "Kamakura",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762230691034-5qezedeya"
+    },
+    {
+      "timestamp": "2025-11-04 13:32",
+      "placeName": "Pase enoden",
+      "amount": 800,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.320265003258164,
+          "lng": 139.55217477736795
+        },
+        "city": "Kamakura",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762230792604-7yq50z404"
+    },
+    {
+      "timestamp": "2025-11-04 17:32",
+      "placeName": "Locker Enoshima",
+      "amount": 600,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.306198633404485,
+          "lng": 139.51022933424505
+        },
+        "city": "Kamakura",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762245178865-0dz7yeafg"
+    },
+    {
+      "timestamp": "2025-11-04 17:35",
+      "placeName": "Asakusa - Fujisawa",
+      "amount": 1168,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.30620146562027,
+          "lng": 139.5056025635077
+        },
+        "city": "Kamakura",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762245354269-lhch5zicq"
+    },
+    {
+      "timestamp": "2025-11-04 19:46",
+      "placeName": "Cena Odawara",
+      "amount": 1780,
+      "category": "food",
+      "notes": "KFC",
+      "location": {
+        "coordinates": {
+          "lat": 35.25513527995787,
+          "lng": 139.15743865359968
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762253185471-grt7ydeq8"
+    },
+    {
+      "timestamp": "2025-11-05 10:52",
+      "placeName": "Huevo negro",
+      "amount": 500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.24337136616,
+          "lng": 139.01946428305143
+        },
+        "city": "Hakone",
+        "prefecture": "Ashigarashimo County"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762307549743-j3d3y10mz"
+    },
+    {
+      "timestamp": "2025-11-05 17:28",
+      "placeName": "Hakone free pass",
+      "amount": 6000,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.256900863824,
+          "lng": 139.15725688088915
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762331349193-z2k1mc9jj"
+    },
+    {
+      "timestamp": "2025-11-05 07:30",
+      "placeName": "Desayuno Odawara",
+      "amount": 580,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.25690083714407,
+          "lng": 139.1572569443616
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762331479778-0fn9t22q5"
+    },
+    {
+      "timestamp": "2025-11-05 13:19",
+      "placeName": "Comida Hakome",
+      "amount": 1850,
+      "category": "food",
+      "notes": "Restaurante Fuki\nhttps://maps.app.goo.gl/RY6epRB4QdRNfFf69?g_st=ipc",
+      "location": {
+        "coordinates": {
+          "lat": 35.25690082162144,
+          "lng": 139.1572569812065
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762331608605-frf0a74na"
+    },
+    {
+      "timestamp": "2025-11-05 23:32",
+      "placeName": "Cena Odawara",
+      "amount": 1980,
+      "category": "food",
+      "notes": "Sushi",
+      "location": {
+        "coordinates": {
+          "lat": 35.256891645288746,
+          "lng": 139.15722983993567
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762353162001-cpypnkf5k"
+    },
+    {
+      "timestamp": "2025-11-05 23:32",
+      "placeName": "7eleven",
+      "amount": 1052,
+      "category": "food",
+      "notes": "7eleven",
+      "location": {
+        "coordinates": {
+          "lat": 35.25689480437078,
+          "lng": 139.15723913280624
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762353192647-mikp1xj66"
+    },
+    {
+      "timestamp": "2025-11-06 06:14",
+      "placeName": "Desayuno",
+      "amount": 364,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.25633326120382,
+          "lng": 139.15683135221266
+        },
+        "city": "Odawara",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762377285488-5pa3hqtcq"
+    },
+    {
+      "timestamp": "2025-11-06 11:13",
+      "placeName": "Autobuses templo de plata",
+      "amount": 460,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02651171912706,
+          "lng": 135.79483305855052
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762395214743-uahh7qf4h"
+    },
+    {
+      "timestamp": "2025-11-06 13:54",
+      "placeName": "Comida",
+      "amount": 850,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01433862493365,
+          "lng": 135.7937175248869
+        },
+        "city": "Kyoto",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762404893310-u0uft7mrw"
+    },
+    {
+      "timestamp": "2025-11-06 14:37",
+      "placeName": "Jardín Nanzenji",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01040584333403,
+          "lng": 135.7936939226787
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762407504711-j8labjd05"
+    },
+    {
+      "timestamp": "2025-11-06 15:25",
+      "placeName": "Nanzenji",
+      "amount": 600,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.011871610163766,
+          "lng": 135.79445759411175
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762410344673-98lawgq1t"
+    },
+    {
+      "timestamp": "2025-11-06 17:18",
+      "placeName": "Autibus a kioto",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.98721750376331,
+          "lng": 135.75921870389746
+        },
+        "city": "Kyoto",
+        "prefecture": "Unknown Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762417159588-idakc4pjj"
+    },
+    {
+      "timestamp": "2025-11-06 20:22",
+      "placeName": "Cena Kioto",
+      "amount": 1450,
+      "category": "food",
+      "notes": "Ramen en el callejón del ramen de la estación",
+      "location": {
+        "coordinates": {
+          "lat": 34.984975606761836,
+          "lng": 135.75639070111896
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762428173306-zk0qosaib"
+    },
+    {
+      "timestamp": "2025-11-06 22:29",
+      "placeName": "Tasas kioto",
+      "amount": 4800,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00829873623378,
+          "lng": 135.75875021277182
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762435790464-3511rgn0g"
+    },
+    {
+      "timestamp": "2025-11-06 17:33",
+      "placeName": "Yebisu Bar",
+      "amount": 770,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.9878883944411,
+          "lng": 135.75897535099352
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762436006592-p2qh2reio"
+    },
+    {
+      "timestamp": "2025-11-06 18:34",
+      "placeName": "Toji",
+      "amount": 1000,
+      "category": "entertainment",
+      "notes": "Toji iluminado",
+      "location": {
+        "coordinates": {
+          "lat": 34.98103736401784,
+          "lng": 135.7467358169198
+        },
+        "city": "Minami-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762436099596-cj2x68j2r"
+    },
+    {
+      "timestamp": "2025-11-06 11:30",
+      "placeName": "Templo de plata",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02682577545862,
+          "lng": 135.7982259565992
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762438071747-9froobk3u"
+    },
+    {
+      "timestamp": "2025-11-06 23:08",
+      "placeName": "Metro",
+      "amount": 220,
+      "category": "transport",
+      "notes": "Kyoto Sta. - Hotel",
+      "location": {
+        "coordinates": {
+          "lat": 35.00231497156582,
+          "lng": 135.75969306756002
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762438130307-x1ettrhzi"
+    },
+    {
+      "timestamp": "2025-11-07 09:33",
+      "placeName": "Autobús a kiyomizudera",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.99502194449046,
+          "lng": 135.77648192601532
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762475643706-v4d2mxvwx"
+    },
+    {
+      "timestamp": "2025-11-07 11:42",
+      "placeName": "Kiyomizudera",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.9948653507583,
+          "lng": 135.78500691897426
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762483392378-cwzumbrs0"
+    },
+    {
+      "timestamp": "2025-11-07 14:31",
+      "placeName": "BurgerKing",
+      "amount": 1790,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00751247327001,
+          "lng": 135.76723279198217
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762493496196-q355pjj8v"
+    },
+    {
+      "timestamp": "2025-11-07 13:42",
+      "placeName": "Autobús a Teramachi",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00376541667211,
+          "lng": 135.76947396446707
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762496789719-54aalpvim"
+    },
+    {
+      "timestamp": "2025-11-07 19:47",
+      "placeName": "Konbini",
+      "amount": 864,
+      "category": "food",
+      "notes": "Cena, sushi y agua",
+      "location": {
+        "coordinates": {
+          "lat": 35.002443867397105,
+          "lng": 135.7594127576064
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762512479568-3bq6l3xl3"
+    },
+    {
+      "timestamp": "2025-11-07 15:45",
+      "placeName": "Tren a fushimi inari",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.96869358164594,
+          "lng": 135.7692592524695
+        },
+        "city": "Fushimi-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762515251762-hekrky9p4"
+    },
+    {
+      "timestamp": "2025-11-07 17:40",
+      "placeName": "Tren a Gion",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.003814965652836,
+          "lng": 135.7719875445719
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762515333991-i9kwxy4wk"
+    },
+    {
+      "timestamp": "2025-11-07 19:40",
+      "placeName": "Autobús al hotel",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00366922492235,
+          "lng": 135.7591087230109
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762515376091-bo799xs11"
+    },
+    {
+      "timestamp": "2025-11-08 11:43",
+      "placeName": "Tren a arashiyama",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01041794448638,
+          "lng": 135.6816311154347
+        },
+        "city": "Nishikyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762569856477-ekk628azo"
+    },
+    {
+      "timestamp": "2025-11-08 12:28",
+      "placeName": "Randen Eki-Beer",
+      "amount": 250,
+      "category": "food",
+      "notes": "Croqueta",
+      "location": {
+        "coordinates": {
+          "lat": 35.015232148570234,
+          "lng": 135.67773178480115
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762572579209-iz12xrnjb"
+    },
+    {
+      "timestamp": "2025-11-08 12:29",
+      "placeName": "Tranvia",
+      "amount": 250,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02739680970227,
+          "lng": 135.73116665282936
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762572593242-fbq7f2za3"
+    },
+    {
+      "timestamp": "2025-11-08 13:15",
+      "placeName": "Templo de Oro",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.03946163394224,
+          "lng": 135.72944050825834
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762577289806-bz6sofa57"
+    },
+    {
+      "timestamp": "2025-11-08 15:42",
+      "placeName": "Katsurai - Kinkaku-ji Temple",
+      "amount": 3300,
+      "category": "food",
+      "notes": "Tonkatsu",
+      "location": {
+        "coordinates": {
+          "lat": 35.03810503308604,
+          "lng": 135.73322053969616
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762584153421-vdmd0p73u"
+    },
+    {
+      "timestamp": "2025-11-08 15:45",
+      "placeName": "Bus al hotel",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.03972157671629,
+          "lng": 135.73345751606035
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762584342074-sfuqxo2u8"
+    },
+    {
+      "timestamp": "2025-11-08 07:55",
+      "placeName": "Agua",
+      "amount": 127,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00868717494458,
+          "lng": 135.75866208534853
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762584464081-fvltd76r7"
+    },
+    {
+      "timestamp": "2025-11-08 11:45",
+      "placeName": "Jardín Tenryuji",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01570220975594,
+          "lng": 135.67335723889084
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762584554678-h1b88dj9p"
+    },
+    {
+      "timestamp": "2025-11-08 17:55",
+      "placeName": "Bebida energética",
+      "amount": 180,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00230736821291,
+          "lng": 135.75882046679573
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762592174642-cze07ago4"
+    },
+    {
+      "timestamp": "2025-11-08 17:56",
+      "placeName": "Lavadora",
+      "amount": 600,
+      "category": "other",
+      "notes": "400 lavadora, 200 secado",
+      "location": {
+        "coordinates": {
+          "lat": 35.00235946397741,
+          "lng": 135.75884977370367
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762592200233-x8insyiz2"
+    },
+    {
+      "timestamp": "2025-11-08 20:12",
+      "placeName": "Nishiki Market Alley by MOON and BACK",
+      "amount": 3013,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00508132198375,
+          "lng": 135.76239862103927
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762600332984-318fzp0zq"
+    },
+    {
+      "timestamp": "2025-11-09 14:45",
+      "placeName": "At the 21",
+      "amount": 2750,
+      "category": "food",
+      "notes": "Okonomiyaki",
+      "location": {
+        "coordinates": {
+          "lat": 34.66434770376017,
+          "lng": 135.5054141490385
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762667173756-ku7zsai5x"
+    },
+    {
+      "timestamp": "2025-11-09 16:35",
+      "placeName": "Agua",
+      "amount": 120,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.675841497271016,
+          "lng": 135.50372159006315
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762673765739-ukzy8amed"
+    },
+    {
+      "timestamp": "2025-11-09 09:55",
+      "placeName": "Tasas IP Hotel",
+      "amount": 2400,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67598590997894,
+          "lng": 135.5037726181001
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762673958608-lx3vueyp0"
+    },
+    {
+      "timestamp": "2025-11-09 08:00",
+      "placeName": "Metros kioto",
+      "amount": 440,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00861248077371,
+          "lng": 135.75970302964447
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762674174585-icfpcuk6e"
+    },
+    {
+      "timestamp": "2025-11-09 09:39",
+      "placeName": "Tren a Osaka",
+      "amount": 650,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.674853557024235,
+          "lng": 135.50638919036288
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762674298364-lxmu1lpuh"
+    },
+    {
+      "timestamp": "2025-11-09 11:35",
+      "placeName": "Metro a Shinsekai",
+      "amount": 190,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64888488493882,
+          "lng": 135.50446682043815
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762674379021-i0f0orfnr"
+    },
+    {
+      "timestamp": "2025-11-09 21:36",
+      "placeName": "Torikizoku",
+      "amount": 2340,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67565731104031,
+          "lng": 135.5013605462357
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762691840688-p4u0slpjf"
+    },
+    {
+      "timestamp": "2025-11-10 07:24",
+      "placeName": "Doutor",
+      "amount": 570,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.676540546456486,
+          "lng": 135.50136652041465
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762727113809-0nxd0dlyp"
+    },
+    {
+      "timestamp": "2025-11-10 14:50",
+      "placeName": "Zagin Kintetsu-Nara",
+      "amount": 2250,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.682292211526644,
+          "lng": 135.82626528966927
+        },
+        "city": "Nara",
+        "prefecture": "Nara"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762781883847-4nl4r26kp"
+    },
+    {
+      "timestamp": "2025-11-11 08:04",
+      "placeName": "Doutor",
+      "amount": 550,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.676469755768174,
+          "lng": 135.501370402234
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762815877655-yd28p3pgi"
+    },
+    {
+      "timestamp": "2025-11-11 09:17",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "Hotel - Osaka",
+      "location": {
+        "coordinates": {
+          "lat": 34.700393427309606,
+          "lng": 135.4810692705929
+        },
+        "city": "Fukushima-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762820271380-1rlsl32s4"
+    },
+    {
+      "timestamp": "2025-11-11 10:17",
+      "placeName": "Tren",
+      "amount": 1460,
+      "category": "transport",
+      "notes": "Osaka - Himeji",
+      "location": {
+        "coordinates": {
+          "lat": 34.82690470607888,
+          "lng": 134.69059144749923
+        },
+        "city": "Himeji",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762820509372-5499tm7xw"
+    },
+    {
+      "timestamp": "2025-11-10 10:00",
+      "placeName": "Tren",
+      "amount": 680,
+      "category": "transport",
+      "notes": "Osaka - Nara",
+      "location": {
+        "coordinates": {
+          "lat": 34.713272499379144,
+          "lng": 135.23642466361738
+        },
+        "city": "Nada-ku",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762821421555-mrl4lupzj"
+    },
+    {
+      "timestamp": "2025-11-10 17:10",
+      "placeName": "Tren",
+      "amount": 680,
+      "category": "transport",
+      "notes": "Nara - Osaka",
+      "location": {
+        "coordinates": {
+          "lat": 34.66711480023322,
+          "lng": 135.50663802902898
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762821588379-62pw0eyqk"
+    },
+    {
+      "timestamp": "2025-11-10 17:29",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.66731748723679,
+          "lng": 135.49923915431356
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762821697927-c5elkeq6j"
+    },
+    {
+      "timestamp": "2025-11-10 18:52",
+      "placeName": "Uniqlo",
+      "amount": 8191,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.674521666896155,
+          "lng": 135.50035148087227
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1762821799248-m9murh8l3"
+    },
+    {
+      "timestamp": "2025-11-10 19:03",
+      "placeName": "7eleven",
+      "amount": 59,
+      "category": "food",
+      "notes": "Cena",
+      "location": {
+        "coordinates": {
+          "lat": 34.67610005675695,
+          "lng": 135.50313564326285
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762821889338-ry9tzm6me"
+    },
+    {
+      "timestamp": "2025-11-11 14:19",
+      "placeName": "Ramen y giozas",
+      "amount": 1350,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.82947081707647,
+          "lng": 134.69201399762102
+        },
+        "city": "Himeji",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762847459855-e8cknvgr3"
+    },
+    {
+      "timestamp": "2025-11-11 11:12",
+      "placeName": "Castillo de Himeji",
+      "amount": 1050,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.83909784383005,
+          "lng": 134.69373444309832
+        },
+        "city": "Himeji",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762865732511-vkhe21p5w"
+    },
+    {
+      "timestamp": "2025-11-11 17:05",
+      "placeName": "Kobe Tower",
+      "amount": 1200,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68265820621495,
+          "lng": 135.1867322725879
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762865825758-6tiqt930j"
+    },
+    {
+      "timestamp": "2025-11-11 21:29",
+      "placeName": "Kobe Beef",
+      "amount": 10131,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.694844471772186,
+          "lng": 135.19447493828926
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762865965240-sovnqtbnv"
+    },
+    {
+      "timestamp": "2025-11-11 16:33",
+      "placeName": "Tren",
+      "amount": 960,
+      "category": "transport",
+      "notes": "Himeji - Kobe",
+      "location": {
+        "coordinates": {
+          "lat": 34.679456888156324,
+          "lng": 135.17804529635106
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762866115484-kuj2cpblz"
+    },
+    {
+      "timestamp": "2025-11-12 08:50",
+      "placeName": "Doutor",
+      "amount": 610,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67646326959342,
+          "lng": 135.50141065790734
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762905092962-4pv9dur9f"
+    },
+    {
+      "timestamp": "2025-11-12 07:30",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.649048682685645,
+          "lng": 135.50373564621066
+        },
+        "city": "Nishinari-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762907341333-f2481u5c2"
+    },
+    {
+      "timestamp": "2025-11-12 08:35",
+      "placeName": "Tren",
+      "amount": 300,
+      "category": "transport",
+      "notes": "Acompañe al grupo y regrese sin salir, no podía salir y me aplicaron tarifa de 300 👌",
+      "location": {
+        "coordinates": {
+          "lat": 34.650392329650074,
+          "lng": 135.50015994218148
+        },
+        "city": "Naniwa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1762907421350-7gp7dnm91"
+    },
+    {
+      "timestamp": "2025-11-12 08:40",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67490983519578,
+          "lng": 135.5063268867939
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1762907519412-dt7ln0nxr"
+    },
+    {
+      "timestamp": "2025-11-12 14:00",
+      "placeName": "Mos Burger",
+      "amount": 1200,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.674844948618045,
+          "lng": 135.50546874806588
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762925167290-ph5zvhn73"
+    },
+    {
+      "timestamp": "2025-11-12 22:51",
+      "placeName": "Okonomiyaki",
+      "amount": 2065,
+      "category": "food",
+      "notes": "6193/3 cena con Efu",
+      "location": {
+        "coordinates": {
+          "lat": 34.66665010137038,
+          "lng": 135.50104316347955
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1762955731333-qny7dopuq"
+    },
+    {
+      "timestamp": "2025-11-13 07:25",
+      "placeName": "Doutor",
+      "amount": 940,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67648997058599,
+          "lng": 135.50125884147906
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763014410855-vwvzqa9tw"
+    },
+    {
+      "timestamp": "2025-11-13 11:13",
+      "placeName": "ABC",
+      "amount": 5500,
+      "category": "shopping",
+      "notes": "Camiseta Adidas",
+      "location": {
+        "coordinates": {
+          "lat": 34.6739778604545,
+          "lng": 135.49718174438362
+        },
+        "city": "Nishi-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1763014498967-mqr0k9fax"
+    },
+    {
+      "timestamp": "2025-11-13 15:15",
+      "placeName": "Kamukura",
+      "amount": 2530,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.434854429899445,
+          "lng": 135.2436320198562
+        },
+        "city": "Tajiri-cho",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763014556652-cktvnkile"
+    },
+    {
+      "timestamp": "2025-11-13 17:10",
+      "placeName": "Tren",
+      "amount": 1300,
+      "category": "transport",
+      "notes": "Aeropuerto al hotel, con lo que ha dejado consu y Dani que le comprado con euros",
+      "location": {
+        "coordinates": {
+          "lat": 34.676921404826054,
+          "lng": 135.50288272080772
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763021505432-1skyufm3h"
+    },
+    {
+      "timestamp": "2025-11-13 17:11",
+      "placeName": "Tasas Hotel",
+      "amount": 900,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67692373117592,
+          "lng": 135.50288670922734
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763021522313-weww5l110"
+    },
+    {
+      "timestamp": "2025-11-13 21:40",
+      "placeName": "Pizza",
+      "amount": 1590,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67026979403748,
+          "lng": 135.4980146745475
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763037690521-0r425z124"
+    },
+    {
+      "timestamp": "2025-11-13 21:44",
+      "placeName": "Agua",
+      "amount": 130,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67694041745626,
+          "lng": 135.5028663854996
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763037868030-1vd88q1m6"
+    },
+    {
+      "timestamp": "2025-11-14 11:30",
+      "placeName": "Zetteria",
+      "amount": 1240,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.436749199343836,
+          "lng": 135.24263501054975
+        },
+        "city": "Izumisano",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763087525945-0yisqb6fk"
+    },
+    {
+      "timestamp": "2025-11-14 16:30",
+      "placeName": "Tasas",
+      "amount": 4700,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67695744184694,
+          "lng": 135.50303199035287
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763105419330-nlly62rgq"
+    },
+    {
+      "timestamp": "2025-11-14 20:50",
+      "placeName": "ABC",
+      "amount": 7790,
+      "category": "shopping",
+      "notes": "Nike",
+      "location": {
+        "coordinates": {
+          "lat": 34.677068566207936,
+          "lng": 135.50156796353866
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1763121665846-8ley5uqrv"
+    },
+    {
+      "timestamp": "2025-11-14 19:33",
+      "placeName": "Dinii Yokozuna",
+      "amount": 2526,
+      "category": "food",
+      "notes": "He pagado 9526 y ellos me han dado 1500 cada uno.",
+      "location": {
+        "coordinates": {
+          "lat": 34.65157115691143,
+          "lng": 135.50584797373136
+        },
+        "city": "Naniwa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763121805021-8tj9w09ld"
+    },
+    {
+      "timestamp": "2025-11-14 15:34",
+      "placeName": "Tren",
+      "amount": 1210,
+      "category": "transport",
+      "notes": "Aeropuerto- Hotel",
+      "location": {
+        "coordinates": {
+          "lat": 34.67507836627554,
+          "lng": 135.50035254749446
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763122060967-c8sn3orjz"
+    },
+    {
+      "timestamp": "2025-11-14 17:51",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "Hotel - Shinsekai",
+      "location": {
+        "coordinates": {
+          "lat": 34.67697442459094,
+          "lng": 135.50301424382621
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763122126364-6lneiqnxv"
+    },
+    {
+      "timestamp": "2025-11-14 20:05",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "Shinsekai - Hotel",
+      "location": {
+        "coordinates": {
+          "lat": 34.675030211296686,
+          "lng": 135.50033291596236
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763122178761-6g9wp7v6e"
+    },
+    {
+      "timestamp": "2025-11-15 12:58",
+      "placeName": "Buda",
+      "amount": 800,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68825349115138,
+          "lng": 135.83989107559458
+        },
+        "city": "Nara",
+        "prefecture": "Nara"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763179136059-qdlo6vhzw"
+    },
+    {
+      "timestamp": "2025-11-15 14:31",
+      "placeName": "Comida",
+      "amount": 2000,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68323068080645,
+          "lng": 135.82874551989957
+        },
+        "city": "Nara",
+        "prefecture": "Nara"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763184698917-08xxa5633"
+    },
+    {
+      "timestamp": "2025-11-15 19:45",
+      "placeName": "Takoyaki",
+      "amount": 800,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.66928103637365,
+          "lng": 135.50417250938136
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763215275775-etiynpxul"
+    },
+    {
+      "timestamp": "2025-11-15 20:05",
+      "placeName": "7eleven",
+      "amount": 520,
+      "category": "food",
+      "notes": "Agua, patatas y ensalada",
+      "location": {
+        "coordinates": {
+          "lat": 34.676495823987,
+          "lng": 135.50359876873938
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763215382404-5zpd9of3k"
+    },
+    {
+      "timestamp": "2025-11-15 09:30",
+      "placeName": "Tren",
+      "amount": 870,
+      "category": "transport",
+      "notes": "Hotel - Nara",
+      "location": {
+        "coordinates": {
+          "lat": 34.67697539724594,
+          "lng": 135.5030196886556
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763215522495-2gmk3ygvu"
+    },
+    {
+      "timestamp": "2025-11-15 16:15",
+      "placeName": "Tren",
+      "amount": 870,
+      "category": "transport",
+      "notes": "Nara -Hotel",
+      "location": {
+        "coordinates": {
+          "lat": 34.67697537995341,
+          "lng": 135.50301975220137
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763215591356-1owysxuis"
+    },
+    {
+      "timestamp": "2025-11-15 18:39",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "Kuroneko - Dotonbori",
+      "location": {
+        "coordinates": {
+          "lat": 34.676975396506734,
+          "lng": 135.5030197758898
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763215697752-bxtqiqa8m"
+    },
+    {
+      "timestamp": "2025-11-15 23:10",
+      "placeName": "Kuroneko",
+      "amount": 2672,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68001886658128,
+          "lng": 135.50905590353733
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763216055629-cwsffe42l"
+    },
+    {
+      "timestamp": "2025-11-16 07:08",
+      "placeName": "Desayuno",
+      "amount": 1068,
+      "category": "food",
+      "notes": "Desayuno Tren bala",
+      "location": {
+        "coordinates": {
+          "lat": 34.73365714024858,
+          "lng": 135.5008396382795
+        },
+        "city": "Yodogawa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763246543940-1t4z0pq8c"
+    },
+    {
+      "timestamp": "2025-11-16 13:29",
+      "placeName": "Comida",
+      "amount": 1500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.296715286374514,
+          "lng": 132.32024938823062
+        },
+        "city": "Hatsukaichi",
+        "prefecture": "Hiroshima"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763276411598-g96gy7maa"
+    },
+    {
+      "timestamp": "2025-11-17 08:49",
+      "placeName": "7eleven",
+      "amount": 308,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.397938335986,
+          "lng": 132.47579256576148
+        },
+        "city": "Minami-ku",
+        "prefecture": "Hiroshima"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763338935545-5thwe2d9f"
+    },
+    {
+      "timestamp": "2025-11-17 10:09",
+      "placeName": "Castillo y jardín",
+      "amount": 1050,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.83610461862829,
+          "lng": 134.69149617166883
+        },
+        "city": "Himeji",
+        "prefecture": "Hyōgo"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763351408725-bmxjuh7u6"
+    },
+    {
+      "timestamp": "2025-11-17 18:16",
+      "placeName": "Tasas",
+      "amount": 9600,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01076253084704,
+          "lng": 135.76229781591204
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763372737218-227xtuqgx"
+    },
+    {
+      "timestamp": "2025-11-17 17:56",
+      "placeName": "Metro",
+      "amount": 220,
+      "category": "transport",
+      "notes": "Kioto sta. - Hotel",
+      "location": {
+        "coordinates": {
+          "lat": 35.01075117526265,
+          "lng": 135.76231773953316
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763372821784-g3u10k918"
+    },
+    {
+      "timestamp": "2025-11-17 10:02",
+      "placeName": "Loker",
+      "amount": 500,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01076790123817,
+          "lng": 135.7622742080461
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763372948043-tbh52rjv1"
+    },
+    {
+      "timestamp": "2025-11-17 19:46",
+      "placeName": "Ramen",
+      "amount": 1450,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00619250430567,
+          "lng": 135.76692365713794
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763376383268-fsezvgd0x"
+    },
+    {
+      "timestamp": "2025-11-18 08:21",
+      "placeName": "7eleven",
+      "amount": 424,
+      "category": "food",
+      "notes": "Desayuno y agua",
+      "location": {
+        "coordinates": {
+          "lat": 35.010935242224306,
+          "lng": 135.761896230378
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763421698936-2v9a2tn43"
+    },
+    {
+      "timestamp": "2025-11-18 14:25",
+      "placeName": "Kura",
+      "amount": 2920,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00781061564769,
+          "lng": 135.76755229666298
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763443560925-a6xxl3lfx"
+    },
+    {
+      "timestamp": "2025-11-18 20:08",
+      "placeName": "7eleven",
+      "amount": 676,
+      "category": "food",
+      "notes": "Agua y desayuno siguiente dia",
+      "location": {
+        "coordinates": {
+          "lat": 35.01076304953118,
+          "lng": 135.76225677507247
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763464133309-ejgj18cap"
+    },
+    {
+      "timestamp": "2025-11-18 15:02",
+      "placeName": "mont-bell",
+      "amount": 2970,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00555127372151,
+          "lng": 135.76711472620303
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1763464528741-zuswd0435"
+    },
+    {
+      "timestamp": "2025-11-18 19:03",
+      "placeName": "Katsusando",
+      "amount": 1500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.007779043227,
+          "lng": 135.7658031307513
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763464590095-xulqfv3b9"
+    },
+    {
+      "timestamp": "2025-11-18 09:18",
+      "placeName": "Transporte",
+      "amount": 370,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.96701932744966,
+          "lng": 135.7709308488371
+        },
+        "city": "Fushimi-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763464723173-1gfwl7ywp"
+    },
+    {
+      "timestamp": "2025-11-18 12:57",
+      "placeName": "Tren",
+      "amount": 240,
+      "category": "transport",
+      "notes": "Fushimi - Gion",
+      "location": {
+        "coordinates": {
+          "lat": 35.00381254746597,
+          "lng": 135.77200556656544
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763464813901-0bwskjsju"
+    },
+    {
+      "timestamp": "2025-11-18 15:27",
+      "placeName": "Metro",
+      "amount": 220,
+      "category": "transport",
+      "notes": "Mercado - Nanzenji",
+      "location": {
+        "coordinates": {
+          "lat": 35.00809509790119,
+          "lng": 135.79029660266264
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763464964786-gv1u78h27"
+    },
+    {
+      "timestamp": "2025-11-19 13:23",
+      "placeName": "Ramen Orange",
+      "amount": 1700,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01517003541848,
+          "lng": 135.6775405921337
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763526250920-5rsm4bcnm"
+    },
+    {
+      "timestamp": "2025-11-19 08:45",
+      "placeName": "Metro",
+      "amount": 220,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.9854245579438,
+          "lng": 135.75774609744553
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763526319533-m43u8vzje"
+    },
+    {
+      "timestamp": "2025-11-19 14:08",
+      "placeName": "Karage",
+      "amount": 600,
+      "category": "food",
+      "notes": "Karage mientras el grupo me hace esperar",
+      "location": {
+        "coordinates": {
+          "lat": 35.015148269835734,
+          "lng": 135.67755376926877
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763528951863-36kuo3s29"
+    },
+    {
+      "timestamp": "2025-11-19 18:47",
+      "placeName": "Yayoi",
+      "amount": 1100,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.010839603717756,
+          "lng": 135.7612668012399
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763545678345-7tjbtoxtf"
+    },
+    {
+      "timestamp": "2025-11-20 14:36",
+      "placeName": "Wagyu, Tempura Ten No Meshi",
+      "amount": 4015,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.004233479857916,
+          "lng": 135.7743939888652
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763617042719-8ld05kesj"
+    },
+    {
+      "timestamp": "2025-11-20 16:17",
+      "placeName": "Kiyomizudera",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.994852707669125,
+          "lng": 135.7842210849122
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763623062723-ckp8kfuwf"
+    },
+    {
+      "timestamp": "2025-11-20 20:03",
+      "placeName": "Ramen",
+      "amount": 1860,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.98521061317565,
+          "lng": 135.7560691382967
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763643755033-h1uf7gynu"
+    },
+    {
+      "timestamp": "2025-11-20 18:32",
+      "placeName": "Toji",
+      "amount": 1000,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01072077718494,
+          "lng": 135.7622702710087
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763643823021-oz3tqk5zu"
+    },
+    {
+      "timestamp": "2025-11-20 21:41",
+      "placeName": "7eleven",
+      "amount": 501,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01112301341158,
+          "lng": 135.7618641471895
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763643957303-90piaz6gr"
+    },
+    {
+      "timestamp": "2025-11-20 11:07",
+      "placeName": "Eikando",
+      "amount": 1000,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01443301290922,
+          "lng": 135.79535626522926
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763644115754-vdfbntav8"
+    },
+    {
+      "timestamp": "2025-11-21 20:58",
+      "placeName": "Cena",
+      "amount": 2150,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.69850868773491,
+          "lng": 139.77611360007256
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763726322276-8m6fmo8mu"
+    },
+    {
+      "timestamp": "2025-11-21 13:56",
+      "placeName": "The God Dinner",
+      "amount": 2090,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70351425760795,
+          "lng": 139.7754023588038
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763733021522-f0yiol65x"
+    },
+    {
+      "timestamp": "2025-11-22 14:25",
+      "placeName": "Comida",
+      "amount": 3320,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.30116443518959,
+          "lng": 139.48054642534055
+        },
+        "city": "Fujisawa",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763789193252-kygauzy19"
+    },
+    {
+      "timestamp": "2025-11-22 21:15",
+      "placeName": "Cena",
+      "amount": 2365,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.69862127649891,
+          "lng": 139.77454755399165
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763813790491-v61nz2ud2"
+    },
+    {
+      "timestamp": "2025-11-23 11:02",
+      "placeName": "Doutor",
+      "amount": 970,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.67160787984387,
+          "lng": 139.7031930161832
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763863390812-qe3ez12tv"
+    },
+    {
+      "timestamp": "2025-11-23 14:26",
+      "placeName": "Comida",
+      "amount": 2190,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.65992841462234,
+          "lng": 139.70165369979338
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763902027889-go1bgudjy"
+    },
+    {
+      "timestamp": "2025-11-23 19:58",
+      "placeName": "Kamukura",
+      "amount": 3920,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.69926523304707,
+          "lng": 139.7748343090737
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763902110095-ab2g8sx1v"
+    },
+    {
+      "timestamp": "2025-11-23 20:40",
+      "placeName": "Lawson",
+      "amount": 630,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70287786584913,
+          "lng": 139.77542144971335
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763902190075-ntsz22ilo"
+    },
+    {
+      "timestamp": "2025-11-22 22:04",
+      "placeName": "Lawson",
+      "amount": 508,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70287783156925,
+          "lng": 139.77542027462607
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763902278708-qpsle6iuf"
+    },
+    {
+      "timestamp": "2025-11-19 15:26",
+      "placeName": "Bus",
+      "amount": 230,
+      "category": "transport",
+      "notes": "Bus al templo de Oro",
+      "location": {
+        "coordinates": {
+          "lat": 35.03905945847765,
+          "lng": 135.73339582989553
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763904093324-nhiz8y3xk"
+    },
+    {
+      "timestamp": "2025-11-19 15:36",
+      "placeName": "Templo de Oro",
+      "amount": 400,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.03953901956994,
+          "lng": 135.7295224143619
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763904201534-e7r6rfah1"
+    },
+    {
+      "timestamp": "2025-11-19 18:16",
+      "placeName": "Bus al Hotel",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.010856330348375,
+          "lng": 135.76241182298054
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763904348195-zm05xkgce"
+    },
+    {
+      "timestamp": "2025-11-20 09:05",
+      "placeName": "Bus al templo de plata",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02745851987592,
+          "lng": 135.79412252488385
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763905849839-4gb9xvczb"
+    },
+    {
+      "timestamp": "2025-11-20 09:16",
+      "placeName": "Templo de plata",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.02693253893426,
+          "lng": 135.79819116695057
+        },
+        "city": "Sakyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763905986176-rallb8iyz"
+    },
+    {
+      "timestamp": "2025-11-20 13:25",
+      "placeName": "Bus a Gion",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00377611998567,
+          "lng": 135.77651993917038
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763906112512-4ymf8l3vb"
+    },
+    {
+      "timestamp": "2025-11-20 18:19",
+      "placeName": "Bus a Toji",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.982366759867446,
+          "lng": 135.74929181519622
+        },
+        "city": "Minami-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934590545-3x54xvqys"
+    },
+    {
+      "timestamp": "2025-11-20 19:31",
+      "placeName": "Bus a Kyoto Sta",
+      "amount": 230,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.98439583016933,
+          "lng": 135.76053318605915
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934653050-4n4lb0les"
+    },
+    {
+      "timestamp": "2025-11-20 21:33",
+      "placeName": "Metro al hotel",
+      "amount": 220,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.010577009232236,
+          "lng": 135.75965617891677
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934708946-56t8ifssu"
+    },
+    {
+      "timestamp": "2025-11-20 21:41",
+      "placeName": "7eleven",
+      "amount": 501,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01035935669104,
+          "lng": 135.75934307268352
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934766558-xrqjvl155"
+    },
+    {
+      "timestamp": "2025-11-21 07:45",
+      "placeName": "Metro a Kioto",
+      "amount": 220,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.98508453555071,
+          "lng": 135.75929774644914
+        },
+        "city": "Shimogyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934838598-ha2z4kcth"
+    },
+    {
+      "timestamp": "2025-11-21 10:42",
+      "placeName": "Tren",
+      "amount": 146,
+      "category": "transport",
+      "notes": "Tokyo - Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.69854145808638,
+          "lng": 139.77309694538945
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934899086-aixo91e1j"
+    },
+    {
+      "timestamp": "2025-11-21 16:04",
+      "placeName": "Tren",
+      "amount": 146,
+      "category": "transport",
+      "notes": "Ueno - Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.69855369238482,
+          "lng": 139.77310630358767
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763934948389-cw3a3q6ze"
+    },
+    {
+      "timestamp": "2025-11-21 21:17",
+      "placeName": "Lawson",
+      "amount": 1396,
+      "category": "food",
+      "notes": "Desayuno, agua, comida",
+      "location": {
+        "coordinates": {
+          "lat": 35.702973186039586,
+          "lng": 139.7753936282242
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1763935037929-onnwut1k5"
+    },
+    {
+      "timestamp": "2025-11-24 14:51",
+      "placeName": "Entrada Skytree",
+      "amount": 2600,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.710050016868564,
+          "lng": 139.81049860491058
+        },
+        "city": "Sumida-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763963512471-4xbxd1u03"
+    },
+    {
+      "timestamp": "2025-11-24 13:50",
+      "placeName": "Comida",
+      "amount": 1810,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.710153625287525,
+          "lng": 139.81058066126556
+        },
+        "city": "Sumida-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763963534316-h1w28sp3x"
+    },
+    {
+      "timestamp": "2025-11-24 09:54",
+      "placeName": "Café en Asakusa",
+      "amount": 700,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.71068556036046,
+          "lng": 139.79653518147126
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763963698587-ro3rtflbx"
+    },
+    {
+      "timestamp": "2025-11-24 20:54",
+      "placeName": "Cena",
+      "amount": 2024,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.69869170016322,
+          "lng": 139.77416032491539
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1763985307493-nf2eqv92x"
+    },
+    {
+      "timestamp": "2025-11-24 12:45",
+      "placeName": "7eleven",
+      "amount": 113,
+      "category": "food",
+      "notes": "Onigiri",
+      "location": {
+        "coordinates": {
+          "lat": 35.71118484073337,
+          "lng": 139.7974425439478
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1763987472855-sabza37b9"
+    },
+    {
+      "timestamp": "2025-11-25 09:53",
+      "placeName": "Jardín",
+      "amount": 300,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66248125539205,
+          "lng": 139.76354880521808
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764032421138-fuqnqc43d"
+    },
+    {
+      "timestamp": "2025-11-25 08:56",
+      "placeName": "Onigiri Mercado",
+      "amount": 510,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.665370257154905,
+          "lng": 139.76968655078787
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764032478642-hpj875m0t"
+    },
+    {
+      "timestamp": "2025-11-25 10:47",
+      "placeName": "Té en el lago",
+      "amount": 1000,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.65865653742965,
+          "lng": 139.76211704313465
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764066352842-5olg5kntg"
+    },
+    {
+      "timestamp": "2025-11-25 15:57",
+      "placeName": "Lawson",
+      "amount": 626,
+      "category": "food",
+      "notes": "Desayuno siguiente día",
+      "location": {
+        "coordinates": {
+          "lat": 35.702897842831234,
+          "lng": 139.77543058847067
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764066433827-znocwrima"
+    },
+    {
+      "timestamp": "2025-11-25 20:20",
+      "placeName": "Cena",
+      "amount": 657,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.703416880200734,
+          "lng": 139.77520065470804
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764069663693-gc9898tl7"
+    },
+    {
+      "timestamp": "2025-11-22 08:28",
+      "placeName": "Tren",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Hotel - Shimbashi",
+      "location": {
+        "coordinates": {
+          "lat": 35.666572028016645,
+          "lng": 139.7582009995416
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764108330979-634n4z2u9"
+    },
+    {
+      "timestamp": "2025-11-22 09:38",
+      "placeName": "Tren",
+      "amount": 858,
+      "category": "transport",
+      "notes": "Shinagawa- Fujisawa",
+      "location": {
+        "coordinates": {
+          "lat": 35.33886357546045,
+          "lng": 139.48734243173283
+        },
+        "city": "Fujisawa",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764108478557-y07oem3dn"
+    },
+    {
+      "timestamp": "2025-11-22 10:12",
+      "placeName": "Enoden",
+      "amount": 220,
+      "category": "transport",
+      "notes": "Fujisawa - Enoshima",
+      "location": {
+        "coordinates": {
+          "lat": 35.311062365475394,
+          "lng": 139.4875175852884
+        },
+        "city": "Fujisawa",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764108570402-tgx3wcs8r"
+    },
+    {
+      "timestamp": "2025-11-22 15:43",
+      "placeName": "Enoden",
+      "amount": 260,
+      "category": "transport",
+      "notes": "Enoshima - Hase",
+      "location": {
+        "coordinates": {
+          "lat": 35.3112647001565,
+          "lng": 139.5359305424002
+        },
+        "city": "Kamakura",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764108927813-3z3iyk8ck"
+    },
+    {
+      "timestamp": "2025-11-22 17:17",
+      "placeName": "Enoden",
+      "amount": 200,
+      "category": "transport",
+      "notes": "Hase - Kamakura",
+      "location": {
+        "coordinates": {
+          "lat": 35.70336975418226,
+          "lng": 139.77526840819337
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109013861-f56omhcd8"
+    },
+    {
+      "timestamp": "2025-11-22 18:03",
+      "placeName": "Café",
+      "amount": 254,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.319114569438085,
+          "lng": 139.55064079561419
+        },
+        "city": "Kamakura",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109078673-zfuu7xhru"
+    },
+    {
+      "timestamp": "2025-11-22 20:18",
+      "placeName": "Tren",
+      "amount": 945,
+      "category": "transport",
+      "notes": "Kamakura -Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.69857370312698,
+          "lng": 139.77307686772087
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109139256-cmixg2fw3"
+    },
+    {
+      "timestamp": "2025-11-23 09:16",
+      "placeName": "Tren",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Akihabara -Yoyogi",
+      "location": {
+        "coordinates": {
+          "lat": 35.683122057286525,
+          "lng": 139.70212263410747
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109214388-lgkk6w9ic"
+    },
+    {
+      "timestamp": "2025-11-23 10:56",
+      "placeName": "Doutor",
+      "amount": 970,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.67163309252736,
+          "lng": 139.7033149394665
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109275700-bi0dg9mx0"
+    },
+    {
+      "timestamp": "2025-11-23 16:48",
+      "placeName": "Tren",
+      "amount": 167,
+      "category": "transport",
+      "notes": "Shibuya -Shinjuku",
+      "location": {
+        "coordinates": {
+          "lat": 35.69119630245771,
+          "lng": 139.70032647940144
+        },
+        "city": "Shinjuku-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109325056-xglqxjsxj"
+    },
+    {
+      "timestamp": "2025-11-23 19:40",
+      "placeName": "Tren",
+      "amount": 220,
+      "category": "transport",
+      "notes": "Shinjuku - Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.69853287614215,
+          "lng": 139.7731250922722
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109399868-4ucxemsc5"
+    },
+    {
+      "timestamp": "2025-11-24 09:10",
+      "placeName": "Metro",
+      "amount": 210,
+      "category": "transport",
+      "notes": "Akihabara- Asakusa",
+      "location": {
+        "coordinates": {
+          "lat": 35.713252398388036,
+          "lng": 139.792323203014
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109608056-q6ujow4v3"
+    },
+    {
+      "timestamp": "2025-11-24 13:18",
+      "placeName": "Tren",
+      "amount": 157,
+      "category": "transport",
+      "notes": "Asakusa - Skytree",
+      "location": {
+        "coordinates": {
+          "lat": 35.71038726654396,
+          "lng": 139.80908610461103
+        },
+        "city": "Sumida-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109658216-vxdbg6zkk"
+    },
+    {
+      "timestamp": "2025-11-24 17:40",
+      "placeName": "Metro",
+      "amount": 252,
+      "category": "transport",
+      "notes": "Skytree - Shinjuku",
+      "location": {
+        "coordinates": {
+          "lat": 35.69108489243031,
+          "lng": 139.700253120988
+        },
+        "city": "Shinjuku-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109716206-hr9dk61j7"
+    },
+    {
+      "timestamp": "2025-11-24 19:55",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Shinjuku - Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.698681002359606,
+          "lng": 139.77319818932483
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109764657-h9zos2hxt"
+    },
+    {
+      "timestamp": "2025-11-25 08:39",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Naka - Tsukiji",
+      "location": {
+        "coordinates": {
+          "lat": 35.668167727869786,
+          "lng": 139.77261614460883
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764109976382-rw6e2p4du"
+    },
+    {
+      "timestamp": "2025-11-25 12:04",
+      "placeName": "Tren",
+      "amount": 388,
+      "category": "transport",
+      "notes": "Shimbashi - Tokyo Teleport",
+      "location": {
+        "coordinates": {
+          "lat": 35.621364339863405,
+          "lng": 139.7731014236956
+        },
+        "city": "Koutou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764110095748-8mgjt7joh"
+    },
+    {
+      "timestamp": "2025-11-25 15:05",
+      "placeName": "Tren",
+      "amount": 325,
+      "category": "transport",
+      "notes": "Daiba- Shimbashi",
+      "location": {
+        "coordinates": {
+          "lat": 35.66639067516458,
+          "lng": 139.7582784924972
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764110250772-xs3p1kfjy"
+    },
+    {
+      "timestamp": "2025-11-25 15:38",
+      "placeName": "Tren",
+      "amount": 167,
+      "category": "transport",
+      "notes": "Shimbashi - Akihabara",
+      "location": {
+        "coordinates": {
+          "lat": 35.69848166462458,
+          "lng": 139.77312936174638
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764110305259-y35kl5oie"
+    },
+    {
+      "timestamp": "2025-11-26 08:26",
+      "placeName": "Kuroneko",
+      "amount": 2680,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.70393514779709,
+          "lng": 139.77446874369923
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764113243065-8z3bod98l"
+    },
+    {
+      "timestamp": "2025-11-26 10:35",
+      "placeName": "Yodobashi",
+      "amount": 30600,
+      "category": "shopping",
+      "notes": "Máquina de afeitar",
+      "location": {
+        "coordinates": {
+          "lat": 35.69885951240141,
+          "lng": 139.77479126874061
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1764131681229-8rupeu8i3"
+    },
+    {
+      "timestamp": "2025-11-26 12:48",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Hotel - Asakusa",
+      "location": {
+        "coordinates": {
+          "lat": 35.71082255466165,
+          "lng": 139.79797352819458
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764140102077-xdce49v29"
+    },
+    {
+      "timestamp": "2025-11-26 14:02",
+      "placeName": "Tren",
+      "amount": 1302,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.764903645451035,
+          "lng": 140.38611442375134
+        },
+        "city": "Narita",
+        "prefecture": "Chiba"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764140170489-evs8sa2kt"
+    },
+    {
+      "timestamp": "2025-11-26 14:46",
+      "placeName": "Comida",
+      "amount": 890,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.764903645451035,
+          "lng": 140.38611442375134
+        },
+        "city": "Narita",
+        "prefecture": "Chiba"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764140246321-540uxkp2x"
+    },
+    {
+      "timestamp": "2025-11-27 12:50",
+      "placeName": "Tren",
+      "amount": 860,
+      "category": "transport",
+      "notes": "Fujinomiya - Shizuoka",
+      "location": {
+        "coordinates": {
+          "lat": 34.97154960471077,
+          "lng": 138.38975384584825
+        },
+        "city": "Aoi-ku",
+        "prefecture": "Shizuoka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764215437538-p3v8vw0hf"
+    },
+    {
+      "timestamp": "2025-11-27 10:05",
+      "placeName": "Coworking",
+      "amount": 550,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.22229155218618,
+          "lng": 138.6134655236213
+        },
+        "city": "Fujinomiya",
+        "prefecture": "Shizuoka"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1764215500201-mxyjhxlxw"
+    },
+    {
+      "timestamp": "2025-11-26 17:22",
+      "placeName": "Tren",
+      "amount": 1414,
+      "category": "transport",
+      "notes": "Narita - Shimbashi",
+      "location": {
+        "coordinates": {
+          "lat": 35.66671347505108,
+          "lng": 139.75820673432736
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764215747177-abw4q3ax5"
+    },
+    {
+      "timestamp": "2025-11-26 20:39",
+      "placeName": "Tren",
+      "amount": 2640,
+      "category": "transport",
+      "notes": "Shimbashi - Fujinomiya",
+      "location": {
+        "coordinates": {
+          "lat": 34.971558309630794,
+          "lng": 138.3897238242489
+        },
+        "city": "Aoi-ku",
+        "prefecture": "Shizuoka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764215817509-h6x0thpvt"
+    },
+    {
+      "timestamp": "2025-11-27 13:31",
+      "placeName": "Sushi",
+      "amount": 2840,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.97149678509528,
+          "lng": 138.38978217439634
+        },
+        "city": "Aoi-ku",
+        "prefecture": "Shizuoka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764217903786-lxb1bx4ka"
+    },
+    {
+      "timestamp": "2025-11-27 15:55",
+      "placeName": "Tren bala",
+      "amount": 10890,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.73376729117908,
+          "lng": 135.50079888635952
+        },
+        "city": "Yodogawa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764227393848-ewvpn7hut"
+    },
+    {
+      "timestamp": "2025-11-27 20:35",
+      "placeName": "Tasas",
+      "amount": 9100,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69096540523785,
+          "lng": 135.50527215931103
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764243373497-5q9xz26qu"
+    },
+    {
+      "timestamp": "2025-11-27 22:25",
+      "placeName": "7eleven",
+      "amount": 158,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69077239754931,
+          "lng": 135.50490163448717
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764252772796-o6szl9yrc"
+    },
+    {
+      "timestamp": "2025-11-26 21:17",
+      "placeName": "7eleven",
+      "amount": 897,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.22319473581324,
+          "lng": 138.6150952589826
+        },
+        "city": "Fujinomiya",
+        "prefecture": "Shizuoka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764252889703-7s9fswfdw"
+    },
+    {
+      "timestamp": "2025-11-28 15:53",
+      "placeName": "Kiyomizudera",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.99482089543993,
+          "lng": 135.78428024870408
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764312843082-hb33uxoe0"
+    },
+    {
+      "timestamp": "2025-11-28 22:12",
+      "placeName": "Cena",
+      "amount": 2130,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.704156875660956,
+          "lng": 135.4964828491763
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764335555488-oy9rxj6im"
+    },
+    {
+      "timestamp": "2025-11-28 13:49",
+      "placeName": "Comida",
+      "amount": 3089,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.006639023205025,
+          "lng": 135.76679816493134
+        },
+        "city": "Nakagyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764335859064-9qdk4dl7j"
+    },
+    {
+      "timestamp": "2025-11-28 11:43",
+      "placeName": "Tofukuji",
+      "amount": 1000,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.70406014860855,
+          "lng": 135.49681058492266
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764335976333-i9l52w83n"
+    },
+    {
+      "timestamp": "2025-11-28 14:20",
+      "placeName": "Mochila",
+      "amount": 12000,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.704116402698354,
+          "lng": 135.49705128604043
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1764336050035-lpy64qdja"
+    },
+    {
+      "timestamp": "2025-11-28 20:35",
+      "placeName": "Mirador Umeda",
+      "amount": 2000,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.705285858435616,
+          "lng": 135.49017886764665
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764338788782-wu348hgg2"
+    },
+    {
+      "timestamp": "2025-11-29 12:58",
+      "placeName": "Comida",
+      "amount": 1850,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01448670704401,
+          "lng": 135.6775561333001
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764388746511-z8ijoit58"
+    },
+    {
+      "timestamp": "2025-11-29 10:29",
+      "placeName": "Jardín",
+      "amount": 500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.01572338946123,
+          "lng": 135.67334596019248
+        },
+        "city": "Ukyou-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764390581408-pr9gsxqt1"
+    },
+    {
+      "timestamp": "2025-11-29 20:12",
+      "placeName": "Cena",
+      "amount": 1947,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.65105421686808,
+          "lng": 135.50608273654098
+        },
+        "city": "Naniwa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764414749449-2o7pzdtk8"
+    },
+    {
+      "timestamp": "2025-11-29 15:06",
+      "placeName": "Templo de Oro",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.039496276603046,
+          "lng": 135.72946199612403
+        },
+        "city": "Kita-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764414817164-cmwxhpb50"
+    },
+    {
+      "timestamp": "2025-11-30 12:19",
+      "placeName": "Gran Buda",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68810622638925,
+          "lng": 135.83936728922447
+        },
+        "city": "Nara",
+        "prefecture": "Nara"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764509162228-cbycafqpr"
+    },
+    {
+      "timestamp": "2025-11-30 21:08",
+      "placeName": "Takoyaki y bebida",
+      "amount": 1100,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.66922558117304,
+          "lng": 135.50118373118102
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764509217976-0ywz3hywt"
+    },
+    {
+      "timestamp": "2025-11-30 21:46",
+      "placeName": "Cangrejo",
+      "amount": 800,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.66867808695507,
+          "lng": 135.49880846544136
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764509260076-21xdplrv9"
+    },
+    {
+      "timestamp": "2025-11-30 13:46",
+      "placeName": "Mos Burger",
+      "amount": 1320,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.68286382226441,
+          "lng": 135.8289367678516
+        },
+        "city": "Nara",
+        "prefecture": "Nara"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764509381719-kcjuo15y6"
+    },
+    {
+      "timestamp": "2025-12-01 11:59",
+      "placeName": "Jardín Kenroku-en",
+      "amount": 320,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.56367856791354,
+          "lng": 136.66265327557267
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764557997174-pc0gi9jgr"
+    },
+    {
+      "timestamp": "2025-12-01 14:56",
+      "placeName": "Comida Kanazawa",
+      "amount": 5500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.57113503896579,
+          "lng": 136.6565864616245
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764568604805-2lzyrox1d"
+    },
+    {
+      "timestamp": "2025-12-01 16:10",
+      "placeName": "Casa ninja kanazawa",
+      "amount": 310,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.56936203578202,
+          "lng": 136.66529098339947
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764580065057-lkkqzauuj"
+    },
+    {
+      "timestamp": "2025-12-01 19:26",
+      "placeName": "Cena MacDonals",
+      "amount": 700,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.5777761571095,
+          "lng": 136.64764054464922
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764588484283-dkvx7759a"
+    },
+    {
+      "timestamp": "2025-12-02 07:10",
+      "placeName": "Doutor",
+      "amount": 550,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.7023753019249,
+          "lng": 137.21468393529807
+        },
+        "city": "Toyama",
+        "prefecture": "Toyama"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764629082458-ze5qm4b8u"
+    },
+    {
+      "timestamp": "2025-12-02 05:53",
+      "placeName": "7eleven",
+      "amount": 192,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.57843769342297,
+          "lng": 136.6473205308214
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764629165742-y8n5kcz7m"
+    },
+    {
+      "timestamp": "2025-12-01 07:48",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.73350798834544,
+          "lng": 135.5006705436204
+        },
+        "city": "Yodogawa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630352996-5pexjmu02"
+    },
+    {
+      "timestamp": "2025-11-30 08:30",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.64738319029797,
+          "lng": 135.51399061415884
+        },
+        "city": "Tennouji-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630444189-2rob7ehd4"
+    },
+    {
+      "timestamp": "2025-11-30 16:40",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69233147931156,
+          "lng": 135.50101142287076
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764630523370-hd2u60ti5"
+    },
+    {
+      "timestamp": "2025-11-30 18:10",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.67505444167354,
+          "lng": 135.5003943259071
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630584071-7o2uhsc9k"
+    },
+    {
+      "timestamp": "2025-11-30 18:46",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.7337709502156,
+          "lng": 135.5008484580158
+        },
+        "city": "Yodogawa-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630650211-988qu51vu"
+    },
+    {
+      "timestamp": "2025-11-30 19:18",
+      "placeName": "Metro",
+      "amount": 290,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.666275963261356,
+          "lng": 135.50030856734804
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764630711552-gowg69vu5"
+    },
+    {
+      "timestamp": "2025-11-30 21:47",
+      "placeName": "Metro",
+      "amount": 240,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69236535307739,
+          "lng": 135.50099875289516
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630799433-n1m7fxm7s"
+    },
+    {
+      "timestamp": "2025-11-29 08:20",
+      "placeName": "Metro",
+      "amount": 190,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.7032150639525,
+          "lng": 135.49771270354069
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764630898876-1f8spk3sy"
+    },
+    {
+      "timestamp": "2025-11-28 09:27",
+      "placeName": "Tren",
+      "amount": 480,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.96872087027478,
+          "lng": 135.7692849600512
+        },
+        "city": "Fushimi-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764631683814-kmxyuph45"
+    },
+    {
+      "timestamp": "2025-11-28 12:47",
+      "placeName": "Tren",
+      "amount": 180,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.00384622847665,
+          "lng": 135.77200827345865
+        },
+        "city": "Higashiyama-ku",
+        "prefecture": "Kyoto"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764631787133-4gf0z1n4f"
+    },
+    {
+      "timestamp": "2025-10-30 19:56",
+      "placeName": "Tren",
+      "amount": 410,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.70097906821093,
+          "lng": 135.49646765432232
+        },
+        "city": "Kita-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764631884709-ubl8ubvvi"
+    },
+    {
+      "timestamp": "2025-11-28 22:46",
+      "placeName": "Metro",
+      "amount": 180,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 34.69233887871928,
+          "lng": 135.50099823913087
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Osaka"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764631970029-cxso7ownu"
+    },
+    {
+      "timestamp": "2025-12-02 10:59",
+      "placeName": "Hida No Sato",
+      "amount": 700,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.13216811139566,
+          "lng": 137.2349662500019
+        },
+        "city": "Takayama",
+        "prefecture": "Gifu"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764640812955-apcx3qgi9"
+    },
+    {
+      "timestamp": "2025-12-02 10:55",
+      "placeName": "Autobús",
+      "amount": 210,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.13230837400195,
+          "lng": 137.23510391697818
+        },
+        "city": "Takayama",
+        "prefecture": "Gifu"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764640845473-px84o70pp"
+    },
+    {
+      "timestamp": "2025-12-02 14:31",
+      "placeName": "Ramen Hida",
+      "amount": 3400,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.141179156779145,
+          "lng": 137.2589157103643
+        },
+        "city": "Takayama",
+        "prefecture": "Gifu"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764653505577-tek272bg5"
+    },
+    {
+      "timestamp": "2025-12-02 21:36",
+      "placeName": "Ramen",
+      "amount": 1280,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.57640734096657,
+          "lng": 136.65421484058382
+        },
+        "city": "Kanazawa",
+        "prefecture": "Ishikawa"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764679020505-5se8qngrb"
+    },
+    {
+      "timestamp": "2025-12-04 15:30",
+      "placeName": "Hamburguesa Matsumoto",
+      "amount": 3110,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.233828080422114,
+          "lng": 137.97163728758784
+        },
+        "city": "Matsumoto",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764829900248-pfmiu0kgf"
+    },
+    {
+      "timestamp": "2025-12-04 16:59",
+      "placeName": "Café y bollo",
+      "amount": 726,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.6428703214705,
+          "lng": 138.18851879684593
+        },
+        "city": "Nagano",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1764886375367-7v0ba473k"
+    },
+    {
+      "timestamp": "2025-12-04 17:45",
+      "placeName": "Midori",
+      "amount": 1471,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.644249598683636,
+          "lng": 138.18788622022421
+        },
+        "city": "Nagano",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764886440292-gug4wh0r6"
+    },
+    {
+      "timestamp": "2025-12-04 11:34",
+      "placeName": "Castillo Matsumoto",
+      "amount": 1300,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.23879459938769,
+          "lng": 137.9692512825543
+        },
+        "city": "Matsumoto",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1764888205626-pqemasuf4"
+    },
+    {
+      "timestamp": "2025-12-05 12:55",
+      "placeName": "Ekibento",
+      "amount": 1709,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.64296494681612,
+          "lng": 138.18843088668564
+        },
+        "city": "Nagano",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764946723940-boulprh2y"
+    },
+    {
+      "timestamp": "2025-12-06 10:38",
+      "placeName": "Moms touch",
+      "amount": 960,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.67047532723378,
+          "lng": 139.70619891869396
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1764985125835-g8tdpn0sf"
+    },
+    {
+      "timestamp": "2025-12-06 19:05",
+      "placeName": "Ramen",
+      "amount": 2250,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66630854539293,
+          "lng": 139.75610592845044
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765015585996-p522yu4w2"
+    },
+    {
+      "timestamp": "2025-12-06 11:24",
+      "placeName": "Jersey Patagonia",
+      "amount": 15000,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66977490331604,
+          "lng": 139.7061453173805
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765023476982-ffjluzgrk"
+    },
+    {
+      "timestamp": "2025-12-06 13:39",
+      "placeName": "Uobei",
+      "amount": 1510,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.65957520656285,
+          "lng": 139.70673266551017
+        },
+        "city": "Shibuya-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1765023641559-7k8wg94ta"
+    },
+    {
+      "timestamp": "2025-12-05 11:06",
+      "placeName": "Starbucks",
+      "amount": 785,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.658868571908656,
+          "lng": 138.18795774661208
+        },
+        "city": "Nagano",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765023860926-6yctkc6fq"
+    },
+    {
+      "timestamp": "2025-12-07 10:35",
+      "placeName": "Jardin",
+      "amount": 300,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.65846935933077,
+          "lng": 139.76214987126812
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1765071346250-7pmgcmnro"
+    },
+    {
+      "timestamp": "2025-12-07 18:57",
+      "placeName": "Kfc",
+      "amount": 1070,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66596386616166,
+          "lng": 139.7567087724642
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765144206874-il33wnq98"
+    },
+    {
+      "timestamp": "2025-12-07 13:12",
+      "placeName": "Comida",
+      "amount": 1820,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.62499590826479,
+          "lng": 139.77532935635554
+        },
+        "city": "Koutou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765144282702-qeh8rj468"
+    },
+    {
+      "timestamp": "2025-12-08 10:28",
+      "placeName": "Cueva",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.29799887073314,
+          "lng": 139.4798047819279
+        },
+        "city": "Fujisawa",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1765172753566-zg87ffoxc"
+    },
+    {
+      "timestamp": "2025-12-08 14:56",
+      "placeName": "Dorayaki",
+      "amount": 300,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.31152124502485,
+          "lng": 139.5356833715158
+        },
+        "city": "Kamakura",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765173405007-rc4lhf8uu"
+    },
+    {
+      "timestamp": "2025-12-08 12:45",
+      "placeName": "Menga Ramen",
+      "amount": 1350,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.31006246954277,
+          "lng": 139.48662368062645
+        },
+        "city": "Fujisawa",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765199324901-lr1r68fk8"
+    },
+    {
+      "timestamp": "2025-12-08 21:11",
+      "placeName": "Matsumoto Karage",
+      "amount": 1390,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66755402497665,
+          "lng": 139.7556220848175
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765199422589-xv8djwr11"
+    },
+    {
+      "timestamp": "2025-12-09 09:37",
+      "placeName": "Starbucks",
+      "amount": 1130,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.716069009925285,
+          "lng": 139.77403531456756
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765240712998-u9itz2ffp"
+    },
+    {
+      "timestamp": "2025-12-09 12:46",
+      "placeName": "Ichiran Ramen",
+      "amount": 2190,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.71117888700645,
+          "lng": 139.79779417267153
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765251991581-plkgg8hpm"
+    },
+    {
+      "timestamp": "2025-12-09 15:14",
+      "placeName": "Skytree",
+      "amount": 2400,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.710186937136925,
+          "lng": 139.81084578105168
+        },
+        "city": "Sumida-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765260898822-tkwvla9wi"
+    },
+    {
+      "timestamp": "2025-12-09 22:49",
+      "placeName": "Columbia",
+      "amount": 15960,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.709363039948826,
+          "lng": 139.77441940515865
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765288262121-u6ez7o6pp"
+    },
+    {
+      "timestamp": "2025-12-10 09:57",
+      "placeName": "Kuruneko",
+      "amount": 2630,
+      "category": "other",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.664702167160755,
+          "lng": 139.75619329183402
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765328259384-jtyps8wb3"
+    },
+    {
+      "timestamp": "2025-12-10 10:47",
+      "placeName": "Pronto",
+      "amount": 539,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.667325676918445,
+          "lng": 139.75734253134556
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1765331248977-99b0gohot"
+    },
+    {
+      "timestamp": "2025-12-10 21:53",
+      "placeName": "Old Station",
+      "amount": 2376,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.682134176291285,
+          "lng": 139.7669423058802
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1765371258759-46ep23u2c"
+    },
+    {
+      "timestamp": "2025-12-10 21:54",
+      "placeName": "Matsuya",
+      "amount": 1220,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.665944994669275,
+          "lng": 139.75683333596027
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765371339897-gpvyrepp0"
+    },
+    {
+      "timestamp": "2025-12-10 21:56",
+      "placeName": "FamilyMart",
+      "amount": 254,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66626578606211,
+          "lng": 139.7566615285064
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765371442457-btadag5b0"
+    },
+    {
+      "timestamp": "2025-12-10 11:26",
+      "placeName": "Tren",
+      "amount": 167,
+      "category": "transport",
+      "notes": "Ueno",
+      "location": {
+        "coordinates": {
+          "lat": 35.714316491272626,
+          "lng": 139.7766627459543
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765372288058-9ku878z60"
+    },
+    {
+      "timestamp": "2025-12-10 14:30",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Nezu - Tokyo",
+      "location": {
+        "coordinates": {
+          "lat": 35.680367611917035,
+          "lng": 139.76165160162486
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1765372360635-p7z597hgi"
+    },
+    {
+      "timestamp": "2025-12-10 18:57",
+      "placeName": "Tren",
+      "amount": 505,
+      "category": "transport",
+      "notes": "Haneda",
+      "location": {
+        "coordinates": {
+          "lat": 35.544940171613334,
+          "lng": 139.76711176487294
+        },
+        "city": "Oota-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765372427254-lh7kr6kzh"
+    },
+    {
+      "timestamp": "2025-12-10 20:28",
+      "placeName": "Tren",
+      "amount": 327,
+      "category": "transport",
+      "notes": "Shinagawa",
+      "location": {
+        "coordinates": {
+          "lat": 35.63004005801146,
+          "lng": 139.73964764120848
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765372508416-o7x0pswze"
+    },
+    {
+      "timestamp": "2025-12-10 20:43",
+      "placeName": "Tren",
+      "amount": 178,
+      "category": "transport",
+      "notes": "Tokyo",
+      "location": {
+        "coordinates": {
+          "lat": 35.681219998519424,
+          "lng": 139.76651982477773
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765372543614-t070ul14x"
+    },
+    {
+      "timestamp": "2025-12-10 21:00",
+      "placeName": "Tren",
+      "amount": 146,
+      "category": "transport",
+      "notes": "Shimbashi",
+      "location": {
+        "coordinates": {
+          "lat": 35.6665937880324,
+          "lng": 139.75810783928216
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1765372620779-3lvxrak6e"
+    },
+    {
+      "timestamp": "2025-12-10 21:06",
+      "placeName": "Hotel",
+      "amount": 10200,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66644610011481,
+          "lng": 139.75606574693018
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765412014497-j8zjan57y"
+    },
+    {
+      "timestamp": "2025-12-11 09:13",
+      "placeName": "Desayuno tren",
+      "amount": 1180,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.67998984496953,
+          "lng": 139.7666505924441
+        },
+        "city": "Chiyoda-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765412051375-vwixvh42d"
+    },
+    {
+      "timestamp": "2025-12-11 14:55",
+      "placeName": "Hotel",
+      "amount": 11000,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.77286248967883,
+          "lng": 140.73011859565904
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765441796085-eozue4nyr"
+    },
+    {
+      "timestamp": "2025-12-11 14:02",
+      "placeName": "Comida",
+      "amount": 1170,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.77378473590457,
+          "lng": 140.72634657355803
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1765442028603-yuvm9n3bq"
+    },
+    {
+      "timestamp": "2025-12-12 09:49",
+      "placeName": "Tranvia",
+      "amount": 270,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.79492540639177,
+          "lng": 140.7540411888582
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1765500583219-w6rwzmndw"
+    },
+    {
+      "timestamp": "2025-12-12 09:49",
+      "placeName": "Subida al Mirador de Hakodate",
+      "amount": 1200,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.79492995350526,
+          "lng": 140.75397490763942
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765500601792-0f19fe3bf"
+    },
+    {
+      "timestamp": "2025-12-12 11:31",
+      "placeName": "Hamburguesa Payaso",
+      "amount": 1408,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.79441677142668,
+          "lng": 140.75330369150632
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765506712085-uogowdlko"
+    },
+    {
+      "timestamp": "2025-12-12 12:56",
+      "placeName": "Hakodate Ropeway",
+      "amount": 1800,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.760914652880686,
+          "lng": 140.71427621450803
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765511791969-oryiyk1pw"
+    },
+    {
+      "timestamp": "2025-12-12 14:28",
+      "placeName": "Comida en el mirador",
+      "amount": 3100,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.759290482901946,
+          "lng": 140.70501222488392
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765517307166-vtr63jrwz"
+    },
+    {
+      "timestamp": "2025-12-13 14:41",
+      "placeName": "Hotel Sapporo",
+      "amount": 16316,
+      "category": "accommodation",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 43.056932866208314,
+          "lng": 141.35103686808043
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765606971619-jmd6x3a7y"
+    },
+    {
+      "timestamp": "2025-12-13 15:23",
+      "placeName": "Ramen",
+      "amount": 1480,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 43.05699438248567,
+          "lng": 141.35101162896487
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "card",
+      "shared": false,
+      "id": "1765607014921-aac4cso8p"
+    },
+    {
+      "timestamp": "2025-12-13 18:17",
+      "placeName": "Camiseta",
+      "amount": 1672,
+      "category": "shopping",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 43.05723252170125,
+          "lng": 141.3518205702286
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765617515796-ag7jm248h"
+    },
+    {
+      "timestamp": "2025-12-11 20:43",
+      "placeName": "Cena Hakodate",
+      "amount": 1830,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 41.77161249209442,
+          "lng": 140.7309814143361
+        },
+        "city": "Hakodate",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765627821459-a16ho9h1l"
+    },
+    {
+      "timestamp": "2025-12-13 20:43",
+      "placeName": "Cena Sapporo",
+      "amount": 2480,
+      "category": "food",
+      "notes": "Hamburguesa",
+      "location": {
+        "coordinates": {
+          "lat": 43.05754157363589,
+          "lng": 141.35333741940474
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765627916271-uc2ye4tfh"
+    },
+    {
+      "timestamp": "2025-12-14 08:31",
+      "placeName": "Doutor",
+      "amount": 550,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 43.05700124069248,
+          "lng": 141.35275426072315
+        },
+        "city": "Chuuou-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765668696658-n2inph72m"
+    },
+    {
+      "timestamp": "2025-12-14 12:56",
+      "placeName": "Buda Sapporo",
+      "amount": 500,
+      "category": "entertainment",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 42.98800593620856,
+          "lng": 141.35052208675233
+        },
+        "city": "Minami-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "cash",
+      "shared": false,
+      "id": "1765684627478-7yussju4c"
+    },
+    {
+      "timestamp": "2025-12-14 09:53",
+      "placeName": "Trayecto al Buda",
+      "amount": 710,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 42.94932146170049,
+          "lng": 141.359643378521
+        },
+        "city": "Minami-ku",
+        "prefecture": "Hokkaido"
+      },
+      "paymentMethod": "ic",
+      "shared": false,
+      "id": "1765684632617-g63uje1dg"
+    },
+    {
+      "timestamp": "2025-12-09 08:39",
+      "placeName": "Tren",
+      "amount": 167,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.7140940057168,
+          "lng": 139.7770288226588
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309583081-ettszx9sb"
+    },
+    {
+      "timestamp": "2025-12-09 11:07",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.71104109594798,
+          "lng": 139.79792544084995
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309644094-ey8m2xopq"
+    },
+    {
+      "timestamp": "2025-12-09 14:58",
+      "placeName": "Tren",
+      "amount": 157,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.71034931941354,
+          "lng": 139.81090131361714
+        },
+        "city": "Sumida-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309708967-cv6bt2a3w"
+    },
+    {
+      "timestamp": "2025-12-09 16:41",
+      "placeName": "Tren",
+      "amount": 157,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.71226231584443,
+          "lng": 139.7983003152707
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309763555-bjzhmvrq5"
+    },
+    {
+      "timestamp": "2025-12-09 16:52",
+      "placeName": "Metro",
+      "amount": 178,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.713830282694104,
+          "lng": 139.77711764432183
+        },
+        "city": "Taitou-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309818160-ma0p4vqrp"
+    },
+    {
+      "timestamp": "2025-12-09 22:10",
+      "placeName": "Tren",
+      "amount": 178,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.666705692725216,
+          "lng": 139.75816370691064
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766309875966-dzyy8gpdf"
+    },
+    {
+      "timestamp": "2025-12-08 18:45",
+      "placeName": "Tren",
+      "amount": 406,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.43824207201257,
+          "lng": 139.64322528072574
+        },
+        "city": "Naka-ku",
+        "prefecture": "Kanagawa"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1766309998858-b8s0nkvdw"
+    },
+    {
+      "timestamp": "2025-12-08 20:20",
+      "placeName": "Tren",
+      "amount": 571,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 35.66673360758094,
+          "lng": 139.75818466545576
+        },
+        "city": "Minato-ku",
+        "prefecture": "Tokyo Prefecture"
+      },
+      "paymentMethod": "ic",
+      "shared": true,
+      "id": "1766310125291-amniq6j3n"
+    },
+    {
+      "timestamp": "2025-12-03 10:03",
+      "placeName": "Trayecto monos",
+      "amount": 1660,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.6435289126665,
+          "lng": 138.18885401107542
+        },
+        "city": "Nagano",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1766310918924-65sd1217c"
+    },
+    {
+      "timestamp": "2025-12-03 15:18",
+      "placeName": "Trayecto monos a nagano bus",
+      "amount": 2000,
+      "category": "transport",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.732705486752096,
+          "lng": 138.46211382494414
+        },
+        "city": "Yamanouchi Machi",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "card",
+      "shared": true,
+      "id": "1766311135854-uoq58w6m8"
+    },
+    {
+      "timestamp": "2025-12-03 14:59",
+      "placeName": "Comida",
+      "amount": 2500,
+      "category": "food",
+      "notes": "",
+      "location": {
+        "coordinates": {
+          "lat": 36.7340957643501,
+          "lng": 138.45731967303732
+        },
+        "city": "Yamanouchi Machi",
+        "prefecture": "Nagano"
+      },
+      "paymentMethod": "cash",
+      "shared": true,
+      "id": "1766311230665-d0p50s9fx"
+    }
+  ]
+}

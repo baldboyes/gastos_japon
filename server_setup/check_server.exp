@@ -1,0 +1,12 @@
+#!/usr/bin/expect
+
+set timeout 10
+set host "141.94.23.216"
+set user "ubuntu"
+set password "MevoyaJapon2026!Secure"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host "ls -la /home/ubuntu/"
+expect {
+    "password:" { send "$password\r" }
+}
+expect eof

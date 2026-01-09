@@ -1,9 +1,20 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- Notifications Icon -->
+    <div class="fixed top-4 right-4 z-40">
+      <NuxtLink to="/notifications" class="relative inline-flex items-center justify-center p-2 rounded-full bg-white shadow-md text-gray-500 hover:text-teal-600 transition-colors">
+        <Bell class="w-6 h-6" />
+        <span v-if="unreadCount > 0" class="absolute top-0 right-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
+          {{ unreadCount }}
+        </span>
+      </NuxtLink>
+    </div>
+
     <!-- Main content -->
     <main class="pb-20">
       <slot />
     </main>
+    <Toaster />
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 z-50">
@@ -18,6 +29,22 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home">
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
               <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </NuxtLink>
+
+          <!-- viajes -->
+          <NuxtLink
+            to="/trips"
+            class="flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors"
+            :class="isActive('/trips') ? 'text-teal-500' : 'text-gray-400 hover:text-gray-200'"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list">
+              <line x1="8" x2="21" y1="6" y2="6"/>
+              <line x1="8" x2="21" y1="12" y2="12"/>
+              <line x1="8" x2="21" y1="18" y2="18"/>
+              <line x1="3" x2="3.01" y1="6" y2="6"/>
+              <line x1="3" x2="3.01" y1="12" y2="12"/>
+              <line x1="3" x2="3.01" y1="18" y2="18"/>
             </svg>
           </NuxtLink>
 
@@ -85,9 +112,18 @@
 
 <script setup lang="ts">
   import { useRoute } from 'vue-router'
+  import { onMounted } from 'vue'
+  import { Bell } from 'lucide-vue-next'
+  import { Toaster } from '~/components/ui/sonner'
+  import { useNotifications } from '~/composables/useNotifications'
 
   const { user } = useUser()
   const route = useRoute()
+  const { unreadCount, fetchNotifications } = useNotifications()
+
+  onMounted(() => {
+    fetchNotifications()
+  })
 
   function isActive(path: string): boolean {
     if (path === '/') {

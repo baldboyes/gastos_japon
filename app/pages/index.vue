@@ -51,6 +51,7 @@
 import { useRouter } from 'vue-router'
 import type { Expense, PlannedExpense } from '~/types'
 import { formatDate, getDateString } from '~/utils/dates'
+import { Badge } from '~/components/ui/badge'
 
 const router = useRouter()
 const { getTodayExpenses, deleteExpense, plannedExpenses, addExpense, deletePlannedExpense } = useExpenses()

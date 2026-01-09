@@ -1,0 +1,36 @@
+#!/usr/bin/expect
+
+set timeout 300
+set host "141.94.23.216"
+set user "ubuntu"
+set password "MevoyaJapon2026!Secure"
+set script_name "install_directus.sh"
+set remote_path "/home/ubuntu/$script_name"
+
+# Step 1: Upload the script
+spawn scp -o StrictHostKeyChecking=no $script_name $user@$host:$remote_path
+expect {
+    "password:" { 
+        send "$password\r" 
+        exp_continue
+    }
+    eof
+}
+
+# Step 2: Execute the script
+spawn ssh -o StrictHostKeyChecking=no $user@$host "echo '$password' | sudo -S bash $remote_path"
+expect {
+    "password:" { 
+        send "$password\r"
+        exp_continue
+    }
+    "Directus Installation Complete!" { 
+        puts "\nSUCCESS: Directus installation finished."
+        exit 0 
+    }
+    timeout { 
+        puts "Timeout executing script"
+        exit 1 
+    }
+    eof
+}

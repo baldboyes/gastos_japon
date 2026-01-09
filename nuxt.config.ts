@@ -11,13 +11,6 @@ export default defineNuxtConfig({
       }
     }
   },
-  runtimeConfig: {
-    strapiUrl: process.env.NUXT_STRAPI_URL || 'https://api.mevoyajapon.com',
-    strapiKey: process.env.NUXT_STRAPI_KEY,
-    public: {
-      // Public variables here
-    }
-  },
   vite: {
     plugins: [
       tailwindcss(),
@@ -51,9 +44,9 @@ export default defineNuxtConfig({
     scope: '/',
     includeAssets: ['favicon.ico', 'favicon.png', 'icon.svg', 'robots.txt'],
     manifest: {
-      name: 'Gastos Japón',
-      short_name: 'Gastos',
-      description: 'Gastos del viaje a Japón',
+      name: 'Me voy a Japón',
+      short_name: 'Me voy a Japón',
+      description: 'Aplicación para gestionar el viaje a Japón',
       theme_color: '#40C4AA',
       background_color: '#F8FAFC',
       display: 'standalone',

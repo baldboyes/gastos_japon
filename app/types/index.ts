@@ -1,5 +1,5 @@
 /**
- * Application types for Gastos Japón
+ * Application types for Me voy a Japón
  */
 
 export type ExpenseCategory = 'food' | 'transport' | 'accommodation' | 'entertainment' | 'shopping' | 'other'

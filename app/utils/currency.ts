@@ -25,8 +25,18 @@ function getCurrencySymbol(currency: Currency): string {
  * @returns Formatted string (e.g., "¥1,200")
  */
 export function formatCurrency(amount: number, currency: Currency = 'JPY'): string {
-  const symbol = getCurrencySymbol(currency)
-  return `${symbol}${amount.toLocaleString()}`
+  // Configuración de decimales según moneda
+  // JPY: 0 decimales
+  // EUR: 2 decimales
+  // Resto: 2 decimales por defecto (ajustable)
+  const decimals = currency === 'JPY' ? 0 : 2
+
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(amount)
 }
 
 /**
