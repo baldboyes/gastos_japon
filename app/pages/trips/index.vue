@@ -181,11 +181,11 @@ const formatDate = (dateStr: string | null | undefined) => {
 
           <!-- Grid de Viajes -->
           <div v-else class="grid gap-6 md:grid-cols-2">
-            <Card v-for="trip in trips" :key="trip.id" class="hover:shadow-md transition-shadow">
+            <Card v-for="trip in trips" :key="trip.id" class="hover:shadow-md transition-shadow pt-0 overflow-hidden">
               <!-- Imagen -->
-              <div class="w-full md:w-48 h-48 relative shrink-0">
+              <div class="w-full h-48 relative shrink-0">
                 <img v-if="trip.portada"
-                  :src="`https://api.mevoyajapon.com/assets/${trip.portada}?width=1200&format=webp`" 
+                  :src="`https://api.mevoyajapon.com/assets/${trip.portada}?width=800&format=webp`" 
                   :alt="trip.nombre"
                   class="w-full h-full object-cover"
                 />
@@ -209,12 +209,12 @@ const formatDate = (dateStr: string | null | undefined) => {
                   {{ formatDate(trip.fecha_inicio) }} - {{ formatDate(trip.fecha_fin) }}
                 </CardDescription>
               </CardHeader>
+              <!--
               <CardContent>
                 <div class="text-sm text-muted-foreground">
-                  <!-- Aquí podríamos poner resumen de gastos futuros -->
-                  Planificado
                 </div>
               </CardContent>
+              -->
               <CardFooter>
                 <Button variant="secondary" class="w-full" as-child>
                   <NuxtLink :to="`/trips/${trip.id}`">Ver Detalles</NuxtLink>
