@@ -14,13 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
 import { formatCurrency } from '~/utils/currency'
+import { groupByDate } from '~/utils/grouping'
 
 const route = useRoute()
 const tripId = route.params.id as string
 
 const { 
   fetchOrganizationData, 
-  vuelos, alojamientos, transportes, actividades, loading 
+  timelineItems, loading 
 } = useTripOrganization()
 
 const { expenses, fetchExpenses, createExpense } = useTripExpenses()
@@ -70,127 +71,56 @@ const formatMoney = (amount: number, currency: string) => new Intl.NumberFormat(
 const timeline = computed(() => {
   const events: any[] = []
 
-  // Gastos
+  // 1. Organization Items (normalized)
+  timelineItems.value.forEach(item => {
+    let icon = Ticket
+    let colorClass = 'bg-gray-100 text-gray-600'
+    
+    switch(item.type) {
+        case 'flight':
+            icon = Plane
+            colorClass = 'bg-blue-100 text-blue-600'
+            break
+        case 'accommodation':
+            icon = Hotel
+            colorClass = 'bg-orange-100 text-orange-600'
+            break
+        case 'transport':
+            icon = Train
+            colorClass = 'bg-green-100 text-green-600'
+            break
+        case 'activity':
+            icon = Ticket
+            colorClass = 'bg-purple-100 text-purple-600'
+            break
+    }
+    
+    events.push({
+        ...item,
+        icon,
+        colorClass,
+        time: item.date.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
+    })
+  })
+
+  // 2. Expenses
   expenses.value.forEach(ex => {
       events.push({
           id: `expense-${ex.id}`,
           type: 'expense',
           date: new Date(ex.fecha),
           title: ex.concepto,
-          subtitle: `${formatCurrency(ex.monto, ex.moneda || 'JPY')} • ${ex.categoria}`, // Asumimos JPY por defecto si no viene, o usamos moneda del viaje
+          subtitle: `${formatCurrency(ex.monto, ex.moneda || 'JPY')} • ${ex.categoria}`,
           icon: Banknote,
           colorClass: 'bg-red-50 text-red-600',
           time: new Date(ex.fecha).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
       })
   })
 
-  // Vuelos
-  vuelos.value.forEach(v => {
-      if (v.escalas && v.escalas.length > 0) {
-          v.escalas.forEach((e: any) => {
-              if (e.fecha_salida) {
-                events.push({
-                    id: `flight-${v.id}-${e.numero_vuelo || Math.random()}`,
-                    type: 'flight',
-                    date: new Date(e.fecha_salida),
-                    title: `Vuelo a ${e.destino}`,
-                    subtitle: `${e.aerolinea || 'Vuelo'} ${e.numero_vuelo ? '• ' + e.numero_vuelo : ''}`,
-                    icon: Plane,
-                    colorClass: 'bg-blue-100 text-blue-600',
-                    time: new Date(e.fecha_salida).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
-                })
-              }
-          })
-      }
-  })
-
-  // Alojamientos
-  alojamientos.value.forEach(a => {
-      if (a.check_in) {
-        events.push({
-            id: `hotel-${a.id}`,
-            type: 'hotel',
-            date: new Date(a.check_in),
-            title: `Check-in: ${a.nombre}`,
-            subtitle: a.direccion,
-            icon: Hotel,
-            colorClass: 'bg-orange-100 text-orange-600',
-            time: new Date(a.check_in).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
-        })
-      }
-  })
-
-  // Transportes
-  transportes.value.forEach(t => {
-      if (t.categoria === 'trayecto' && t.escalas) {
-          t.escalas.forEach((e: any) => {
-              if (e.fecha_salida) {
-                events.push({
-                    id: `transport-${t.id}-${Math.random()}`,
-                    type: 'transport',
-                    date: new Date(e.fecha_salida),
-                    title: `Viaje a ${e.destino}`,
-                    subtitle: `${t.nombre} • ${e.medio}`,
-                    icon: Train,
-                    colorClass: 'bg-green-100 text-green-600',
-                    time: new Date(e.fecha_salida).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
-                })
-              }
-          })
-      } else if (t.categoria === 'pase' && t.fecha_inicio) {
-           events.push({
-                id: `pass-${t.id}`,
-                type: 'pass',
-                date: new Date(t.fecha_inicio),
-                title: `Inicio Validez: ${t.nombre}`,
-                subtitle: 'Transporte',
-                icon: Ticket,
-                colorClass: 'bg-green-100 text-green-600',
-                time: '00:00'
-            })
-      }
-  })
-
-  // Actividades
-  actividades.value.forEach(a => {
-      if (a.fecha) {
-        events.push({
-            id: `activity-${a.id}`,
-            type: 'activity',
-            date: new Date(a.fecha),
-            title: a.nombre,
-            subtitle: a.tipo,
-            icon: Ticket,
-            colorClass: 'bg-purple-100 text-purple-600',
-            time: new Date(a.fecha).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit', hour12: false})
-        })
-      }
-  })
-
   return events.sort((a, b) => a.date.getTime() - b.date.getTime())
 })
 
-const groupedEvents = computed(() => {
-    const groups: Record<string, any[]> = {}
-    timeline.value.forEach(event => {
-        // Usar formato ISO YYYY-MM-DD para agrupar
-        const dateKey = event.date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-        if (!groups[dateKey]) groups[dateKey] = []
-        groups[dateKey].push(event)
-    })
-    return groups
-})
-
-const sortedDateKeys = computed(() => {
-    // Necesitamos ordenar las claves de fecha correctamente, no alfabéticamente
-    // Pero como groupedEvents es un objeto, iteramos sobre el timeline original para sacar las fechas únicas en orden
-    const keys = new Set<string>()
-    timeline.value.forEach(event => {
-         const dateKey = event.date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-         keys.add(dateKey)
-    })
-    return Array.from(keys)
-})
+const groupedEvents = computed(() => groupByDate(timeline.value, 'date'))
 </script>
 
 <template>
@@ -216,24 +146,24 @@ const sortedDateKeys = computed(() => {
     </div>
 
     <div v-else class="space-y-8">
-        <div v-for="dateKey in sortedDateKeys" :key="dateKey" class="relative">
+        <div v-for="group in groupedEvents" :key="group.date" class="relative">
             <!-- Sticky Header Día -->
             <div class="sticky top-0 z-10 bg-gray-50/95 backdrop-blur py-2 mb-4 border-b border-slate-200">
                 <h3 class="text-lg font-bold capitalize text-slate-800 flex items-center">
                     <CalendarRange class="w-5 h-5 mr-2 text-primary" />
-                    {{ dateKey }}
+                    {{ group.date }}
                 </h3>
             </div>
 
             <!-- Timeline Items -->
             <div class="space-y-4 pl-4 border-l-2 border-slate-200 ml-2.5">
-                <div v-for="event in groupedEvents[dateKey]" :key="event.id" class="relative pl-6 group">
+                <div v-for="event in group.items" :key="event.id" class="relative pl-6 group">
                     <!-- Dot -->
                     <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center" :class="event.colorClass">
                          <div class="w-2 h-2 rounded-full bg-current"></div>
                     </div>
 
-                    <Card class="hover:shadow-md transition-shadow duration-200 border-l-4" :class="event.type === 'flight' ? 'border-l-blue-400' : event.type === 'hotel' ? 'border-l-orange-400' : event.type === 'activity' ? 'border-l-purple-400' : event.type === 'expense' ? 'border-l-red-400' : 'border-l-green-400'">
+                    <Card class="hover:shadow-md transition-shadow duration-200 border-l-4" :class="event.type === 'flight' ? 'border-l-blue-400' : event.type === 'accommodation' || event.type === 'hotel' ? 'border-l-orange-400' : event.type === 'activity' ? 'border-l-purple-400' : event.type === 'expense' ? 'border-l-red-400' : 'border-l-green-400'">
                         <CardContent class="p-4 flex items-start gap-4">
                             <div class="p-2 rounded-lg shrink-0" :class="event.colorClass.replace('text-', 'bg-opacity-20 text-')">
                                 <component :is="event.icon" class="w-5 h-5" />

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <!-- Empty state -->
-    <div v-if="Object.keys(groupedExpenses).length === 0" class="text-center py-12">
+    <div v-if="groupedExpenses.length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">📝</div>
       <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ emptyTitle }}</h3>
       <p class="text-sm text-gray-600">{{ emptyMessage }}</p>
@@ -9,26 +9,26 @@
 
     <!-- Render only visible items for performance -->
     <div v-else>
-      <div v-for="(expensesForDate, date) in visibleGroupedExpenses" :key="date" class="space-y-3">
+      <div v-for="group in visibleGroupedExpenses" :key="group.date" class="space-y-3">
         <!-- Date Header -->
         <div class="flex items-center justify-between px-2 py-2 bg-gray-100 rounded-lg sticky top-0 z-10">
           <div class="flex items-center gap-2">
             <span class="text-sm font-semibold text-gray-900">
-              {{ getRelativeDayLabel(date) }}
+              {{ getRelativeDayLabel(group.date) }}
             </span>
             <span class="text-xs text-gray-600">
-              {{ formatDate(date) }}
+              {{ formatDate(group.date) }}
             </span>
           </div>
           <div class="text-sm font-bold text-gray-900">
-            {{ formatAmount(getTotalForDate(expensesForDate)) }}
+            {{ formatAmount(getTotalForDate(group.items)) }}
           </div>
         </div>
 
         <!-- Planned expenses for this date -->
-        <div v-if="plannedExpensesForDate[date]" class="space-y-3">
+        <div v-if="plannedExpensesForDate[group.date]" class="space-y-3">
           <ExpensesPlannedCard
-            v-for="planned in plannedExpensesForDate[date]"
+            v-for="planned in plannedExpensesForDate[group.date]"
             :key="planned.id"
             :planned-expense="planned"
             @click="$emit('planned-expense-click', planned)"
@@ -38,7 +38,7 @@
         <!-- Expenses for this date -->
         <div class="space-y-3">
           <ExpensesCard
-            v-for="expense in expensesForDate"
+            v-for="expense in group.items"
             :key="expense.id"
             :expense="expense"
             @click="$emit('expense-click', expense)"

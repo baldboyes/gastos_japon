@@ -16,6 +16,7 @@ import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { FileUploader } from '~/components/ui/FileUploader'
 import { FileList } from '~/components/ui/FileList'
 import { formatCurrency } from '~/utils/currency'
+import { groupByDate } from '~/utils/grouping'
 import { toast } from 'vue-sonner'
 import { cn } from '~/lib/utils'
 
@@ -53,31 +54,7 @@ const trayectos = computed(() => {
 })
 
 // 3. Trayectos Grouped by Date (Similar to Flights)
-const groupedTrayectos = computed(() => {
-  if (!trayectos.value || trayectos.value.length === 0) return []
-  
-  // Sort by date first
-  const sorted = [...trayectos.value].sort((a, b) => 
-    new Date(a.fecha_inicio || '').getTime() - new Date(b.fecha_inicio || '').getTime()
-  )
-  
-  const groups: { date: string, items: Transporte[] }[] = []
-  
-  sorted.forEach(t => {
-    if (!t.fecha_inicio) return
-    const dateKey = new Date(t.fecha_inicio).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    const dateStr = dateKey.charAt(0).toUpperCase() + dateKey.slice(1)
-    
-    let lastGroup = groups[groups.length - 1]
-    if (!lastGroup || lastGroup.date !== dateStr) {
-      lastGroup = { date: dateStr, items: [] }
-      groups.push(lastGroup)
-    }
-    lastGroup.items.push(t)
-  })
-  
-  return groups
-})
+const groupedTrayectos = computed(() => groupByDate(trayectos.value, 'fecha_inicio'))
 
 // Computed list of available passes for the selector (filtered from all transports)
 const availablePasses = computed(() => {

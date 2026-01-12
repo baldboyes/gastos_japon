@@ -15,6 +15,7 @@ import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { FileUploader } from '~/components/ui/FileUploader'
 import { FileList } from '~/components/ui/FileList'
 import { formatCurrency } from '~/utils/currency'
+import { groupByDate } from '~/utils/grouping'
 import { formatTime } from '~/utils/dates'
 import { toast } from 'vue-sonner'
 
@@ -61,31 +62,7 @@ const isValid = computed(() => formData.value.nombre && formData.value.fecha)
 const onFileUploaded = () => fetchOrganizationData(tripId)
 
 // Group Activities by Date
-const groupedActivities = computed(() => {
-  if (!actividades.value || actividades.value.length === 0) return []
-  
-  // Sort by date first
-  const sorted = [...actividades.value].sort((a, b) => 
-    new Date(a.fecha || '').getTime() - new Date(b.fecha || '').getTime()
-  )
-  
-  const groups: { date: string, items: Actividad[] }[] = []
-  
-  sorted.forEach(a => {
-    if (!a.fecha) return
-    const dateKey = new Date(a.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    const dateStr = dateKey.charAt(0).toUpperCase() + dateKey.slice(1)
-    
-    let lastGroup = groups[groups.length - 1]
-    if (!lastGroup || lastGroup.date !== dateStr) {
-      lastGroup = { date: dateStr, items: [] }
-      groups.push(lastGroup)
-    }
-    lastGroup.items.push(a)
-  })
-  
-  return groups
-})
+const groupedActivities = computed(() => groupByDate(actividades.value, 'fecha'))
 </script>
 
 <template>

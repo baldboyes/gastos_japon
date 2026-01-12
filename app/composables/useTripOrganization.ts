@@ -100,6 +100,16 @@ export interface Seguro {
   adjuntos?: any[]
 }
 
+export interface TimelineItem {
+  id: string
+  type: 'flight' | 'accommodation' | 'transport' | 'activity' | 'expense'
+  date: Date
+  title: string
+  subtitle: string
+  originalItem: any
+  metadata?: Record<string, any>
+}
+
 export const useTripOrganization = () => {
   const { getAuthenticatedClient } = useDirectus()
   
@@ -111,6 +121,97 @@ export const useTripOrganization = () => {
   const seguros = useState<Seguro[]>('org-seguros', () => [])
   
   const loading = useState<boolean>('org-loading', () => false)
+
+  // --- Timeline Computed ---
+  const timelineItems = computed<TimelineItem[]>(() => {
+    const items: TimelineItem[] = []
+
+    // 1. Vuelos
+    vuelos.value.forEach(v => {
+      if (v.escalas && v.escalas.length > 0) {
+        v.escalas.forEach((e: any, index) => {
+          if (e.fecha_salida) {
+            items.push({
+              id: `flight-${v.id}-scale-${index}`,
+              type: 'flight',
+              date: new Date(e.fecha_salida),
+              title: `Vuelo a ${e.destino}`,
+              subtitle: `${e.aerolinea || 'Vuelo'} ${e.numero_vuelo ? '• ' + e.numero_vuelo : ''}`,
+              originalItem: v,
+              metadata: { scale: e }
+            })
+          }
+        })
+      } else if (v.fecha_salida) {
+        items.push({
+          id: `flight-${v.id}`,
+          type: 'flight',
+          date: new Date(v.fecha_salida),
+          title: `Vuelo a ${v.destino}`,
+          subtitle: `${v.aerolinea || 'Vuelo'} ${v.numero_vuelo ? '• ' + v.numero_vuelo : ''}`,
+          originalItem: v
+        })
+      }
+    })
+
+    // 2. Alojamientos
+    alojamientos.value.forEach(a => {
+      if (a.check_in) {
+        items.push({
+          id: `accommodation-${a.id}`,
+          type: 'accommodation',
+          date: new Date(a.check_in),
+          title: `Check-in: ${a.nombre}`,
+          subtitle: a.direccion || a.ciudad || 'Sin dirección',
+          originalItem: a
+        })
+      }
+    })
+
+    // 3. Transportes
+    transportes.value.forEach(t => {
+      if (t.escalas && t.escalas.length > 0) {
+        t.escalas.forEach((e: any, index) => {
+          if (e.fecha_salida) {
+            items.push({
+              id: `transport-${t.id}-scale-${index}`,
+              type: 'transport',
+              date: new Date(e.fecha_salida),
+              title: `${e.medio}: ${e.origen} → ${e.destino}`,
+              subtitle: e.notas || '',
+              originalItem: t,
+              metadata: { scale: e }
+            })
+          }
+        })
+      } else if (t.fecha_inicio) {
+        items.push({
+          id: `transport-${t.id}`,
+          type: 'transport',
+          date: new Date(t.fecha_inicio),
+          title: t.nombre,
+          subtitle: t.categoria === 'pase' ? 'Activación de Pase' : 'Transporte',
+          originalItem: t
+        })
+      }
+    })
+
+    // 4. Actividades
+    actividades.value.forEach(act => {
+      if (act.fecha) {
+        items.push({
+          id: `activity-${act.id}`,
+          type: 'activity',
+          date: new Date(act.fecha),
+          title: act.nombre,
+          subtitle: act.tipo.charAt(0).toUpperCase() + act.tipo.slice(1),
+          originalItem: act
+        })
+      }
+    })
+
+    return items.sort((a, b) => a.date.getTime() - b.date.getTime())
+  })
 
   // --- Fetch All ---
   const fetchOrganizationData = async (tripId: string) => {
@@ -254,6 +355,7 @@ export const useTripOrganization = () => {
     transportes,
     actividades,
     seguros,
+    timelineItems,
     loading,
     fetchOrganizationData,
     createVuelo, updateVuelo, deleteVuelo,

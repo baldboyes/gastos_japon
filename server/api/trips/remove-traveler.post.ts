@@ -1,4 +1,4 @@
-import { createDirectus, rest, deleteItem, readItem, staticToken } from '@directus/sdk'
+import { createDirectus, rest, deleteItem, readItem, staticToken, updateItems } from '@directus/sdk'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -21,6 +21,55 @@ export default defineEventHandler(async (event) => {
 
     if (!relation) {
       return { success: false, error: 'Relation not found' }
+    }
+
+    // Lógica de reasignación de items antes de eliminar
+    try {
+      const tripId = relation.viaje_id
+      const removedUserId = relation.directus_user_id
+
+      // Obtener el creador del viaje
+      const trip = await adminClient.request(readItem('viajes', tripId, {
+        fields: ['user_created']
+      }))
+
+      // El campo user_created suele ser un UUID string, pero verificamos por seguridad
+      const tripOwnerId = typeof trip.user_created === 'object' && trip.user_created !== null 
+        ? trip.user_created.id 
+        : trip.user_created
+
+      // Si el usuario que se elimina NO es el creador del viaje (evitar bucles raros)
+      // y tenemos un ID de propietario válido
+      if (removedUserId && tripOwnerId && removedUserId !== tripOwnerId) {
+        const collections = ['alojamientos', 'vuelos', 'transportes', 'actividades', 'seguros', 'gastos']
+        
+        // Ejecutamos las actualizaciones en paralelo
+        await Promise.all(collections.map(async (collection) => {
+          try {
+            await adminClient.request(updateItems(collection as any, {
+              filter: {
+                _and: [
+                  { viaje_id: { _eq: tripId } },
+                  { user_created: { _eq: removedUserId } }
+                ]
+              },
+              data: {
+                user_created: tripOwnerId
+              }
+            }))
+          } catch (err) {
+            // Logueamos pero no detenemos el proceso si una colección falla (ej: si no existe)
+            console.warn(`[REMOVE TRAVELER] No se pudieron reasignar items en ${collection}:`, err)
+          }
+        }))
+        
+        console.log(`[REMOVE TRAVELER] Items reasignados de ${removedUserId} a ${tripOwnerId} en el viaje ${tripId}`)
+      }
+    } catch (reassignError) {
+      console.error('[REMOVE TRAVELER] Error en proceso de reasignación:', reassignError)
+      // Continuamos con la eliminación del usuario aunque falle la reasignación
+      // O podríamos abortar, pero el usuario pidió eliminarlo. 
+      // Generalmente mejor intentar cumplir la eliminación, aunque idealmente debería ser transaccional.
     }
 
     // Lógica de permisos simplificada: 

@@ -234,7 +234,8 @@ import { useRouter } from 'vue-router'
 import type { Expense, PlannedExpense } from '~/types'
 import { getCategoryInfo } from '~/types'
 import type { DateFilterRange } from '~/components/common/DateRangeFilter.vue'
-import { formatDate, groupByDate } from '~/utils/dates'
+import { formatDate, getDateString } from '~/utils/dates'
+import { groupByDate } from '~/utils/grouping'
 
 const { formatAmount } = useCurrency()
 const router = useRouter()
@@ -412,7 +413,7 @@ function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
 const totalSpent = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0))
 
 const tripDays = computed(() => {
-  const dates = Object.keys(groupByDate(expenses.value))
+  const dates = groupByDate(expenses.value, 'timestamp', (d) => getDateString(d))
   return dates.length
 })
 

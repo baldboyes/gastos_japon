@@ -272,22 +272,6 @@ export function getEndOfDay(date: string | Date): string {
 }
 
 /**
- * Group expenses by date
- * @param expenses - Array of expenses
- * @returns Record of date string to expenses
- */
-export function groupByDate(expenses: Expense[]): Record<string, Expense[]> {
-  return expenses.reduce((acc, expense) => {
-    const dateKey = getDateString(expense.timestamp)
-    if (!acc[dateKey]) {
-      acc[dateKey] = []
-    }
-    acc[dateKey].push(expense)
-    return acc
-  }, {} as Record<string, Expense[]>)
-}
-
-/**
  * Sort expenses by timestamp (newest first)
  * Handles both "YYYY-MM-DD HH:MM" format and ISO format
  * @param expenses - Array of expenses

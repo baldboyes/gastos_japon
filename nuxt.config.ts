@@ -127,5 +127,10 @@ export default defineNuxtConfig({
       navigateFallback: '/',
       type: 'module'
     }
+  },
+  runtimeConfig: {
+    public: {
+      directusUrl: 'https://api.mevoyajapon.com'
+    }
   }
 })

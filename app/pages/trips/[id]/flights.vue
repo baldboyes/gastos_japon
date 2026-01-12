@@ -18,6 +18,7 @@ import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { FileUploader } from '~/components/ui/FileUploader'
 import { FileList } from '~/components/ui/FileList'
 import { formatCurrency } from '~/utils/currency'
+import { groupByDate } from '~/utils/grouping'
 import { toast } from 'vue-sonner'
 
 const route = useRoute()
@@ -129,27 +130,7 @@ const isValid = computed(() => {
   return formData.value.escalas.every((e: any) => e.origen && e.destino && e.fecha_salida)
 })
 
-const getEscalasGrouped = (escalas?: any[]) => {
-  if (!escalas || escalas.length === 0) return []
-  const sorted = [...escalas].sort((a, b) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
-  
-  const groups: { date: string, items: any[] }[] = []
-  
-  sorted.forEach(e => {
-    if (!e.fecha_salida) return
-    const dateKey = new Date(e.fecha_salida).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    const dateStr = dateKey.charAt(0).toUpperCase() + dateKey.slice(1)
-    
-    let lastGroup = groups[groups.length - 1]
-    if (!lastGroup || lastGroup.date !== dateStr) {
-      lastGroup = { date: dateStr, items: [] }
-      groups.push(lastGroup)
-    }
-    lastGroup.items.push(e)
-  })
-  
-  return groups
-}
+const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
 
 const onFileUploaded = () => fetchOrganizationData(tripId) 
 </script>

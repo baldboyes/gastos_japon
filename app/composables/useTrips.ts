@@ -3,6 +3,7 @@ import { readItems, readItem, createItem, updateItem, deleteItem } from '@direct
 export interface Trip {
   id: string
   nombre: string
+  portada: string | null
   fecha_inicio: string
   fecha_fin: string | null
   presupuesto_diario?: number

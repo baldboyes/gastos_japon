@@ -1,5 +1,6 @@
 import type { Expense } from '~/types'
-import { groupByDate } from '~/utils/dates'
+import { groupByDate } from '~/utils/grouping'
+import { getDateString } from '~/utils/dates'
 
 export function useGroupedExpenses(expenses: Ref<Expense[]>, itemsPerPage: number = 10) {
   const currentPage = ref(1)
@@ -11,45 +12,30 @@ export function useGroupedExpenses(expenses: Ref<Expense[]>, itemsPerPage: numbe
 
   const groupedExpenses = computed(() => {
     // Group and sort by date (newest first)
-    const grouped = groupByDate(expenses.value)
-    const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a))
-
-    const result: Record<string, Expense[]> = {}
-    sortedDates.forEach(date => {
-      result[date] = grouped[date].sort((a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      )
+    // Use custom formatter to get YYYY-MM-DD key
+    const grouped = groupByDate(expenses.value, 'timestamp', (d) => getDateString(d))
+    
+    // Sort items within groups (newest first)
+    grouped.forEach(g => {
+        g.items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     })
-
-    return result
+    
+    // Sort groups by date descending (newest first)
+    // groupByDate returns ascending order by default
+    return grouped.reverse()
   })
 
   const visibleGroupedExpenses = computed(() => {
-    const allDates = Object.keys(groupedExpenses.value)
     const endIndex = currentPage.value * itemsPerPage
-    const visibleDates = allDates.slice(0, endIndex)
-
-    const result: Record<string, Expense[]> = {}
-    visibleDates.forEach(date => {
-      const expenses = groupedExpenses.value[date]
-      if (expenses) {
-        result[date] = expenses
-      }
-    })
-
-    return result
+    return groupedExpenses.value.slice(0, endIndex)
   })
 
   const hasMoreItems = computed(() => {
-    const totalDates = Object.keys(groupedExpenses.value).length
-    const visibleDates = Object.keys(visibleGroupedExpenses.value).length
-    return visibleDates < totalDates
+    return visibleGroupedExpenses.value.length < groupedExpenses.value.length
   })
 
   const remainingCount = computed(() => {
-    const totalDates = Object.keys(groupedExpenses.value).length
-    const visibleDates = Object.keys(visibleGroupedExpenses.value).length
-    return totalDates - visibleDates
+    return groupedExpenses.value.length - visibleGroupedExpenses.value.length
   })
 
   function loadMore() {

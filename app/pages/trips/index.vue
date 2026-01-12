@@ -12,23 +12,8 @@ import {
   Trash2, 
   Calendar as CalendarIcon 
 } from 'lucide-vue-next'
-
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { RangeCalendar } from '~/components/ui/range-calendar'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '~/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '~/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '~/components/ui/alert-dialog'
+import { fileUrl } from '~/utils/directusFiles'
+import GroupTripsList from '~/components/trips/GroupTripsList.vue'
 
 // Estado
 const { trips, loading, error, fetchTrips, createTrip, updateTrip, deleteTrip } = useTrips()
@@ -58,6 +43,9 @@ const df = new DateFormatter('es-ES', {
 onMounted(() => {
   fetchTrips()
 })
+
+
+
 
 // Handlers
 const openCreateDialog = () => {
@@ -112,7 +100,8 @@ const handleSubmit = async () => {
   const tripData = {
     nombre: formData.value.nombre,
     fecha_inicio: dateRange.value.start.toString(),
-    fecha_fin: dateRange.value.end?.toString() || dateRange.value.start.toString()
+    fecha_fin: dateRange.value.end?.toString() || dateRange.value.start.toString(),
+    portada: null,
   }
 
   try {
@@ -146,135 +135,149 @@ const formatDate = (dateStr: string | null | undefined) => {
   // Para mostrar en la tarjeta, usamos Date nativo que es más tolerante
   return new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
+
 </script>
 
 <template>
   <NuxtLayout name="default">
-    <div class="max-w-4xl mx-auto p-4 space-y-6">
-
-      <SignedIn>
-        <div class="flex items-center justify-between pt-8">
-          <div class="flex items-center gap-3">
-              <div v-if="user?.imageUrl" class="w-10 h-10 rounded-full overflow-hidden">
-                <img :src="user.imageUrl" alt="Perfil" class="w-full h-full object-cover" />
-              </div>
-              <div class="text-sm text-slate-500">
-                {{ user?.firstName || 'Usuario' }} {{ user?.lastName || '' }}<br />
-                <pre>{{ user?.emailAddresses?.[0]?.emailAddress || 'No email' }}</pre>
-              </div>
-          </div>
-        </div>
-      
-
-        <div class="flex justify-between items-center">
-          <div>
-            <h1 class="text-3xl font-bold tracking-tight">Mis Viajes</h1>
-            <p class="text-muted-foreground">Gestiona tus aventuras y presupuestos.</p>
-          </div>
-          <Button @click="openCreateDialog">
-            <Plus class="mr-2 h-4 w-4" /> Nuevo Viaje
-          </Button>
-        </div>
-
-        <!-- Loading State -->
-        <div v-if="loading && trips.length === 0" class="flex justify-center py-12">
-          <Loader2 class="h-8 w-8 animate-spin text-primary" />
-        </div>
-
-        <!-- Empty State -->
-        <div v-else-if="trips.length === 0" class="text-center py-12 border rounded-lg bg-muted/20 border-dashed">
-          <MapPin class="mx-auto h-12 w-12 text-muted-foreground/50" />
-          <h3 class="mt-4 text-lg font-semibold">No hay viajes todavía</h3>
-          <p class="text-muted-foreground mb-4">Empieza creando tu primer viaje para controlar los gastos.</p>
-          <Button @click="openCreateDialog" variant="outline">Crear Viaje</Button>
-        </div>
-
-        <!-- Grid de Viajes -->
-        <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card v-for="trip in trips" :key="trip.id" class="hover:shadow-md transition-shadow">
-            <CardHeader class="pb-2">
-              <div class="flex justify-between items-start">
-                <CardTitle class="text-xl">{{ trip.nombre }}</CardTitle>
-                <div class="flex gap-1">
-                  <Button variant="ghost" size="icon" class="h-8 w-8" @click="openEditDialog(trip)">
-                    <Edit2 class="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" class="h-8 w-8 text-destructive hover:text-destructive" @click="handleDeleteClick(trip.id)">
-                    <Trash2 class="h-4 w-4" />
-                  </Button>
+    <div class="w-full space-y-16">
+      <div class="max-w-4xl mx-auto p-4 space-y-6">
+        <SignedIn>
+          <div class="flex items-center justify-between pt-8">
+            <div class="flex items-center gap-3">
+                <div v-if="user?.imageUrl" class="w-10 h-10 rounded-full overflow-hidden">
+                  <img :src="user.imageUrl" alt="Perfil" class="w-full h-full object-cover" />
                 </div>
-              </div>
-              <CardDescription class="flex items-center mt-1">
-                <CalendarIcon class="mr-1 h-3 w-3" />
-                {{ formatDate(trip.fecha_inicio) }} - {{ formatDate(trip.fecha_fin) }}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div class="text-sm text-muted-foreground">
-                <!-- Aquí podríamos poner resumen de gastos futuros -->
-                Planificado
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="secondary" class="w-full" as-child>
-                <NuxtLink :to="`/trips/${trip.id}`">Ver Detalles</NuxtLink>
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        <!-- Dialogo Crear/Editar -->
-        <Dialog v-model:open="isOpen">
-          <DialogContent class="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{{ isEditing ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</DialogTitle>
-              <DialogDescription>
-                Define el nombre y las fechas de tu viaje.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div class="grid gap-4 py-4">
-              <div class="grid gap-2">
-                <Label htmlFor="name">Nombre del Viaje</Label>
-                <Input id="name" v-model="formData.nombre" placeholder="Ej: Japón 2026" />
-              </div>
-              
-              <div class="grid gap-2">
-                <Label>Fechas</Label>
-                <div class="border rounded-md p-4 flex justify-center bg-background">
-                  <RangeCalendar v-model="dateRange" class="rounded-md border" />
+                <div class="text-sm text-slate-500">
+                  {{ user?.firstName || 'Usuario' }} {{ user?.lastName || '' }}<br />
+                  <pre>{{ user?.emailAddresses?.[0]?.emailAddress || 'No email' }}</pre>
                 </div>
-                <p class="text-xs text-muted-foreground text-center">
-                  Selecciona el día de inicio y el día de fin.
-                </p>
-              </div>
             </div>
+          </div>
+        
 
-            <DialogFooter>
-              <Button type="submit" @click="handleSubmit" :disabled="loading">
-                {{ loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear Viaje') }}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-3xl font-bold tracking-tight">Mis Viajes</h1>
+              <p class="text-muted-foreground">Gestiona tus aventuras y presupuestos.</p>
+            </div>
+            <Button @click="openCreateDialog">
+              <Plus class="mr-2 h-4 w-4" /> Nuevo Viaje
+            </Button>
+          </div>
 
-        <!-- Alert Dialog Confirmación -->
-        <AlertDialog v-model:open="isDeleteOpen">
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta acción no se puede deshacer. Se eliminará permanentemente el viaje y todos los datos asociados (vuelos, alojamientos, gastos, etc.).
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Viaje</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          <!-- Loading State -->
+          <div v-if="loading && trips.length === 0" class="flex justify-center py-12">
+            <Loader2 class="h-8 w-8 animate-spin text-primary" />
+          </div>
 
-      </SignedIn>
+          <!-- Empty State -->
+          <div v-else-if="trips.length === 0" class="text-center py-12 border rounded-lg bg-muted/20 border-dashed">
+            <MapPin class="mx-auto h-12 w-12 text-muted-foreground/50" />
+            <h3 class="mt-4 text-lg font-semibold">No hay viajes todavía</h3>
+            <p class="text-muted-foreground mb-4">Empieza creando tu primer viaje para controlar los gastos.</p>
+            <Button @click="openCreateDialog" variant="outline">Crear Viaje</Button>
+          </div>
+
+          <!-- Grid de Viajes -->
+          <div v-else class="grid gap-6 md:grid-cols-2">
+            <Card v-for="trip in trips" :key="trip.id" class="hover:shadow-md transition-shadow">
+              <!-- Imagen -->
+              <div class="w-full md:w-48 h-48 relative shrink-0">
+                <img v-if="trip.portada"
+                  :src="`https://api.mevoyajapon.com/assets/${trip.portada}?width=1200&format=webp`" 
+                  :alt="trip.nombre"
+                  class="w-full h-full object-cover"
+                />
+                <img v-else src="/placeholder-trip.webp" alt="Placeholder" class="w-full h-full object-cover" />
+              </div>
+
+              <CardHeader class="pb-2">
+                <div class="flex justify-between items-start">
+                  <CardTitle class="text-xl">{{ trip.nombre }}</CardTitle>
+                  <div class="flex gap-1">
+                    <Button variant="ghost" size="icon" class="h-8 w-8" @click="openEditDialog(trip)">
+                      <Edit2 class="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" class="h-8 w-8 text-destructive hover:text-destructive" @click="handleDeleteClick(trip.id)">
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <CardDescription class="flex items-center mt-1">
+                  <CalendarIcon class="mr-1 h-3 w-3" />
+                  {{ formatDate(trip.fecha_inicio) }} - {{ formatDate(trip.fecha_fin) }}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div class="text-sm text-muted-foreground">
+                  <!-- Aquí podríamos poner resumen de gastos futuros -->
+                  Planificado
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button variant="secondary" class="w-full" as-child>
+                  <NuxtLink :to="`/trips/${trip.id}`">Ver Detalles</NuxtLink>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+
+          <!-- Dialogo Crear/Editar -->
+          <Dialog v-model:open="isOpen">
+            <DialogContent class="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{{ isEditing ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</DialogTitle>
+                <DialogDescription>
+                  Define el nombre y las fechas de tu viaje.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                  <Label htmlFor="name">Nombre del Viaje</Label>
+                  <Input id="name" v-model="formData.nombre" placeholder="Ej: Japón 2026" />
+                </div>
+                
+                <div class="grid gap-2">
+                  <Label>Fechas</Label>
+                  <div class="border rounded-md p-4 flex justify-center bg-background">
+                    <RangeCalendar v-model="dateRange" class="rounded-md border" />
+                  </div>
+                  <p class="text-xs text-muted-foreground text-center">
+                    Selecciona el día de inicio y el día de fin.
+                  </p>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button type="submit" @click="handleSubmit" :disabled="loading">
+                  {{ loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear Viaje') }}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <!-- Alert Dialog Confirmación -->
+          <AlertDialog v-model:open="isDeleteOpen">
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción no se puede deshacer. Se eliminará permanentemente el viaje y todos los datos asociados (vuelos, alojamientos, gastos, etc.).
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Viaje</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+        </SignedIn>
+      </div>
+      <!-- Viajes en Grupo - Componente autónomo -->
+      <GroupTripsList />
 
     </div>
   </NuxtLayout>

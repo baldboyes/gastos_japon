@@ -14,6 +14,7 @@ export interface TripExpense {
   ubicacion_lng?: number
   ciudad?: string
   prefectura?: string
+  moneda?: string
 }
 
 export const useTripExpenses = () => {

@@ -17,6 +17,7 @@ import { LocationSelector } from '~/components/ui/LocationSelector'
 import { FileUploader } from '~/components/ui/FileUploader'
 import { FileList } from '~/components/ui/FileList'
 import { formatCurrency } from '~/utils/currency'
+import { groupByDate } from '~/utils/grouping'
 import { cn } from '~/lib/utils'
 
 const route = useRoute()
@@ -117,31 +118,7 @@ const getCreatorAvatar = (user: any) => {
 }
 
 // Group Accommodations by Date (Check-in)
-const groupedAccommodations = computed(() => {
-  if (!alojamientos.value || alojamientos.value.length === 0) return []
-  
-  // Sort by check-in date
-  const sorted = [...alojamientos.value].sort((a, b) => 
-    new Date(a.check_in || '').getTime() - new Date(b.check_in || '').getTime()
-  )
-  
-  const groups: { date: string, items: Alojamiento[] }[] = []
-  
-  sorted.forEach(a => {
-    if (!a.check_in) return
-    const dateKey = new Date(a.check_in).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    const dateStr = dateKey.charAt(0).toUpperCase() + dateKey.slice(1)
-    
-    let lastGroup = groups[groups.length - 1]
-    if (!lastGroup || lastGroup.date !== dateStr) {
-      lastGroup = { date: dateStr, items: [] }
-      groups.push(lastGroup)
-    }
-    lastGroup.items.push(a)
-  })
-  
-  return groups
-})
+const groupedAccommodations = computed(() => groupByDate(alojamientos.value, 'check_in'))
 </script>
 
 <template>

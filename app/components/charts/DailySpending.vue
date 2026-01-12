@@ -49,7 +49,8 @@ import {
   type ChartOptions
 } from 'chart.js'
 import type { Expense } from '~/types'
-import { formatDate, groupByDate } from '~/utils/dates'
+import { formatDate, getDateString } from '~/utils/dates'
+import { groupByDate } from '~/utils/grouping'
 
 const { formatAmount, currencySymbol } = useCurrency()
 
@@ -80,16 +81,15 @@ interface DailyData {
 }
 
 const dailyData = computed<DailyData[]>(() => {
-  const grouped = groupByDate(props.expenses)
+  const grouped = groupByDate(props.expenses, 'timestamp', (d) => getDateString(d))
 
   // Convert to array and sort by date (oldest first for chart)
-  return Object.entries(grouped)
-    .map(([date, expenses]) => ({
-      date,
-      total: expenses.reduce((sum, e) => sum + e.amount, 0),
-      displayDate: formatShortDate(date)
+  return grouped.map(g => ({
+      date: g.date,
+      total: g.items.reduce((sum, e) => sum + e.amount, 0),
+      displayDate: formatShortDate(g.date)
     }))
-    .sort((a, b) => a.date.localeCompare(b.date))
+    // groupByDate returns sorted ascending by default, which is what chart wants
 })
 
 const hasData = computed(() => dailyData.value.length > 0)
