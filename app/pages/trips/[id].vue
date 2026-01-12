@@ -40,7 +40,7 @@ const isActive = (path: string) => {
   <div class="flex h-screen bg-gray-50">
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r hidden md:flex flex-col fixed inset-y-0 z-50">
-      <div class="p-6 border-b" style="background-image: url('https://api.mevoyajapon.com/assets/${currentTrip?.portada}?width=800&format=webp'); background-size: cover; background-position: center;">
+      <div class="p-6 border-b" :style="`background-image: url('https://api.mevoyajapon.com/assets/${currentTrip?.portada}?width=800&format=webp'); background-size: cover; background-position: center;`">
         <Button variant="ghost" class="w-full justify-start pl-0 -ml-2 mb-4" @click="router.push('/trips')">
           <ArrowLeft class="mr-2 h-4 w-4" /> Volver
         </Button>
