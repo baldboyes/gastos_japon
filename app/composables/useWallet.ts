@@ -119,6 +119,37 @@ export const useWallet = () => {
     return totalJPYAcquired.value - totalJPYSpent.value
   })
 
+  // 5. Desglose de Pagos (Pagado vs Pendiente)
+  const paymentBreakdown = computed(() => {
+    const breakdown = {
+      eur: { paid: 0, pending: 0 },
+      jpy: { paid: 0, pending: 0 }
+    }
+
+    const processItem = (item: any) => {
+      const price = Number(item.precio || 0)
+      const currency = item.moneda as 'EUR' | 'JPY'
+      // Default to 'pendiente' if status is missing or not 'pagado'
+      const status = item.estado_pago === 'pagado' ? 'pagado' : 'pendiente'
+
+      if (currency === 'EUR') {
+        if (status === 'pagado') breakdown.eur.paid += price
+        else breakdown.eur.pending += price
+      } else {
+        if (status === 'pagado') breakdown.jpy.paid += price
+        else breakdown.jpy.pending += price
+      }
+    }
+
+    vuelos.value.forEach(processItem)
+    alojamientos.value.forEach(processItem)
+    transportes.value.forEach(processItem)
+    actividades.value.forEach(processItem)
+    seguros.value.forEach(processItem)
+
+    return breakdown
+  })
+
   return {
     cambios,
     loading,
@@ -128,6 +159,7 @@ export const useWallet = () => {
     totalInvestedEUR,
     totalJPYAcquired,
     totalJPYSpent,
-    currentJPYBalance
+    currentJPYBalance,
+    paymentBreakdown
   }
 }

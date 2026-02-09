@@ -1,182 +1,242 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Shield, Plus, Trash2, Pencil, Phone, MoreVertical } from 'lucide-vue-next'
+import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
-import { Shield, Plus, Trash2, Pencil } from 'lucide-vue-next'
-import { useTripOrganization, type Seguro } from '~/composables/useTripOrganization'
-import { useTripItemForm } from '~/composables/useTripItemForm'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { DateTimePicker } from '~/components/ui/date-time-picker'
-import { FileUploader } from '~/components/ui/FileUploader'
-import { FileList } from '~/components/ui/FileList'
 import { formatCurrency } from '~/utils/currency'
 import { formatPhoneNumber, formatPhoneForHref } from '~/utils/phone'
-import { toast } from 'vue-sonner'
+import { cn } from '~/lib/utils'
+import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+import InsuranceModal from '~/components/trips/modals/InsuranceModal.vue'
+import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+import { useTripTasks } from '~/composables/useTripTasks'
+import { type Task } from '~/types/tasks'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 
 const route = useRoute()
 const tripId = route.params.id as string
-const { currentTrip } = useTrips()
-const { seguros, fetchOrganizationData, createSeguro, updateSeguro, deleteSeguro } = useTripOrganization()
 
-// Initialize generic form logic
-const { 
-  activeModal, 
-  formData, 
-  handleCreate: baseCreate, 
-  handleEdit: baseEdit, 
-  handleSave 
-} = useTripItemForm(
-  () => ({ moneda: 'EUR' }),
-  createSeguro,
-  updateSeguro,
-  'Seguro'
-)
+const { currentTrip } = useTrips()
+const { seguros, fetchOrganizationData, deleteSeguro } = useTripOrganization()
+const { tasks, init: initTasks, updateTask } = useTripTasks()
+
+const isTaskModalOpen = ref(false)
+const selectedTaskToEdit = ref<Task | null>(null)
+
+const allInsuranceTasks = computed(() => {
+  return tasks.value.filter(t => {
+    // Check direct entity type
+    if (t.entity_type === 'insurance') return true
+    
+    // Check group entity type if task doesn't have it set directly
+    const group = typeof t.task_group === 'object' ? t.task_group : null
+    if (group && group.entity_type === 'insurance') return true
+    
+    return false
+  })
+})
+
+const handleEditTask = (task: Task) => {
+  selectedTaskToEdit.value = task
+  isTaskModalOpen.value = true
+}
+
+const isModalOpen = ref(false)
+const itemToEdit = ref(null)
+
+const isDeleteOpen = ref(false)
+const insuranceToDelete = ref<number | null>(null)
+
+const confirmDelete = (id: number) => {
+  insuranceToDelete.value = id
+  isDeleteOpen.value = true
+}
+
+const executeDelete = async () => {
+  if (insuranceToDelete.value) {
+    await deleteSeguro(insuranceToDelete.value)
+    isDeleteOpen.value = false
+    insuranceToDelete.value = null
+  }
+}
+
+const handleCreateInsurance = () => {
+  itemToEdit.value = null
+  isModalOpen.value = true
+}
+
+const handleEditInsurance = (s: any) => {
+  itemToEdit.value = s
+  isModalOpen.value = true
+}
+
+const onSaved = () => {
+  fetchOrganizationData(tripId)
+}
 
 onMounted(() => {
   fetchOrganizationData(tripId)
+  initTasks(parseInt(tripId))
 })
-
-const handleCreateInsurance = () => {
-  baseCreate()
-}
-
-const handleEditInsurance = (item: any) => {
-  baseEdit(item)
-}
-
-const saveInsurance = () => {
-  handleSave((data) => {
-    data.viaje_id = parseInt(tripId)
-    return data
-  })
-}
-
-const isValid = computed(() => formData.value.compania && formData.value.tipo)
-
-const onFileUploaded = () => fetchOrganizationData(tripId)
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">Seguros</h2>
-        <p class="text-muted-foreground">Pólizas de salud y cancelación.</p>
-      </div>
-      <Button @click="handleCreateInsurance"><Plus class="mr-2 h-4 w-4" /> Nuevo Seguro</Button>
-    </div>
-
-    <div v-if="seguros.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
-      <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-      <h3 class="text-lg font-semibold text-slate-700">No hay seguros contratados</h3>
-      <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener la documentación a mano.</p>
-    </div>
-
-    <div v-else class="space-y-4">
-      <Card v-for="s in seguros" :key="s.id">
-        <CardHeader class="flex flex-row items-start justify-between pb-2">
-          <div class="flex items-center gap-2">
-            <Shield class="h-5 w-5 text-red-500" />
-            <div>
-              <CardTitle class="text-base">{{ s.compania }}</CardTitle>
-              <p class="text-sm text-muted-foreground capitalize">{{ s.tipo }} • Póliza: {{ s.numero_poliza }}</p>
-              <div class="text-xs text-muted-foreground mt-1 flex items-center gap-2">
-                 <span v-if="s.telefono_urgencias">Tel: <a :href="'tel:' + formatPhoneForHref(s.telefono_urgencias)">{{ formatPhoneNumber(s.telefono_urgencias) }}</a></span>
-                 <span v-if="s.email_urgencias">Email: <a :href="'mailto:' + s.email_urgencias">{{ s.email_urgencias }}</a></span>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="font-bold">{{ formatCurrency(s.precio, s.moneda) }}</span>
-            <div class="flex gap-1">
-              <Button variant="ghost" size="icon" @click="handleEditInsurance(s)">
-                <Pencil class="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" class="text-destructive hover:text-red-600" @click="deleteSeguro(s.id)">
-                <Trash2 class="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div class="pt-4 border-t mt-2">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sm font-medium text-slate-700">Póliza / Documentos</span>
-              <FileUploader collection="seguros" :item-id="s.id" @uploaded="onFileUploaded" />
-            </div>
-            <FileList :files="s.adjuntos" />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <Dialog v-model:open="activeModal">
-      <DialogContent @interact-outside="(e) => { e.preventDefault() }">
-        <DialogHeader><DialogTitle>{{ formData.id ? 'Editar' : 'Nuevo' }} Seguro</DialogTitle></DialogHeader>
-        <div class="grid gap-4 py-4">
-            <div><Label>Compañía</Label><Input v-model="formData.compania" placeholder="Ej: IATI" /></div>
-            <div>
-              <Label>Tipo</Label>
-              <Select v-model="formData.tipo">
-                <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="salud">Salud</SelectItem>
-                  <SelectItem value="cancelacion">Cancelación</SelectItem>
-                  <SelectItem value="completo">Completo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div><Label>Nº Póliza</Label><Input v-model="formData.numero_poliza" /></div>
-              <div><Label>Tel. Urgencias</Label><Input v-model="formData.telefono_urgencias" /></div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <Label>Inicio</Label>
-                <DateTimePicker 
-                  v-model="formData.fecha_inicio"
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
-                />
-              </div>
-              <div>
-                <Label>Fin</Label>
-                <DateTimePicker 
-                  v-model="formData.fecha_fin"
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
-                />
-              </div>
-            </div>
-            <div><Label>Email Urgencias</Label><Input v-model="formData.email_urgencias" placeholder="ejemplo@seguro.com" /></div>
-            <div class="grid grid-cols-2 gap-2">
-             <div>
-               <Label>Precio</Label>
-               <Input 
-                 type="number" 
-                 v-model="formData.precio" 
-                 :step="formData.moneda === 'JPY' ? '1' : '0.01'"
-               />
-             </div>
-             <div>
-               <Label>Moneda</Label>
-               <Select v-model="formData.moneda">
-                <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EUR">Euros (€)</SelectItem>
-                  <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                </SelectContent>
-              </Select>
-             </div>
-          </div>
+  <NuxtLayout name="dashboard">
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+      <div class="flex flex-col lg:flex-row gap-8 items-start relative">
+        <!-- Main Content -->
+        <div class="flex-1 w-full space-y-4">
+          <div class="flex justify-between items-center px-4 md:px-0">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Seguros</h2>
+          <p class="text-muted-foreground hidden md:block">Pólizas de viaje y asistencia médica.</p>
         </div>
-        <DialogFooter><Button @click="saveInsurance" :disabled="!isValid">Guardar</Button></DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div>
+        <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> Añadir</Button>
+      </div>
+
+      <div v-if="seguros.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+        <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
+        <h3 class="text-lg font-semibold text-slate-700">No hay seguros registrados</h3>
+        <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener a mano la póliza.</p>
+      </div>
+
+      <div v-else class="space-y-4">
+        <Card v-for="s in seguros" :key="s.id">
+          <CardHeader class="flex flex-row items-start justify-between pb-2">
+            <div class="flex items-start gap-3">
+              <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mt-1">
+                <Shield class="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle class="text-lg">{{ s.compania }}</CardTitle>
+                <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1 font-mono bg-slate-100 px-2 py-0.5 rounded w-fit">
+                  Póliza: {{ s.numero_poliza }}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
+                    <span class="sr-only">Abrir menú</span>
+                    <MoreVertical class="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem @click="handleEditInsurance(s)">
+                    <Pencil class="mr-2 h-4 w-4" />
+                    <span>Editar</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem @click="confirmDelete(s.id)" class="text-destructive focus:text-destructive">
+                    <Trash2 class="mr-2 h-4 w-4" />
+                    <span>Eliminar</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div class="flex flex-col xl:flex-row gap-8">
+              <div class="w-full">
+                <div v-if="s.telefono_asistencia" class="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded-md mb-4">
+                  <div class="h-8 w-8 rounded-full bg-green-200 flex items-center justify-center text-green-700">
+                    <Phone class="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-green-800 uppercase">Teléfono Asistencia</p>
+                    <a :href="`tel:${formatPhoneForHref(s.telefono_asistencia)}`" class="text-lg font-bold text-green-700 hover:underline">
+                      {{ formatPhoneNumber(s.telefono_asistencia) }}
+                    </a>
+                  </div>
+                </div>
+
+                <div v-if="s.notas" class="mb-4 p-3 bg-slate-50 rounded-md text-sm text-slate-600">
+                  <span class="font-bold text-xs uppercase text-slate-400 block mb-1">Coberturas / Notas</span>
+                  {{ s.notas }}
+                </div>
+
+                <div class="flex justify-end pt-2 border-t">
+                  <div class="flex items-center gap-3">
+                    <span :class="cn('text-[10px] px-1.5 py-1 rounded border uppercase font-bold tracking-wide', getStatusColor(s.estado_pago || 'pendiente'))">
+                      {{ getStatusLabel(s.estado_pago || 'pendiente') }}
+                    </span>
+                    <span class="font-mono">{{ formatCurrency(s.precio, s.moneda) }}</span>
+                    <div class="flex gap-1">
+                      <!-- Actions -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full xl:max-w-md">
+                <EntityTasksWidget 
+                  :trip-id="parseInt(tripId)"
+                  entity-type="insurance"
+                  :entity-id="s.id"
+                  :title="`Tareas: ${s.compania}`"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      </div>
+
+      <!-- Sidebar Tasks -->
+      <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
+        <TasksSidebar 
+          :tasks="allInsuranceTasks"
+          @update:status="(id, status) => updateTask(id, { status })"
+          @edit="handleEditTask"
+        />
+        <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[170px] w-full flex items-center justify-center">
+          ANUNCIO
+        </div>
+      </div>
+      </div>
+
+      <InsuranceModal 
+        v-model:open="isModalOpen" 
+        :trip-id="tripId" 
+        :current-trip="currentTrip" 
+        :item-to-edit="itemToEdit" 
+        @saved="onSaved"
+      />
+
+      <TaskModal 
+        v-model:open="isTaskModalOpen" 
+        :task="selectedTaskToEdit" 
+        :trip-id="parseInt(tripId)"
+        @saved="initTasks(parseInt(tripId))"
+      />
+
+      <!-- Alert Dialog Confirmación -->
+      <AlertDialog v-model:open="isDeleteOpen">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el seguro y todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Seguro</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  </NuxtLayout>
 </template>

@@ -16,8 +16,8 @@ import EditableMap from '~/components/maps/Editable.vue'
 interface LocationData {
   prefecture: string
   city: string
-  latitude: number
-  longitude: number
+  latitude: number | undefined
+  longitude: number | undefined
   address?: string
 }
 

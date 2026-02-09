@@ -42,6 +42,139 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme{
+  --font-display: "Alcyone", sans-serif;
+}
+
+/* Thin (100) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Thin.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-ThinItalic.woff2") format("woff2");
+}
+
+/* ExtraLight (200) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-ExtraLight.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-ExtraLightItalic.woff2") format("woff2");
+}
+
+/* Light (300) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Light.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-LightItalic.woff2") format("woff2");
+}
+
+/* Regular (400) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-RegularItalic.woff2") format("woff2");
+}
+
+/* Medium (500) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-MediumItalic.woff2") format("woff2");
+}
+
+/* SemiBold (600) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-SemiBoldItalic.woff2") format("woff2");
+}
+
+/* Bold (700) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-BoldItalic.woff2") format("woff2");
+}
+
+/* Black (900) */
+@font-face {
+  font-family: 'Alcyone';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/AlcyoneRoman/Alcyone-Black.woff2") format("woff2");
+}
+@font-face {
+  font-family: 'Alcyone';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/AlcyoneItalic/Alcyone-BlackItalic.woff2") format("woff2");
+}
+
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -69,8 +202,6 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -113,11 +244,6 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+@theme inline {
+  --font-sans: var(--font-display);
 }

@@ -48,7 +48,7 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
     activeModal.value = true
   }
 
-  const handleSave = async (payloadProcessor?: (data: T) => any) => {
+  const handleSave = async (payloadProcessor?: (data: T) => any, onSuccess?: () => void) => {
     try {
       // Prepare payload: allow custom processing or use default copy
       let payload = payloadProcessor ? payloadProcessor(formData.value) : { ...formData.value }
@@ -75,6 +75,10 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
       
       activeModal.value = false
       resetForm()
+
+      if (onSuccess) {
+        onSuccess()
+      }
     } catch (e: any) {
       console.error(`Error saving ${itemLabel}:`, e)
       

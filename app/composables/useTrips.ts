@@ -48,15 +48,46 @@ export const useTrips = () => {
     error.value = null
     try {
       const client = await getAuthenticatedClient()
-      const result = await client.request(readItems('viajes', {
-        sort: ['-fecha_inicio']
-      }))
       
-      if (Array.isArray(result)) {
-        trips.value = result as Trip[]
-      } else {
-        trips.value = []
+      // Intentar obtener con campos expandidos (requiere permisos avanzados)
+      try {
+        const result = await client.request(readItems('viajes' as any, {
+            sort: ['-fecha_inicio'],
+            fields: [
+            '*',
+            'user_created.first_name',
+            'user_created.last_name',
+            'user_created.avatar_url',
+            'colaboradores.directus_user_id.id',
+            'colaboradores.directus_user_id.first_name',
+            'colaboradores.directus_user_id.last_name',
+            'colaboradores.directus_user_id.avatar_url'
+            ]
+        }))
+        
+        if (Array.isArray(result)) {
+            trips.value = result as Trip[]
+        } else {
+            trips.value = []
+        }
+      } catch (permissionError: any) {
+        // Fallback: Si falla por permisos (403), intentar consulta básica sin expandir usuarios
+        if (permissionError?.errors?.[0]?.extensions?.code === 'FORBIDDEN') {
+             console.warn('[fetchTrips] Permisos insuficientes para expandir usuarios. Cargando datos básicos.')
+             const basicResult = await client.request(readItems('viajes', {
+                sort: ['-fecha_inicio']
+             }))
+             
+             if (Array.isArray(basicResult)) {
+                trips.value = basicResult as Trip[]
+             } else {
+                trips.value = []
+             }
+        } else {
+            throw permissionError
+        }
       }
+
     } catch (e: any) {
       console.error('Error fetching trips:', e)
       error.value = e.message || 'Error al cargar los viajes'
@@ -89,7 +120,7 @@ export const useTrips = () => {
       const client = await getAuthenticatedClient()
       
       const result = await client.request(createItem('viajes', trip, {
-        fields: ['id', 'nombre', 'fecha_inicio', 'fecha_fin', 'status', 'presupuesto_diario', 'moneda']
+        fields: ['id', 'nombre', 'portada', 'fecha_inicio', 'fecha_fin', 'status', 'presupuesto_diario', 'moneda']
       }))
       
       if (result && typeof result === 'object') {

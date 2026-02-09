@@ -57,7 +57,7 @@
 </script>
 
 <template>
-  <div class="w-full bg-gray-100 py-16">
+  <div class="w-full py-16">
     <div class="max-w-4xl mx-auto space-y-6 px-4 lg:px-0">
       <div class="flex justify-between items-center">
         <div>

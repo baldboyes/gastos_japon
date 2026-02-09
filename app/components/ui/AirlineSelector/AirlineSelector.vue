@@ -25,7 +25,7 @@ const POPULAR_AIRLINES = [
   'Iberia Airlines', 'Japan Airlines', 'All Nippon Airways', 
   'British Airways', 'Air France', 'Lufthansa', 'Qatar Airways', 
   'Emirates', 'Finnair', 'KLM Royal Dutch Airlines', 'Etihad Airways',
-  'Peach Aviation', 'Jetstar Japan', 'Vueling Airlines', 'Ryanair'
+  'Peach Aviation', 'Jetstar Japan', 'Vueling Airlines'
 ]
 
 const filteredAirlines = computed(() => {
@@ -67,7 +67,7 @@ const handleImageError = (e: Event) => {
         variant="outline"
         role="combobox"
         :aria-expanded="open"
-        class="w-full justify-between"
+        class="w-full justify-between border-input hover:bg-white focus-visible:border-ring focus-visible:ring-ring/50"
       >
         <div class="flex items-center gap-2 truncate w-full">
           <img 
@@ -84,18 +84,18 @@ const handleImageError = (e: Event) => {
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-[300px] p-0" align="start">
-      <div class="p-2 border-b">
-        <div class="flex items-center px-2 border rounded-md">
+      <div class="p-2 border-b border-gray-200">
+        <div class="flex items-center px-2 border border-input rounded-md">
           <Search class="h-4 w-4 text-muted-foreground mr-2" />
           <input 
             v-model="searchQuery"
-            class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 border-input hover:bg-white focus-visible:border-ring focus-visible:ring-ring/50"
             placeholder="Buscar aerolínea..."
           />
         </div>
       </div>
       
-      <div class="max-h-[300px] overflow-y-auto p-1">
+      <div class="max-h-[300px] overflow-y-auto p-2">
         <div v-if="loading" class="p-4 text-center text-sm text-muted-foreground">
           Cargando...
         </div>
@@ -107,7 +107,7 @@ const handleImageError = (e: Event) => {
           :key="airline.id"
           @click="selectAirline(airline.name)"
           :class="cn(
-            'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer',
+            'relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer',
             modelValue === airline.name ? 'bg-accent' : ''
           )"
         >
@@ -128,7 +128,7 @@ const handleImageError = (e: Event) => {
           </div>
         </div>
 
-        <div v-if="!searchQuery && filteredAirlines.length > 0" class="px-2 py-2 text-xs text-center text-muted-foreground bg-slate-50 border-t mt-1">
+        <div v-if="!searchQuery && filteredAirlines.length > 0" class="px-2 py-2 text-xs text-center text-muted-foreground mt-2">
           Escribe para buscar más...
         </div>
       </div>

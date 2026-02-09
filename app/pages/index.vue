@@ -48,66 +48,66 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import type { Expense, PlannedExpense } from '~/types'
-import { formatDate, getDateString } from '~/utils/dates'
-import { Badge } from '~/components/ui/badge'
+  import { useRouter } from 'vue-router'
+  import type { Expense, PlannedExpense } from '~/types'
+  import { formatDate, getDateString } from '~/utils/dates'
+  import { Badge } from '~/components/ui/badge'
 
-const router = useRouter()
-const { getTodayExpenses, deleteExpense, plannedExpenses, addExpense, deletePlannedExpense } = useExpenses()
-const currentDate = computed(() => formatDate(new Date()))
-const todayExpenses = computed(() => getTodayExpenses())
-const todayTotal = computed(() =>
-  todayExpenses.value.reduce((sum, exp) => sum + exp.amount, 0)
-)
+  const router = useRouter()
+  const { getTodayExpenses, deleteExpense, plannedExpenses, addExpense, deletePlannedExpense } = useExpenses()
+  const currentDate = computed(() => formatDate(new Date()))
+  const todayExpenses = computed(() => getTodayExpenses())
+  const todayTotal = computed(() =>
+    todayExpenses.value.reduce((sum, exp) => sum + exp.amount, 0)
+  )
 
-// Planned expenses list - only show today's planned expenses
-const plannedExpensesList = computed(() => {
-  const todayStr = getDateString(new Date())
+  // Planned expenses list - only show today's planned expenses
+  const plannedExpensesList = computed(() => {
+    const todayStr = getDateString(new Date())
 
-  return plannedExpenses.value.filter(planned => {
-    return planned.plannedDate === todayStr
+    return plannedExpenses.value.filter(planned => {
+      return planned.plannedDate === todayStr
+    })
   })
-})
 
-// Expense detail dialog
-const showExpenseDetail = ref(false)
-const selectedExpense = ref<Expense | null>(null)
+  // Expense detail dialog
+  const showExpenseDetail = ref(false)
+  const selectedExpense = ref<Expense | null>(null)
 
-function handleExpenseClick(expense: Expense) {
-  selectedExpense.value = expense
-  showExpenseDetail.value = true
-}
-
-function handleEdit(expense: Expense) {
-  showExpenseDetail.value = false
-  router.push(`/add?id=${expense.id}`)
-}
-
-function handleDelete(expense: Expense) {
-  deleteExpense(expense.id)
-  selectedExpense.value = null
-}
-
-// Handle planned expense click - convert to real expense
-function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
-  // Create a real expense from the planned expense
-  const now = new Date()
-  const expenseData = {
-    timestamp: now.toISOString(),
-    placeName: plannedExpense.placeName,
-    amount: plannedExpense.amount,
-    category: plannedExpense.category,
-    notes: plannedExpense.notes,
-    location: plannedExpense.location,
-    paymentMethod: plannedExpense.paymentMethod,
-    shared: plannedExpense.shared
+  function handleExpenseClick(expense: Expense) {
+    selectedExpense.value = expense
+    showExpenseDetail.value = true
   }
 
-  // Add as real expense
-  addExpense(expenseData)
+  function handleEdit(expense: Expense) {
+    showExpenseDetail.value = false
+    router.push(`/add?id=${expense.id}`)
+  }
 
-  // Delete from planned expenses
-  deletePlannedExpense(plannedExpense.id)
-}
+  function handleDelete(expense: Expense) {
+    deleteExpense(expense.id)
+    selectedExpense.value = null
+  }
+
+  // Handle planned expense click - convert to real expense
+  function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
+    // Create a real expense from the planned expense
+    const now = new Date()
+    const expenseData = {
+      timestamp: now.toISOString(),
+      placeName: plannedExpense.placeName,
+      amount: plannedExpense.amount,
+      category: plannedExpense.category,
+      notes: plannedExpense.notes,
+      location: plannedExpense.location,
+      paymentMethod: plannedExpense.paymentMethod,
+      shared: plannedExpense.shared
+    }
+
+    // Add as real expense
+    addExpense(expenseData)
+
+    // Delete from planned expenses
+    deletePlannedExpense(plannedExpense.id)
+  }
 </script>

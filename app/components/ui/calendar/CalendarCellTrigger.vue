@@ -18,6 +18,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 <template>
   <CalendarCellTrigger
     data-slot="calendar-cell-trigger"
+    class="cursor-pointer"
     :class="cn(
       buttonVariants({ variant: 'ghost' }),
       'size-8 p-0 font-normal aria-selected:opacity-100 cursor-default',

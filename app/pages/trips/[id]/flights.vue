@@ -1,87 +1,106 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Plane, Plus, Trash2, Edit2, ArrowRight, Calendar } from 'lucide-vue-next'
+import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
 import { useAirlines } from '~/composables/useAirlines'
-import { useTripItemForm } from '~/composables/useTripItemForm'
-import { formatDateTime, formatTime, getDayDiff } from '~/utils/dates'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { AirlineSelector } from '~/components/ui/AirlineSelector'
-import { DateTimePicker } from '~/components/ui/date-time-picker'
-import { FileUploader } from '~/components/ui/FileUploader'
-import { FileList } from '~/components/ui/FileList'
+import { formatTime } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
 import { groupByDate } from '~/utils/grouping'
-import { toast } from 'vue-sonner'
+import { cn } from '~/lib/utils'
+import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+import FlightModal from '~/components/trips/modals/FlightModal.vue'
+import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+import { useTripTasks } from '~/composables/useTripTasks'
+import { type Task } from '~/types/tasks'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 
 const route = useRoute()
 const tripId = route.params.id as string
 
 const { currentTrip } = useTrips()
-const { vuelos, fetchOrganizationData, createVuelo, updateVuelo, deleteVuelo } = useTripOrganization()
+const { vuelos, fetchOrganizationData, deleteVuelo } = useTripOrganization()
 const { airlines, fetchAirlines } = useAirlines()
+const { tasks, init: initTasks, updateTask } = useTripTasks()
 
-// Initialize generic form logic
-const { 
-  activeModal, 
-  formData, 
-  handleCreate: baseCreate, 
-  handleEdit: baseEdit, 
-  handleSave 
-} = useTripItemForm(
-  () => ({ moneda: 'EUR', escalas: [] }),
-  createVuelo,
-  updateVuelo,
-  'Vuelo'
-)
+const isTaskModalOpen = ref(false)
+const selectedTaskToEdit = ref<Task | null>(null)
 
-// Wrappers
+const allFlightTasks = computed(() => {
+  return tasks.value.filter(t => {
+    // Check direct entity type
+    if (t.entity_type === 'flight') return true
+    
+    // Check group entity type if task doesn't have it set directly
+    const group = typeof t.task_group === 'object' ? t.task_group : null
+    if (group && group.entity_type === 'flight') return true
+    
+    return false
+  })
+})
+
+const handleEditTask = (task: Task) => {
+  selectedTaskToEdit.value = task
+  isTaskModalOpen.value = true
+}
+
+const isModalOpen = ref(false)
+const itemToEdit = ref(null)
+
+const isDeleteOpen = ref(false)
+const flightToDelete = ref<number | null>(null)
+
+const confirmDelete = (id: number) => {
+  flightToDelete.value = id
+  isDeleteOpen.value = true
+}
+
+const executeDelete = async () => {
+  if (flightToDelete.value) {
+    await deleteVuelo(flightToDelete.value)
+    isDeleteOpen.value = false
+    flightToDelete.value = null
+  }
+}
+
 const handleCreateFlight = () => {
-  baseCreate()
+  itemToEdit.value = null
+  isModalOpen.value = true
 }
 
 const handleEditFlight = (v: any) => {
-  baseEdit(v)
-  if (!formData.value.escalas) formData.value.escalas = []
+  itemToEdit.value = v
+  isModalOpen.value = true
 }
 
-const saveFlight = () => {
-  handleSave((data) => {
-     // Validate at least one segment
-     if (!data.escalas || data.escalas.length === 0) {
-         toast.error('Debes añadir al menos un trayecto')
-         throw new Error('Validation failed')
-     }
-
-     // Auto-calculate globals from segments
-     const sorted = [...data.escalas].sort((a: any, b: any) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
-     
-     data.fecha_salida = sorted[0].fecha_salida
-     data.fecha_llegada = sorted[sorted.length - 1].fecha_llegada
-     data.origen = sorted[0].origen
-     data.destino = sorted[sorted.length - 1].destino
-     data.aerolinea = sorted[0].aerolinea
-
-     // Default title if empty
-     if (!data.titulo) {
-         data.titulo = `${data.origen} ➝ ${data.destino}`
-     }
-     
-     data.viaje_id = parseInt(tripId)
-     return data
-  })
+const onSaved = () => {
+  fetchOrganizationData(tripId)
 }
 
 onMounted(() => {
   fetchOrganizationData(tripId)
   fetchAirlines()
+  initTasks(parseInt(tripId))
 })
 
 const getAirlineLogo = (name: string) => {
@@ -90,266 +109,186 @@ const getAirlineLogo = (name: string) => {
   return airline?.logo || null
 }
 
-const addEscala = () => {
-  if (!formData.value.escalas) formData.value.escalas = []
-  
-  // Auto-fill logic based on previous segment
-  let prevDest = ''
-  let prevDate = ''
-  if (formData.value.escalas.length > 0) {
-      const last = formData.value.escalas[formData.value.escalas.length - 1]
-      prevDest = last.destino || ''
-      // Suggest next flight 2 hours later
-      if (last.fecha_llegada) {
-        try {
-           const d = new Date(last.fecha_llegada)
-           d.setHours(d.getHours() + 2)
-           prevDate = d.toISOString().slice(0, 16)
-        } catch(e) {}
-      }
-  }
-
-  formData.value.escalas.push({ 
-    origen: prevDest, 
-    destino: '', 
-    aerolinea: '', 
-    numero_vuelo: '', 
-    terminal: '',
-    fecha_salida: prevDate, 
-    fecha_llegada: '' 
-  })
-}
-
-const removeEscala = (index: number) => {
-  formData.value.escalas.splice(index, 1)
-}
-
-const isValid = computed(() => {
-  if (!formData.value.titulo) return false
-  if (!formData.value.escalas || formData.value.escalas.length === 0) return false
-  return formData.value.escalas.every((e: any) => e.origen && e.destino && e.fecha_salida)
-})
-
 const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
 
-const onFileUploaded = () => fetchOrganizationData(tripId) 
+const getDayDiff = (start?: string, end?: string) => {
+  if (!start || !end) return null
+  const d1 = new Date(start); d1.setHours(0,0,0,0)
+  const d2 = new Date(end); d2.setHours(0,0,0,0)
+  const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+  return diff > 0 ? `+${diff}` : null
+}
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">Vuelos</h2>
-        <p class="text-muted-foreground">Gestiona tus billetes aéreos y reservas.</p>
-      </div>
-      <Button @click="handleCreateFlight"><Plus class="mr-2 h-4 w-4" /> Nuevo Vuelo</Button>
-    </div>
-
-    <div v-if="vuelos.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
-      <Plane class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-      <h3 class="text-lg font-semibold text-slate-700">No hay vuelos registrados</h3>
-      <p class="max-w-md mx-auto mt-2">Añade tus vuelos para organizar el itinerario de viaje.</p>
-    </div>
-
-    <div v-else class="space-y-4">
-      <Card v-for="v in vuelos" :key="v.id">
-        <CardHeader class="flex flex-row items-start justify-between pb-2">
-          <div class="flex items-center gap-3">
-            <Plane class="h-5 w-5 text-blue-500 mt-1" />
-            <div>
-              <div class="flex items-center gap-2">
-                 <!-- Título Principal -->
-                 <CardTitle class="text-base font-bold flex items-center gap-2">
-                   {{ v.titulo || `${v.origen} ➝ ${v.destino}` }}
-                 </CardTitle>
-                 <!-- Precio debajo del título -->
-                 <div class="text-sm font-medium text-slate-600">
-                    {{ formatCurrency(v.precio, v.moneda) }}
-                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <!-- Localizador a la derecha -->
-            <div v-if="v.codigo_reserva" class="bg-blue-100 text-blue-700 font-mono font-bold px-2 py-1 rounded text-sm mr-2 border border-blue-200">
-               {{ v.codigo_reserva }}
-            </div>
-            <Button variant="ghost" size="icon" @click="handleEditFlight(v)"><Edit2 class="h-4 w-4 text-slate-500" /></Button>
-            <Button variant="ghost" size="icon" class="text-destructive hover:text-red-600" @click="deleteVuelo(v.id)">
-              <Trash2 class="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <!-- Escalas Display -->
-          <div v-if="v.escalas && v.escalas.length > 0" class="mt-4">
-            <div v-for="(group, gIndex) in getEscalasGrouped(v.escalas)" :key="gIndex" class="mb-4 last:mb-0">
-               <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-2">
-                  <Calendar class="h-3 w-3" /> {{ group.date }}
-               </h4>
-               <div class="space-y-3">
-                  <Card v-for="(escala, i) in group.items" :key="i" class="border shadow-sm bg-slate-50/50">
-                    <CardContent class="p-4 flex items-center justify-between">
-                      <div class="flex items-center gap-4">
-                        <!-- Logo Aerolínea -->
-                        <div class="h-10 w-10 flex-shrink-0 flex items-center justify-center bg-white rounded-md border p-1 shadow-sm">
-                            <img 
-                              v-if="getAirlineLogo(escala.aerolinea)" 
-                              :src="getAirlineLogo(escala.aerolinea)" 
-                              class="h-full w-full object-contain"
-                              alt=""
-                            />
-                            <Plane v-else class="h-5 w-5 text-slate-300" />
-                        </div>
-                        
-                        <!-- Detalles Trayecto -->
-                        <div>
-                          <div class="flex items-center gap-2 font-bold text-base text-slate-800">
-                              <span class="text-slate-500 font-normal text-sm">{{ formatTime(escala.fecha_salida) }}</span>
-                              <span>{{ escala.origen }}</span>
-                              <ArrowRight class="h-4 w-4 text-muted-foreground mx-1" />
-                              <span>{{ escala.destino }}</span>
-                              <span class="text-slate-500 font-normal text-sm ml-1" v-if="escala.fecha_llegada">
-                                {{ formatTime(escala.fecha_llegada) }}
-                                <sup v-if="getDayDiff(escala.fecha_salida, escala.fecha_llegada)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.fecha_salida, escala.fecha_llegada) }}</sup>
-                              </span>
-                          </div>
-                          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
-                              <div v-if="escala.aerolinea" class="font-medium text-slate-700">
-                                {{ escala.aerolinea }}
-                              </div>
-                              <div v-if="escala.numero_vuelo" class="bg-slate-200 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
-                                {{ escala.numero_vuelo }}
-                              </div>
-                              <div v-if="escala.terminal" class="text-xs border px-1.5 py-0.5 rounded bg-white">
-                                T: {{ escala.terminal }}
-                              </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Número de Escala (Decorativo) -->
-                      <div class="text-xs font-mono text-slate-300 font-bold hidden sm:block">
-                        #{{ i + 1 }}
-                      </div>
-                    </CardContent>
-                  </Card>
-               </div>
-            </div>
-          </div>
-
-          <div class="pt-4 border-t mt-8">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sm font-medium text-slate-700">Archivos adjuntos</span>
-              <FileUploader collection="vuelos" :item-id="v.id" @uploaded="onFileUploaded" />
-            </div>
-            <FileList :files="v.adjuntos" />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <Dialog v-model:open="activeModal">
-      <DialogContent 
-        class="max-h-[90vh] overflow-y-auto sm:max-w-[650px]"
-        @interact-outside="(e) => { e.preventDefault() }"
-      >
-        <DialogHeader>
-            <DialogTitle>{{ formData.id ? 'Editar Itinerario' : 'Nuevo Vuelo' }}</DialogTitle>
-        </DialogHeader>
-        
-        <div class="grid gap-4 py-4">
-            <!-- Título del Vuelo -->
-            <div class="grid grid-cols-[2fr_1fr] gap-4">
-              <div>
-                <Label class="text-base font-bold">Título del Viaje</Label>
-                <Input v-model="formData.titulo" placeholder="Ej: Vuelo Ida a Japón" class="font-medium" />
-                <p class="text-xs text-muted-foreground mt-1">Nombre general para identificar este itinerario.</p>
+  <NuxtLayout name="dashboard">
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+      <div class="flex flex-col lg:flex-row gap-8 items-start relative">
+        <!-- Main Content -->
+        <div class="flex-1 w-full space-y-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-1">
+                <Plane class="h-5 w-5" />
               </div>
               <div>
-                <Label class="text-base font-bold">Localizador</Label>
-                <Input v-model="formData.codigo_reserva" placeholder="Ej: A1B2C3" class="font-mono uppercase" />
-                <p class="text-xs text-muted-foreground mt-1">Código de reserva.</p>
+                <h2 class="text-2xl font-bold tracking-tight">Vuelos</h2>
+                <p class="text-muted-foreground hidden md:block">Gestiona tus billetes aéreos y reservas.</p>
               </div>
             </div>
+            <Button @click="handleCreateFlight"><Plus class="h-4 w-4" /> Añadir</Button>
+          </div>
 
-            <!-- Escalas Section -->
-            <div class="space-y-3 border-t pt-4">
-               <div class="flex justify-between items-center">
-                  <Label class="font-bold">Trayectos / Escalas</Label>
-                  <Button size="sm" variant="outline" @click="addEscala"><Plus class="h-3 w-3 mr-1" /> Añadir Trayecto</Button>
-               </div>
-               
-               <div v-if="!formData.escalas || formData.escalas.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
-                  <p>Añade al menos un trayecto para definir el vuelo.</p>
-                  <Button variant="link" size="sm" @click="addEscala">Añadir primero</Button>
-               </div>
+          <div v-if="vuelos.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+            <Plane class="mx-auto h-12 w-12 text-slate-300 mb-4" />
+            <h3 class="text-lg font-semibold text-slate-700">No hay vuelos registrados</h3>
+            <p class="max-w-md mx-auto mt-2">Añade tus vuelos para organizar el itinerario de viaje.</p>
+          </div>
 
-               <div v-for="(escala, index) in formData.escalas" :key="index" class="p-4 border rounded-lg relative bg-white shadow-sm space-y-3 transition-all hover:border-blue-300">
-                  <div class="flex justify-between items-center mb-2 border-b pb-2">
-                      <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
-                        <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs">{{ index + 1 }}</div>
-                        Trayecto
-                      </span>
-                      <button @click="removeEscala(index)" class="text-slate-400 hover:text-red-500 transition-colors"><Trash2 class="h-4 w-4" /></button>
+          <div v-else class="space-y-4">
+            <Card v-for="v in vuelos" :key="v.id">
+              <CardHeader class="flex flex-row items-start justify-between gap-4">
+                <div class="flex justify-between w-full">
+                  <CardTitle class="text-lg">
+                    <span>{{ v.titulo }}</span>
+                    <span v-if="v.codigo_reserva" class="opacity-80 text-sm ml-2">{{ v.codigo_reserva }}</span>
+                  </CardTitle>
+                  <div class="flex items-center gap-2">
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(v.estado_pago || 'pendiente'))">
+                      {{ formatCurrency(v.precio || 0, v.moneda) }}
+                    </span>
                   </div>
-                  
-                  <div class="grid grid-cols-2 gap-3">
-                    <div><Label class="text-xs">Origen</Label><Input class="h-9" v-model="escala.origen" placeholder="Ciudad Origen" /></div>
-                    <div><Label class="text-xs">Destino</Label><Input class="h-9" v-model="escala.destino" placeholder="Ciudad Destino" /></div>
-                  </div>
-                  
-                  <div class="grid grid-cols-2 gap-3">
-                     <div>
-                       <Label class="text-xs">Salida</Label>
-                       <DateTimePicker 
-                         v-model="escala.fecha_salida" 
-                         :min="currentTrip?.fecha_inicio || undefined"
-                         :max="currentTrip?.fecha_fin || undefined"
-                       />
-                     </div>
-                     <div>
-                       <Label class="text-xs">Llegada</Label>
-                       <DateTimePicker 
-                         v-model="escala.fecha_llegada" 
-                         :min="currentTrip?.fecha_inicio || undefined"
-                         :max="currentTrip?.fecha_fin || undefined"
-                       />
-                     </div>
-                  </div>
-                  
-                  <div class="grid grid-cols-[2fr_1fr_1fr] gap-3">
-                     <div><Label class="text-xs">Aerolínea</Label><AirlineSelector v-model="escala.aerolinea" /></div>
-                     <div><Label class="text-xs">Nº Vuelo</Label><Input class="h-9" v-model="escala.numero_vuelo" placeholder="IB6800" /></div>
-                     <div><Label class="text-xs">Terminal</Label><Input class="h-9" v-model="escala.terminal" placeholder="T4" /></div>
-                  </div>
-               </div>
-            </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
+                      <span class="sr-only">Abrir menú</span>
+                      <MoreVertical class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="handleEditFlight(v)">
+                      <Pencil class="mr-2 h-4 w-4" />
+                      <span>Editar</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem @click="confirmDelete(v.id)" class="text-destructive focus:text-destructive">
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      <span>Eliminar</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardHeader>
+              <CardContent>
+                <div class="w-full">
+                  <!-- Escalas Display -->
+                  <div v-if="v.escalas && v.escalas.length > 0" class="mt-4">
+                    <div v-for="(group, gIndex) in getEscalasGrouped(v.escalas)" :key="gIndex" class="mb-4 last:mb-0">
+                      <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-2">
+                          <Calendar class="h-3 w-3" /> {{ group.date }}
+                      </h4>
+                      <div class="md:space-y-3">
+                          <Card v-for="(escala, i) in group.items" :key="i" class="bg-slate-50/50">
+                            <CardContent class="md:px-6 flex items-center justify-between">
+                              <div class="flex items-center gap-2 md:gap-4">
+                                <!-- Logo Aerolínea -->
+                                <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 p-1">
+                                  <img 
+                                    v-if="getAirlineLogo(escala.aerolinea)" 
+                                    :src="getAirlineLogo(escala.aerolinea)" 
+                                    class="h-full w-full object-contain"
+                                    alt=""
+                                  />
+                                  <Plane v-else class="h-8 w-8 text-slate-400" />
+                                </div>
+                                
+                                <!-- Detalles Trayecto -->
+                                <div>
+                                  <div class="flex items-center gap-2 font-bold text-base text-slate-800">
+                                    <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_salida) }}</Badge>
+                                    <span>{{ escala.origen }}</span> <span v-if="escala.terminal_origen" class="opacity-50 text-xs">{{ escala.terminal_origen }}</span>
+                                    <ArrowRight class="h-4 w-4 text-muted-foreground mx-1" />
+                                    <span v-if="escala.terminal_destino" class="opacity-50 text-xs">{{ escala.terminal_destino }}</span> <span>{{ escala.destino }}</span>
+                                    <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_llegada) }}</Badge>
+                                      <sup v-if="getDayDiff(escala.fecha_salida, escala.fecha_llegada)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.fecha_salida, escala.fecha_llegada) }}</sup>
+                                  </div>
+                                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
+                                    <div v-if="escala.aerolinea" class="font-medium text-slate-700">
+                                      {{ escala.aerolinea }}
+                                    </div>
+                                    <div v-if="escala.numero_vuelo" class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
+                                      {{ escala.numero_vuelo }}
+                                    </div>
+                                  </div>
+                                  <div v-if="escala.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                                    <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                                    <p class="whitespace-pre-line">{{ escala.notas }}</p>
+                                  </div>
+                                </div>
+                              </div>
 
-            <!-- Price -->
-            <div class="grid grid-cols-[2fr_1fr] gap-3 pt-4">
-             <div>
-               <Label>Precio Total</Label>
-               <Input 
-                 type="number" 
-                 v-model="formData.precio" 
-                 :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
-               />
-             </div>
-             <div>
-               <Label>Moneda</Label>
-               <Select v-model="formData.moneda">
-                <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EUR">Euros (€)</SelectItem>
-                  <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                </SelectContent>
-              </Select>
-             </div>
+                            </CardContent>
+                          </Card>
+                      </div>
+                    </div>
+                  </div>
+
+                  <EntityTasksWidget 
+                    :trip-id="parseInt(tripId)"
+                    entity-type="flight"
+                    :entity-id="v.id"
+                    :title="`Tareas: ${v.titulo || 'Vuelo'}`"
+                    class="hidden"
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-        <DialogFooter><Button @click="saveFlight" :disabled="!isValid">Guardar</Button></DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div>
+
+        <!-- Sidebar Tasks -->
+        <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
+          <TasksSidebar 
+            :tasks="allFlightTasks"
+            @update:status="(id, status) => updateTask(id, { status })"
+            @edit="handleEditTask"
+          />
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+            ANUNCIO
+          </div>
+        </div>
+      </div>
+
+      <FlightModal 
+        v-model:open="isModalOpen" 
+        :trip-id="tripId" 
+        :current-trip="currentTrip" 
+        :item-to-edit="itemToEdit" 
+        @saved="onSaved"
+      />
+
+      <TaskModal 
+        v-model:open="isTaskModalOpen" 
+        :task="selectedTaskToEdit" 
+        :trip-id="parseInt(tripId)"
+        @saved="initTasks(parseInt(tripId))"
+      />
+
+      <!-- Alert Dialog Confirmación -->
+      <AlertDialog v-model:open="isDeleteOpen">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el vuelo y todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Vuelo</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  </NuxtLayout>
 </template>

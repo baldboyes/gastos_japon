@@ -1,4 +1,4 @@
-import { uploadFiles, createItem } from '@directus/sdk'
+import { uploadFiles, createItem, deleteItem, deleteFile } from '@directus/sdk'
 
 export const useDirectusFiles = () => {
   const { getAuthenticatedClient } = useDirectus()
@@ -39,5 +39,31 @@ export const useDirectusFiles = () => {
     }
   }
 
-  return { uploadFile, attachFileToItem }
+  const removeFile = async (collection: string, junctionId: number | string, fileId: string) => {
+    const client = await getAuthenticatedClient()
+    const junctionTable = `${collection}_files`
+    
+    console.log(`[Directus Files] Iniciando eliminación. Colección: ${junctionTable}, ID Relación: ${junctionId}, ID Archivo: ${fileId} - Usuario: ${client.getToken() ? 'Autenticado' : 'Anonimo'}`)
+
+    try {
+        // 1. Eliminar la relación (registro en la tabla intermedia)
+        if (junctionId) {
+            await client.request(deleteItem(junctionTable, junctionId))
+            console.log(`[Directus Files] Relación eliminada exitosamente: ${junctionId}`)
+        }
+
+        // 2. Eliminar el archivo físico (usando deleteFile, no deleteItem para core collections)
+        if (fileId) {
+            await client.request(deleteFile(fileId))
+            console.log(`[Directus Files] Archivo físico eliminado exitosamente: ${fileId}`)
+        }
+        
+        return true
+    } catch (e: any) {
+         console.error('[Directus Files] Error eliminando archivo:', e)
+         throw e
+    }
+  }
+
+  return { uploadFile, attachFileToItem, removeFile }
 }

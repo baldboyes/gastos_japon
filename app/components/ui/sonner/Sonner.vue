@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import type { ToasterProps } from "vue-sonner"
-import { Toaster as Sonner } from "vue-sonner"
+import { Toaster as Sonner, type ToasterProps } from 'vue-sonner'
 
 const props = defineProps<ToasterProps>()
 </script>
@@ -9,11 +8,13 @@ const props = defineProps<ToasterProps>()
   <Sonner
     class="toaster group"
     v-bind="props"
-    :style="{
-      '--normal-bg': 'var(--popover)',
-      '--normal-text': 'var(--popover-foreground)',
-      '--normal-border': 'var(--border)',
-
+    :toast-options="{
+      classes: {
+        toast: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
+        description: 'group-[.toast]:text-muted-foreground',
+        actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
+        cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
+      },
     }"
   />
 </template>

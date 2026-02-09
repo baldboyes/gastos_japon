@@ -28,67 +28,69 @@ const daysUntil = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center mb-6">
-        <div class="space-y-1">
-            <h2 class="text-2xl font-semibold tracking-tight">Dashboard</h2>
-            <p class="text-sm text-muted-foreground">Resumen general del viaje.</p>
+  <NuxtLayout name="dashboard">
+    <div class="space-y-6">
+        <div class="flex justify-between items-center mb-6">
+            <div class="space-y-1">
+                <h2 class="text-2xl font-semibold tracking-tight">Dashboard</h2>
+                <p class="text-sm text-muted-foreground">Resumen general del viaje.</p>
+            </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">Cuenta Atrás</CardTitle>
+                    <Calendar class="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div class="text-2xl font-bold">{{ daysUntil > 0 ? daysUntil + ' días' : '¡En curso!' }}</div>
+                    <p class="text-xs text-muted-foreground">Para el inicio del viaje</p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">Presupuesto Diario</CardTitle>
+                    <Banknote class="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div class="text-2xl font-bold">
+                        {{ currentTrip?.presupuesto_diario ? formatCurrency(currentTrip.presupuesto_diario, tripCurrency) : 'N/A' }}
+                    </div>
+                    <p class="text-xs text-muted-foreground">Objetivo de gasto</p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">Cambio Divisa</CardTitle>
+                    <ArrowRightLeft class="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div v-if="rateLoading" class="flex items-center h-8">
+                        <Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                    <div v-else>
+                        <div class="text-2xl font-bold">1€ = {{ rate ? rate.toFixed(2) : '---' }}¥</div>
+                        <p class="text-xs text-muted-foreground">
+                            {{ lastUpdated ? 'Act. ' + lastUpdated.toLocaleDateString() : 'Mercado de divisas' }}
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">Destino</CardTitle>
+                    <MapPin class="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div class="text-2xl font-bold truncate">{{ currentTrip?.nombre || 'Japón' }}</div>
+                    <p class="text-xs text-muted-foreground">Viaje principal</p>
+                </CardContent>
+            </Card>
         </div>
     </div>
-
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Cuenta Atrás</CardTitle>
-                <Calendar class="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div class="text-2xl font-bold">{{ daysUntil > 0 ? daysUntil + ' días' : '¡En curso!' }}</div>
-                <p class="text-xs text-muted-foreground">Para el inicio del viaje</p>
-            </CardContent>
-        </Card>
-
-        <Card>
-             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Presupuesto Diario</CardTitle>
-                <Banknote class="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div class="text-2xl font-bold">
-                    {{ currentTrip?.presupuesto_diario ? formatCurrency(currentTrip.presupuesto_diario, tripCurrency) : 'N/A' }}
-                </div>
-                <p class="text-xs text-muted-foreground">Objetivo de gasto</p>
-            </CardContent>
-        </Card>
-
-        <Card>
-             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Cambio Divisa</CardTitle>
-                <ArrowRightLeft class="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div v-if="rateLoading" class="flex items-center h-8">
-                     <Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-                </div>
-                <div v-else>
-                    <div class="text-2xl font-bold">1€ = {{ rate ? rate.toFixed(2) : '---' }}¥</div>
-                    <p class="text-xs text-muted-foreground">
-                        {{ lastUpdated ? 'Act. ' + lastUpdated.toLocaleDateString() : 'Mercado de divisas' }}
-                    </p>
-                </div>
-            </CardContent>
-        </Card>
-        
-        <Card>
-             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Destino</CardTitle>
-                <MapPin class="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div class="text-2xl font-bold truncate">{{ currentTrip?.nombre || 'Japón' }}</div>
-                <p class="text-xs text-muted-foreground">Viaje principal</p>
-            </CardContent>
-        </Card>
-    </div>
-  </div>
+    </NuxtLayout>
 </template>

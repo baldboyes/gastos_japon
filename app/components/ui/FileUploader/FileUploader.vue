@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Upload, Loader2 } from 'lucide-vue-next'
-import { Button } from '~/components/ui/button'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { toast } from 'vue-sonner'
 

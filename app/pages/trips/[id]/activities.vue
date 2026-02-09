@@ -1,194 +1,265 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Camera, Plus, Trash2, Pencil, Calendar, MapPin, Clock, MoreVertical } from 'lucide-vue-next'
+import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
-import { Ticket, Plus, Trash2, Pencil, Calendar } from 'lucide-vue-next'
-import { useTripOrganization, type Actividad } from '~/composables/useTripOrganization'
-import { useTripItemForm } from '~/composables/useTripItemForm'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { DateTimePicker } from '~/components/ui/date-time-picker'
-import { FileUploader } from '~/components/ui/FileUploader'
-import { FileList } from '~/components/ui/FileList'
+import { formatDateTime } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
-import { groupByDate } from '~/utils/grouping'
 import { formatTime } from '~/utils/dates'
-import { toast } from 'vue-sonner'
+import { cn } from '~/lib/utils'
+import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+import ActivityModal from '~/components/trips/modals/ActivityModal.vue'
+import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+import { useTripTasks } from '~/composables/useTripTasks'
+import { type Task } from '~/types/tasks'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
+import LocationMap from '~/components/maps/LocationMap.vue'
+
 
 const route = useRoute()
 const tripId = route.params.id as string
-const { currentTrip } = useTrips()
-const { actividades, fetchOrganizationData, createActividad, updateActividad, deleteActividad } = useTripOrganization()
 
-// Initialize generic form logic
-const { 
-  activeModal, 
-  formData, 
-  handleCreate: baseCreate, 
-  handleEdit: baseEdit, 
-  handleSave 
-} = useTripItemForm(
-  () => ({ moneda: 'JPY', estado_pago: 'pendiente', tipo: 'entrada' }),
-  createActividad,
-  updateActividad,
-  'Actividad'
-)
+const { currentTrip } = useTrips()
+const { actividades, fetchOrganizationData, deleteActividad } = useTripOrganization()
+const { tasks, init: initTasks, updateTask } = useTripTasks()
+
+const isTaskModalOpen = ref(false)
+const selectedTaskToEdit = ref<Task | null>(null)
+
+const allActivityTasks = computed(() => {
+  return tasks.value.filter(t => {
+    // Check direct entity type
+    if (t.entity_type === 'activity') return true
+    
+    // Check group entity type if task doesn't have it set directly
+    const group = typeof t.task_group === 'object' ? t.task_group : null
+    if (group && group.entity_type === 'activity') return true
+    
+    return false
+  })
+})
+
+const handleEditTask = (task: Task) => {
+  selectedTaskToEdit.value = task
+  isTaskModalOpen.value = true
+}
+
+const isModalOpen = ref(false)
+const itemToEdit = ref(null)
+
+const isDeleteOpen = ref(false)
+const activityToDelete = ref<number | null>(null)
+
+const confirmDelete = (id: number) => {
+  activityToDelete.value = id
+  isDeleteOpen.value = true
+}
+
+const executeDelete = async () => {
+  if (activityToDelete.value) {
+    await deleteActividad(activityToDelete.value)
+    isDeleteOpen.value = false
+    activityToDelete.value = null
+  }
+}
+
+const handleCreateActivity = () => {
+  itemToEdit.value = null
+  isModalOpen.value = true
+}
+
+const handleEditActivity = (a: any) => {
+  itemToEdit.value = a
+  isModalOpen.value = true
+}
+
+const onSaved = () => {
+  fetchOrganizationData(tripId)
+}
 
 onMounted(() => {
   fetchOrganizationData(tripId)
+  initTasks(parseInt(tripId))
 })
 
-const handleCreateActivity = () => {
-  baseCreate()
+const getDuration = (start: string, end: string) => {
+  if (!start || !end) return ''
+  const d1 = new Date(start)
+  const d2 = new Date(end)
+  const diffMs = d2.getTime() - d1.getTime()
+  const hours = Math.floor(diffMs / (1000 * 60 * 60))
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  
+  if (hours > 0) return `${hours}h ${minutes > 0 ? minutes + 'm' : ''}`
+  return `${minutes}m`
 }
-
-const handleEditActivity = (item: any) => {
-  baseEdit(item)
-}
-
-const saveActivity = () => {
-  handleSave((data) => {
-    data.viaje_id = parseInt(tripId)
-    return data
-  })
-}
-
-const isValid = computed(() => formData.value.nombre && formData.value.fecha)
-
-const onFileUploaded = () => fetchOrganizationData(tripId)
-
-// Group Activities by Date
-const groupedActivities = computed(() => groupByDate(actividades.value, 'fecha'))
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">Actividades</h2>
-        <p class="text-muted-foreground">Entradas a museos, parques y eventos.</p>
-      </div>
-      <Button @click="handleCreateActivity"><Plus class="mr-2 h-4 w-4" /> Nueva Actividad</Button>
-    </div>
-
-    <div v-if="actividades.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
-      <Ticket class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-      <h3 class="text-lg font-semibold text-slate-700">No hay actividades registradas</h3>
-      <p class="max-w-md mx-auto mt-2">Planifica tus visitas a museos, parques y eventos.</p>
-    </div>
-
-    <div v-else class="space-y-6">
-      <div v-for="(group, index) in groupedActivities" :key="index">
-         <!-- Date Header -->
-         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2 sticky top-0 bg-white/95 backdrop-blur py-2 px-4 z-10 rounded-2xl">
-            <Calendar class="h-3 w-3" /> {{ group.date }}
-         </h4>
-
-         <div class="space-y-3">
-            <Card v-for="a in group.items" :key="a.id" class="hover:shadow-md transition-shadow">
+  <NuxtLayout name="dashboard">
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+      <div class="flex flex-col lg:flex-row gap-8 items-start relative">
+        <!-- Main Content -->
+        <div class="flex-1 w-full space-y-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mt-1">
+                <Camera class="h-5 w-5" />
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Actividades</h2>
+                <p class="text-muted-foreground hidden md:block">Excursiones, visitas y experiencias.</p>
+              </div>
+            </div>
+            <Button @click="handleCreateActivity"><Plus class="h-4 w-4" /> Añadir</Button>
+          </div>
+          <div v-if="actividades.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+            <Camera class="mx-auto h-12 w-12 text-slate-300 mb-4" />
+            <h3 class="text-lg font-semibold text-slate-700">No hay actividades registradas</h3>
+            <p class="max-w-md mx-auto mt-2">Añade tus planes para completar el itinerario.</p>
+          </div>
+          <div v-else class="space-y-4">
+            <Card v-for="a in actividades" :key="a.id">
               <CardHeader class="flex flex-row items-start justify-between pb-2">
-                <div class="flex items-center gap-2">
-                  <div class="h-8 w-8 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100 mt-1">
-                     <Ticket class="h-4 w-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <CardTitle class="text-base">{{ a.nombre }}</CardTitle>
-                    <p class="text-sm text-muted-foreground">{{ a.fecha ? formatTime(a.fecha) : 'Sin hora' }} • <span class="capitalize">{{ a.tipo }}</span></p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span class="font-bold">{{ formatCurrency(a.precio, a.moneda) }}</span>
-                  <div class="flex gap-1">
-                    <Button variant="ghost" size="icon" @click="handleEditActivity(a)">
-                      <Pencil class="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" class="text-destructive hover:text-red-600" @click="deleteActividad(a.id)">
-                      <Trash2 class="h-4 w-4" />
-                    </Button>
+                <div class="flex justify-between w-full">
+                  <CardTitle class="text-lg">{{ a.nombre }}</CardTitle>
+                  <div class="flex items-center gap-2">
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(a.estado_pago || 'pendiente'))">
+                      {{ formatCurrency(a.precio || 0, a.moneda) }}
+                    </span>
                   </div>
                 </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
+                      <span class="sr-only">Abrir menú</span>
+                      <MoreVertical class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="handleEditActivity(a)">
+                      <Pencil class="mr-2 h-4 w-4" />
+                      <span>Editar</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem @click="confirmDelete(a.id)" class="text-destructive focus:text-destructive">
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      <span>Eliminar</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </CardHeader>
               <CardContent>
-                <div class="pt-3 border-t border-dashed mt-2">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-medium text-slate-500">Archivos adjuntos</span>
-                    <FileUploader collection="actividades" :item-id="a.id" @uploaded="onFileUploaded" minimal />
+                <div class="flex flex-col xl:flex-row gap-8 w-full">
+                  <div class="w-full xl:w-1/2">
+                    <div v-if="a.ubicacion?.latitude && a.ubicacion?.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
+                      <LocationMap 
+                        :latitude="a.ubicacion.latitude" 
+                        :longitude="a.ubicacion.longitude"
+                      />
+                    </div>
                   </div>
-                  <FileList :files="a.adjuntos" />
+                  <div class="w-full xl:w-1/2 flex flex-col justify-between space-y-6">
+                    <div class="flex flex-wrap gap-4">
+                      <div class="flex items-center gap-2 text-sm">
+                        <Calendar class="h-4 w-4 text-slate-400" />
+                        <span class="font-medium">{{ formatDateTime(a.fecha_inicio) }}</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock class="h-4 w-4 text-slate-400" />
+                        <span>{{ formatTime(a.fecha_fin) }}</span>
+                        <Badge variant="secondary" class="ml-1 text-[10px]">{{ getDuration(a.fecha_inicio, a.fecha_fin) }}</Badge>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                      <MapPin class="h-3 w-3" />
+                      <span v-if="a.ubicacion?.address">{{ a.ubicacion.address }}</span>
+                      <span v-else class="italic">Sin ubicación especificada</span>
+                    </div>
+                  </div>
+
+
+
                 </div>
+                <div v-if="a.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                  <p class="whitespace-pre-line">{{ a.notas }}</p>
+                </div>
+                <EntityTasksWidget 
+                  :trip-id="parseInt(tripId)"
+                  entity-type="activity"
+                  :entity-id="a.id"
+                  :title="`Tareas: ${a.nombre}`"
+                  class="hidden"
+                />
               </CardContent>
             </Card>
-         </div>
+          </div>
+        </div>
+        <!-- Sidebar Tasks -->
+        <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
+          <TasksSidebar 
+            :tasks="allActivityTasks"
+            @update:status="(id, status) => updateTask(id, { status })"
+            @edit="handleEditTask"
+          />
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[170px] w-full flex items-center justify-center">
+            ANUNCIO
+          </div>
+        </div>
       </div>
     </div>
 
-    <Dialog v-model:open="activeModal">
-      <DialogContent @interact-outside="(e) => { e.preventDefault() }">
-        <DialogHeader><DialogTitle>{{ formData.id ? 'Editar' : 'Nueva' }} Actividad</DialogTitle></DialogHeader>
-        <div class="grid gap-4 py-4">
-            <div class="grid grid-cols-3 gap-2">
-              <div class="col-span-2">
-                <Label>Nombre Actividad</Label>
-                <Input v-model="formData.nombre" />
-              </div>
-              <div class="col-span-1">
-                <Label>Estado Pago</Label>
-                <Select v-model="formData.estado_pago" class="w-full">
-                   <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
-                   <SelectContent>
-                     <SelectItem value="pagado">Pagado</SelectItem>
-                     <SelectItem value="pendiente">Pendiente</SelectItem>
-                   </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div>
-              <Label>Fecha</Label>
-              <DateTimePicker v-model="formData.fecha" 
-                :min="currentTrip?.fecha_inicio || undefined"
-                :max="currentTrip?.fecha_fin || undefined"
-              />
-            </div>
-            <div>
-              <Label>Tipo</Label>
-              <Select v-model="formData.tipo">
-                <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="entrada">Entrada</SelectItem>
-                  <SelectItem value="compra">Compra</SelectItem>
-                  <SelectItem value="restauracion">Comida/Bebida</SelectItem>
-                  <SelectItem value="otro">Otro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-             <div>
-               <Label>Precio</Label>
-               <Input 
-                 type="number" 
-                 v-model="formData.precio" 
-                 :step="formData.moneda === 'JPY' ? '1' : '0.01'"
-               />
-             </div>
-             <div>
-               <Label>Moneda</Label>
-               <Select v-model="formData.moneda">
-                <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EUR">Euros (€)</SelectItem>
-                  <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                </SelectContent>
-              </Select>
-             </div>
-          </div>
-        </div>
-        <DialogFooter><Button @click="saveActivity" :disabled="!isValid">Guardar</Button></DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div>
+    <ActivityModal 
+      v-model:open="isModalOpen" 
+      :trip-id="tripId" 
+      :current-trip="currentTrip" 
+      :item-to-edit="itemToEdit" 
+      @saved="onSaved"
+    />
+
+    <TaskModal 
+      v-model:open="isTaskModalOpen" 
+      :task="selectedTaskToEdit" 
+      :trip-id="parseInt(tripId)"
+      @saved="initTasks(parseInt(tripId))"
+    />
+
+    <!-- Alert Dialog Confirmación -->
+    <AlertDialog v-model:open="isDeleteOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción no se puede deshacer. Se eliminará permanentemente la actividad y todos sus datos asociados.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Actividad</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+  </NuxtLayout>
 </template>

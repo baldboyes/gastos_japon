@@ -120,122 +120,115 @@ const closeInviteModal = () => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">Viajeros</h2>
-        <p class="text-muted-foreground">Gestiona quiénes participan en este viaje.</p>
-      </div>
-      <Button @click="isInviteModalOpen = true">
-        <UserPlus class="mr-2 h-4 w-4" /> Invitar Viajero
-      </Button>
-    </div>
-
-    <!-- Lista de viajeros -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Tarjeta para invitar (siempre primera) -->
-      <Card class="bg-slate-50 border-dashed h-full">
-        <CardContent class="flex flex-col items-center justify-center py-10 text-center h-full">
-          <div class="rounded-full bg-slate-100 p-3 mb-3">
-            <UserPlus class="h-6 w-6 text-slate-400" />
-          </div>
-          <h3 class="font-medium">Invitar a más personas</h3>
-          <p class="text-sm text-muted-foreground mt-1 mb-4 max-w-[200px]">
-            Comparte los gastos y la planificación con tus amigos.
-          </p>
-          <Button variant="outline" size="sm" @click="isInviteModalOpen = true">
-            Invitar ahora
-          </Button>
-        </CardContent>
-      </Card>
-      
-      <!-- Tarjetas de viajeros reales -->
-      <Card v-for="traveler in travelers" :key="traveler.id" class="relative overflow-hidden">
-        <div v-if="traveler.role === 'owner'" class="absolute top-0 right-0 bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-bl font-bold flex items-center gap-1">
-          <Crown class="h-3 w-3" /> OWNER
+  <NuxtLayout name="dashboard">
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Viajeros</h2>
+          <p class="text-muted-foreground">Gestiona quiénes participan en este viaje.</p>
         </div>
-        
-        <CardContent class="p-6">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-4">
-              <!-- Avatar -->
-              <div class="h-12 w-12 rounded-full overflow-hidden bg-slate-100 border flex items-center justify-center">
-                <img v-if="traveler.avatar_url" :src="traveler.avatar_url" class="h-full w-full object-cover" />
-                <User v-else class="h-6 w-6 text-slate-400" />
-              </div>
-              
-              <div>
-                <h3 class="font-bold text-lg leading-none">{{ traveler.first_name }} {{ traveler.last_name }}</h3>
-                <p class="text-sm text-muted-foreground mt-1">{{ traveler.email }}</p>
-                
-                <div class="mt-2 flex items-center gap-2">
-                  <Badge variant="secondary" class="capitalize text-xs font-normal">
-                    {{ traveler.role === 'owner' ? 'Propietario' : 'Viajero' }}
-                  </Badge>
-                  <span v-if="traveler.status === 'invited'" class="text-xs text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">Pendiente</span>
+        <Button @click="isInviteModalOpen = true">
+          <UserPlus class="mr-2 h-4 w-4" /> Invitar Viajero
+        </Button>
+      </div>
+
+      <!-- Lista de viajeros -->
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">    
+        <!-- Tarjetas de viajeros reales -->
+        <Card v-for="traveler in travelers" :key="traveler.id" class="relative overflow-hidden">
+          <div v-if="traveler.role === 'owner'" class="absolute top-0 right-0 uppercase bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-bl font-bold flex items-center gap-1">
+            <Crown class="h-3 w-3" /> Organizador
+          </div>
+          
+          <CardContent class="p-2">
+              <div class="space-y-8">
+                <!-- Avatar -->
+                <div class="h-12 w-12 rounded-full overflow-hidden bg-slate-100 border flex items-center justify-center">
+                  <img v-if="traveler.avatar_url" :src="traveler.avatar_url" class="h-full w-full object-cover" />
+                  <User v-else class="h-6 w-6 text-slate-400" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg leading-none">{{ traveler.first_name }} {{ traveler.last_name }}</h3>
+                  <p class="text-sm text-muted-foreground mt-1">{{ traveler.email }}</p>
                 </div>
               </div>
+          </CardContent>
+          
+          <CardFooter class="px-4 flex justify-end gap-2 absolute bottom-2 right-0" v-if="isCurrentUserOwner && traveler.id !== directusUserId">
+            <Button variant="ghost" size="sm" class="text-red-600 hover:text-red-700 hover:bg-red-50 h-8" @click="removeTraveler(traveler.relationId)">
+              <Trash2 class="h-3.5 w-3.5 mr-1.5" /> Eliminar
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <!-- Tarjeta para invitar (siempre primera) -->
+        <Card class="bg-slate-50 border-dashed h-full">
+          <CardContent class="flex flex-col items-center justify-center py-4 text-center h-full">
+            <div class="rounded-full bg-slate-100 p-3 mb-3">
+              <UserPlus class="h-6 w-6 text-slate-400" />
+            </div>
+            <h3 class="font-medium">Invitar a más personas</h3>
+            <p class="text-sm text-muted-foreground mt-1 mb-4 max-w-[200px]">
+              Comparte los gastos y la planificación con tus amigos.
+            </p>
+            <Button variant="outline" size="sm" @click="isInviteModalOpen = true">
+              Invitar ahora
+            </Button>
+          </CardContent>
+        </Card>
+
+      </div>
+
+      <!-- Modal de Invitación -->
+      <Dialog :open="isInviteModalOpen" @update:open="closeInviteModal">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invitar al viaje</DialogTitle>
+            <DialogDescription>
+              Introduce el correo electrónico de la persona que quieres invitar.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div class="space-y-4 py-4">
+            <div class="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input 
+                id="email" 
+                v-model="inviteEmail" 
+                placeholder="ejemplo@correo.com" 
+                type="email" 
+                :disabled="isInviting"
+                @keyup.enter="handleInvite"
+              />
+            </div>
+
+            <!-- Feedback visual -->
+            <div v-if="inviteResult" class="rounded-md p-3 text-sm flex items-start gap-2"
+              :class="inviteResult.status === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
+            >
+              <CheckCircle v-if="inviteResult.status === 'success'" class="h-4 w-4 mt-0.5 shrink-0" />
+              <AlertCircle v-else class="h-4 w-4 mt-0.5 shrink-0" />
+              
+              <div class="flex-1">
+                <p class="font-medium">{{ inviteResult.message }}</p>
+                <p v-if="inviteResult.type === 'email_sent'" class="text-xs mt-1 opacity-90">
+                  El usuario recibirá un correo con instrucciones para registrarse.
+                </p>
+              </div>
             </div>
           </div>
-        </CardContent>
-        
-        <CardFooter class="bg-slate-50 p-2 flex justify-end gap-2" v-if="isCurrentUserOwner && traveler.id !== directusUserId">
-           <Button variant="ghost" size="sm" class="text-red-600 hover:text-red-700 hover:bg-red-50 h-8" @click="removeTraveler(traveler.relationId)">
-             <Trash2 class="h-3.5 w-3.5 mr-1.5" /> Eliminar
-           </Button>
-        </CardFooter>
-      </Card>
+
+          <DialogFooter class="sm:justify-end">
+            <Button variant="secondary" @click="closeInviteModal">
+              Cerrar
+            </Button>
+            <Button @click="handleInvite" :disabled="!isValidEmail || isInviting">
+              <Loader2 v-if="isInviting" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isInviting ? 'Enviando...' : 'Enviar invitación' }}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-
-    <!-- Modal de Invitación -->
-    <Dialog :open="isInviteModalOpen" @update:open="closeInviteModal">
-      <DialogContent class="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Invitar al viaje</DialogTitle>
-          <DialogDescription>
-            Introduce el correo electrónico de la persona que quieres invitar.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div class="space-y-4 py-4">
-          <div class="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              v-model="inviteEmail" 
-              placeholder="ejemplo@correo.com" 
-              type="email" 
-              :disabled="isInviting"
-              @keyup.enter="handleInvite"
-            />
-          </div>
-
-          <!-- Feedback visual -->
-          <div v-if="inviteResult" class="rounded-md p-3 text-sm flex items-start gap-2"
-            :class="inviteResult.status === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
-          >
-            <CheckCircle v-if="inviteResult.status === 'success'" class="h-4 w-4 mt-0.5 shrink-0" />
-            <AlertCircle v-else class="h-4 w-4 mt-0.5 shrink-0" />
-            
-            <div class="flex-1">
-              <p class="font-medium">{{ inviteResult.message }}</p>
-              <p v-if="inviteResult.type === 'email_sent'" class="text-xs mt-1 opacity-90">
-                El usuario recibirá un correo con instrucciones para registrarse.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter class="sm:justify-end">
-          <Button variant="secondary" @click="closeInviteModal">
-            Cerrar
-          </Button>
-          <Button @click="handleInvite" :disabled="!isValidEmail || isInviting">
-            <Loader2 v-if="isInviting" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isInviting ? 'Enviando...' : 'Enviar invitación' }}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div>
+  </NuxtLayout>
 </template>

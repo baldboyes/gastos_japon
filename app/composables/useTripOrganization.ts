@@ -4,29 +4,25 @@ import { readItems, createItem, updateItem, deleteItem } from '@directus/sdk'
 
 export interface EscalaVuelo {
   origen: string
+  terminal_origen?: string
   destino: string
+  terminal_destino?: string
   aerolinea: string
   numero_vuelo?: string
-  terminal?: string
   fecha_salida: string
   fecha_llegada: string
+  notas?: string
 }
 
 export interface Vuelo {
   id: number
   viaje_id: number
   titulo?: string
-  origen: string
-  destino: string
-  fecha_salida: string
-  fecha_llegada?: string
-  aerolinea?: string
-  numero_vuelo?: string
-  terminal?: string
   escalas?: EscalaVuelo[]
   codigo_reserva?: string
   precio?: number
   moneda: 'EUR' | 'JPY'
+  estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
 }
 
@@ -35,11 +31,14 @@ export interface Alojamiento {
   viaje_id: number
   nombre: string
   direccion?: string
-  check_in: string
-  check_out: string
+  check_in?: string // Backend field
+  check_out?: string // Backend field
+  fecha_entrada?: string // Frontend mapped field
+  fecha_salida?: string // Frontend mapped field
   precio?: number
   moneda: 'EUR' | 'JPY'
   estado_pago: 'pagado' | 'pendiente' | 'parcial'
+  notas?: string
   adjuntos?: any[]
   codigo_reserva?: string
   enlace_google?: string
@@ -47,6 +46,18 @@ export interface Alojamiento {
   prefectura?: string
   latitud?: number
   longitud?: number
+  ubicacion?: {
+    address?: string
+    latitude: number
+    longitude: number
+    city?: string
+    prefecture?: string
+  }
+  pension: string[] | null
+  privado: boolean
+  telefono: string
+  email: string
+  takkyubin: boolean
   user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
@@ -57,6 +68,7 @@ export interface Escala {
   fecha_salida: string
   fecha_llegada: string
   notas?: string
+  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export interface Transporte {
@@ -69,8 +81,16 @@ export interface Transporte {
   escalas?: Escala[]
   precio?: number
   moneda: 'EUR' | 'JPY'
+  estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
   pase_id?: number | null
+  tipo_duracion?: 'dias' | 'horas'
+  origen?: string
+  destino?: string
+  medio?: string
+  titulo?: string
+  notas?: string
+  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export interface Actividad {
@@ -78,11 +98,23 @@ export interface Actividad {
   viaje_id: number
   nombre: string
   fecha?: string
+  fecha_inicio?: string
+  fecha_fin?: string
   tipo: 'museo' | 'parque' | 'evento' | 'otro'
   precio?: number
   moneda: 'EUR' | 'JPY'
-  estado_pago: 'pagado' | 'pendiente'
+  estado_pago: 'pagado' | 'pendiente' | 'parcial'
+  notas?: string
+  enlace_google?: string
   adjuntos?: any[]
+  ubicacion?: {
+    address?: string
+    latitude: number
+    longitude: number
+    city?: string
+    prefecture?: string
+  }
+  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export interface Seguro {
@@ -97,7 +129,9 @@ export interface Seguro {
   fecha_fin?: string
   precio?: number
   moneda: 'EUR' | 'JPY'
+  estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
+  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export interface TimelineItem {
@@ -108,6 +142,7 @@ export interface TimelineItem {
   subtitle: string
   originalItem: any
   metadata?: Record<string, any>
+  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export const useTripOrganization = () => {
@@ -213,6 +248,14 @@ export const useTripOrganization = () => {
     return items.sort((a, b) => a.date.getTime() - b.date.getTime())
   })
 
+  // --- Utils ---
+  const normalizeDate = (dateStr?: string) => {
+    if (!dateStr) return dateStr
+    // Si viene con Z (UTC) o milisegundos, lo limpiamos para dejarlo como YYYY-MM-DDTHH:mm
+    // Esto fuerza a que la UI lo trate como "Hora Local" sin conversiones de zona horaria
+    return dateStr.replace('Z', '').split('.')[0].slice(0, 16)
+  }
+
   // --- Fetch All ---
   const fetchOrganizationData = async (tripId: string) => {
     loading.value = true
@@ -224,28 +267,139 @@ export const useTripOrganization = () => {
         const query = (sortField: string) => ({
           filter: { viaje_id: { _eq: tripId } },
           sort: [sortField],
-          fields: ['*', 'adjuntos.directus_files_id.*']
+          fields: [
+            '*',
+            'adjuntos.directus_files_id.*',
+            'user_created.first_name',
+            'user_created.last_name',
+            'user_created.avatar_url'
+          ]
         })
 
         const [v, a, t, act, s] = await Promise.all([
           client.request(readItems('vuelos' as any, query('fecha_salida'))),
           client.request(readItems('alojamientos' as any, {
             ...query('check_in'),
-            fields: ['*', 'adjuntos.directus_files_id.*', 'user_created.first_name', 'user_created.last_name', 'user_created.avatar_url']
+            fields: [
+              '*',
+              'adjuntos.directus_files_id.*',
+              'user_created.first_name',
+              'user_created.last_name',
+              'user_created.avatar_url'
+            ]
           })),
           client.request(readItems('transportes' as any, query('fecha_inicio'))),
           client.request(readItems('actividades' as any, query('fecha'))),
           client.request(readItems('seguros' as any, { 
               filter: { viaje_id: { _eq: tripId } }, 
-              fields: ['*', 'adjuntos.directus_files_id.*'] 
+              fields: [
+                '*',
+                'adjuntos.directus_files_id.*',
+                'user_created.first_name',
+                'user_created.last_name',
+                'user_created.avatar_url'
+              ] 
           }))
         ])
 
-        vuelos.value = v as unknown as Vuelo[]
-        alojamientos.value = a as unknown as Alojamiento[]
-        transportes.value = t as unknown as Transporte[]
-        actividades.value = act as unknown as Actividad[]
-        seguros.value = s as unknown as Seguro[]
+        // Normalizamos las fechas para evitar problemas de zona horaria (UTC vs Local)
+        vuelos.value = (v as unknown as Vuelo[]).map(i => ({
+          ...i,
+          // Los vuelos suelen ser JSON y ya vienen bien, pero por si acaso
+          fecha_salida: normalizeDate(i.fecha_salida) || '',
+          fecha_llegada: normalizeDate(i.fecha_llegada),
+        }))
+
+        // Mapear alojamientos
+        alojamientos.value = (a as any[] || []).map((i: any) => ({
+          id: i.id,
+          viaje_id: i.viaje_id,
+          nombre: i.nombre,
+          fecha_entrada: normalizeDate(i.check_in),
+          fecha_salida: normalizeDate(i.check_out),
+          ubicacion: {
+            address: i.direccion,
+            latitude: parseFloat(i.latitud || '0'),
+            longitude: parseFloat(i.longitud || '0'),
+            city: i.ciudad,
+            prefectura: i.prefectura
+          },
+          precio: parseFloat(i.precio),
+          moneda: i.moneda,
+          estado_pago: i.estado_pago,
+          notas: i.notas,
+          enlace_google: i.enlace_google,
+          adjuntos: i.adjuntos || [],
+          user_created: i.user_created || {},
+          pension: i.pension || null,
+          privado: i.privado || false,
+          telefono: i.telefono || '',
+          email: i.email || '', 
+          takkyubin: i.takkyubin || false,
+        }))
+
+        transportes.value = (t as unknown as Transporte[]).map(i => {
+          let escalas = i.escalas?.map(e => ({
+            ...e,
+            fecha_salida: normalizeDate(e.fecha_salida) || '',
+            fecha_llegada: normalizeDate(e.fecha_llegada) || '',
+          })) || []
+
+          // Sort scales by date
+          if (escalas.length > 0) {
+            escalas = escalas.sort((a: any, b: any) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
+          }
+
+          // Auto-fill from segments if missing in root (for display purposes)
+          let { origen, destino, medio } = i
+          if (i.categoria === 'trayecto' && escalas.length > 0) {
+             if (!origen) origen = escalas[0].origen
+             if (!destino) destino = escalas[escalas.length - 1].destino
+             if (!medio) medio = escalas[0].medio
+          }
+
+          return {
+            ...i,
+            fecha_inicio: normalizeDate(i.fecha_inicio),
+            fecha_fin: normalizeDate(i.fecha_fin),
+            precio: parseFloat(i.precio?.toString() || '0'),
+            escalas,
+            origen,
+            destino,
+            medio,
+            user_created: i.user_created || {}
+          }
+        })
+
+        // Mapear actividades
+        actividades.value = (act as any[] || []).map((a: any) => ({
+          id: a.id,
+          viaje_id: a.viaje_id,
+          nombre: a.nombre,
+          fecha_inicio: normalizeDate(a.fecha_inicio),
+          fecha_fin: normalizeDate(a.fecha_fin),
+          ubicacion: {
+            address: a.direccion,
+            latitude: parseFloat(a.latitud || '0'),
+            longitude: parseFloat(a.longitud || '0'),
+            city: a.ciudad,
+            prefecture: a.prefectura
+          },
+          precio: parseFloat(a.precio),
+          moneda: a.moneda,
+          estado_pago: a.estado_pago,
+          notas: a.notas,
+          enlace_google: a.enlace_google,
+          adjuntos: a.adjuntos?.map((adj: any) => adj.directus_files_id) || [],
+          user_created: a.user_created || {}
+        }))
+
+        seguros.value = (s as unknown as Seguro[]).map(i => ({
+          ...i,
+          fecha_inicio: normalizeDate(i.fecha_inicio),
+          fecha_fin: normalizeDate(i.fecha_fin),
+          user_created: i.user_created || {}
+        }))
         
       } catch (e: any) {
         // Detectar token inválido y reintentar
@@ -275,12 +429,46 @@ export const useTripOrganization = () => {
   }
 
   // --- Generic CRUD Helper ---
+  const sanitizeResponse = (collection: string, item: any) => {
+      const newItem = { ...item }
+      if (collection === 'vuelos') {
+         if (newItem.fecha_salida) newItem.fecha_salida = normalizeDate(newItem.fecha_salida)
+         if (newItem.fecha_llegada) newItem.fecha_llegada = normalizeDate(newItem.fecha_llegada)
+      }
+      if (collection === 'alojamientos') {
+         if (newItem.check_in) newItem.check_in = normalizeDate(newItem.check_in)
+         if (newItem.check_out) newItem.check_out = normalizeDate(newItem.check_out)
+      }
+      if (collection === 'actividades') {
+         if (newItem.fecha) newItem.fecha = normalizeDate(newItem.fecha)
+      }
+      if (collection === 'transportes') {
+         if (newItem.fecha_inicio) newItem.fecha_inicio = normalizeDate(newItem.fecha_inicio)
+         if (newItem.fecha_fin) newItem.fecha_fin = normalizeDate(newItem.fecha_fin)
+         if (newItem.escalas) {
+            newItem.escalas = newItem.escalas.map((e: any) => ({
+                ...e,
+                fecha_salida: normalizeDate(e.fecha_salida),
+                fecha_llegada: normalizeDate(e.fecha_llegada)
+            }))
+         }
+      }
+      if (collection === 'seguros') {
+         if (newItem.fecha_inicio) newItem.fecha_inicio = normalizeDate(newItem.fecha_inicio)
+         if (newItem.fecha_fin) newItem.fecha_fin = normalizeDate(newItem.fecha_fin)
+      }
+      return newItem
+  }
+
   const createItemGeneric = async (collection: string, item: any, state: any) => {
     try {
       const client = await getAuthenticatedClient()
-      const res = await client.request(createItem(collection, item))
+      let res = await client.request(createItem(collection as any, item)) as any
       // Add empty attachments array for UI consistency
       res.adjuntos = []
+      // Sanitize dates
+      res = sanitizeResponse(collection, res)
+      
       state.value.push(res)
       return res
     } catch (e) {
@@ -292,11 +480,14 @@ export const useTripOrganization = () => {
   const updateItemGeneric = async (collection: string, id: number, item: any, state: any) => {
     try {
       const client = await getAuthenticatedClient()
-      const res = await client.request(updateItem(collection, id, item))
+      let res = await client.request(updateItem(collection as any, id, item)) as any
       // Maintain attachments from state if not returned updated
       const existing = state.value.find((i: any) => i.id === id)
       if (existing && existing.adjuntos) res.adjuntos = existing.adjuntos
       
+      // Sanitize dates
+      res = sanitizeResponse(collection, res)
+
       const index = state.value.findIndex((i: any) => i.id === id)
       if (index !== -1) state.value[index] = res
       return res
@@ -333,16 +524,102 @@ export const useTripOrganization = () => {
   const updateVuelo = (id: number, item: Partial<Vuelo>) => updateItemGeneric('vuelos', id, item, vuelos)
   const deleteVuelo = (id: number) => deleteItemGeneric('vuelos', id, vuelos)
 
-  const createAlojamiento = (item: Omit<Alojamiento, 'id'>) => createItemGeneric('alojamientos', item, alojamientos)
-  const updateAlojamiento = (id: number, item: Partial<Alojamiento>) => updateItemGeneric('alojamientos', id, item, alojamientos)
+  const createAlojamiento = async (data: any) => {
+    const payload = {
+      viaje_id: data.viaje_id,
+      nombre: data.nombre,
+      check_in: data.fecha_entrada,
+      check_out: data.fecha_salida,
+      direccion: data.ubicacion?.address,
+      latitud: data.ubicacion?.latitude,
+      longitud: data.ubicacion?.longitude,
+      ciudad: data.ubicacion?.city,
+      prefectura: data.ubicacion?.prefecture,
+      precio: data.precio,
+      moneda: data.moneda,
+      estado_pago: data.estado_pago,
+      notas: data.notas,
+      enlace_google: data.enlace_google,
+      adjuntos: data.adjuntos || [],
+      user_created: data.user_created || {},
+      pension: data.pension || null,
+      privado: data.privado || false,
+      telefono: data.telefono || '',
+      email: data.email || '', 
+      takkyubin: data.takkyubin || false,
+    }
+    return createItemGeneric('alojamientos', payload, alojamientos)
+  }
+  const updateAlojamiento = async (id: number, data: any) => {
+    const payload = {
+      nombre: data.nombre,
+      check_in: data.fecha_entrada,
+      check_out: data.fecha_salida,
+      direccion: data.ubicacion?.address,
+      latitud: data.ubicacion?.latitude,
+      longitud: data.ubicacion?.longitude,
+      ciudad: data.ubicacion?.city,
+      prefectura: data.ubicacion?.prefecture,
+      precio: data.precio,
+      moneda: data.moneda,
+      estado_pago: data.estado_pago,
+      notas: data.notas,
+      enlace_google: data.enlace_google,
+      //adjuntos: data.adjuntos || [],
+      //user_created: data.user_created || {},
+      pension: data.pension || null,
+      privado: data.privado || false,
+      telefono: data.telefono || '',
+      email: data.email || '', 
+      takkyubin: data.takkyubin || false,
+    }
+    return updateItemGeneric('alojamientos', id, payload, alojamientos)
+  }
   const deleteAlojamiento = (id: number) => deleteItemGeneric('alojamientos', id, alojamientos)
 
   const createTransporte = (item: Omit<Transporte, 'id'>) => createItemGeneric('transportes', item, transportes)
   const updateTransporte = (id: number, item: Partial<Transporte>) => updateItemGeneric('transportes', id, item, transportes)
   const deleteTransporte = (id: number) => deleteItemGeneric('transportes', id, transportes)
 
-  const createActividad = (item: Omit<Actividad, 'id'>) => createItemGeneric('actividades', item, actividades)
-  const updateActividad = (id: number, item: Partial<Actividad>) => updateItemGeneric('actividades', id, item, actividades)
+  const createActividad = async (data: any) => {
+    const payload = {
+      viaje_id: data.viaje_id,
+      nombre: data.nombre,
+      fecha_inicio: data.fecha_inicio,
+      fecha_fin: data.fecha_fin,
+      tipo: data.tipo,
+      direccion: data.ubicacion?.address,
+      latitud: data.ubicacion?.latitude,
+      longitud: data.ubicacion?.longitude,
+      ciudad: data.ubicacion?.city,
+      prefectura: data.ubicacion?.prefecture,
+      precio: data.precio,
+       moneda: data.moneda,
+       estado_pago: data.estado_pago,
+       notas: data.notas,
+       enlace_google: data.enlace_google
+     }
+     return createItemGeneric('actividades', payload, actividades)
+   }
+   const updateActividad = async (id: number, data: any) => {
+     const payload = {
+       nombre: data.nombre,
+       fecha_inicio: data.fecha_inicio,
+       fecha_fin: data.fecha_fin,
+       tipo: data.tipo,
+       direccion: data.ubicacion?.address,
+      latitud: data.ubicacion?.latitude,
+      longitud: data.ubicacion?.longitude,
+      ciudad: data.ubicacion?.city,
+       prefectura: data.ubicacion?.prefecture,
+       precio: data.precio,
+       moneda: data.moneda,
+       estado_pago: data.estado_pago,
+       notas: data.notas,
+       enlace_google: data.enlace_google
+     }
+     return updateItemGeneric('actividades', id, payload, actividades)
+   }
   const deleteActividad = (id: number) => deleteItemGeneric('actividades', id, actividades)
 
   const createSeguro = (item: Omit<Seguro, 'id'>) => createItemGeneric('seguros', item, seguros)

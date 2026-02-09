@@ -201,27 +201,27 @@ const groupedEvents = computed(() => groupByDate(timeline.value, 'date'))
             <div><Label>Concepto</Label><Input v-model="expenseForm.concepto" /></div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                <Label>Categoría</Label>
-                <Select v-model="expenseForm.categoria">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                    <SelectItem value="food">Comida</SelectItem>
-                    <SelectItem value="transport">Transporte</SelectItem>
-                    <SelectItem value="accommodation">Alojamiento</SelectItem>
-                    <SelectItem value="shopping">Compras</SelectItem>
-                    <SelectItem value="entertainment">Ocio</SelectItem>
-                    <SelectItem value="other">Otros</SelectItem>
-                    </SelectContent>
-                </Select>
+                    <Label>Categoría</Label>
+                    <Select v-model="expenseForm.categoria">
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="food">Comida</SelectItem>
+                            <SelectItem value="transport">Transporte</SelectItem>
+                            <SelectItem value="accommodation">Alojamiento</SelectItem>
+                            <SelectItem value="shopping">Compras</SelectItem>
+                            <SelectItem value="entertainment">Ocio</SelectItem>
+                            <SelectItem value="other">Otros</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div>
                 <Label>Método Pago</Label>
-                    <Select v-model="expenseForm.metodo_pago">
+                <Select v-model="expenseForm.metodo_pago">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                    <SelectItem value="cash">Efectivo</SelectItem>
-                    <SelectItem value="card">Tarjeta</SelectItem>
-                    <SelectItem value="ic">Tarjeta IC</SelectItem>
+                        <SelectItem value="cash">Efectivo</SelectItem>
+                        <SelectItem value="card">Tarjeta</SelectItem>
+                        <SelectItem value="ic">Tarjeta IC</SelectItem>
                     </SelectContent>
                 </Select>
                 </div>

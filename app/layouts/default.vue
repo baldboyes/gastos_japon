@@ -14,7 +14,7 @@
     <main class="pb-20">
       <slot />
     </main>
-    <Toaster />
+    <Toaster position="top-center" />
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 z-50">

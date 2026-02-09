@@ -3,77 +3,45 @@
  */
 
 import type { Expense } from '~/types'
+import { format, parseISO, addDays as fnsAddDays, addHours as fnsAddHours } from 'date-fns'
+import { es } from 'date-fns/locale'
 
-/**
- * Format date in readable format (e.g., "18 May 2025")
- * Handles both "YYYY-MM-DD HH:MM" format and ISO format
- * @param date - Date string or Date object
- * @returns Formatted date string
- */
-export function formatDate(date: string | Date): string {
-  if (typeof date === 'string') {
-    // Check if it's our custom format "YYYY-MM-DD HH:MM"
-    if (date.includes(' ') && !date.includes('T')) {
-      const datePart = date.split(' ')[0]
-      // Parse manually to avoid timezone conversion
-      const [year, month, day] = datePart!.split('-').map(Number)
-      const d = new Date(year!, month! - 1, day)
-      return d.toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      })
-    }
-    // Handle ISO format or other string formats
-    const d = new Date(date)
-    return d.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    })
-  }
-  // Handle Date object
-  return date.toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  })
+export const formatDateTime = (dateStr?: string | Date) => {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), "PPP HH:mm", { locale: es })
 }
 
-/**
- * Format time in readable format (e.g., "14:30")
- * Handles both "YYYY-MM-DD HH:MM" format and ISO format
- * @param date - Date string or Date object
- * @returns Formatted time string
- */
-export function formatTime(date: string | Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false // Ensure consistency across app
-  }
-
-  if (typeof date === 'string') {
-    // Check if it's our custom format "YYYY-MM-DD HH:MM"
-    if (date.includes(' ') && !date.includes('T')) {
-      const timePart = date.split(' ')[1]
-      return timePart || '00:00'
-    }
-    // Handle ISO format or other string formats
-    const d = new Date(date)
-    return d.toLocaleTimeString('es-ES', options)
-  }
-  // Handle Date object
-  return date.toLocaleTimeString('es-ES', options)
+export const formatDate = (dateStr?: string | Date) => {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), "PPP", { locale: es })
 }
 
-/**
- * Format date and time together (e.g., "18 May 2025, 14:30")
- * @param date - Date string or Date object
- * @returns Formatted datetime string
- */
-export function formatDateTime(date: string | Date): string {
-  return `${formatDate(date)}, ${formatTime(date)}`
+export const formatTime = (dateStr?: string | Date) => {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), "HH:mm")
+}
+
+export const formatDateFull = (dateStr?: string | Date) => {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), "EEEE, d 'de' MMMM", { locale: es })
+}
+
+export const formatDateWithDayShort = (dateStr?: string | Date) => {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), "EEE, dd MMM", { locale: es })
+}
+
+export const addDays = (dateStr: string, amount: number) => {
+  if (!dateStr) return ''
+  // Si no tiene hora, asumimos inicio del día para evitar problemas de zona horaria al sumar
+  const date = new Date(dateStr)
+  return format(fnsAddDays(date, amount), "yyyy-MM-dd'T'HH:mm")
+}
+
+export const addHours = (dateStr: string, amount: number) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return format(fnsAddHours(date, amount), "yyyy-MM-dd'T'HH:mm")
 }
 
 /**

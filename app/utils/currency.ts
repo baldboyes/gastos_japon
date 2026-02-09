@@ -30,13 +30,21 @@ export function formatCurrency(amount: number, currency: Currency = 'JPY'): stri
   // EUR: 2 decimales
   // Resto: 2 decimales por defecto (ajustable)
   const decimals = currency === 'JPY' ? 0 : 2
-
-  return new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  }).format(amount)
+  if (currency === 'JPY') {
+    return new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(amount)
+  }else{
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(amount)
+  }
 }
 
 /**

@@ -19,6 +19,7 @@ const props = defineProps<{
   min?: string
   max?: string
   defaultTime?: string
+  hideTime?: boolean
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -88,6 +89,14 @@ const updateModel = () => {
   
   const isoLocal = `${y}-${m}-${da}T${h}:${min}`
   
+  // If hiding time, we still emit ISO with time, but it will be 00:00 or default.
+  // Actually, if we hide time, we should probably respect that visually but the value
+  // expected by Directus is likely DateTime.
+  // The user requirement says "no quiero sacar las horas" (don't want to output hours).
+  // But our DB fields are likely DateTime.
+  // Let's assume we keep emitting the full ISO string for compatibility,
+  // but the UI hides the time picker.
+  
   // Avoid emitting if same as prop to prevent loops
   if (isoLocal !== props.modelValue) {
     emit('update:modelValue', isoLocal)
@@ -100,7 +109,8 @@ watch(dateVal, () => updateModel())
 const formattedDate = computed(() => {
   if (!props.modelValue) return null
   try {
-    return format(new Date(props.modelValue), "PPP HH:mm", { locale: es })
+    const formatStr = props.hideTime ? "PPP" : "PPP HH:mm"
+    return format(new Date(props.modelValue), formatStr, { locale: es })
   } catch (e) {
     return null
   }
@@ -131,7 +141,7 @@ const onTimeChange = () => {
       <Button
         variant="outline"
         :class="cn(
-          'w-full justify-start text-left font-normal',
+          'w-full justify-start text-left font-normal border-input hover:bg-white focus-visible:border-ring focus-visible:ring-ring/50',
           !modelValue && 'text-muted-foreground'
         )"
       >
@@ -147,9 +157,9 @@ const onTimeChange = () => {
         :min-value="min ? parseDate(min.split('T')[0]) : undefined"
         :max-value="max ? parseDate(max.split('T')[0]) : undefined"
       />
-      <div class="p-3 border-t border-border bg-slate-50">
+      <div v-if="!hideTime" class="p-3 border-t border-border bg-slate-50">
         <div class="flex items-center gap-2 justify-center">
-            <Clock class="h-4 w-4 text-muted-foreground" />
+            <Clock class="h-4 w-4 text-muted-foreground mt-4" />
             <div class="flex items-center gap-1">
               <div class="flex flex-col items-center">
                 <Label class="text-[10px] text-muted-foreground mb-1">Hora</Label>

@@ -1,11 +1,13 @@
-export function fileUrl(file, options = {}){
+export function fileUrl(file: string | { id: string } | null | undefined, options: Record<string, any> = {}) {
+  if (!file) return undefined
+  
+  const fileId = typeof file === 'string' ? file : file.id
+  
+  if (!fileId) return undefined
 
-  console.log("file" + file);
-
-  if (!file || !file.id) return null
-
-  const base = useRuntimeConfig().public.directusUrl
+  const config = useRuntimeConfig()
+  const base = config.public.directusUrl
   const params = new URLSearchParams(options).toString()
-  console.log("sss" + params);
-  return `${base}/assets/${file}${params ? `?${params}` : ''}`
+  
+  return `${base}/assets/${fileId}${params ? `?${params}` : ''}`
 }

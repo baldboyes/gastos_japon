@@ -1,9 +1,9 @@
 export const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pagado': return 'bg-green-100 text-green-700 border-green-200'
-    case 'pendiente': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-    case 'parcial': return 'bg-orange-100 text-orange-700 border-orange-200'
-    case 'confirmado': return 'bg-blue-100 text-blue-700 border-blue-200'
+    case 'pagado': return 'bg-green-500 text-white border-green-500'
+    case 'pendiente': return 'bg-yellow-400 text-white border-yellow-400'
+    case 'parcial': return 'bg-orange-500 text-white border-orange-500'
+    case 'confirmado': return 'bg-blue-500 text-white border-blue-500'
     default: return 'bg-slate-100 text-slate-700'
   }
 }
