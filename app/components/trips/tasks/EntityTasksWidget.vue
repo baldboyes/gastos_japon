@@ -60,7 +60,7 @@ const handleEditTask = (task: Task) => {
 </script>
 
 <template>
-  <div class="border rounded-lg bg-slate-50/50 p-4">
+  <div class="border border-input rounded-lg bg-slate-50/50 p-4">
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
         <ListTodo class="w-4 h-4 text-muted-foreground" />
@@ -69,9 +69,9 @@ const handleEditTask = (task: Task) => {
           {{ pendingCount }} pendientes
         </span>
       </div>
-      <Button variant="ghost" size="sm" class="h-8 text-xs" @click="handleAddTask" :disabled="isLoading">
+      <Button size="sm" class="h-8 text-xs" @click="handleAddTask" :disabled="isLoading">
         <Plus class="w-3 h-3 mr-1" />
-        Añadir Tarea
+        Añadir
       </Button>
     </div>
 

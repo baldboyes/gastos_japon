@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { BedDouble, Plus, Trash2, Pencil, Calendar, MapPin, MoreVertical, PhoneCall, Mail, BaggageClaim, Bath, Coffee, Utensils, BedSingle } from 'lucide-vue-next'
+import { BedDouble, Plus, Trash2, Pencil, Calendar, MapPin, MoreVertical, PhoneCall, Mail, BaggageClaim, Bath, Coffee, Utensils, BedSingle, FileDown } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
+import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { formatDateTime, formatDate, getDaysElapsed, formatDateWithDayShort, formatTime } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
 import { cn } from '~/lib/utils'
@@ -11,7 +12,7 @@ import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
 import { Button } from '~/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
-import AccommodationModal from '~/components/trips/modals/AccommodationModal.vue'
+import AccommodationDrawer from '~/components/trips/modals/AccommodationDrawer.vue'
 import LocationMap from '~/components/maps/LocationMap.vue'
 import {
   Tooltip,
@@ -50,6 +51,7 @@ const tripId = route.params.id as string
 const { currentTrip } = useTrips()
 const { alojamientos, fetchOrganizationData, deleteAlojamiento } = useTripOrganization()
 const { tasks, init: initTasks, updateTask } = useTripTasks()
+const { downloadFile } = useDirectusFiles()
 
 const isTaskModalOpen = ref(false)
 const selectedTaskToEdit = ref<Task | null>(null)
@@ -175,7 +177,7 @@ const getNights = (start: string, end: string) => {
               </CardHeader>
               <CardContent>
                 <div class="flex flex-col xl:flex-row gap-8 w-full">
-                  <div class="w-full xl:w-1/2">
+                  <div class="w-full xl:w-1/3">
                     <div v-if="a.ubicacion?.latitude && a.ubicacion?.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
                       <LocationMap 
                         :latitude="a.ubicacion.latitude" 
@@ -183,7 +185,7 @@ const getNights = (start: string, end: string) => {
                       />
                     </div>
                   </div>
-                  <div class="w-full xl:w-1/2 flex flex-col justify-between space-y-6">
+                  <div class="w-full xl:w-2/3 flex flex-col justify-between space-y-6">
                     <div class="flex justify-between gap-4">
                       <div class="space-y-1">
                         <div class="text-xs font-bold text-slate-500 uppercase">Entrada</div>
@@ -224,6 +226,19 @@ const getNights = (start: string, end: string) => {
                             <Mail class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
+
+                        <!-- Descargas de ficheros adjuntos -->
+                        <Button 
+                          v-for="item in a.adjuntos" 
+                          :key="item.id"
+                          size="icon" 
+                          class="h-8 w-8"
+                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                        >
+                          <FileDown class="h-6 w-6" />
+                        </Button>
+
                       </div>
                       <div class="flex items-center justify-end gap-2">
                         <TooltipProvider v-if="a.takkyubin">
@@ -283,6 +298,7 @@ const getNights = (start: string, end: string) => {
                   :title="`Tareas: ${a.nombre || 'Alojamiento'}`"
                   class="hidden"
                 />
+                
               </CardContent>
             </Card>
           </template>
@@ -295,21 +311,13 @@ const getNights = (start: string, end: string) => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[170px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
             ANUNCIO
           </div>
         </div>
 
       </div>
     </div>
-
-    <AccommodationModal 
-      v-model:open="isModalOpen" 
-      :trip-id="tripId" 
-      :current-trip="currentTrip" 
-      :item-to-edit="itemToEdit" 
-      @saved="onSaved"
-    />
 
     <TaskModal 
       v-model:open="isTaskModalOpen" 
@@ -333,5 +341,14 @@ const getNights = (start: string, end: string) => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    <AccommodationDrawer 
+      v-model:open="isModalOpen" 
+      :trip-id="tripId" 
+      :current-trip="currentTrip" 
+      :item-to-edit="itemToEdit" 
+      @saved="onSaved"
+    />
+
   </NuxtLayout>
 </template>

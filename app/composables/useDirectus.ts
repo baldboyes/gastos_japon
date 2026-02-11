@@ -116,6 +116,7 @@ export const useDirectus = () => {
     getAuthenticatedClient,
     directusUserId,
     token: directusToken,
-    resetToken
+    resetToken,
+    url: directusUrl
   }
 }

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Camera, Plus, Trash2, Pencil, Calendar, MapPin, Clock, MoreVertical } from 'lucide-vue-next'
+import { Camera, Plus, Trash2, Pencil, Calendar, MapPin, Clock, MoreVertical, FileDown } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
-import { formatDateTime } from '~/utils/dates'
+import { useDirectusFiles } from '~/composables/useDirectusFiles'
+import { formatDateTime, formatDateWithDayShort } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
 import { formatTime } from '~/utils/dates'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import ActivityModal from '~/components/trips/modals/ActivityModal.vue'
+import ActivityDrawer from '~/components/trips/modals/ActivityDrawer.vue'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import TaskModal from '~/components/trips/tasks/TaskModal.vue'
@@ -42,6 +43,7 @@ const tripId = route.params.id as string
 const { currentTrip } = useTrips()
 const { actividades, fetchOrganizationData, deleteActividad } = useTripOrganization()
 const { tasks, init: initTasks, updateTask } = useTripTasks()
+const { downloadFile } = useDirectusFiles()
 
 const isTaskModalOpen = ref(false)
 const selectedTaskToEdit = ref<Task | null>(null)
@@ -171,7 +173,7 @@ const getDuration = (start: string, end: string) => {
               </CardHeader>
               <CardContent>
                 <div class="flex flex-col xl:flex-row gap-8 w-full">
-                  <div class="w-full xl:w-1/2">
+                  <div class="w-full xl:w-1/3">
                     <div v-if="a.ubicacion?.latitude && a.ubicacion?.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
                       <LocationMap 
                         :latitude="a.ubicacion.latitude" 
@@ -179,15 +181,15 @@ const getDuration = (start: string, end: string) => {
                       />
                     </div>
                   </div>
-                  <div class="w-full xl:w-1/2 flex flex-col justify-between space-y-6">
+                  <div class="w-full xl:w-2/3 flex flex-col justify-between space-y-6">
                     <div class="flex flex-wrap gap-4">
-                      <div class="flex items-center gap-2 text-sm">
+                      <div class="flex items-center gap-2">
                         <Calendar class="h-4 w-4 text-slate-400" />
-                        <span class="font-medium">{{ formatDateTime(a.fecha_inicio) }}</span>
+                        <span class="font-medium">{{ formatDateWithDayShort(a.fecha_inicio) }}</span>
                       </div>
                       <div class="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock class="h-4 w-4 text-slate-400" />
-                        <span>{{ formatTime(a.fecha_fin) }}</span>
+                        <span>{{ formatTime(a.fecha_inicio) }} - {{ formatTime(a.fecha_fin) }}</span>
                         <Badge variant="secondary" class="ml-1 text-[10px]">{{ getDuration(a.fecha_inicio, a.fecha_fin) }}</Badge>
                       </div>
                     </div>
@@ -196,6 +198,48 @@ const getDuration = (start: string, end: string) => {
                       <span v-if="a.ubicacion?.address">{{ a.ubicacion.address }}</span>
                       <span v-else class="italic">Sin ubicación especificada</span>
                     </div>
+
+                    <div class="flex items-center justify-between gap-4">
+                      <div class="flex items-center justify-start gap-1">
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.ubicacion?.address">
+                          <NuxtLink :href="a.enlace_google" target="_blank"> 
+                            <span class="sr-only">Ir a Google Maps</span>
+                            <MapPin class="h-6 w-6" />
+                          </NuxtLink>
+                        </Button>
+                        <!--
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.telefono">
+                          <NuxtLink v-if="a.telefono" :title="`Llamar: ${a.telefono}`" :href="`tel:${a.telefono}`"> 
+                            <span class="sr-only">Llamar</span>
+                            <PhoneCall class="h-6 w-6" />
+                          </NuxtLink>
+                        </Button>
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.email">
+                          <NuxtLink v-if="a.email" :title="`Enviar correo: ${a.email}`" :href="`mailto:${a.email}`"> 
+                            <span class="sr-only">Enviar correo</span>
+                            <Mail class="h-6 w-6" />
+                          </NuxtLink>
+                        </Button>
+                        -->
+                        <!-- Descargas de ficheros adjuntos -->
+                        <Button 
+                          v-for="item in a.adjuntos" 
+                          :key="item.id"
+                          size="icon" 
+                          class="h-8 w-8 p-0"
+                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                        >
+                          <FileDown class="h-4 w-4" />
+                        </Button>
+
+                      </div>
+                      <div class="flex items-center justify-end gap-2">
+                            aaa
+                      </div>
+                    </div>
+
+
                   </div>
 
 
@@ -223,14 +267,14 @@ const getDuration = (start: string, end: string) => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[170px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
             ANUNCIO
           </div>
         </div>
       </div>
     </div>
 
-    <ActivityModal 
+    <ActivityDrawer 
       v-model:open="isModalOpen" 
       :trip-id="tripId" 
       :current-trip="currentTrip" 

@@ -152,7 +152,8 @@ const onTimeChange = () => {
     <PopoverContent class="w-auto p-0" align="start">
       <Calendar 
         v-model="dateVal" 
-        locale="es" 
+        locale="es-ES" 
+        :week-starts-on="1"
         initial-focus 
         :min-value="min ? parseDate(min.split('T')[0]) : undefined"
         :max-value="max ? parseDate(max.split('T')[0]) : undefined"

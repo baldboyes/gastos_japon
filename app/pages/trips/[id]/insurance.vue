@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Shield, Plus, Trash2, Pencil, Phone, MoreVertical } from 'lucide-vue-next'
+import { Shield, Plus, Trash2, Pencil, Phone, MoreVertical, FileDown, PhoneCall, Mail } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
+import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { formatCurrency } from '~/utils/currency'
 import { formatPhoneNumber, formatPhoneForHref } from '~/utils/phone'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import InsuranceModal from '~/components/trips/modals/InsuranceModal.vue'
+import InsuranceDrawer from '~/components/trips/modals/InsuranceDrawer.vue'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import TaskModal from '~/components/trips/tasks/TaskModal.vue'
@@ -29,6 +30,7 @@ const route = useRoute()
 const tripId = route.params.id as string
 
 const { currentTrip } = useTrips()
+const { downloadFile } = useDirectusFiles()
 const { seguros, fetchOrganizationData, deleteSeguro } = useTripOrganization()
 const { tasks, init: initTasks, updateTask } = useTripTasks()
 
@@ -98,122 +100,146 @@ onMounted(() => {
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
         <div class="flex-1 w-full space-y-4">
-          <div class="flex justify-between items-center px-4 md:px-0">
-        <div>
-          <h2 class="text-2xl font-bold tracking-tight">Seguros</h2>
-          <p class="text-muted-foreground hidden md:block">Pólizas de viaje y asistencia médica.</p>
-        </div>
-        <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> Añadir</Button>
-      </div>
-
-      <div v-if="seguros.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
-        <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-        <h3 class="text-lg font-semibold text-slate-700">No hay seguros registrados</h3>
-        <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener a mano la póliza.</p>
-      </div>
-
-      <div v-else class="space-y-4">
-        <Card v-for="s in seguros" :key="s.id">
-          <CardHeader class="flex flex-row items-start justify-between pb-2">
-            <div class="flex items-start gap-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
               <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mt-1">
                 <Shield class="h-5 w-5" />
               </div>
               <div>
-                <CardTitle class="text-lg">{{ s.compania }}</CardTitle>
-                <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1 font-mono bg-slate-100 px-2 py-0.5 rounded w-fit">
-                  Póliza: {{ s.numero_poliza }}
-                </div>
+                <h2 class="text-2xl font-bold tracking-tight">Seguros</h2>
+                <p class="text-muted-foreground hidden md:block">Pólizas de viaje y asistencia médica.</p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                    <span class="sr-only">Abrir menú</span>
-                    <MoreVertical class="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem @click="handleEditInsurance(s)">
-                    <Pencil class="mr-2 h-4 w-4" />
-                    <span>Editar</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem @click="confirmDelete(s.id)" class="text-destructive focus:text-destructive">
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    <span>Eliminar</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="flex flex-col xl:flex-row gap-8">
-              <div class="w-full">
-                <div v-if="s.telefono_asistencia" class="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded-md mb-4">
+            <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> Añadir</Button>
+          </div>
+
+
+
+
+          <div v-if="seguros.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+            <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
+            <h3 class="text-lg font-semibold text-slate-700">No hay seguros registrados</h3>
+            <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener a mano la póliza.</p>
+          </div>
+
+          <div v-else class="space-y-4">
+            <Card v-for="s in seguros" :key="s.id">
+              <CardHeader class="flex flex-row items-start justify-between pb-2">
+                <div class="flex justify-between w-full">
+                  <CardTitle class="text-lg">
+                    <span>{{ s.compania }}</span>
+                    <span v-if="s.numero_poliza" class="opacity-80 text-sm ml-2">{{ s.numero_poliza }}</span>
+                  </CardTitle>
+                  <div class="flex items-center gap-2">
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(s.estado_pago || 'pendiente'))">
+                      {{ formatCurrency(s.precio || 0, s.moneda) }}
+                    </span>
+                  </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
+                      <span class="sr-only">Abrir menú</span>
+                      <MoreVertical class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="handleEditInsurance(s)">
+                      <Pencil class="mr-2 h-4 w-4" />
+                      <span>Editar</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem @click="confirmDelete(s.id)" class="text-destructive focus:text-destructive">
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      <span>Eliminar</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardHeader>
+              <CardContent>
+                <div v-if="s.telefono_urgencias" class="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded-md mb-4">
                   <div class="h-8 w-8 rounded-full bg-green-200 flex items-center justify-center text-green-700">
                     <Phone class="h-4 w-4" />
                   </div>
                   <div>
                     <p class="text-xs font-bold text-green-800 uppercase">Teléfono Asistencia</p>
-                    <a :href="`tel:${formatPhoneForHref(s.telefono_asistencia)}`" class="text-lg font-bold text-green-700 hover:underline">
-                      {{ formatPhoneNumber(s.telefono_asistencia) }}
+                    <a :href="`tel:${formatPhoneForHref(s.telefono_urgencias)}`" class="text-lg font-bold text-green-700 hover:underline">
+                      {{ formatPhoneNumber(s.telefono_urgencias) }}
                     </a>
                   </div>
                 </div>
 
-                <div v-if="s.notas" class="mb-4 p-3 bg-slate-50 rounded-md text-sm text-slate-600">
-                  <span class="font-bold text-xs uppercase text-slate-400 block mb-1">Coberturas / Notas</span>
-                  {{ s.notas }}
+
+
+
+                <div v-if="s.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                  <p class="whitespace-pre-line">{{ s.notas }}</p>
                 </div>
 
-                <div class="flex justify-end pt-2 border-t">
-                  <div class="flex items-center gap-3">
-                    <span :class="cn('text-[10px] px-1.5 py-1 rounded border uppercase font-bold tracking-wide', getStatusColor(s.estado_pago || 'pendiente'))">
-                      {{ getStatusLabel(s.estado_pago || 'pendiente') }}
-                    </span>
-                    <span class="font-mono">{{ formatCurrency(s.precio, s.moneda) }}</span>
-                    <div class="flex gap-1">
-                      <!-- Actions -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="w-full xl:max-w-md">
                 <EntityTasksWidget 
                   :trip-id="parseInt(tripId)"
                   entity-type="insurance"
                   :entity-id="s.id"
                   :title="`Tareas: ${s.compania}`"
+                  class="hidden"
                 />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      </div>
 
-      <!-- Sidebar Tasks -->
-      <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
-        <TasksSidebar 
-          :tasks="allInsuranceTasks"
-          @update:status="(id, status) => updateTask(id, { status })"
-          @edit="handleEditTask"
-        />
-        <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[170px] w-full flex items-center justify-center">
-          ANUNCIO
+
+                    <div class="flex items-center justify-between gap-4">
+                      <div class="flex items-center justify-start gap-1">
+
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.telefono_urgencias">
+                          <NuxtLink v-if="s.telefono_urgencias" :title="`Llamar: ${s.telefono_urgencias}`" :href="`tel:${s.telefono_urgencias}`"> 
+                            <span class="sr-only">Llamar</span>
+                            <PhoneCall class="h-6 w-6" />
+                          </NuxtLink>
+                        </Button>
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.email_urgencias">
+                          <NuxtLink v-if="s.email_urgencias" :title="`Enviar correo: ${s.email_urgencias}`" :href="`mailto:${s.email_urgencias}`"> 
+                            <span class="sr-only">Enviar correo</span>
+                            <Mail class="h-6 w-6" />
+                          </NuxtLink>
+                        </Button>
+                        
+                        <!-- Descargas de ficheros adjuntos -->
+                        <Button 
+                          v-for="item in s.adjuntos" 
+                          :key="item.id"
+                          size="icon"
+                          class="h-8 w-8"
+                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                        >
+                          <FileDown class="h-6 w-6" />
+                        </Button>
+
+                      </div>
+                      <div class="flex items-center justify-end gap-2">
+                            aaa
+                      </div>
+                    </div>
+
+
+
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <!-- Sidebar Tasks -->
+        <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
+          <TasksSidebar 
+            :tasks="allInsuranceTasks"
+            @update:status="(id, status) => updateTask(id, { status })"
+            @edit="handleEditTask"
+          />
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+            ANUNCIO
+          </div>
         </div>
       </div>
-      </div>
 
-      <InsuranceModal 
-        v-model:open="isModalOpen" 
-        :trip-id="tripId" 
-        :current-trip="currentTrip" 
-        :item-to-edit="itemToEdit" 
-        @saved="onSaved"
-      />
 
       <TaskModal 
         v-model:open="isTaskModalOpen" 
@@ -238,5 +264,15 @@ onMounted(() => {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+
+
+      <InsuranceDrawer 
+        v-model:open="isModalOpen" 
+        :trip-id="tripId" 
+        :current-trip="currentTrip" 
+        :item-to-edit="itemToEdit" 
+        @saved="onSaved"
+      />
+
   </NuxtLayout>
 </template>

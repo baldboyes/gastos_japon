@@ -60,14 +60,16 @@
             v-if="dateMode === 'single'"
             key="single-calendar"
             v-model="singleDate"
-            locale="es"
+            locale="es-ES"
+            :week-starts-on="1"
             @update:model-value="handleSingleDateChange"
           />
           <RangeCalendar
             v-else
             key="range-calendar"
             :model-value="rangeDates"
-            locale="es"
+            locale="es-ES"
+            :week-starts-on="1"
             @update:model-value="handleRangeDateChange"
           />
         </div>
@@ -93,6 +95,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { cn } from '@/lib/utils'
 import type { DateValue } from '@internationalized/date'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'

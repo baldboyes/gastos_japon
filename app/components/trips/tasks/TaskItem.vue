@@ -82,7 +82,7 @@ const resolvedEntityName = computed(() => {
       return s ? s.compania : null
     case 'transport':
       const t = transportes.value.find(i => String(i.id) === String(id))
-      return t ? t.titulo : null
+      return t ? t.nombre : null
 
     default:
       return null

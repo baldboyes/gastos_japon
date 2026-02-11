@@ -6,6 +6,9 @@
  * @param {(date: Date) => string} [dateFormatter] Función opcional para formatear la fecha (clave del grupo)
  * @returns {{ date: string, items: T[] }[]} Lista agrupada por fecha formateada y ordenada cronológicamente
  */
+
+import { formatDateWithDayShort } from '~/utils/dates'
+
 export function groupByDate<T>(
   items: T[] | undefined | null, 
   dateField: keyof T | ((item: T) => string | Date | undefined | null),
@@ -41,13 +44,7 @@ export function groupByDate<T>(
     if (dateFormatter) {
       dateStr = dateFormatter(dateObj)
     } else {
-      const dateKey = dateObj.toLocaleDateString('es-ES', { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
-      })
-      dateStr = dateKey.charAt(0).toUpperCase() + dateKey.slice(1)
+      dateStr = formatDateWithDayShort(dateObj)
     }
 
     let lastGroup = groups[groups.length - 1]

@@ -59,7 +59,7 @@ const handleFileSelect = async (e: Event) => {
       accept=".pdf,.jpg,.jpeg,.png"
       @change="handleFileSelect"
     />
-    <Button variant="outline" size="sm" @click="fileInput?.click()" :disabled="uploading">
+    <Button size="sm" @click="fileInput?.click()" :disabled="uploading">
       <Loader2 v-if="uploading" class="h-4 w-4 animate-spin mr-2" />
       <Upload v-else class="h-4 w-4 mr-2" />
       Adjuntar

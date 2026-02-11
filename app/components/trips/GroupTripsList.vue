@@ -88,7 +88,7 @@
         <div 
           v-for="trip in trips" 
           :key="trip.slug" 
-          class="flex flex-col md:flex-row bg-white rounded-xl shadow-sm hover:shadow-md transition-all border overflow-hidden group"
+          class="flex flex-col md:flex-row bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-input overflow-hidden group"
         >
           <!-- Imagen -->
           <div class="w-full md:w-48 h-48 relative shrink-0">
@@ -125,7 +125,7 @@
 
             <!-- Botón -->
             <div class="w-full md:w-auto shrink-0">
-              <Button variant="secondary" class="w-full md:w-auto" as-child>
+              <Button class="w-full md:w-auto" as-child>
                 <a :href="`https://porjapon.com/viajes-en-grupo-a-japon/${trip.slug}`" target="_blank">
                   Ver viaje
                 </a>

@@ -119,7 +119,7 @@ const onFileUploaded = async () => {
 
           <div>
             <Label>Teléfono Asistencia</Label>
-            <Input v-model="formData.telefono_asistencia" placeholder="+34 900..." />
+            <Input v-model="formData.telefono_urgencias" placeholder="+34 900..." />
           </div>
 
           <div class="grid grid-cols-3 gap-2">

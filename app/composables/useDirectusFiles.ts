@@ -1,7 +1,7 @@
 import { uploadFiles, createItem, deleteItem, deleteFile } from '@directus/sdk'
 
 export const useDirectusFiles = () => {
-  const { getAuthenticatedClient } = useDirectus()
+  const { getAuthenticatedClient, token, url } = useDirectus()
 
   const uploadFile = async (file: File) => {
     const client = await getAuthenticatedClient()
@@ -65,5 +65,37 @@ export const useDirectusFiles = () => {
     }
   }
 
-  return { uploadFile, attachFileToItem, removeFile }
+  const downloadFile = async (fileId: string, filename: string) => {
+    try {
+        await getAuthenticatedClient() // Asegurar token actualizado
+
+        const headers: HeadersInit = {}
+        if (token.value) {
+            headers['Authorization'] = `Bearer ${token.value}`
+        }
+
+        const response = await fetch(`${url}/assets/${fileId}`, {
+            headers
+        })
+
+        if (!response.ok) throw new Error('Fallo en la descarga')
+
+        const blob = await response.blob()
+        const downloadUrl = window.URL.createObjectURL(blob)
+        
+        const a = document.createElement('a')
+        a.href = downloadUrl
+        a.download = filename || 'archivo'
+        document.body.appendChild(a)
+        a.click()
+        
+        window.URL.revokeObjectURL(downloadUrl)
+        document.body.removeChild(a)
+    } catch (e: any) {
+        console.error('[Directus Files] Error descargando archivo:', e)
+        throw e
+    }
+  }
+
+  return { uploadFile, attachFileToItem, removeFile, downloadFile }
 }

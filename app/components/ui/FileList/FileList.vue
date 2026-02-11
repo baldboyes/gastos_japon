@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { FileText, Image, Download, Loader2, Trash2, Search } from 'lucide-vue-next'
-import { useDirectus } from '~/composables/useDirectus'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { ref, computed } from 'vue'
 import { Input } from '~/components/ui/input'
+import { Button } from '~/components/ui/button'
+import { ButtonGroup } from '~/components/ui/button-group'
 import { toast } from 'vue-sonner'
 
 const props = defineProps<{
@@ -13,8 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['deleted'])
 
-const { token } = useDirectus()
-const { removeFile } = useDirectusFiles()
+const { removeFile, downloadFile } = useDirectusFiles()
 const downloadingId = ref<string | null>(null)
 const deletingId = ref<string | null>(null)
 const searchQuery = ref('')
@@ -43,31 +43,7 @@ const handleDownload = async (fileId: string, filename: string) => {
   downloadingId.value = fileId
   
   try {
-    // Método seguro: enviamos el token en el Header, no en la URL
-    const response = await fetch(`https://api.mevoyajapon.com/assets/${fileId}`, {
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      }
-    })
-    
-    if (!response.ok) throw new Error('Fallo en la descarga')
-    
-    // Convertimos la respuesta a un objeto Blob (binario)
-    const blob = await response.blob()
-    
-    // Creamos una URL temporal de tipo blob que solo existe en esta sesión del navegador
-    const url = window.URL.createObjectURL(blob)
-    
-    // Simulamos un click en un enlace invisible para forzar la descarga
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename || 'archivo'
-    document.body.appendChild(a)
-    a.click()
-    
-    // Limpiamos la URL temporal y el elemento del DOM
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
+    await downloadFile(fileId, filename)
   } catch (e) {
     console.error('Error al descargar el archivo:', e)
     toast.error('Error al descargar el archivo')
@@ -110,48 +86,34 @@ const handleDelete = async () => {
     </div>
 -->
     <div class="flex flex-wrap gap-2">
-        <div 
-        v-for="item in filteredFiles" 
-        :key="item.id" 
-        class="group flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border text-sm shadow-sm hover:bg-slate-50 transition-colors"
-        >
-        <!-- Icono Archivo -->
-        <component :is="getFileIcon(item.directus_files_id?.type)" class="h-4 w-4 text-blue-500 shrink-0" />
-        
-        <!-- Nombre (Click para descargar) -->
-        <span 
-            class="group-hover:text-blue-600 truncate max-w-[200px] font-medium transition-colors cursor-pointer"
-            :title="item.directus_files_id?.filename_download"
-            @click="handleDownload(item.directus_files_id?.id, item.directus_files_id?.filename_download)"
-        >
-            {{ item.directus_files_id?.title || item.directus_files_id?.filename_download }}
-        </span>
+      <div 
+      v-for="item in filteredFiles" 
+      :key="item.id" 
+      class="flex items-center justify-between gap-2 py-1.5 w-full"
+      >
+        <div class="flex items-center gap-2">
+          <component :is="getFileIcon(item.directus_files_id?.type || item.type)" class="h-4 w-4 text-blue-500 shrink-0" />
+          <span 
+              class="truncate max-w-[200px] font-medium transition-colors cursor-pointer"
+              :title="item.directus_files_id?.filename_download || item.filename_download"
+              @click="handleDownload(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+          >
+            {{ item.directus_files_id?.title || item.directus_files_id?.filename_download || item.title || item.filename_download }}
+          </span>
+        </div>  
 
-        <!-- Botones Acción -->
-        <div class="flex items-center gap-4 border-l pl-4 ml-1">
-            <!-- Download -->
-            <button 
-                @click.stop="handleDownload(item.directus_files_id?.id, item.directus_files_id?.filename_download)"
-                class="text-slate-400 hover:text-blue-500 transition-colors p-0.5 rounded cursor-pointer"
-                :disabled="!!downloadingId"
-                title="Descargar"
-            >
-                <Loader2 v-if="downloadingId === item.directus_files_id?.id" class="h-3 w-3 animate-spin" />
-                <Download v-else class="h-4 w-4" />
-            </button>
+        <ButtonGroup>
+          <Button class="border-input" variant="outline" @click.stop="handleDownload(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)" :disabled="!!downloadingId">
+            <Loader2 v-if="downloadingId === (item.directus_files_id?.id || item.id)" class="h-3 w-3 animate-spin" />
+            <Download v-else class="h-4 w-4" />
+          </Button>
+          <Button class="border-input text-red-500" variant="outline" @click.stop="confirmDelete(item.directus_files_id?.id || item.id, item.id)" :disabled="!!deletingId">
+            <Loader2 v-if="deletingId === (item.directus_files_id?.id || item.id)" class="h-3 w-3 animate-spin" />
+            <Trash2 v-else class="h-4 w-4" />
+          </Button>
+        </ButtonGroup>
 
-            <!-- Delete -->
-            <button 
-                @click.stop="confirmDelete(item.directus_files_id?.id, item.id)"
-                class="text-slate-400 hover:text-red-500 transition-colors p-0.5 rounded cursor-pointer"
-                :disabled="!!deletingId"
-                title="Eliminar"
-            >
-                <Loader2 v-if="deletingId === item.directus_files_id?.id" class="h-3 w-3 animate-spin text-red-500" />
-                <Trash2 v-else class="h-4 w-4" />
-            </button>
-        </div>
-        </div>
+      </div>
     </div>
 
     <AlertDialog :open="isDeleteDialogOpen" @update:open="isDeleteDialogOpen = $event">

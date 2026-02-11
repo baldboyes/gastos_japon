@@ -10,7 +10,7 @@ import { formatCurrency } from '~/utils/currency'
 import { groupByDate } from '~/utils/grouping'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import FlightModal from '~/components/trips/modals/FlightModal.vue'
+import FlightDrawer from '~/components/trips/modals/FlightDrawer.vue'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import TaskModal from '~/components/trips/tasks/TaskModal.vue'
@@ -104,9 +104,9 @@ onMounted(() => {
 })
 
 const getAirlineLogo = (name: string) => {
-  if (!name) return null
+  if (!name) return undefined
   const airline = airlines.value.find(a => a.name === name)
-  return airline?.logo || null
+  return airline?.logo || undefined
 }
 
 const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
@@ -182,10 +182,10 @@ const getDayDiff = (start?: string, end?: string) => {
               <CardContent>
                 <div class="w-full">
                   <!-- Escalas Display -->
-                  <div v-if="v.escalas && v.escalas.length > 0" class="mt-4">
-                    <div v-for="(group, gIndex) in getEscalasGrouped(v.escalas)" :key="gIndex" class="mb-4 last:mb-0">
-                      <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-2">
-                          <Calendar class="h-3 w-3" /> {{ group.date }}
+                  <div v-if="v.escalas && v.escalas.length > 0" class="mb-4">
+                    <div v-for="(group, gIndex) in getEscalasGrouped(v.escalas)" :key="gIndex" class="mb-4 last:mb-0 space-y-2">
+                      <h4 class="font-medium flex items-center gap-2">
+                        <Calendar class="h-4 w-4" /> {{ group.date }}
                       </h4>
                       <div class="md:space-y-3">
                           <Card v-for="(escala, i) in group.items" :key="i" class="bg-slate-50/50">
@@ -232,14 +232,6 @@ const getDayDiff = (start?: string, end?: string) => {
                       </div>
                     </div>
                   </div>
-
-                  <EntityTasksWidget 
-                    :trip-id="parseInt(tripId)"
-                    entity-type="flight"
-                    :entity-id="v.id"
-                    :title="`Tareas: ${v.titulo || 'Vuelo'}`"
-                    class="hidden"
-                  />
                 </div>
               </CardContent>
             </Card>
@@ -258,14 +250,6 @@ const getDayDiff = (start?: string, end?: string) => {
           </div>
         </div>
       </div>
-
-      <FlightModal 
-        v-model:open="isModalOpen" 
-        :trip-id="tripId" 
-        :current-trip="currentTrip" 
-        :item-to-edit="itemToEdit" 
-        @saved="onSaved"
-      />
 
       <TaskModal 
         v-model:open="isTaskModalOpen" 
@@ -289,6 +273,16 @@ const getDayDiff = (start?: string, end?: string) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
     </div>
+
+    <FlightDrawer 
+      v-model:open="isModalOpen" 
+      :trip-id="tripId" 
+      :current-trip="currentTrip" 
+      :item-to-edit="itemToEdit" 
+      @saved="onSaved"
+    />
+
   </NuxtLayout>
 </template>

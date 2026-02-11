@@ -216,7 +216,7 @@ const performSearch = async (query: string, autoFill: boolean) => {
           @keydown.enter.prevent="handleManualSearch"
         />
       </div>
-      <Button variant="secondary" @click="handleManualSearch" :disabled="isSearchingMap">
+      <Button @click="handleManualSearch" :disabled="isSearchingMap">
         <Loader2 v-if="isSearchingMap" class="h-4 w-4 animate-spin mr-2" />
         <span v-else>Buscar</span>
       </Button>
@@ -247,19 +247,19 @@ const performSearch = async (query: string, autoFill: boolean) => {
               variant="outline"
               role="combobox"
               :aria-expanded="openPrefecture"
-              class="w-full justify-between"
+              class="w-full justify-between border border-input"
             >
               <span class="truncate">{{ modelValue.prefecture || "Seleccionar prefectura..." }}</span>
               <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent class="w-[250px] p-0" align="start">
-            <div class="p-2 border-b">
-              <div class="flex items-center px-2 border rounded-md">
+            <div class="p-2 border-input border-b">
+              <div class="flex items-center px-2 border border-input rounded-md">
                 <Search class="h-4 w-4 text-muted-foreground mr-2" />
                 <input 
                   v-model="prefectureQuery"
-                  class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+                  class="flex h-9 w-full rounded-md bg-white border-input py-3 text-sm outline-none placeholder:text-muted-foreground"
                   placeholder="Buscar..."
                 />
               </div>
@@ -302,7 +302,7 @@ const performSearch = async (query: string, autoFill: boolean) => {
               variant="outline"
               role="combobox"
               :aria-expanded="openCity"
-              class="w-full justify-between"
+              class="w-full justify-between border border-input"
               :disabled="!modelValue.prefecture"
             >
               <span class="truncate">{{ modelValue.city || "Seleccionar ciudad..." }}</span>
@@ -310,8 +310,8 @@ const performSearch = async (query: string, autoFill: boolean) => {
             </Button>
           </PopoverTrigger>
           <PopoverContent class="w-[250px] p-0" align="start">
-            <div class="p-2 border-b">
-              <div class="flex items-center px-2 border rounded-md">
+            <div class="p-2 border-b border-input">
+              <div class="flex items-center px-2 border border-input rounded-md">
                 <Search class="h-4 w-4 text-muted-foreground mr-2" />
                 <input 
                   v-model="cityQuery"

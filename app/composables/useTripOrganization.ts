@@ -24,6 +24,12 @@ export interface Vuelo {
   moneda: 'EUR' | 'JPY'
   estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
+  fecha_salida?: string
+  fecha_llegada?: string
+  origen?: string
+  destino?: string
+  aerolinea?: string
+  numero_vuelo?: string
 }
 
 export interface Alojamiento {
@@ -67,8 +73,6 @@ export interface Escala {
   medio: string
   fecha_salida: string
   fecha_llegada: string
-  notas?: string
-  user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
 export interface Transporte {
@@ -84,12 +88,12 @@ export interface Transporte {
   estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
   pase_id?: number | null
+  pase_titulo?: string
   tipo_duracion?: 'dias' | 'horas'
+  notas?: string
   origen?: string
   destino?: string
   medio?: string
-  titulo?: string
-  notas?: string
   user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
@@ -131,6 +135,7 @@ export interface Seguro {
   moneda: 'EUR' | 'JPY'
   estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   adjuntos?: any[]
+  notas?: string
   user_created?: string | { first_name?: string, last_name?: string, email?: string, avatar_url?: string }
 }
 
@@ -253,7 +258,7 @@ export const useTripOrganization = () => {
     if (!dateStr) return dateStr
     // Si viene con Z (UTC) o milisegundos, lo limpiamos para dejarlo como YYYY-MM-DDTHH:mm
     // Esto fuerza a que la UI lo trate como "Hora Local" sin conversiones de zona horaria
-    return dateStr.replace('Z', '').split('.')[0].slice(0, 16)
+    return (dateStr as string).replace('Z', '').split('.')[0].slice(0, 16)
   }
 
   // --- Fetch All ---
@@ -288,7 +293,14 @@ export const useTripOrganization = () => {
               'user_created.avatar_url'
             ]
           })),
-          client.request(readItems('transportes' as any, query('fecha_inicio'))),
+          client.request(readItems('transportes' as any, {
+            ...query('fecha_inicio'),
+            fields: [
+              ...query('fecha_inicio').fields,
+              'pase_id.id',
+              'pase_id.nombre'
+            ]
+          })),
           client.request(readItems('actividades' as any, query('fecha'))),
           client.request(readItems('seguros' as any, { 
               filter: { viaje_id: { _eq: tripId } }, 
@@ -338,20 +350,16 @@ export const useTripOrganization = () => {
           takkyubin: i.takkyubin || false,
         }))
 
-        transportes.value = (t as unknown as Transporte[]).map(i => {
-          let escalas = i.escalas?.map(e => ({
-            ...e,
-            fecha_salida: normalizeDate(e.fecha_salida) || '',
-            fecha_llegada: normalizeDate(e.fecha_llegada) || '',
-          })) || []
-
-          // Sort scales by date
-          if (escalas.length > 0) {
-            escalas = escalas.sort((a: any, b: any) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
-          }
-
+        transportes.value = (t as unknown as any[]).map(i => {
           // Auto-fill from segments if missing in root (for display purposes)
           let { origen, destino, medio } = i
+          const escalas = i.escalas || []
+          
+          // Extract pass title if available
+          const paseObj = i.pase_id
+          const pase_titulo = paseObj?.nombre || ''
+          const pase_id = typeof paseObj === 'object' ? paseObj?.id : paseObj
+          
           if (i.categoria === 'trayecto' && escalas.length > 0) {
              if (!origen) origen = escalas[0].origen
              if (!destino) destino = escalas[escalas.length - 1].destino
@@ -367,6 +375,8 @@ export const useTripOrganization = () => {
             origen,
             destino,
             medio,
+            pase_id,
+            pase_titulo,
             user_created: i.user_created || {}
           }
         })
@@ -376,6 +386,7 @@ export const useTripOrganization = () => {
           id: a.id,
           viaje_id: a.viaje_id,
           nombre: a.nombre,
+          tipo: a.tipo,
           fecha_inicio: normalizeDate(a.fecha_inicio),
           fecha_fin: normalizeDate(a.fecha_fin),
           ubicacion: {
@@ -445,12 +456,17 @@ export const useTripOrganization = () => {
       if (collection === 'transportes') {
          if (newItem.fecha_inicio) newItem.fecha_inicio = normalizeDate(newItem.fecha_inicio)
          if (newItem.fecha_fin) newItem.fecha_fin = normalizeDate(newItem.fecha_fin)
-         if (newItem.escalas) {
-            newItem.escalas = newItem.escalas.map((e: any) => ({
-                ...e,
-                fecha_salida: normalizeDate(e.fecha_salida),
-                fecha_llegada: normalizeDate(e.fecha_llegada)
-            }))
+         
+         // Ensure price is a number
+         if (newItem.precio) newItem.precio = parseFloat(newItem.precio.toString())
+         
+         const escalas = newItem.escalas || []
+         newItem.escalas = escalas
+
+         if (newItem.categoria === 'trayecto' && escalas.length > 0) {
+             if (!newItem.origen) newItem.origen = escalas[0].origen
+             if (!newItem.destino) newItem.destino = escalas[escalas.length - 1].destino
+             if (!newItem.medio) newItem.medio = escalas[0].medio
          }
       }
       if (collection === 'seguros') {
@@ -511,7 +527,7 @@ export const useTripOrganization = () => {
   const deleteItemGeneric = async (collection: string, id: number, state: any) => {
     try {
       const client = await getAuthenticatedClient()
-      await client.request(deleteItem(collection, id))
+      await client.request(deleteItem(collection as any, id))
       state.value = state.value.filter((i: any) => i.id !== id)
     } catch (e) {
       console.error(`Error deleting ${collection}:`, e)
@@ -577,8 +593,22 @@ export const useTripOrganization = () => {
   }
   const deleteAlojamiento = (id: number) => deleteItemGeneric('alojamientos', id, alojamientos)
 
-  const createTransporte = (item: Omit<Transporte, 'id'>) => createItemGeneric('transportes', item, transportes)
-  const updateTransporte = (id: number, item: Partial<Transporte>) => updateItemGeneric('transportes', id, item, transportes)
+  const createTransporte = (item: Omit<Transporte, 'id'>) => {
+    const payload = { ...item }
+    // @ts-ignore
+    delete payload.pase_nombre
+    // @ts-ignore
+    delete payload.pase_titulo
+    return createItemGeneric('transportes', payload, transportes)
+  }
+  const updateTransporte = (id: number, item: Partial<Transporte>) => {
+    const payload = { ...item }
+    // @ts-ignore
+    delete payload.pase_nombre
+    // @ts-ignore
+    delete payload.pase_titulo
+    return updateItemGeneric('transportes', id, payload, transportes)
+  }
   const deleteTransporte = (id: number) => deleteItemGeneric('transportes', id, transportes)
 
   const createActividad = async (data: any) => {

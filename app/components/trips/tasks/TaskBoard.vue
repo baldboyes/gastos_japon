@@ -280,7 +280,8 @@ const hasTasksOnDate = (date: DateValue) => {
         <div class="w-fit mx-auto md:mx-0">
           <Calendar 
             v-model="calendarDate" 
-            locale="es"
+            locale="es-ES"
+            :week-starts-on="1"
             class="rounded-md border shadow bg-white" 
           >
             <template #day="{ day, date }">

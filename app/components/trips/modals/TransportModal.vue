@@ -106,11 +106,11 @@ const saveTransport = () => {
     }
 
     // Default title if empty
-    if (!data.titulo) {
+    if (!data.nombre) {
        if (data.categoria === 'pase') {
-          data.titulo = `Pase de Transporte`
+          data.nombre = `Pase de Transporte`
        } else {
-          data.titulo = `${data.origen || 'Origen'} ➝ ${data.destino || 'Destino'}`
+          data.nombre = `${data.origen || 'Origen'} ➝ ${data.destino || 'Destino'}`
        }
     }
     
@@ -123,7 +123,7 @@ const saveTransport = () => {
 }
 
 const isValid = computed(() => {
-  // if (!formData.value.titulo) return false
+  // if (!formData.value.nombre) return false
   if (formData.value.categoria === 'pase') {
      return formData.value.fecha_inicio && formData.value.fecha_fin
   }
@@ -169,7 +169,7 @@ const onFileUploaded = async () => {
       <div class="grid gap-4 py-4">
           <div>
             <Label>Título / Nombre</Label>
-            <Input v-model="formData.titulo" placeholder="Ej: JR Pass, Shinkansen a Kyoto..." />
+            <Input v-model="formData.nombre" placeholder="Ej: JR Pass, Shinkansen a Kyoto..." />
           </div>
 
           <div>
