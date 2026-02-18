@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Train, Plus, Trash2, Pencil, Calendar, ArrowRight, Bus, Ship, Car, MoreVertical } from 'lucide-vue-next'
+import { Train, Plus, Trash2, Pencil, Calendar, ArrowRight, Bus, Ship, Car, MoreVertical, FileDown } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
 import { formatDateTime, formatTime, formatDate, formatDateWithDayShort } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
+import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
 import TransportDrawer from '~/components/trips/modals/TransportDrawer.vue'
@@ -35,7 +36,7 @@ import {
 
 const route = useRoute()
 const tripId = route.params.id as string
-
+const { downloadFile } = useDirectusFiles()
 const { currentTrip } = useTrips()
 const { transportes, fetchOrganizationData, deleteTransporte } = useTripOrganization()
 const { tasks, init: initTasks, updateTask } = useTripTasks()
@@ -129,10 +130,6 @@ const getTransportIcon = (type: string) => {
             <Button @click="handleCreateTransport"><Plus class="h-4 w-4" /> Añadir</Button>
           </div>
 
-
-
-
-
           <div v-if="transportes.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Train class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">No hay transportes registrados</h3>
@@ -222,11 +219,8 @@ const getTransportIcon = (type: string) => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </CardHeader>
-
-
-
                 <CardContent>
-<!--
+                  <!--
                   <div class="flex items-start gap-2">
                     <p class="text-xs font-medium mt-1">
                       {{ t.tipo_duracion === 'horas' ? formatDateTime(t.fecha_inicio) : formatDate(t.fecha_inicio) }} 
@@ -234,10 +228,7 @@ const getTransportIcon = (type: string) => {
                       {{ t.tipo_duracion === 'horas' ? formatDateTime(t.fecha_fin) : formatDate(t.fecha_fin) }}
                     </p>
                   </div>
--->
-
-
-
+                  -->
                   <div class="flex flex-col xl:flex-row gap-8">
                     <div class="w-full">
                       <div v-if="t.escalas && t.escalas.length > 0" class="mb-4">
@@ -277,17 +268,25 @@ const getTransportIcon = (type: string) => {
                         {{ t.notas }}
                       </div>
 
+                      <div v-if="t.adjuntos" class="flex items-center gap-2 mt-4">
+                        <div v-for="item in t.adjuntos" :key="item.id">
+                          <Button 
+                            :key="item.id"
+                            @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                            :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                          >
+                            <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
 
                   </div>
                 </CardContent>
-                
               </Card>
             </template>
-
-
-
           </div>
+  
         </div>
 
         <!-- Sidebar Tasks -->
@@ -298,7 +297,7 @@ const getTransportIcon = (type: string) => {
             @edit="handleEditTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
-            ANUNCIO
+            &nbsp;
           </div>
         </div>
       </div>

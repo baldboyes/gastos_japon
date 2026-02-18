@@ -5,9 +5,8 @@ import { Camera, Plus, Trash2, Pencil, Calendar, MapPin, Clock, MoreVertical, Fi
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
-import { formatDateTime, formatDateWithDayShort } from '~/utils/dates'
+import { formatTime, formatDateTime, formatDateWithDayShort } from '~/utils/dates'
 import { formatCurrency } from '~/utils/currency'
-import { formatTime } from '~/utils/dates'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
 import ActivityDrawer from '~/components/trips/modals/ActivityDrawer.vue'
@@ -221,21 +220,9 @@ const getDuration = (start: string, end: string) => {
                           </NuxtLink>
                         </Button>
                         -->
-                        <!-- Descargas de ficheros adjuntos -->
-                        <Button 
-                          v-for="item in a.adjuntos" 
-                          :key="item.id"
-                          size="icon" 
-                          class="h-8 w-8 p-0"
-                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
-                        >
-                          <FileDown class="h-4 w-4" />
-                        </Button>
-
                       </div>
                       <div class="flex items-center justify-end gap-2">
-                            aaa
+                        aaa
                       </div>
                     </div>
 
@@ -256,6 +243,17 @@ const getDuration = (start: string, end: string) => {
                   :title="`Tareas: ${a.nombre}`"
                   class="hidden"
                 />
+                <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in a.adjuntos" :key="item.id">
+                    <Button 
+                      :key="item.id"
+                      @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                    >
+                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -268,7 +266,7 @@ const getDuration = (start: string, end: string) => {
             @edit="handleEditTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
-            ANUNCIO
+            &nbsp;
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { CheckCircle2, Circle, Calendar, User, Link2, ArrowRight } from 'lucide-
 import { cn } from '~/lib/utils'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import UserAvatar from '~/components/common/UserAvatar.vue'
-
+import { formatDateWithDayShort } from '~/utils/dates'
 const props = defineProps<{
   task: Task
 }>()
@@ -122,7 +122,7 @@ const resolvedEntityName = computed(() => {
         <div class="mt-2 flex items-center justify-between text-xs text-muted-foreground">
           <span v-if="task.due_date" class="flex items-center gap-1" :class="{'text-red-500 font-medium': isOverdue}">
             <Calendar class="h-3 w-3" />
-            {{ new Date(task.due_date).toLocaleDateString() }}
+            {{ formatDateWithDayShort(task.due_date) }} {{ formatTime(task.due_date) }}
           </span>
         </div>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical } from 'lucide-vue-next'
+import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical, FileDown } from 'lucide-vue-next'
 import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
 import { useAirlines } from '~/composables/useAirlines'
@@ -16,6 +16,7 @@ import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import TaskModal from '~/components/trips/tasks/TaskModal.vue'
 import { useTripTasks } from '~/composables/useTripTasks'
 import { type Task } from '~/types/tasks'
+import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +38,7 @@ import {
 
 const route = useRoute()
 const tripId = route.params.id as string
+const { downloadFile } = useDirectusFiles()
 
 const { currentTrip } = useTrips()
 const { vuelos, fetchOrganizationData, deleteVuelo } = useTripOrganization()
@@ -188,49 +190,61 @@ const getDayDiff = (start?: string, end?: string) => {
                         <Calendar class="h-4 w-4" /> {{ group.date }}
                       </h4>
                       <div class="md:space-y-3">
-                          <Card v-for="(escala, i) in group.items" :key="i" class="bg-slate-50/50">
-                            <CardContent class="md:px-6 flex items-center justify-between">
-                              <div class="flex items-center gap-2 md:gap-4">
-                                <!-- Logo Aerolínea -->
-                                <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 p-1">
-                                  <img 
-                                    v-if="getAirlineLogo(escala.aerolinea)" 
-                                    :src="getAirlineLogo(escala.aerolinea)" 
-                                    class="h-full w-full object-contain"
-                                    alt=""
-                                  />
-                                  <Plane v-else class="h-8 w-8 text-slate-400" />
+                        <Card v-for="(escala, i) in group.items" :key="i" class="bg-slate-50/50">
+                          <CardContent class="md:px-6 flex items-center justify-between">
+                            <div class="flex items-center gap-2 md:gap-4">
+                              <!-- Logo Aerolínea -->
+                              <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 p-1">
+                                <img 
+                                  v-if="getAirlineLogo(escala.aerolinea)" 
+                                  :src="getAirlineLogo(escala.aerolinea)" 
+                                  class="h-full w-full object-contain"
+                                  alt=""
+                                />
+                                <Plane v-else class="h-8 w-8 text-slate-400" />
+                              </div>
+                              
+                              <!-- Detalles Trayecto -->
+                              <div>
+                                <div class="flex items-center gap-2 font-bold text-base text-slate-800">
+                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_salida) }}</Badge>
+                                  <span>{{ escala.origen }}</span> <span v-if="escala.terminal_origen" class="opacity-50 text-xs">{{ escala.terminal_origen }}</span>
+                                  <ArrowRight class="h-4 w-4 text-muted-foreground mx-1" />
+                                  <span v-if="escala.terminal_destino" class="opacity-50 text-xs">{{ escala.terminal_destino }}</span> <span>{{ escala.destino }}</span>
+                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_llegada) }}</Badge>
+                                    <sup v-if="getDayDiff(escala.fecha_salida, escala.fecha_llegada)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.fecha_salida, escala.fecha_llegada) }}</sup>
                                 </div>
-                                
-                                <!-- Detalles Trayecto -->
-                                <div>
-                                  <div class="flex items-center gap-2 font-bold text-base text-slate-800">
-                                    <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_salida) }}</Badge>
-                                    <span>{{ escala.origen }}</span> <span v-if="escala.terminal_origen" class="opacity-50 text-xs">{{ escala.terminal_origen }}</span>
-                                    <ArrowRight class="h-4 w-4 text-muted-foreground mx-1" />
-                                    <span v-if="escala.terminal_destino" class="opacity-50 text-xs">{{ escala.terminal_destino }}</span> <span>{{ escala.destino }}</span>
-                                    <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_llegada) }}</Badge>
-                                      <sup v-if="getDayDiff(escala.fecha_salida, escala.fecha_llegada)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.fecha_salida, escala.fecha_llegada) }}</sup>
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
+                                  <div v-if="escala.aerolinea" class="font-medium text-slate-700">
+                                    {{ escala.aerolinea }}
                                   </div>
-                                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
-                                    <div v-if="escala.aerolinea" class="font-medium text-slate-700">
-                                      {{ escala.aerolinea }}
-                                    </div>
-                                    <div v-if="escala.numero_vuelo" class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
-                                      {{ escala.numero_vuelo }}
-                                    </div>
+                                  <div v-if="escala.numero_vuelo" class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
+                                    {{ escala.numero_vuelo }}
                                   </div>
-                                  <div v-if="escala.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
-                                    <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
-                                    <p class="whitespace-pre-line">{{ escala.notas }}</p>
-                                  </div>
+                                </div>
+                                <div v-if="escala.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                                  <p class="whitespace-pre-line">{{ escala.notas }}</p>
                                 </div>
                               </div>
+                            </div>
 
-                            </CardContent>
-                          </Card>
+                          </CardContent>
+                        </Card>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <!-- Adjuntos -->
+                <div v-if="v.adjuntos" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in v.adjuntos" :key="item.id">
+                    <Button 
+                      :key="item.id"
+                      @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                    >
+                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -246,7 +260,7 @@ const getDayDiff = (start?: string, end?: string) => {
             @edit="handleEditTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
-            ANUNCIO
+            &nbsp;
           </div>
         </div>
       </div>

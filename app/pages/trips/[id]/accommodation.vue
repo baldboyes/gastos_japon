@@ -226,19 +226,6 @@ const getNights = (start: string, end: string) => {
                             <Mail class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
-
-                        <!-- Descargas de ficheros adjuntos -->
-                        <Button 
-                          v-for="item in a.adjuntos" 
-                          :key="item.id"
-                          size="icon" 
-                          class="h-8 w-8"
-                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
-                        >
-                          <FileDown class="h-6 w-6" />
-                        </Button>
-
                       </div>
                       <div class="flex items-center justify-end gap-2">
                         <TooltipProvider v-if="a.takkyubin">
@@ -298,7 +285,17 @@ const getNights = (start: string, end: string) => {
                   :title="`Tareas: ${a.nombre || 'Alojamiento'}`"
                   class="hidden"
                 />
-                
+                <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in a.adjuntos" :key="item.id">
+                    <Button 
+                      :key="item.id"
+                      @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                    >
+                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </template>
@@ -312,7 +309,7 @@ const getNights = (start: string, end: string) => {
             @edit="handleEditTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
-            ANUNCIO
+            &nbsp;
           </div>
         </div>
 

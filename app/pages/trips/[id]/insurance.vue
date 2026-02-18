@@ -157,20 +157,28 @@ onMounted(() => {
                 </DropdownMenu>
               </CardHeader>
               <CardContent>
-                <div v-if="s.telefono_urgencias" class="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded-md mb-4">
-                  <div class="h-8 w-8 rounded-full bg-green-200 flex items-center justify-center text-green-700">
-                    <Phone class="h-4 w-4" />
+
+                <div class="flex items-center justify-between gap-4">
+                  <div class="flex items-center justify-start gap-1">
+
+                    <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.telefono_urgencias">
+                      <NuxtLink v-if="s.telefono_urgencias" :title="`Llamar: ${s.telefono_urgencias}`" :href="`tel:${s.telefono_urgencias}`"> 
+                        <span class="sr-only">Llamar</span>
+                        <PhoneCall class="h-6 w-6" />
+                      </NuxtLink>
+                    </Button>
+                    <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.email_urgencias">
+                      <NuxtLink v-if="s.email_urgencias" :title="`Enviar correo: ${s.email_urgencias}`" :href="`mailto:${s.email_urgencias}`"> 
+                        <span class="sr-only">Enviar correo</span>
+                        <Mail class="h-6 w-6" />
+                      </NuxtLink>
+                    </Button>
+
                   </div>
-                  <div>
-                    <p class="text-xs font-bold text-green-800 uppercase">Teléfono Asistencia</p>
-                    <a :href="`tel:${formatPhoneForHref(s.telefono_urgencias)}`" class="text-lg font-bold text-green-700 hover:underline">
-                      {{ formatPhoneNumber(s.telefono_urgencias) }}
-                    </a>
+                  <div class="flex items-center justify-end gap-2">
+                        aaa
                   </div>
                 </div>
-
-
-
 
                 <div v-if="s.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
                   <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
@@ -185,42 +193,18 @@ onMounted(() => {
                   class="hidden"
                 />
 
-
-                    <div class="flex items-center justify-between gap-4">
-                      <div class="flex items-center justify-start gap-1">
-
-                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.telefono_urgencias">
-                          <NuxtLink v-if="s.telefono_urgencias" :title="`Llamar: ${s.telefono_urgencias}`" :href="`tel:${s.telefono_urgencias}`"> 
-                            <span class="sr-only">Llamar</span>
-                            <PhoneCall class="h-6 w-6" />
-                          </NuxtLink>
-                        </Button>
-                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.email_urgencias">
-                          <NuxtLink v-if="s.email_urgencias" :title="`Enviar correo: ${s.email_urgencias}`" :href="`mailto:${s.email_urgencias}`"> 
-                            <span class="sr-only">Enviar correo</span>
-                            <Mail class="h-6 w-6" />
-                          </NuxtLink>
-                        </Button>
-                        
-                        <!-- Descargas de ficheros adjuntos -->
-                        <Button 
-                          v-for="item in s.adjuntos" 
-                          :key="item.id"
-                          size="icon"
-                          class="h-8 w-8"
-                          @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                          :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
-                        >
-                          <FileDown class="h-6 w-6" />
-                        </Button>
-
-                      </div>
-                      <div class="flex items-center justify-end gap-2">
-                            aaa
-                      </div>
-                    </div>
-
-
+                <!-- Adjuntos -->
+                <div v-if="s.adjuntos" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in s.adjuntos" :key="item.id">
+                    <Button 
+                      :key="item.id"
+                      @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
+                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                    >
+                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                    </Button>
+                  </div>
+                </div>
 
               </CardContent>
             </Card>
@@ -235,7 +219,7 @@ onMounted(() => {
             @edit="handleEditTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
-            ANUNCIO
+            &nbsp;
           </div>
         </div>
       </div>

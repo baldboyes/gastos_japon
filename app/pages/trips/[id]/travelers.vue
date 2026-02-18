@@ -7,6 +7,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '~/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '~/components/ui/dialog'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Label } from '~/components/ui/label'
 import { Badge } from '~/components/ui/badge'
 import { toast } from 'vue-sonner'
@@ -21,6 +22,7 @@ const { trips, travelers, fetchTravelers } = useTrips()
 
 const isInviteModalOpen = ref(false)
 const inviteEmail = ref('')
+const inviteRole = ref('a78c3ab5-20eb-451f-b93f-c087f500fb47') // Default to App User
 const isInviting = ref(false)
 const inviteResult = ref<{ status: 'success' | 'error', message: string, type?: 'invited' | 'email_sent' } | null>(null)
 
@@ -78,6 +80,7 @@ const handleInvite = async () => {
       method: 'POST',
       body: {
         email: inviteEmail.value,
+        role: inviteRole.value,
         tripId: parseInt(tripId),
         tripName: currentTrip.value?.nombre || 'Viaje a Japón',
         inviterName: user.value?.fullName || user.value?.firstName || 'Un usuario',
@@ -115,6 +118,7 @@ const handleInvite = async () => {
 const closeInviteModal = () => {
   isInviteModalOpen.value = false
   inviteEmail.value = ''
+  inviteRole.value = 'a78c3ab5-20eb-451f-b93f-c087f500fb47'
   inviteResult.value = null
 }
 </script>
@@ -203,6 +207,31 @@ const closeInviteModal = () => {
               :disabled="isInviting"
               @keyup.enter="handleInvite"
             />
+          </div>
+
+          <div class="space-y-2">
+            <Label>Rol</Label>
+            <Select v-model="inviteRole">
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona un rol" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="a78c3ab5-20eb-451f-b93f-c087f500fb47">
+                    <div class="flex flex-col text-left">
+                      <span class="font-medium">Usuario App</span>
+                      <span class="text-xs text-muted-foreground">Puede crear y editar.</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="7e0df8d5-c156-4db0-ae0a-aa6d2980c61e">
+                     <div class="flex flex-col text-left">
+                      <span class="font-medium">Solo Lectura</span>
+                      <span class="text-xs text-muted-foreground">Solo puede ver información.</span>
+                    </div>
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           <!-- Feedback visual -->

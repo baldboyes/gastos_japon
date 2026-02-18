@@ -1,4 +1,4 @@
-import { createDirectus, rest, readUsers, createUser, updateUser, staticToken } from '@directus/sdk'
+import { createDirectus, rest, readUsers, createUser, updateUser, staticToken, readItems, deleteItem } from '@directus/sdk'
 
 export default defineEventHandler(async (event) => {
   // 1. Validar Autenticación de Clerk
@@ -41,17 +41,52 @@ export default defineEventHandler(async (event) => {
     } else {
       // Crear Usuario
       try {
+        // 1. Buscar si hay una invitación pendiente para determinar el rol
+        let userRole = 'a78c3ab5-20eb-451f-b93f-c087f500fb47' // Default: App User Role
+        let invitationId = null
+
+        try {
+          const invitations = await adminClient.request(readItems('invitations', {
+            filter: { 
+              email: { _eq: userEmail },
+              status: { _eq: 'pending' }
+            },
+            limit: 1
+          }))
+          
+          if (invitations && invitations.length > 0) {
+            const inv = invitations[0]
+            // Asegurar que obtenemos el ID del rol (por si Directus lo expande)
+            userRole = typeof inv.role === 'object' ? inv.role.id : inv.role
+            invitationId = inv.id
+            console.log(`[SYNC] Found invitation for ${userEmail}, using role: ${userRole}`)
+          }
+        } catch (e) {
+          console.warn('[SYNC] Error checking invitations (skipping):', e)
+        }
+
+        // 2. Crear el usuario con el rol determinado
         const newToken = generateSimpleToken()
         directusUser = await adminClient.request(createUser({
           email: userEmail,
           first_name: body.firstName || 'Viajero',
           last_name: body.lastName || '',
-          role: 'a78c3ab5-20eb-451f-b93f-c087f500fb47', // App User Role
+          role: userRole, 
           status: 'active',
           provider: 'default',
           token: newToken
         }))
         tokenToReturn = newToken
+
+        // 3. Eliminar la invitación si se procesó correctamente
+        if (invitationId) {
+          try {
+            await adminClient.request(deleteItem('invitations', invitationId))
+          } catch (e) {
+            console.warn('[SYNC] Could not delete invitation after use:', e)
+          }
+        }
+
       } catch (e: any) {
         console.error('[SYNC] Create failed:', e)
         return { error: 'Create user failed', details: e.message }

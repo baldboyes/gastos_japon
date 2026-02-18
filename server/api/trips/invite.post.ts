@@ -3,7 +3,7 @@ import { createDirectus, rest, createItem, readItems, readUsers, staticToken } f
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { email, tripId, tripName, inviterName, inviterId } = body
+    const { email, tripId, tripName, inviterName, inviterId, role } = body
 
     if (!email || !tripId) {
       return { success: false, error: 'Missing required fields' }
@@ -60,9 +60,20 @@ export default defineEventHandler(async (event) => {
 
       return { success: true, status: 'invited', message: 'Invitación enviada al usuario.' }
     } else {
-      // Caso 2: Usuario NO existe -> Simular envío de email
-      // En un entorno real, aquí se llamaría a un servicio de email (SendGrid, Resend, etc.)
+      // Caso 2: Usuario NO existe -> Crear invitación en BD y Simular envío de email
       
+      try {
+        await adminClient.request(createItem('invitations', {
+          email: email,
+          role: role || 'a78c3ab5-20eb-451f-b93f-c087f500fb47', // Default App User
+          trip_id: tripId,
+          inviter_id: inviterId,
+          status: 'pending'
+        }))
+      } catch (e: any) {
+        console.error('[INVITE] Failed to create invitation record:', e)
+      }
+
       console.log(`[MOCK EMAIL] To: ${email} | Subject: Únete a ${tripName} | Body: Hola, ${inviterName} te invita... Regístrate aquí: https://app.mevoyajapon.com/register`)
 
       return { success: true, status: 'email_sent', message: 'Usuario no registrado. Se ha enviado un correo de invitación.' }

@@ -160,6 +160,42 @@ const hasTasksOnDate = (date: DateValue) => {
 
 <template>
   <div class="space-y-6">
+    <!-- Filters -->
+    <div class="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg">
+      <div class="grid w-full max-w-sm items-center gap-1.5">
+        <Label for="searchQuery">Buscar</Label>
+        <Input v-model="searchQuery" placeholder="Buscar tareas..." />
+      </div>
+      <div class="grid w-full max-w-sm items-center gap-1.5">
+        <Label for="statusFilter">Estado</Label>
+        <Select v-model="statusFilter">
+          <SelectTrigger class="w-40">
+            <SelectValue placeholder="Estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="pending">Pendiente</SelectItem>
+            <SelectItem value="in_progress">En Progreso</SelectItem>
+            <SelectItem value="completed">Completada</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="grid w-full max-w-sm items-center gap-1.5">
+        <Label for="priorityFilter">Prioridad</Label>
+        <Select v-model="priorityFilter">
+          <SelectTrigger class="w-40">
+            <SelectValue placeholder="Prioridad" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="high">Alta</SelectItem>
+            <SelectItem value="medium">Media</SelectItem>
+            <SelectItem value="low">Baja</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+
     <!-- Header / Controls -->
     <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
       <div class="flex items-center bg-slate-100 p-1 rounded-lg">
@@ -188,7 +224,7 @@ const hasTasksOnDate = (date: DateValue) => {
           Calendario
         </button>
       </div>
-
+      <!--
       <div class="flex gap-2 w-full md:w-auto">
         <Button variant="outline" @click="openNewGroup">
           <Plus class="w-4 h-4 mr-2" /> Grupo
@@ -197,38 +233,7 @@ const hasTasksOnDate = (date: DateValue) => {
           <Plus class="w-4 h-4 mr-2" /> Tarea
         </Button>
       </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border">
-      <div class="relative w-full md:w-64">
-        <Input v-model="searchQuery" placeholder="Buscar tareas..." class="pl-8" />
-        <Filter class="w-4 h-4 absolute left-2.5 top-3 text-slate-400" />
-      </div>
-      
-      <Select v-model="statusFilter">
-        <SelectTrigger class="w-full md:w-40">
-          <SelectValue placeholder="Estado" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos los estados</SelectItem>
-          <SelectItem value="pending">Pendiente</SelectItem>
-          <SelectItem value="in_progress">En Progreso</SelectItem>
-          <SelectItem value="completed">Completada</SelectItem>
-        </SelectContent>
-      </Select>
-      
-      <Select v-model="priorityFilter">
-        <SelectTrigger class="w-full md:w-40">
-          <SelectValue placeholder="Prioridad" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todas las prioridades</SelectItem>
-          <SelectItem value="high">Alta</SelectItem>
-          <SelectItem value="medium">Media</SelectItem>
-          <SelectItem value="low">Baja</SelectItem>
-        </SelectContent>
-      </Select>
+      -->
     </div>
 
     <!-- Views -->
@@ -251,7 +256,7 @@ const hasTasksOnDate = (date: DateValue) => {
           @edit-task="openEditTask"
         />
         
-        <!-- Add Group Card -->
+        <!-- Add Group Card 
         <button 
           @click="openNewGroup"
           class="flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg text-slate-400 hover:text-slate-600 hover:border-slate-400 hover:bg-slate-50 transition-colors"
@@ -259,6 +264,7 @@ const hasTasksOnDate = (date: DateValue) => {
           <Plus class="w-8 h-8 mb-2" />
           <span class="font-medium">Nuevo Grupo</span>
         </button>
+        -->
       </div>
 
       <!-- List View -->

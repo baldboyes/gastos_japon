@@ -100,7 +100,7 @@ export const useTripTasks = () => {
       { name: 'General', entity_type: 'travel' },
       { name: 'Vuelos', entity_type: 'flight' },
       { name: 'Alojamientos', entity_type: 'accommodation' },
-      { name: 'Transporte', entity_type: 'travel' }, // or specific type if exists
+      { name: 'Transporte', entity_type: 'transport' }, // or specific type if exists
       { name: 'Actividades', entity_type: 'activity' },
       { name: 'Seguros', entity_type: 'insurance' }
     ]
