@@ -7,7 +7,11 @@ import {
   Loader2, 
   Trash2,
   Upload,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Check, 
+  ChevronsUpDown, 
+  Search,
+  Plus
 } from 'lucide-vue-next'
 
 import { useDirectus } from '~/composables/useDirectus'
@@ -34,6 +38,9 @@ import {
   DrawerFooter,
   DrawerDescription 
 } from '~/components/ui/drawer'
+import { toast } from 'vue-sonner'
+// @ts-ignore
+import { Country, City } from 'country-state-city'
 
 const props = defineProps<{
   open: boolean
@@ -43,6 +50,81 @@ const props = defineProps<{
 const emit = defineEmits(['update:open', 'saved'])
 
 const { createTrip, updateTrip, loading } = useTrips()
+
+const selectedCountryCode = ref('')
+const openCountry = ref(false)
+const countrySearchQuery = ref('')
+
+const regionNames = new Intl.DisplayNames(['es'], { type: 'region' });
+
+const countries = computed(() => {
+  return Country.getAllCountries().map(country => {
+    try {
+      return {
+        ...country,
+        name: regionNames.of(country.isoCode) || country.name
+      }
+    } catch (e) {
+      return country
+    }
+  }).sort((a, b) => a.name.localeCompare(b.name, 'es'))
+})
+
+const filteredCountries = computed(() => {
+  if (!countrySearchQuery.value) return countries.value
+  const query = countrySearchQuery.value.toLowerCase()
+  return countries.value.filter(c => c.name.toLowerCase().includes(query))
+})
+
+const cities = computed(() => {
+  if (!selectedCountryCode.value) return []
+  return City.getCitiesOfCountry(selectedCountryCode.value) || []
+})
+
+const getFilteredCities = (query: string) => {
+  if (!query) return cities.value.slice(0, 50)
+  const q = query.toLowerCase()
+  return cities.value.filter(c => c.name.toLowerCase().includes(q)).slice(0, 50)
+}
+
+const onCountrySelect = (country: any) => {
+  selectedCountryCode.value = country.isoCode
+  console.log('Country:', country)
+  openCountry.value = false
+  countrySearchQuery.value = ''
+  
+  // Update formData with country data
+  formData.value.isocode = country.isoCode
+  formData.value.pais = country
+  
+  // Clear destinations when country changes
+  formData.value.destinos = []
+  
+  // Auto-select currency if available and not in edit mode (or if user hasn't manually changed it yet)
+  if (country.currency) {
+    formData.value.moneda = country.currency
+  }
+}
+
+const onCitySelect = (city: any, index: number) => {
+  if (formData.value.destinos[index]) {
+    formData.value.destinos[index].ciudad = city.name
+    formData.value.destinos[index].ciudad_data = city
+    formData.value.destinos[index]._isOpen = false
+    formData.value.destinos[index]._citySearch = ''
+  }
+}
+
+const selectedCountryName = computed(() => {
+  const c = countries.value.find((c: any) => c.isoCode === selectedCountryCode.value)
+  return c ? c.name : ''
+})
+
+const selectedCountryFlag = computed(() => {
+  const c = countries.value.find((c: any) => c.isoCode === selectedCountryCode.value)
+  return c ? c.flag : ''
+})
+
 const { uploadFile } = useDirectusFiles()
 const { getAuthenticatedClient, directusUserId } = useDirectus()
 
@@ -89,12 +171,39 @@ const formData = ref<{
   portada: string | null
   presupuesto_diario: number | undefined
   moneda: string
+  isocode: string
+  pais: any
+  destinos: Array<{
+    ciudad: string
+    fecha_inicio: any
+    fecha_fin: any
+    ciudad_data?: any
+    _isOpen?: boolean
+    _citySearch?: string
+  }>
 }>({
   nombre: '',
   portada: null,
   presupuesto_diario: undefined,
   moneda: '',
+  isocode: '',
+  pais: null,
+  destinos: []
 })
+
+const addDestino = () => {
+  formData.value.destinos.push({
+    ciudad: '',
+    fecha_inicio: null,
+    fecha_fin: null,
+    _isOpen: false,
+    _citySearch: ''
+  })
+}
+
+const removeDestino = (index: number) => {
+  formData.value.destinos.splice(index, 1)
+}
 
 // Fechas
 const startDate = ref<any>(today(getLocalTimeZone()))
@@ -138,6 +247,30 @@ watch(() => props.tripToEdit, (trip) => {
     formData.value.portada = trip.portada
     formData.value.presupuesto_diario = trip.presupuesto_diario
     formData.value.moneda = trip.moneda
+    formData.value.isocode = trip.isocode
+    // Handle repeater field (array)
+    formData.value.pais = Array.isArray(trip.pais) && trip.pais.length > 0 ? trip.pais[0] : trip.pais
+    
+    // Handle destinations
+    if (trip.destinos && Array.isArray(trip.destinos)) {
+      formData.value.destinos = trip.destinos.map((d: any) => ({
+        ciudad: d.ciudad,
+        fecha_inicio: d.fecha_inicio ? parseDate(d.fecha_inicio) : null,
+        fecha_fin: d.fecha_fin ? parseDate(d.fecha_fin) : null,
+        ciudad_data: d.ciudad_data,
+        _isOpen: false,
+        _citySearch: ''
+      }))
+    } else {
+      formData.value.destinos = []
+    }
+    
+    // Set selected country for UI
+    if (trip.isocode) {
+      selectedCountryCode.value = trip.isocode
+    } else {
+      selectedCountryCode.value = ''
+    }
     
     try {
       if (trip.fecha_inicio) {
@@ -158,6 +291,10 @@ watch(() => props.tripToEdit, (trip) => {
     formData.value.portada = null
     formData.value.presupuesto_diario = undefined
     formData.value.moneda = defaultCurrency.value
+    formData.value.isocode = ''
+    formData.value.pais = null
+    formData.value.destinos = []
+    selectedCountryCode.value = ''
     startDate.value = today(getLocalTimeZone())
     endDate.value = today(getLocalTimeZone()).add({ days: 7 })
   }
@@ -198,14 +335,26 @@ const handleSubmit = async () => {
     presupuesto_diario: formData.value.presupuesto_diario,
     moneda: formData.value.moneda,
     fecha_inicio: startDate.value.toString(),
-    fecha_fin: endDate.value?.toString() || startDate.value.toString()
+    fecha_fin: endDate.value?.toString() || startDate.value.toString(),
+    isocode: formData.value.isocode,
+    // Send as array for repeater field
+    pais: formData.value.pais ? [formData.value.pais] : null,
+    // Send destinations with dates as strings
+    destinos: formData.value.destinos.map(d => ({
+      ciudad: d.ciudad,
+      fecha_inicio: d.fecha_inicio ? d.fecha_inicio.toString() : null,
+      fecha_fin: d.fecha_fin ? d.fecha_fin.toString() : null,
+      ciudad_data: d.ciudad_data
+    }))
   }
 
   try {
     if (isEditing.value && props.tripToEdit?.id) {
       await updateTrip(props.tripToEdit.id, tripData)
+      toast.success('Viaje actualizado correctamente')
     } else {
       await createTrip(tripData)
+      toast.success('Viaje creado correctamente')
     }
     emit('saved')
     isOpen.value = false
@@ -222,11 +371,67 @@ const handleSubmit = async () => {
         <DrawerTitle>{{ isEditing ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
-        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row pr-4">
-          <div class="grid gap-4 py-4 max-w-3xl mx-auto">
-            <div class="grid gap-2">
-              <Label htmlFor="name">Nombre del Viaje</Label>
-              <Input id="name" v-model="formData.nombre" placeholder="Ej: Japón 2026" />
+        <div class="max-w-7xl w-full mx-auto flex gap-16 flex-col lg:flex-row pr-4">
+          <div class="grid gap-4 py-4 w-full mx-auto">
+            <div class="grid grid-cols-3 gap-2">
+              <div class="col-span-2">
+                <Label htmlFor="name">Nombre del Viaje</Label>
+                <Input id="name" v-model="formData.nombre" placeholder="Ej: Japón 2026" />
+              </div>
+              <div class="col-span-1">
+                <Label>Destino</Label>
+                <Popover v-model:open="openCountry">
+                  <PopoverTrigger as-child>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      :aria-expanded="openCountry"
+                      class="w-full justify-between font-normal border border-input"
+                    >
+                      <span class="truncate flex items-center gap-2">
+                        <span v-if="selectedCountryFlag" class="mt-1">{{ selectedCountryFlag }}</span>
+                        {{ selectedCountryName || "Selecciona un país" }}
+                      </span>
+                      <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-[300px] p-0" align="start">
+                    <div class="p-2 border-b border-gray-200">
+                      <div class="flex items-center px-2 border border-input rounded-md">
+                        <Search class="h-4 w-4 text-muted-foreground mr-2" />
+                        <input 
+                          v-model="countrySearchQuery"
+                          class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder="Buscar país..."
+                        />
+                      </div>
+                    </div>
+                    <div class="max-h-[300px] overflow-y-auto p-2">
+                      <div
+                        v-for="country in filteredCountries"
+                        :key="country.isoCode"
+                        @click="onCountrySelect(country)"
+                        :class="cn(
+                          'relative flex select-none items- gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                          selectedCountryCode === country.isoCode ? 'bg-accent' : ''
+                        )"
+                      >
+                        <Check
+                          :class="cn(
+                            'h-4 w-4',
+                            selectedCountryCode === country.isoCode ? 'opacity-100' : 'opacity-0'
+                          )"
+                        />
+                        <span class="mt-0.5">{{ country.flag }}</span>
+                        {{ country.name }}
+                      </div>
+                      <div v-if="filteredCountries.length === 0" class="p-4 text-center text-sm text-muted-foreground">
+                        No encontrado.
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             <div class="grid gap-2">
               <Label>Fechas</Label>
@@ -319,6 +524,135 @@ const handleSubmit = async () => {
                 </label>
               </div>
             </div>
+
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2">
+                <Label class="font-bold">Itinerario / Ciudades</Label>
+                <Button size="sm" @click="addDestino" :disabled="!selectedCountryCode"><Plus class="h-3 w-3 mr-1" /> Añadir ciudad</Button>
+              </div>
+              <div v-if="!formData.destinos || formData.destinos.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
+                <p v-if="!selectedCountryCode">Selecciona un país primero.</p>
+                <p v-else>Añade ciudades y fechas a tu itinerario.</p>
+              </div>
+              <div v-for="(destino, index) in formData.destinos" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm border space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-xs">{{ index + 1 }}</div>
+                  </span>
+                  <Button @click="removeDestino(index)" variant="ghost" size="icon" class="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10">
+                    <Trash2 class="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <!-- City Selector -->
+                  <div class="col-span-1 md:col-span-2">
+                    <Label class="text-xs mb-1.5 block">Ciudad</Label>
+                    <Popover v-model:open="destino._isOpen">
+                      <PopoverTrigger as-child>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          :aria-expanded="destino._isOpen"
+                          class="w-full justify-between font-normal h-9"
+                        >
+                          <span class="truncate">{{ destino.ciudad || "Selecciona una ciudad" }}</span>
+                          <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-[300px] p-0" align="start">
+                        <div class="p-2 border-b border-gray-200">
+                          <div class="flex items-center px-2 border border-input rounded-md">
+                            <Search class="h-4 w-4 text-muted-foreground mr-2" />
+                            <input 
+                              v-model="destino._citySearch"
+                              class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="Buscar ciudad..."
+                            />
+                          </div>
+                        </div>
+                        <div class="max-h-[200px] overflow-y-auto p-2">
+                          <div
+                            v-for="city in getFilteredCities(destino._citySearch || '')"
+                            :key="city.name"
+                            @click="onCitySelect(city, index)"
+                            :class="cn(
+                              'relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                              destino.ciudad === city.name ? 'bg-accent' : ''
+                            )"
+                          >
+                            <Check
+                              :class="cn(
+                                'mr-2 h-4 w-4',
+                                destino.ciudad === city.name ? 'opacity-100' : 'opacity-0'
+                              )"
+                            />
+                            {{ city.name }}
+                          </div>
+                          <div v-if="getFilteredCities(destino._citySearch || '').length === 0" class="p-4 text-center text-sm text-muted-foreground">
+                            No encontrado.
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <!-- Dates -->
+                  <div>
+                    <Label class="text-xs mb-1.5 block">Llegada</Label>
+                    <Popover>
+                      <PopoverTrigger as-child>
+                        <Button
+                          variant="outline"
+                          :class="cn(
+                            'w-full justify-start text-left font-normal h-9',
+                            !destino.fecha_inicio && 'text-muted-foreground'
+                          )"
+                        >
+                          <CalendarIcon class="mr-2 h-4 w-4" />
+                          {{ destino.fecha_inicio ? df.format(destino.fecha_inicio.toDate(getLocalTimeZone())) : "Fecha" }}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <Calendar 
+                          v-model="destino.fecha_inicio" 
+                          initial-focus 
+                          :min-value="startDate"
+                          :max-value="endDate"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                    <Label class="text-xs mb-1.5 block">Salida</Label>
+                    <Popover>
+                      <PopoverTrigger as-child>
+                        <Button
+                          variant="outline"
+                          :class="cn(
+                            'w-full justify-start text-left font-normal h-9',
+                            !destino.fecha_fin && 'text-muted-foreground'
+                          )"
+                        >
+                          <CalendarIcon class="mr-2 h-4 w-4" />
+                          {{ destino.fecha_fin ? df.format(destino.fecha_fin.toDate(getLocalTimeZone())) : "Fecha" }}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <Calendar 
+                          v-model="destino.fecha_fin" 
+                          initial-focus 
+                          :min-value="destino.fecha_inicio || startDate"
+                          :max-value="endDate"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+                
           </div>
           <div class="w-full lg:w-1/3 space-y-8">
             aaaaaa

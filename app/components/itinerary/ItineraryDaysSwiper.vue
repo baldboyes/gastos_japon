@@ -3,28 +3,28 @@
   import 'swiper/css'
   import 'swiper/css/free-mode'
 
-import { format, isSameDay } from 'date-fns'
-import { es } from 'date-fns/locale'
-import { Plane, Sun, Cloud, CloudRain, Ticket } from 'lucide-vue-next'
+  import { format, isSameDay } from 'date-fns'
+  import { es } from 'date-fns/locale'
+  import { Plane, Sun, Cloud, CloudRain, Ticket } from 'lucide-vue-next'
 
-const props = defineProps<{
-  days: any[]
-  selectedDate: Date
-}>()
+  const props = defineProps<{
+    days: any[]
+    selectedDate: Date
+  }>()
 
-const emit = defineEmits<{
-  (e: 'select', date: Date): void
-}>()
+  const emit = defineEmits<{
+    (e: 'select', date: Date): void
+  }>()
 
-const getDayLabel = (date: Date) => format(date, 'd', { locale: es })
-const getDayName = (date: Date) => format(date, 'EEEE', { locale: es })
-const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
+  const getDayLabel = (date: Date) => format(date, 'd', { locale: es })
+  const getDayName = (date: Date) => format(date, 'EEEE', { locale: es })
+  const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
 
-const isSelected = (date: Date) => isSameDay(date, props.selectedDate)
+  const isSelected = (date: Date) => isSameDay(date, props.selectedDate)
 
-const selectDate = (date: Date) => {
-  emit('select', date)
-}
+  const selectDate = (date: Date) => {
+    emit('select', date)
+  }
 </script>
 
 <template>
@@ -39,11 +39,30 @@ const selectDate = (date: Date) => {
       <SwiperSlide
         v-for="(day, index) in days"
         :key="day.date.toISOString()"
-        class="!w-40 relative overflow-visible p-4"
+        class="!w-40 relative overflow-visible p-4 pt-8"
         :style="{ zIndex: days.length - index }"
       >
+        <!-- Destinations (Row 0 - Top/Behind) -->
+         <div class="absolute top-0 left-1.5 w-full px-0 pointer-events-none z-0 h-32 flex flex-col">
+            <template v-for="dest in day.destinations" :key="dest.id">
+              <div 
+                class="bg-gray-300 text-gray-700 relative w-full flex-1 flex items-start pt-3 px-4 text-xs font-bold transition-all"
+                :class="[
+                  dest.status === 'start' ? 'rounded-l-2xl left-0 right-0 ml-1' : '',
+                  dest.status === 'end' ? 'rounded-r-2xl left-0 right-0' : '',
+                  dest.status === 'middle' ? 'left-0 right-0' : '',
+                  dest.status === 'single' ? 'rounded-2xl left-2 right-2' : '',
+                  dest.status === 'start' && dest.duration && dest.duration > 1 ? 'whitespace-nowrap overflow-visible' : 'truncate'
+                ]"
+              >
+                <component :is="dest.icon" class="h-3 w-3 mr-1 shrink-0" v-if="dest.status === 'start' || dest.status === 'single'" />
+                <span :class="dest.status === 'start' && dest.duration && dest.duration > 1 ? 'whitespace-nowrap' : 'truncate'" v-if="dest.status === 'start' || dest.status === 'single'" class="-mt-0.5">{{ dest.title }}</span>
+              </div>
+            </template>
+         </div>
+
         <!-- Day Card -->
-        <div class="p-0 !w-40 relative overflow-visible">
+        <div class="p-0 !w-40 relative overflow-visible z-10">
           <div 
             class="bg-white rounded-2xl shadow-md flex flex-col justify-start px-4 py-2 cursor-pointer transition-all relative w-36 h-32 overflow-visible"
             :class="isSelected(day.date) ? 'scale-110 shadow-lg z-10' : 'hover:shadow-md hover:scale-105'"
@@ -65,11 +84,12 @@ const selectDate = (date: Date) => {
             </div>
           </div>
         </div>
+
         <!-- Flights (Row 1) -->
-        <div class="absolute top-13 left-0 w-full px-2 pointer-events-none z-50 flex flex-col items-end gap-1">
-           <div v-for="flight in day.flights" :key="flight.id" class="flex justify-end">
-              <Plane class="h-4 w-4 text-blue-600/80" />
-           </div>
+        <div class="absolute top-17 left-0 w-full px-2 pointer-events-none z-50 flex flex-col items-end gap-1">
+          <div v-for="flight in day.flights" :key="flight.id" class="flex justify-end">
+            <Plane class="h-4 w-4 text-blue-600/80" />
+          </div>
            <!-- Activities Indicators
            <div v-if="day.activities && day.activities.length > 0" class="flex gap-1">
               <Ticket v-for="act in day.activities" :key="act.id" class="h-4 w-4 text-purple-600/80" />
@@ -78,45 +98,45 @@ const selectDate = (date: Date) => {
         </div>
 
         <!-- Accommodations (Row 2) -->
-        <div class="absolute top-[80px] left-12 w-full px-0 pointer-events-none z-50 h-6">
-           <div 
-             v-for="acc in day.accommodations" 
-             :key="acc.id"
-             class="h-full flex items-center px-2 text-sm font-medium transition-all"
-             :class="[
-               acc.colorClass,
-               acc.status === 'start' ? 'rounded-l-md ml-1' : '',
-               acc.status === 'end' ? 'rounded-r-md mr-1' : '',
-               acc.status === 'single' ? 'rounded-md mx-1' : '',
-               acc.status === 'middle' ? 'rounded-none mx-0' : '',
-               acc.status === 'start' || acc.status === 'single' ? 'whitespace-nowrap overflow-visible' : 'truncate'
-             ]"
-             :style="acc.status === 'start' && acc.duration ? { maxWidth: `calc(100% * ${acc.duration})`, width: 'max-content', minWidth: '100%' } : {}"
-           >
-             <component :is="acc.icon" class="h-3 w-3 mr-1 shrink-0" v-if="acc.status === 'start' || acc.status === 'single'" />
-             <span class="truncate" v-if="acc.status === 'start' || acc.status === 'single'">{{ acc.title }}</span>
-           </div>
+        <div class="absolute top-[95px] left-12 w-full px-0 pointer-events-none z-50 h-6">
+          <div 
+            v-for="acc in day.accommodations" 
+            :key="acc.id"
+            class="h-full flex items-center px-2 text-sm font-medium transition-all"
+            :class="[
+              acc.colorClass,
+              acc.status === 'start' ? 'rounded-l-md ml-1' : '',
+              acc.status === 'end' ? 'rounded-r-md mr-1' : '',
+              acc.status === 'single' ? 'rounded-md mx-1' : '',
+              acc.status === 'middle' ? 'rounded-none mx-0' : '',
+              acc.status === 'start' || acc.status === 'single' ? 'whitespace-nowrap overflow-visible' : 'truncate'
+            ]"
+            :style="acc.status === 'start' && acc.duration ? { maxWidth: `calc(100% * ${acc.duration})`, width: 'max-content', minWidth: '100%' } : {}"
+          >
+            <component :is="acc.icon" class="h-3 w-3 mr-1 shrink-0" v-if="acc.status === 'start' || acc.status === 'single'" />
+            <span class="truncate" v-if="acc.status === 'start' || acc.status === 'single'">{{ acc.title }}</span>
+          </div>
         </div>
 
         <!-- Passes (Row 3) -->
-        <div class="absolute top-[110px] left-4 w-full px-0 pointer-events-none z-50 h-6">
-           <div 
-             v-for="pass in day.passes" 
-             :key="pass.id"
-             class="h-full flex items-center px-2 text-sm font-bold transition-all"
-             :class="[
-               pass.colorClass,
-               pass.status === 'start' ? 'rounded-l-md ml-2' : '',
-               pass.status === 'end' ? 'rounded-r-md mr-6' : '',
-               pass.status === 'single' ? 'rounded-md mx-2' : '',
-               pass.status === 'middle' ? 'rounded-none mx-0' : '',
-               pass.status === 'start' || pass.status === 'single' ? 'whitespace-nowrap overflow-visible' : 'truncate'
-             ]"
-             :style="pass.status === 'start' && pass.duration ? { maxWidth: `calc(100% * ${pass.duration})`, width: 'max-content', minWidth: '100%' } : {}"
-           >
-             <component :is="pass.icon" class="h-3 w-3 mr-1 shrink-0" v-if="pass.status === 'start' || pass.status === 'single'" />
-             <span class="truncate" v-if="pass.status === 'start' || pass.status === 'single'">{{ pass.title }}</span>
-           </div>
+        <div class="absolute top-[125px] left-4 w-full px-0 pointer-events-none z-50 h-6">
+          <div 
+            v-for="pass in day.passes" 
+            :key="pass.id"
+            class="h-full flex items-center px-2 text-sm font-bold transition-all"
+            :class="[
+              pass.colorClass,
+              pass.status === 'start' ? 'rounded-l-md ml-2' : '',
+              pass.status === 'end' ? 'rounded-r-md mr-6' : '',
+              pass.status === 'single' ? 'rounded-md mx-2' : '',
+              pass.status === 'middle' ? 'rounded-none mx-0' : '',
+              pass.status === 'start' || pass.status === 'single' ? 'whitespace-nowrap overflow-visible' : 'truncate'
+            ]"
+            :style="pass.status === 'start' && pass.duration ? { maxWidth: `calc(100% * ${pass.duration})`, width: 'max-content', minWidth: '100%' } : {}"
+          >
+            <component :is="pass.icon" class="h-3 w-3 mr-1 shrink-0" v-if="pass.status === 'start' || pass.status === 'single'" />
+            <span class="truncate" v-if="pass.status === 'start' || pass.status === 'single'">{{ pass.title }}</span>
+          </div>
         </div>
 
       </SwiperSlide>

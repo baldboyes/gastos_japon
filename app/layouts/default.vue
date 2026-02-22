@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Notifications Icon -->
+    <!-- Notifications Icon 
     <div class="fixed top-4 right-4 z-40">
       <NuxtLink to="/notifications" class="relative inline-flex items-center justify-center p-2 rounded-full bg-white shadow-md text-gray-500 hover:text-teal-600 transition-colors">
         <Bell class="w-6 h-6" />
@@ -9,7 +9,7 @@
         </span>
       </NuxtLink>
     </div>
-
+    -->
     <!-- Main content -->
     <main class="pb-20">
       <slot />

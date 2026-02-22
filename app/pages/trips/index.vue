@@ -37,6 +37,8 @@ import TripDrawer from '~/components/trips/modals/TripDrawer.vue'
 import GroupTripsList from '~/components/trips/GroupTripsList.vue'
 import UserAvatar from '~/components/common/UserAvatar.vue'
 import { formatDateWithDayShort, formatDate } from '~/utils/dates'
+import AppLogo from '~/components/common/AppLogo.vue'
+import HeaderUserMenu from '~/components/layout/HeaderUserMenu.vue'
 
 // Estado
 const { trips, loading, error, fetchTrips, deleteTrip } = useTrips()
@@ -78,8 +80,6 @@ const tripToEdit = ref(null)
 const isDeleteOpen = ref(false)
 const tripToDelete = ref<string | null>(null)
 
-const { user } = useUser()
-
 // Cargar viajes al montar
 onMounted(() => {
   fetchTrips()
@@ -118,22 +118,14 @@ const handleImageError = (event: Event) => {
 
 <template>
   <NuxtLayout name="default">
+    <header class="flex h-18 shrink-0 items-center gap-2 px-6 sticky top-0 z-10 mb-6">
+      <AppLogo />
+      <div class="ml-auto flex items-center gap-4">
+        <HeaderUserMenu />
+      </div>
+    </header>
     <div class="max-w-4xl mx-auto p-4 space-y-6">
-
       <SignedIn>
-        <div class="flex items-center justify-between pt-8">
-          <div class="flex items-center gap-3">
-              <div v-if="user?.imageUrl" class="w-10 h-10 rounded-full overflow-hidden">
-                <img :src="user.imageUrl" alt="Perfil" class="w-full h-full object-cover" />
-              </div>
-              <div class="text-sm text-slate-500">
-                {{ user?.firstName || 'Usuario' }} {{ user?.lastName || '' }}<br />
-                <pre>{{ user?.emailAddresses?.[0]?.emailAddress || 'No email' }}</pre>
-              </div>
-          </div>
-        </div>
-      
-
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold tracking-tight">Mis Viajes</h1>

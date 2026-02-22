@@ -23,6 +23,7 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from '~/components/ui/drawer'
+import AppLogo from '~/components/common/AppLogo.vue'
 import SettingsContent from '~/components/settings/SettingsContent.vue'
 import { useTrips } from '~/composables/useTrips'
 
@@ -64,12 +65,7 @@ const handleNavClick = () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child>
-            <div class="flex items-center gap-2 cursor-pointer" @click="router.push('/trips')">
-              <div class="flex items-center justify-center gap-2">
-                <img src="/icon-192x192.png" alt="Logo" class="size-8" />
-                <span class="truncate font-semibold text-xl">jizou.io</span>
-              </div>
-            </div>
+            <AppLogo />
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

@@ -15,7 +15,7 @@ import {
   eachDayOfInterval 
 } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Plane, Train, BedDouble, Ticket, Banknote, CheckSquare, Moon } from 'lucide-vue-next'
+import { Plane, Train, BedDouble, Ticket, Banknote, CheckSquare, Moon, MapPin } from 'lucide-vue-next'
 import { formatCurrency } from '~/utils/currency'
 
 export const useItinerary = () => {
@@ -145,6 +145,35 @@ export const useItinerary = () => {
                })
           }
        })
+       
+       // Destinations (Ciudades)
+       const dests = (currentTrip.value?.destinos || []).map((d: any) => {
+         if (!d.fecha_inicio || !d.fecha_fin) return null
+         const start = startOfDay(parseISO(d.fecha_inicio))
+         const end = startOfDay(parseISO(d.fecha_fin))
+         
+         if (dayDate >= start && dayDate <= end) {
+             let status = 'middle'
+             // Inclusive duration? If day 1 to day 2, duration = 1.
+             // If we want 50% start to 50% end, we use differenceInDays
+             const duration = differenceInDays(end, start)
+             
+             if (duration === 0) status = 'single'
+             else if (isSameDay(dayDate, start)) status = 'start'
+             else if (isSameDay(dayDate, end)) status = 'end'
+             
+             return { 
+               id: `dest-${d.ciudad}-${start.getTime()}`, 
+               title: d.ciudad, 
+               status, 
+               duration,
+               type: 'destination', 
+               colorClass: 'bg-emerald-100 text-emerald-800 border-emerald-200 border', 
+               icon: MapPin 
+             }
+         }
+         return null
+       }).filter((item): item is NonNullable<typeof item> => !!item)
 
        // Activities
       const acts = timelineItems.value.filter(item => {
@@ -165,6 +194,7 @@ export const useItinerary = () => {
          accommodations: accs,
          passes: passes,
          flights: flts,
+         destinations: dests,
          activities: acts
        }
     })
