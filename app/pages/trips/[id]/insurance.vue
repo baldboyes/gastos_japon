@@ -112,16 +112,11 @@ onMounted(() => {
             </div>
             <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> Añadir</Button>
           </div>
-
-
-
-
           <div v-if="seguros.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">No hay seguros registrados</h3>
             <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener a mano la póliza.</p>
           </div>
-
           <div v-else class="space-y-4">
             <Card v-for="s in seguros" :key="s.id">
               <CardHeader class="flex flex-row items-start justify-between pb-2">
@@ -201,7 +196,7 @@ onMounted(() => {
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
                       :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
                     >
-                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                      <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
                   </div>
                 </div>
@@ -210,7 +205,6 @@ onMounted(() => {
             </Card>
           </div>
         </div>
-
         <!-- Sidebar Tasks -->
         <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
           <TasksSidebar 
@@ -218,12 +212,11 @@ onMounted(() => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>
       </div>
-
 
       <TaskModal 
         v-model:open="isTaskModalOpen" 
@@ -231,7 +224,6 @@ onMounted(() => {
         :trip-id="parseInt(tripId)"
         @saved="initTasks(parseInt(tripId))"
       />
-
       <!-- Alert Dialog Confirmación -->
       <AlertDialog v-model:open="isDeleteOpen">
         <AlertDialogContent>

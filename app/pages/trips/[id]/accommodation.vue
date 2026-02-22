@@ -122,7 +122,7 @@ const getNights = (start: string, end: string) => {
 
 <template>
   <NuxtLayout name="dashboard">
-    <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         
         <!-- Main Content -->
@@ -132,10 +132,7 @@ const getNights = (start: string, end: string) => {
               <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-1">
                 <BedDouble class="h-5 w-5" />
               </div>
-              <div>
-                <h2 class="text-2xl font-bold tracking-tight">Alojamiento</h2>
-                <p class="text-muted-foreground hidden md:block">Gestiona tus reservas de hoteles y apartamentos.</p>
-              </div>
+              <h2 class="text-2xl font-bold tracking-tight">Alojamiento</h2>
             </div>
             <Button @click="handleCreateAccommodation"><Plus class="h-4 w-4" /> Añadir</Button>
           </div>
@@ -292,7 +289,7 @@ const getNights = (start: string, end: string) => {
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
                       :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
                     >
-                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                      <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
                   </div>
                 </div>
@@ -308,7 +305,7 @@ const getNights = (start: string, end: string) => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>

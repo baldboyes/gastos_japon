@@ -15,7 +15,7 @@ const props = defineProps<{
   open: boolean
   task?: Task | null
   tripId: number
-  defaultGroupId?: number
+  defaultGroupId?: number | string
   defaultEntityType?: string
   defaultEntityId?: number | string
 }>()

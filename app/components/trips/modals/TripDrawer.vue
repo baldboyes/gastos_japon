@@ -1,23 +1,31 @@
 <script setup lang="ts">
-import { ref, computed, watch, type Ref } from 'vue'
-import { getLocalTimeZone, today, parseDate } from '@internationalized/date'
-import type { DateRange } from 'reka-ui'
+import { ref, computed, watch, onMounted, type Ref } from 'vue'
+import { getLocalTimeZone, today, parseDate, type CalendarDate } from '@internationalized/date'
 import { useMediaQuery } from '@vueuse/core'
 import { DateFormatter } from '@internationalized/date'
 import { 
   Loader2, 
   Trash2,
-  Upload
+  Upload,
+  Calendar as CalendarIcon
 } from 'lucide-vue-next'
 
+import { useDirectus } from '~/composables/useDirectus'
+import { readUser } from '@directus/sdk'
 import { fileUrl } from '~/utils/directusFiles'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import SecureImage from '~/components/ui/SecureImage.vue'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { RangeCalendar } from '~/components/ui/range-calendar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Calendar } from '~/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
+import { cn } from '~/lib/utils'
+import { CurrencySelector } from '~/components/ui/CurrencySelector'
 import { 
   Drawer, 
   DrawerContent, 
@@ -36,10 +44,44 @@ const emit = defineEmits(['update:open', 'saved'])
 
 const { createTrip, updateTrip, loading } = useTrips()
 const { uploadFile } = useDirectusFiles()
+const { getAuthenticatedClient, directusUserId } = useDirectus()
 
 // Estado
 const uploadingCover = ref(false)
 const isEditing = computed(() => !!props.tripToEdit)
+const defaultCurrency = ref('')
+const loadingPreference = ref(false)
+
+// Fetch user preference
+const fetchUserPreference = async () => {
+  if (loadingPreference.value) return
+  
+  try {
+    loadingPreference.value = true
+    const client = await getAuthenticatedClient()
+    
+    if (!directusUserId.value) {
+      console.warn('No Directus User ID found')
+      return
+    }
+
+    const userData = await client.request(readUser(directusUserId.value, {
+      fields: ['moneda']
+    }))
+    
+    if (userData && userData.moneda) {
+      defaultCurrency.value = userData.moneda
+      // If we are in create mode, update the form immediately
+      if (!props.tripToEdit) {
+        formData.value.moneda = userData.moneda
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching user preference:', e)
+  } finally {
+    loadingPreference.value = false
+  }
+}
 
 // Formulario
 const formData = ref<{
@@ -51,22 +93,42 @@ const formData = ref<{
   nombre: '',
   portada: null,
   presupuesto_diario: undefined,
-  moneda: 'JPY',
+  moneda: '',
 })
 
 // Fechas
-const dateRange = ref({
-  start: today(getLocalTimeZone()),
-  end: today(getLocalTimeZone()).add({ days: 7 }),
-}) as Ref<DateRange>
+const startDate = ref<any>(today(getLocalTimeZone()))
+const endDate = ref<any>(today(getLocalTimeZone()).add({ days: 7 }))
+
+const df = new DateFormatter('es-ES', {
+  dateStyle: 'long'
+})
+
+// Sync start/end dates
+watch(startDate, (newVal) => {
+  if (endDate.value && newVal && newVal.compare(endDate.value) > 0) {
+    endDate.value = newVal
+  }
+})
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
 const numberOfMonths = computed(() => isDesktop.value ? 2 : 1)
+
+onMounted(() => {
+  fetchUserPreference()
+})
 
 // Sync open state
 const isOpen = computed({
   get: () => props.open,
   set: (val) => emit('update:open', val)
+})
+
+// Fetch preference when drawer opens for new trip
+watch(() => props.open, (isOpen) => {
+  if (isOpen && !props.tripToEdit) {
+    fetchUserPreference()
+  }
 })
 
 // Watch changes in tripToEdit
@@ -79,32 +141,25 @@ watch(() => props.tripToEdit, (trip) => {
     
     try {
       if (trip.fecha_inicio) {
-        const start = parseDate(trip.fecha_inicio)
-        const end = trip.fecha_fin ? parseDate(trip.fecha_fin) : start
-        dateRange.value = { start, end }
+        startDate.value = parseDate(trip.fecha_inicio)
+        endDate.value = trip.fecha_fin ? parseDate(trip.fecha_fin) : startDate.value
       } else {
-         dateRange.value = {
-            start: today(getLocalTimeZone()),
-            end: today(getLocalTimeZone()).add({ days: 7 }),
-         }
+         startDate.value = today(getLocalTimeZone())
+         endDate.value = today(getLocalTimeZone()).add({ days: 7 })
       }
     } catch (e) {
       console.error("Error parsing dates for calendar:", e)
-      dateRange.value = {
-          start: today(getLocalTimeZone()),
-          end: today(getLocalTimeZone()).add({ days: 7 }),
-      }
+      startDate.value = today(getLocalTimeZone())
+      endDate.value = today(getLocalTimeZone()).add({ days: 7 })
     }
   } else {
     // Reset form for create
     formData.value.nombre = ''
     formData.value.portada = null
     formData.value.presupuesto_diario = undefined
-    formData.value.moneda = 'JPY'
-    dateRange.value = {
-      start: today(getLocalTimeZone()),
-      end: today(getLocalTimeZone()).add({ days: 7 }),
-    }
+    formData.value.moneda = defaultCurrency.value
+    startDate.value = today(getLocalTimeZone())
+    endDate.value = today(getLocalTimeZone()).add({ days: 7 })
   }
 }, { immediate: true })
 
@@ -135,15 +190,15 @@ const handleCoverUpload = async (event: Event) => {
 }
 
 const handleSubmit = async () => {
-  if (!formData.value.nombre || !dateRange.value.start) return
+  if (!formData.value.nombre || !startDate.value) return
 
   const tripData = {
     nombre: formData.value.nombre,
     portada: formData.value.portada,
     presupuesto_diario: formData.value.presupuesto_diario,
     moneda: formData.value.moneda,
-    fecha_inicio: dateRange.value.start.toString(),
-    fecha_fin: dateRange.value.end?.toString() || dateRange.value.start.toString()
+    fecha_inicio: startDate.value.toString(),
+    fecha_fin: endDate.value?.toString() || startDate.value.toString()
   }
 
   try {
@@ -165,7 +220,6 @@ const handleSubmit = async () => {
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl pl-4">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-0">
         <DrawerTitle>{{ isEditing ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</DrawerTitle>
-        <DrawerDescription>Define el nombre y las fechas de tu viaje.</DrawerDescription>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row pr-4">
@@ -176,34 +230,64 @@ const handleSubmit = async () => {
             </div>
             <div class="grid gap-2">
               <Label>Fechas</Label>
-              <div class="rounded-md p-4 flex justify-center bg-background">
-                <RangeCalendar 
-                  v-model="dateRange" 
-                  class="rounded-md border border-input" 
-                  locale="es-ES" 
-                  :week-starts-on="1"
-                  :number-of-months="numberOfMonths"
-                />
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex flex-col gap-2 w-full">
+                  <Label class="text-xs text-muted-foreground">Inicio</Label>
+                  <Popover>
+                    <PopoverTrigger as-child>
+                      <Button
+                        variant="outline"
+                        :class="cn(
+                          'w-full justify-start text-left font-normal',
+                          !startDate && 'text-muted-foreground'
+                        )"
+                      >
+                        <CalendarIcon class="mr-2 h-4 w-4" />
+                        {{ startDate ? df.format(startDate.toDate(getLocalTimeZone())) : "Seleccionar fecha" }}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent class="w-auto p-0">
+                      <Calendar v-model="startDate" initial-focus />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div class="flex flex-col gap-2 w-full">
+                  <Label class="text-xs text-muted-foreground">Fin</Label>
+                  <Popover>
+                    <PopoverTrigger as-child>
+                      <Button
+                        variant="outline"
+                        :class="cn(
+                          'w-full justify-start text-left font-normal',
+                          !endDate && 'text-muted-foreground'
+                        )"
+                      >
+                        <CalendarIcon class="mr-2 h-4 w-4" />
+                        {{ endDate ? df.format(endDate.toDate(getLocalTimeZone())) : "Seleccionar fecha" }}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent class="w-auto p-0">
+                      <Calendar 
+                        v-model="endDate" 
+                        initial-focus 
+                        :min-value="startDate"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-              <p class="text-xs text-muted-foreground text-center">
-                Selecciona el día de inicio y el día de fin.
-              </p>
             </div>
-            <div class="grid grid-cols-3 gap-2">
-              <div class="col-span-2 w-full">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="w-full">
                 <Label htmlFor="presupuesto">Presupuesto diario</Label>
                 <Input id="presupuesto" v-model="formData.presupuesto_diario" type="number" placeholder="Ej: 10000" />
               </div>
-              <div class="col-span-1 w-full">
-                <Label htmlFor="moneda">Moneda</Label>
-                <Select v-model="formData.moneda">
-                    <SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="JPY">&yen; Yen</SelectItem>
-                      <SelectItem value="EUR">&euro; Euro</SelectItem>
-                      <SelectItem value="USD">&dollar; Dolar</SelectItem>
-                    </SelectContent>
-                </Select>
+              <div class="w-full">
+                <div class="flex items-center gap-2 mb-2">
+                  <Label htmlFor="moneda">Moneda</Label>
+                  <Loader2 v-if="loadingPreference" class="h-3 w-3 animate-spin text-muted-foreground" />
+                </div>
+                <CurrencySelector v-model="formData.moneda" />
               </div>
             </div>
             <div class="grid gap-2">

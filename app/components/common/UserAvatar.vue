@@ -6,6 +6,7 @@ interface User {
   last_name?: string
   avatar?: string // UUID
   avatar_url?: string // External URL
+  moneda?: string // Currency
   [key: string]: any
 }
 

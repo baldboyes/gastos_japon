@@ -19,7 +19,8 @@ export default defineNuxtConfig({
   modules: [
     'shadcn-nuxt',
     '@vite-pwa/nuxt',
-    '@clerk/nuxt'
+    '@clerk/nuxt',
+    'nuxt-swiper'
   ],
   nitro: {
     preset: 'vercel',
@@ -132,5 +133,8 @@ export default defineNuxtConfig({
     public: {
       directusUrl: 'https://api.mevoyajapon.com'
     }
+  },
+  swiper: {
+    modules: ['free-mode', 'mousewheel']
   }
 })

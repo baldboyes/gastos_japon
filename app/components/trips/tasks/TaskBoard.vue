@@ -241,7 +241,7 @@ const hasTasksOnDate = (date: DateValue) => {
       Cargando tareas...
     </div>
 
-    <div v-else class="min-h-[400px]">
+    <div v-else>
       <!-- Groups View -->
       <div v-if="viewMode === 'groups'" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start">
         <TaskGroupComponent

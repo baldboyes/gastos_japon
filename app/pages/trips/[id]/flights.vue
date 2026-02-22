@@ -124,7 +124,7 @@ const getDayDiff = (start?: string, end?: string) => {
 
 <template>
   <NuxtLayout name="dashboard">
-    <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
         <div class="flex-1 w-full space-y-4">
@@ -140,13 +140,11 @@ const getDayDiff = (start?: string, end?: string) => {
             </div>
             <Button @click="handleCreateFlight"><Plus class="h-4 w-4" /> Añadir</Button>
           </div>
-
           <div v-if="vuelos.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Plane class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">No hay vuelos registrados</h3>
             <p class="max-w-md mx-auto mt-2">Añade tus vuelos para organizar el itinerario de viaje.</p>
           </div>
-
           <div v-else class="space-y-4">
             <Card v-for="v in vuelos" :key="v.id">
               <CardHeader class="flex flex-row items-start justify-between gap-4">
@@ -243,7 +241,7 @@ const getDayDiff = (start?: string, end?: string) => {
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
                       :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
                     >
-                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                      <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
                   </div>
                 </div>
@@ -251,7 +249,6 @@ const getDayDiff = (start?: string, end?: string) => {
             </Card>
           </div>
         </div>
-
         <!-- Sidebar Tasks -->
         <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
           <TasksSidebar 
@@ -259,37 +256,33 @@ const getDayDiff = (start?: string, end?: string) => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>
       </div>
-
-      <TaskModal 
-        v-model:open="isTaskModalOpen" 
-        :task="selectedTaskToEdit" 
-        :trip-id="parseInt(tripId)"
-        @saved="initTasks(parseInt(tripId))"
-      />
-
-      <!-- Alert Dialog Confirmación -->
-      <AlertDialog v-model:open="isDeleteOpen">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el vuelo y todos sus datos asociados.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Vuelo</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      
     </div>
-
+    <TaskModal 
+      v-model:open="isTaskModalOpen" 
+      :task="selectedTaskToEdit" 
+      :trip-id="parseInt(tripId)"
+      @saved="initTasks(parseInt(tripId))"
+    />
+    <!-- Alert Dialog Confirmación -->
+    <AlertDialog v-model:open="isDeleteOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción no se puede deshacer. Se eliminará permanentemente el vuelo y todos sus datos asociados.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Vuelo</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     <FlightDrawer 
       v-model:open="isModalOpen" 
       :trip-id="tripId" 
@@ -297,6 +290,5 @@ const getDayDiff = (start?: string, end?: string) => {
       :item-to-edit="itemToEdit" 
       @saved="onSaved"
     />
-
   </NuxtLayout>
 </template>

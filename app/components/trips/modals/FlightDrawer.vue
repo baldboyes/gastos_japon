@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { Textarea } from '~/components/ui/textarea'
 import AirlineSelector from '~/components/ui/AirlineSelector/AirlineSelector.vue'
+import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
 import { useDirectus } from '~/composables/useDirectus'
@@ -64,7 +65,7 @@ const {
   handleSave 
 } = useTripItemForm<Partial<Vuelo>>(
   () => ({ 
-    moneda: 'EUR', 
+    moneda: props.currentTrip?.moneda || 'JPY', 
     escalas: [] as EscalaVuelo[], 
     estado_pago: 'pendiente',
     titulo: '',
@@ -91,6 +92,12 @@ watch(() => props.itemToEdit, (newItem) => {
     handleCreate()
   }
 }, { immediate: true })
+
+watch(isOpen, (isOpened) => {
+  if (isOpened && !props.itemToEdit) {
+    handleCreate()
+  }
+})
 
 // Fetch airlines if needed
 watch(() => isOpen.value, (val) => {
@@ -215,15 +222,12 @@ const onFileUploaded = async () => {
 
 <template>
   <Drawer v-model:open="isOpen">
-    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl pl-4">
-      <DrawerHeader class="w-full max-w-7xl mx-auto px-0">
-        <DrawerTitle>{{ formData.id ? 'Editar Itinerario' : 'Nuevo Vuelo' }}</DrawerTitle>
-        <DrawerDescription>
-          Gestiona los detalles de tu vuelo, escalas y archivos adjuntos.
-        </DrawerDescription>
+    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
+      <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
+        <DrawerTitle>{{ formData.id ? 'Editar Vuelo' : 'Nuevo Vuelo' }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
-        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row pr-4">
+        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div class="grid grid-cols-[2fr_1fr] gap-3">
               <div>
@@ -247,13 +251,7 @@ const onFileUploaded = async () => {
               </div>
               <div>
                 <Label>Moneda</Label>
-                <Select v-model="formData.moneda">
-                  <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="EUR">Euros (€)</SelectItem>
-                    <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
                 <Label>Estado</Label>

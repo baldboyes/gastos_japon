@@ -46,7 +46,7 @@ const entityLabel = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 bg-gray-200/75 rounded-2xl pt-4 px-4">
     <div class="flex items-center justify-between">
     
       <div class="flex items-center gap-2">
@@ -87,16 +87,16 @@ const entityLabel = computed(() => {
     </div>
     
     <!-- Progress Bar -->
-    <div v-if="tasks.length > 0" class="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+    <div v-if="tasks.length > 0" class="h-1 w-full bg-white rounded-full overflow-hidden">
       <div class="h-full bg-primary transition-all duration-500" :style="{ width: `${progress}%` }" />
     </div>
 
-    <div v-if="tasks.length === 0" class="text-center py-4 text-sm text-muted-foreground border border-dashed rounded-lg">
+    <div v-if="tasks.length === 0" class="text-center py-4 text-sm text-muted-foreground border border-dashed rounded-lg mb-4">
       No hay tareas en este grupo
     </div>
     <template v-else>
       <ScrollArea class="w-full h-[450px]">
-        <div class="space-y-2">
+        <div class="space-y-2 pb-4">
           <TaskItem 
             v-for="task in tasks" :key="task.id"
             :task="task" 

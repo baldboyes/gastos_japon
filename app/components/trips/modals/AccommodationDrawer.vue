@@ -19,6 +19,7 @@ import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
 import { DateTimePicker } from '~/components/ui/date-time-picker'
 import LocationSelector from '~/components/ui/LocationSelector/LocationSelector.vue'
+import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
 import { useDirectus } from '~/composables/useDirectus'
@@ -50,7 +51,7 @@ type FormState = {
   id?: number
   viaje_id?: number
   nombre?: string
-  moneda: 'EUR' | 'JPY'
+  moneda: string
   precio?: number
   estado_pago?: 'pagado' | 'pendiente' | 'parcial'
   notas?: string
@@ -80,7 +81,7 @@ const {
   handleSave 
 } = useTripItemForm<FormState>(
   () => ({ 
-    moneda: 'JPY', 
+    moneda: props.currentTrip?.moneda || 'JPY', 
     precio: 0, 
     estado_pago: 'pendiente', 
     notas: '', 
@@ -136,6 +137,12 @@ watch(() => props.itemToEdit, (newItem) => {
   }
 }, { immediate: true })
 
+watch(isOpen, (isOpened) => {
+  if (isOpened && !props.itemToEdit) {
+    handleCreate()
+  }
+})
+
 const saveAccommodation = () => {
   handleSave((data) => {
      data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
@@ -181,14 +188,12 @@ const onFileUploaded = async () => {
 
 <template>
   <Drawer v-model:open="isOpen">
-    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl pl-4">
-      <DrawerHeader class="w-full max-w-7xl mx-auto px-0">
+    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
+      <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
         <DrawerTitle>{{ formData.id ? 'Editar Alojamiento' : 'Nuevo Alojamiento' }}</DrawerTitle>
-        <DrawerDescription>Gestiona los detalles de tu alojamiento.</DrawerDescription>
       </DrawerHeader>
-      
-      <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pr-4 pb-0">
-        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row pr-4">
+      <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
+        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div>
               <Label>Nombre del Alojamiento</Label>
@@ -232,13 +237,7 @@ const onFileUploaded = async () => {
               </div>
               <div>
                 <Label>Moneda</Label>
-                <Select v-model="formData.moneda">
-                <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EUR">Euros (€)</SelectItem>
-                  <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                </SelectContent>
-              </Select>
+                <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
                 <Label>Estado</Label>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-full h-full overflow-x-hidden">
     <NuxtRouteAnnouncer />
     <NuxtPage />
   </div>
@@ -10,8 +10,8 @@
 
   // Meta tags para PWA
   useSeoMeta({
-    title: 'Me voy a Japón',
-    description: 'Aplicación para gestionar el viaje a Japón',
+    title: 'jizou.io',
+    description: 'Aplicación para gestionar viajes',
     themeColor: '#40C4AA',
     viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
     appleItunesApp: undefined,

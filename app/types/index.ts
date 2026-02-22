@@ -40,7 +40,7 @@ export interface PlannedExpense {
   shared: boolean
 }
 
-export type Currency = 'JPY' | 'CNY' | 'KRW' | 'EUR' | 'USD' | 'GBP'
+export type Currency = string
 
 export interface Budget {
   dailyLimit: number // Default: 8000 yenes

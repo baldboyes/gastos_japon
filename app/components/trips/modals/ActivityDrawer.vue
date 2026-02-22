@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Textarea } from '~/components/ui/textarea'
 import { DateTimePicker } from '~/components/ui/date-time-picker'
 import LocationSelector from '~/components/ui/LocationSelector/LocationSelector.vue'
+import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
 import { useDirectus } from '~/composables/useDirectus'
@@ -36,7 +37,7 @@ const { createActividad, updateActividad } = useTripOrganization()
 const { getAuthenticatedClient } = useDirectus()
 
 type FormState = Omit<Partial<Actividad>, 'moneda'> & {
-  moneda: 'EUR' | 'JPY'
+  moneda: string
 }
 
 // Initialize generic form logic
@@ -47,7 +48,7 @@ const {
   handleSave 
 } = useTripItemForm<FormState>(
   () => ({ 
-    moneda: 'JPY', 
+    moneda: props.currentTrip?.moneda || 'JPY', 
     precio: 0, 
     estado_pago: 'pendiente', 
     notas: '', 
@@ -73,6 +74,12 @@ watch(() => props.itemToEdit, (newItem) => {
     handleCreate()
   }
 }, { immediate: true })
+
+watch(isOpen, (isOpened) => {
+  if (isOpened && !props.itemToEdit) {
+    handleCreate()
+  }
+})
 
 const saveActivity = () => {
   handleSave((data) => {
@@ -170,13 +177,7 @@ const onFileUploaded = async () => {
               </div>
               <div>
                 <Label>Moneda</Label>
-                <Select v-model="formData.moneda">
-                  <SelectTrigger><SelectValue placeholder="EUR/JPY" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="EUR">Euros (€)</SelectItem>
-                    <SelectItem value="JPY">Yenes (¥)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
                 <Label>Estado</Label>

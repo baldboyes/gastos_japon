@@ -9,8 +9,17 @@ interface Trip {
   user_created: string
 }
 
+interface DirectusUser {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  moneda: string | null
+}
+
 interface Schema {
   viajes: Trip[]
+  directus_users: DirectusUser[]
 }
 
 let syncPromise: Promise<void> | null = null

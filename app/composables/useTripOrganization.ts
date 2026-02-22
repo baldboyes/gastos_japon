@@ -1,4 +1,5 @@
 import { readItems, createItem, updateItem, deleteItem } from '@directus/sdk'
+import { format, parseISO } from 'date-fns'
 
 // --- Interfaces ---
 
@@ -238,11 +239,14 @@ export const useTripOrganization = () => {
 
     // 4. Actividades
     actividades.value.forEach(act => {
-      if (act.fecha) {
+      // Priorizar fecha_inicio. NO USAR campo 'fecha' ya que es residual.
+      const dateStr = act.fecha_inicio || act.start_date || act.datetime
+
+      if (dateStr) {
         items.push({
           id: `activity-${act.id}`,
           type: 'activity',
-          date: new Date(act.fecha),
+          date: parseISO(dateStr),
           title: act.nombre,
           subtitle: act.tipo.charAt(0).toUpperCase() + act.tipo.slice(1),
           originalItem: act
@@ -258,7 +262,7 @@ export const useTripOrganization = () => {
     if (!dateStr) return dateStr
     // Si viene con Z (UTC) o milisegundos, lo limpiamos para dejarlo como YYYY-MM-DDTHH:mm
     // Esto fuerza a que la UI lo trate como "Hora Local" sin conversiones de zona horaria
-    return (dateStr as string).replace('Z', '').split('.')[0].slice(0, 16)
+    return (dateStr as string).replace('Z', '').split('.')[0]?.slice(0, 16) || ''
   }
 
   // --- Fetch All ---
@@ -274,23 +278,21 @@ export const useTripOrganization = () => {
           sort: [sortField],
           fields: [
             '*',
-            'adjuntos.directus_files_id.*',
-            'user_created.first_name',
-            'user_created.last_name',
-            'user_created.avatar_url'
+            'adjuntos.directus_files_id.*'
+            // 'user_created.first_name',
+            // 'user_created.last_name',
+            // 'user_created.avatar_url'
           ]
         })
 
+        // 3. Executar peticiones
         const [v, a, t, act, s] = await Promise.all([
           client.request(readItems('vuelos' as any, query('fecha_salida'))),
           client.request(readItems('alojamientos' as any, {
             ...query('check_in'),
             fields: [
               '*',
-              'adjuntos.directus_files_id.*',
-              'user_created.first_name',
-              'user_created.last_name',
-              'user_created.avatar_url'
+              'adjuntos.directus_files_id.*'
             ]
           })),
           client.request(readItems('transportes' as any, {
@@ -301,15 +303,19 @@ export const useTripOrganization = () => {
               'pase_id.nombre'
             ]
           })),
-          client.request(readItems('actividades' as any, query('fecha'))),
+          client.request(readItems('actividades' as any, {
+             filter: { viaje_id: { _eq: tripId } },
+             sort: ['fecha_inicio'],
+             fields: [
+               '*',
+               'adjuntos.directus_files_id.*'
+             ]
+          })),
           client.request(readItems('seguros' as any, { 
               filter: { viaje_id: { _eq: tripId } }, 
               fields: [
                 '*',
-                'adjuntos.directus_files_id.*',
-                'user_created.first_name',
-                'user_created.last_name',
-                'user_created.avatar_url'
+                'adjuntos.directus_files_id.*'
               ] 
           }))
         ])
@@ -387,6 +393,8 @@ export const useTripOrganization = () => {
           viaje_id: a.viaje_id,
           nombre: a.nombre,
           tipo: a.tipo,
+          // Eliminado uso de campo 'fecha'
+          fecha: undefined,
           fecha_inicio: normalizeDate(a.fecha_inicio),
           fecha_fin: normalizeDate(a.fecha_fin),
           ubicacion: {
@@ -451,7 +459,9 @@ export const useTripOrganization = () => {
          if (newItem.check_out) newItem.check_out = normalizeDate(newItem.check_out)
       }
       if (collection === 'actividades') {
-         if (newItem.fecha) newItem.fecha = normalizeDate(newItem.fecha)
+         // if (newItem.fecha) newItem.fecha = normalizeDate(newItem.fecha)
+         if (newItem.fecha_inicio) newItem.fecha_inicio = normalizeDate(newItem.fecha_inicio)
+         if (newItem.fecha_fin) newItem.fecha_fin = normalizeDate(newItem.fecha_fin)
       }
       if (collection === 'transportes') {
          if (newItem.fecha_inicio) newItem.fecha_inicio = normalizeDate(newItem.fecha_inicio)
@@ -557,7 +567,7 @@ export const useTripOrganization = () => {
       notas: data.notas,
       enlace_google: data.enlace_google,
       adjuntos: data.adjuntos || [],
-      user_created: data.user_created || {},
+      //user_created: data.user_created || {},
       pension: data.pension || null,
       privado: data.privado || false,
       telefono: data.telefono || '',

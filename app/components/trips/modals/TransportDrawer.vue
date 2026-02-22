@@ -14,11 +14,12 @@
   } from '~/components/ui/drawer'
   import { Button } from '~/components/ui/button'
   import { Input } from '~/components/ui/input'
-  import { Label } from '~/components/ui/label'
-  import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-  import { Textarea } from '~/components/ui/textarea'
-  import { DateTimePicker } from '~/components/ui/date-time-picker'
-  import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
+import { Label } from '~/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Textarea } from '~/components/ui/textarea'
+import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
+import { DateTimePicker } from '~/components/ui/date-time-picker'
+import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   import FileList from '~/components/ui/FileList/FileList.vue'
   import { useDirectus } from '~/composables/useDirectus'
   import { readItem } from '@directus/sdk'
@@ -39,7 +40,7 @@
 
   type FormState = Omit<Partial<Transporte>, 'moneda' | 'escalas'> & {
     duracion_cantidad?: number
-    moneda: 'EUR' | 'JPY'
+    moneda: string
     escalas: Escala[]
     pase_id?: number | null
   }
@@ -58,7 +59,7 @@
     handleSave 
   } = useTripItemForm<FormState>(
     () => ({ 
-      moneda: 'JPY', 
+      moneda: props.currentTrip?.moneda || 'JPY', 
       categoria: 'trayecto', 
       escalas: [] as Escala[], 
       precio: 0, 
@@ -105,11 +106,17 @@
           }
       }
     } else {
-      handleCreate()
-    }
-  }, { immediate: true })
+    handleCreate()
+  }
+}, { immediate: true })
 
-  // Watch for changes to calculate End Date
+watch(isOpen, (isOpened) => {
+  if (isOpened && !props.itemToEdit) {
+    handleCreate()
+  }
+})
+
+// Watch for changes to calculate End Date
   watch([() => formData.value.fecha_inicio, () => formData.value.duracion_cantidad, () => formData.value.tipo_duracion], () => {
     if (formData.value.categoria !== 'pase') return
     if (!formData.value.fecha_inicio) return
@@ -263,13 +270,12 @@
 
 <template>
   <Drawer v-model:open="isOpen">
-    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl pl-4">
-      <DrawerHeader class="w-full max-w-7xl mx-auto px-0">
+    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
+      <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
         <DrawerTitle>{{ formData.id ? 'Editar Transporte' : 'Nuevo Transporte' }}</DrawerTitle>
-        <DrawerDescription>Gestiona los detalles de tus desplazamientos.</DrawerDescription>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
-        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row pr-4">
+        <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div v-if="formData.categoria === 'pase'">
               <Label>Título / Nombre</Label>
@@ -398,33 +404,29 @@
                </div>
             </template>
 
-            <div v-if="formData.categoria === 'pase' || (formData.categoria === 'trayecto' && !formData.pase_id)" class="grid grid-cols-2 gap-4 mt-2">
+            <div v-if="formData.categoria === 'pase' || (formData.categoria === 'trayecto' && !formData.pase_id)" class="grid grid-cols-[2fr_1fr_1fr] gap-3 mt-2">
               <div>
                 <Label>Precio Total</Label>
-                <Input type="number" v-model="formData.precio" min="0" />
+                <Input 
+                  type="number" 
+                  v-model="formData.precio" 
+                  :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
+                />
               </div>
               <div>
                 <Label>Moneda</Label>
-                <Select v-model="formData.moneda">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <CurrencySelector v-model="formData.moneda" />
+              </div>
+              <div>
+                <Label>Estado</Label>
+                <Select v-model="formData.estado_pago">
+                  <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="JPY">JPY (¥)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
+                    <SelectItem value="pendiente">Pendiente</SelectItem>
+                    <SelectItem value="pagado">Pagado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            
-            <div v-if="formData.categoria === 'pase' || (formData.categoria === 'trayecto' && !formData.pase_id)">
-              <Label>Estado Pago</Label>
-              <Select v-model="formData.estado_pago">
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="pagado">Pagado</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div>

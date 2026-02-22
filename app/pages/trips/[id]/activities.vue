@@ -250,7 +250,7 @@ const getDuration = (start: string, end: string) => {
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
                       :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
                     >
-                      <FileDown class="h-6 w-6" /> {{ item.directus_files_id?.filename_download || item.filename_download }}
+                      <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
                   </div>
                 </div>
@@ -265,7 +265,7 @@ const getDuration = (start: string, end: string) => {
             @update:status="(id, status) => updateTask(id, { status })"
             @edit="handleEditTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[160px] w-full flex items-center justify-center">
+          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>
