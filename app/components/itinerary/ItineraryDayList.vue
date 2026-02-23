@@ -41,7 +41,7 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
 </script>
 
 <template>
-  <div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+  <div class="flex-1 p-4 md:p-8 relative">
     <div class="max-w-3xl mx-auto space-y-6">
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold flex items-center gap-2">
@@ -61,11 +61,11 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
       <div v-else class="space-y-4">
         <div v-for="event in events" :key="event.id" class="relative group">
           <!-- Special "Noche en" sticky header-like card -->
-          <Card 
+          <div 
             v-if="event.type === 'accommodation_stay'" 
-            class="bg-slate-800 border-slate-700 text-white !border-l-blue-400 !border-l-4"
+            class="bg-slate-800 border-slate-700 text-white !border-l-blue-400 !border-l-4 py-4 px-4 rounded-2xl"
           >
-            <CardContent class="w-full h-full flex flex-col justify-between transition-colors">
+            <div class="w-full h-full flex flex-col justify-between transition-colors">
               <div class="flex justify-start items-start w-full mb-1 gap-4">
                 <div class="h-10 w-10 rounded-full shrink-0 bg-opacity-10 flex items-center justify-center bg-slate-700 text-slate-200">
                   <component :is="event.icon" class="h-4 w-4 text-slate-200" />
@@ -75,14 +75,14 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
                   <p v-if="event.subtitle" class="text-xs text-slate-400 mt-0 truncate">{{ event.subtitle }}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           <!-- Active Pass sticky header-like card -->
-          <Card 
+          <div 
             v-else-if="event.type === 'transport_pass_active'" 
-            class="bg-green-700 border-green-600 text-white !border-l-green-400 !border-l-4"
+            class="bg-green-700 border-green-600 text-white !border-l-green-400 !border-l-4 py-4 px-4 rounded-2xl"
           >
-            <CardContent class="w-full h-full flex flex-col justify-between transition-colors">
+            <div class="w-full h-full flex flex-col justify-between transition-colors">
               <div class="flex justify-start items-start w-full mb-1 gap-4">
                 <div class="h-10 w-10 rounded-full shrink-0 bg-opacity-10 flex items-center justify-center bg-green-600 text-green-100">
                   <component :is="event.icon" class="h-4 w-4 text-green-100" />
@@ -92,14 +92,14 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
                   <p v-if="event.subtitle" class="text-xs text-green-200 mt-0 truncate">{{ event.subtitle }}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           <!-- Priority Group Row (Check-in/Out) -->
           <div v-else-if="event.type === 'accommodation_transition_group'" class="flex gap-4">
-            <Card 
+            <div 
               v-for="subEvent in event.items" 
               :key="subEvent.id"
-              class=" !border-l-blue-400 !border-l-4"
+              class=" !border-l-blue-400 !border-l-4 py-4 px-4 rounded-2xl"
               :class="[
                 event.items.length > 1 ? 'w-1/2' : 'w-full',
                 subEvent.type === 'accommodation_checkin' 
@@ -107,7 +107,7 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
                   : 'bg-white border-slate-200 text-slate-900'
               ]"
             >
-              <CardContent class="w-full h-full flex flex-col justify-between transition-colors">
+              <div class="w-full h-full flex flex-col justify-between transition-colors">
                 <div class="flex justify-between items-start w-full mb-1 gap-2">
                   <div class="flex items-center gap-3 min-w-0 flex-1">
                     <div class="h-10 w-10 rounded-full shrink-0 bg-opacity-10 flex items-center justify-center" :class="subEvent.type === 'accommodation_checkin' ? 'bg-slate-700 text-slate-200' : subEvent.colorClass">
@@ -130,13 +130,13 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
                     {{ subEvent.time }}
                   </Badge>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
           <!-- Standard Event Card -->
-          <Card v-else class="mb-3 overflow-hidden !border-l-4 p-0" 
+          <div v-else class="mb-3 overflow-hidden !border-l-4 py-4 px-4 rounded-2xl bg-white" 
             :class="event.type === 'flight' ? 'border-l-blue-400' : event.type === 'accommodation' || event.type === 'hotel' ? 'border-l-blue-400' : event.type === 'activity' ? 'border-l-purple-400' : event.type === 'expense' ? 'border-l-red-400' : event.type === 'task' ? 'border-l-yellow-400' : 'border-l-green-400'">
-            <CardContent class="p-0 flex items-start gap-4">
+            <div class="p-0 flex items-start gap-4">
               <div class="h-10 w-10 rounded-full shrink-0 bg-opacity-10 flex items-center justify-center" :class="event.colorClass">
                 <component :is="event.icon" class="w-5 h-5" />
               </div>
@@ -159,8 +159,8 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
                 </div>
                 <p v-if="event.subtitle" class="text-sm text-slate-500 mt-0.5 truncate">{{ event.subtitle }}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
         <div class="mt-8 mb-8 pt-6">
           <div class="flex items-center justify-between z-50 absolute">
@@ -172,6 +172,7 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
             placeholder="Escribe aquí tus notas, diario o recordatorios para este día..." 
             :read-only="noteLoading"
             :loading="noteSaving"
+            sticky-top="0px"
             @save="handleSaveNote"
           />
         </div>

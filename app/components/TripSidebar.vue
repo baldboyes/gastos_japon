@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { 
-  LayoutDashboard, Plane, BedDouble, Train, Ticket, Shield, Wallet, Users, CalendarRange,
-  ListTodo,
-  Settings
-} from 'lucide-vue-next'
+import { LayoutDashboard, Plane, BedDouble, Train, Ticket, Shield, Wallet, Users, CalendarRange, ListTodo, Settings, Eye } from 'lucide-vue-next'
 import {
   Sidebar,
   SidebarContent,
@@ -45,6 +41,7 @@ const navItems = [
   { label: 'Seguros', icon: Shield, path: `/trips/${tripId}/insurance` },
   { label: 'Viajeros', icon: Users, path: `/trips/${tripId}/travelers` },
   { label: 'Finanzas', icon: Wallet, path: `/trips/${tripId}/wallet` },
+  { label: 'Vista viaje', icon: Eye, path: `/trips/${tripId}/gastos` },
 ]
 
 const isActive = (path: string) => {

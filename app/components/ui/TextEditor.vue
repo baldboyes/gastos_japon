@@ -8,6 +8,7 @@ const props = defineProps<{
   placeholder?: string
   readOnly?: boolean
   loading?: boolean
+  stickyTop?: string
 }>()
 
 const emit = defineEmits<{
@@ -19,7 +20,7 @@ const editorRef = ref<HTMLElement | null>(null)
 let quillInstance: any = null
 
 onMounted(async () => {
-  if (process.client && editorRef.value) {
+  if (typeof window !== 'undefined' && editorRef.value) {
     const { default: Quill } = await import('quill')
     
     // Add custom save handler
@@ -75,7 +76,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="quill-editor-wrapper bg-white rounded-md">
+  <div class="quill-editor-wrapper bg-white rounded-md" :style="{ '--sticky-top': stickyTop || '0px' }">
     <!-- Custom Toolbar -->
     <div id="toolbar-container" class="flex items-center justify-between flex-wrap gap-2">
       <div class="flex items-center flex-wrap">
@@ -113,12 +114,12 @@ onBeforeUnmount(() => {
       <!-- Save Button -->
       <Button 
         @click="$emit('save')" 
-        class="!w-fit !bg-slate-900 text-white hover:bg-slate-800 flex items-center !px-3 py-1.5 text-sm rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+        class="!w-fit !bg-slate-900 text-white !hover:text-white hover:bg-slate-800 flex items-center gap-2 !px-3 text-sm rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
         :disabled="loading || readOnly"
       >
-        <Save class="w-4 h-4 mr-2" />
+        <Save class="w-4 h-4 text-white hover:text-white mr-2" />
         <span v-if="loading">Guardando...</span>
-        <span v-else>Guardar</span>
+        <span v-else class="text-white hover:text-white">Guardar</span>
       </Button>
     </div>
     
@@ -138,7 +139,7 @@ onBeforeUnmount(() => {
   border-top-right-radius: 0.5rem;
   border-color: #e2e8f0;
   position: sticky;
-  top: -20px;
+  top: var(--sticky-top);
   z-index: 50;
   background-color: white;
   border-bottom: 1px solid #e2e8f0;
