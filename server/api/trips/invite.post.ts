@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
       return { success: false, error: 'Missing required fields' }
     }
 
-    const directusUrl = 'https://api.mevoyajapon.com'
+    const directusUrl = 'https://directus.jizou.io'
     const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || 'DirectusAdmin2026!'
     
     // Conectar como Admin

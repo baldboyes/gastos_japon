@@ -1,5 +1,7 @@
 import { createDirectus, rest, staticToken } from '@directus/sdk'
 
+import type { TripExpense } from '~/types'
+
 interface Trip {
   id: string
   nombre: string
@@ -20,13 +22,14 @@ interface DirectusUser {
 interface Schema {
   viajes: Trip[]
   directus_users: DirectusUser[]
+  gastos: TripExpense[]
 }
 
 let syncPromise: Promise<void> | null = null
 
 export const useDirectus = () => {
   const { user, isLoaded } = useUser() // Clerk user
-  const directusUrl = 'https://api.mevoyajapon.com'
+  const directusUrl = 'https://directus.jizou.io'
   
   // State to cache the Directus token and User ID
   const directusToken = useState<string | null>('directus-token', () => null)

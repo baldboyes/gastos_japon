@@ -1,7 +1,9 @@
 <template>
-  <div class="w-full h-full overflow-x-hidden">
+  <div class="w-full h-full overflow-x-hidden bg-gray-50">
     <NuxtRouteAnnouncer />
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
 
@@ -22,7 +24,7 @@
     meta: [
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-      { name: 'apple-mobile-web-app-title', content: 'Me voy a Japón' },
+      { name: 'apple-mobile-web-app-title', content: 'jizou.io' },
     ],
     link: [
       { rel: 'icon', type: 'image/png', href: '/favicon.png' },
@@ -34,3 +36,14 @@
     }
   })
 </script>
+<style>
+  .page-enter-active,
+  .page-leave-active {
+    transition: all 0.4s;
+  }
+  .page-enter-from,
+  .page-leave-to {
+    opacity: 0;
+    filter: blur(1rem);
+  }
+</style>

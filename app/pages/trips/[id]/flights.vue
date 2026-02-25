@@ -36,6 +36,10 @@ import {
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
 
+definePageMeta({
+  layout: 'dashboard'
+})
+
 const route = useRoute()
 const tripId = route.params.id as string
 const { downloadFile } = useDirectusFiles()
@@ -123,7 +127,6 @@ const getDayDiff = (start?: string, end?: string) => {
 </script>
 
 <template>
-  <NuxtLayout name="dashboard">
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
@@ -290,5 +293,4 @@ const getDayDiff = (start?: string, end?: string) => {
       :item-to-edit="itemToEdit" 
       @saved="onSaved"
     />
-  </NuxtLayout>
 </template>

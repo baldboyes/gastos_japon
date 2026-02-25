@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       return { error: 'Email required' }
     }
 
-    const directusUrl = 'https://api.mevoyajapon.com'
+    const directusUrl = 'https://directus.jizou.io'
     // Explicación: Usamos credenciales de Admin (Token) para generar el token inicial del usuario.
     const adminToken = process.env.NUXT_DIRECTUS_ADMIN_TOKEN || 'hYOCsJK_Ros_zlClJynUFlVQT7W_G9La'
     

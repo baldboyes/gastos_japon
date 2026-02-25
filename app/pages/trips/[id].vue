@@ -1,5 +1,10 @@
 <script setup lang="ts">
   import { useRoute, useRouter } from 'vue-router'
+
+  definePageMeta({
+    middleware: 'auth'
+  })
+
   import { Calendar as CalendarIcon } from 'lucide-vue-next'
   import {
     SidebarProvider,

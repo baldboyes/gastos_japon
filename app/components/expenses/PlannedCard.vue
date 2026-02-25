@@ -17,7 +17,7 @@
               {{ plannedExpense.placeName }}
             </h3>
             <div class="flex-shrink-0 font-bold text-gray-700">
-              {{ formatAmount(plannedExpense.amount) }}
+              {{ formattedAmount }}
             </div>
           </div>
           <div class="flex items-center gap-2 justify-between">
@@ -61,13 +61,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { PlannedExpense } from '~/types'
 import { getCategoryInfo } from '~/types'
+import { useCurrency } from '~/composables/useCurrency'
+import { CURRENCIES } from '~/composables/useSettings'
 
-const { formatAmount } = useCurrency()
+const { formatAmount: globalFormat } = useCurrency()
 
 interface Props {
   plannedExpense: PlannedExpense
+  currency?: string
 }
 
 const props = defineProps<Props>()
@@ -77,4 +81,12 @@ defineEmits<{
 }>()
 
 const categoryInfo = computed(() => getCategoryInfo(props.plannedExpense.category))
+
+const formattedAmount = computed(() => {
+  if (props.currency) {
+    const symbol = CURRENCIES.find(c => c.code === props.currency)?.symbol || '$'
+    return `${symbol}${props.plannedExpense.amount.toLocaleString()}`
+  }
+  return globalFormat(props.plannedExpense.amount)
+})
 </script>

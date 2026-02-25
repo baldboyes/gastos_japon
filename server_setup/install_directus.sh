@@ -7,7 +7,7 @@ exec 2>&1
 
 echo "Starting Directus Installation..."
 
-PROJECT_DIR="/var/www/api.mevoyajapon.com"
+PROJECT_DIR="/var/www/directus.jizou.io"
 DB_USER="directus"
 DB_PASS="DirectusPass2025!Secure"
 DB_NAME="directus"
@@ -47,7 +47,7 @@ DB_USER="$DB_USER"
 DB_PASSWORD="$DB_PASS"
 DB_SSL=false
 
-PUBLIC_URL="https://api.mevoyajapon.com"
+PUBLIC_URL="https://directus.jizou.io"
 EOF
 
 echo "Bootstrapping Database..."

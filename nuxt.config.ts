@@ -9,7 +9,8 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'es'
       }
-    }
+    },
+    pageTransition: { name: 'page' },
   },
   vite: {
     plugins: [
@@ -45,9 +46,9 @@ export default defineNuxtConfig({
     scope: '/',
     includeAssets: ['favicon.ico', 'favicon.png', 'icon.svg', 'robots.txt'],
     manifest: {
-      name: 'Me voy a Japón',
-      short_name: 'Me voy a Japón',
-      description: 'Aplicación para gestionar el viaje a Japón',
+      name: 'jizou.io',
+      short_name: 'jizou.io',
+      description: 'Gestiona tu viaje de principio a fin: vuelos, alojamiento, reservas y gastos. Tu compañero de viaje integral, inspirado en Jizo.',
       theme_color: '#40C4AA',
       background_color: '#F8FAFC',
       display: 'standalone',
@@ -132,10 +133,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      directusUrl: 'https://api.mevoyajapon.com'
+      directusUrl: 'https://directus.jizou.io'
     }
-  },
-  swiper: {
-    modules: ['free-mode', 'mousewheel']
   }
 })

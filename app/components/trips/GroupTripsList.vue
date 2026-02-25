@@ -26,8 +26,8 @@
 
   const props = withDefaults(defineProps<Props>(), {
     apiUrl: 'https://porjapon.com/api/viajes-en-grupo.json',
-    title: '¿No te quieres complicar?',
-    description: 'Descubre nuestros viajes organizados a Japón y vente con nosotros.'
+    title: '¿Vas a Japón?',
+    description: 'No te compliques y descubre nuestros viajes organizados.'
   })
 
   // Función para obtener viajes en grupo
@@ -57,8 +57,11 @@
 </script>
 
 <template>
-  <div class="w-full py-16">
+  <div class="w-full py-16 bg-white mt-12">
     <div class="max-w-4xl mx-auto space-y-6 px-4 lg:px-0">
+      <div class="pb-8">
+        <small>Contenido patrocinado por: <a href="https://porjapon.com" target="_blank" class="text-pink-800 font-bold">porjapon.com</a></small>
+      </div>
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold tracking-tight">{{ title }}</h2>

@@ -21,7 +21,7 @@
             </span>
           </div>
           <div class="text-sm font-bold text-gray-900">
-            {{ formatAmount(getTotalForDate(group.items)) }}
+            {{ formattedTotalForDate(getTotalForDate(group.items)) }}
           </div>
         </div>
 
@@ -31,6 +31,7 @@
             v-for="planned in plannedExpensesForDate[group.date]"
             :key="planned.id"
             :planned-expense="planned"
+            :currency="currency"
             @click="$emit('planned-expense-click', planned)"
           />
         </div>
@@ -41,6 +42,7 @@
             v-for="expense in group.items"
             :key="expense.id"
             :expense="expense"
+            :currency="currency"
             @click="$emit('expense-click', expense)"
           />
         </div>
@@ -66,21 +68,32 @@
 <script setup lang="ts">
 import type { Expense, PlannedExpense } from '~/types'
 import { formatDate, getRelativeDayLabel } from '~/utils/dates'
+import { CURRENCIES } from '~/composables/useSettings'
 
-const { formatAmount } = useCurrency()
+const { formatAmount: globalFormatAmount } = useCurrency()
 
 interface Props {
   expenses: Expense[]
   plannedExpenses?: PlannedExpense[]
   emptyTitle?: string
   emptyMessage?: string
+  currency?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   plannedExpenses: () => [],
   emptyTitle: 'Sin gastos',
-  emptyMessage: 'No hay gastos para mostrar'
+  emptyMessage: 'No hay gastos para mostrar',
+  currency: undefined
 })
+
+const formattedTotalForDate = (amount: number) => {
+  if (props.currency) {
+    const symbol = CURRENCIES.find(c => c.code === props.currency)?.symbol || '$'
+    return `${symbol}${amount.toLocaleString()}`
+  }
+  return globalFormatAmount(amount)
+}
 
 defineEmits<{
   'expense-click': [expense: Expense]

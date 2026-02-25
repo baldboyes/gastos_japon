@@ -7,7 +7,7 @@ Este plan detalla los pasos para configurar el servidor Ubuntu 22.04/24.04 con N
    - Accede a tu panel de OVH > Dominios > Zona DNS.
    - Crea/Modifica un registro **A** para `mevoyajapon.com` apuntando a `141.94.23.216`.
    - Crea/Modifica un registro **A** para `www.mevoyajapon.com` apuntando a `141.94.23.216`.
-   - Crea/Modifica un registro **A** para `api.mevoyajapon.com` apuntando a `141.94.23.216`.
+   - Crea/Modifica un registro **A** para `directus.jizou.io` apuntando a `141.94.23.216`.
    *Nota: Esto es crucial para que la emisión de certificados SSL funcione.*
 
 ## Fase 1: Acceso y Preparación del Sistema
@@ -26,13 +26,13 @@ Este plan detalla los pasos para configurar el servidor Ubuntu 22.04/24.04 con N
    - Crear `/var/www/mevoyajapon.com/html`.
    - Asignar propiedad `ubuntu:www-data`.
    - Crear página de prueba "Próximamente".
-2. **Subdominio API (`api.mevoyajapon.com`):**
-   - Crear `/var/www/api.mevoyajapon.com`.
+2. **Subdominio API (`directus.jizou.io`):**
+   - Crear `/var/www/directus.jizou.io`.
    - Asignar propiedad `ubuntu:www-data`.
 
 ## Fase 4: Configuración de Nginx (Virtual Hosts)
 1. **Configuración Principal:** Crear bloque de servidor para `mevoyajapon.com` sirviendo archivos estáticos.
-2. **Configuración API:** Crear bloque de servidor para `api.mevoyajapon.com` configurado como Proxy Inverso (preparado para reenviar tráfico al puerto de Directus/Node).
+2. **Configuración API:** Crear bloque de servidor para `directus.jizou.io` configurado como Proxy Inverso (preparado para reenviar tráfico al puerto de Directus/Node).
 
 ## Fase 5: Seguridad y SSL
 1. **Firewall (UFW):**

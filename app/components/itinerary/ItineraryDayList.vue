@@ -5,7 +5,7 @@ import { Badge } from '~/components/ui/badge'
 import { Card, CardContent } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Plus, Save, ArrowRight, Clock } from 'lucide-vue-next'
-import TextEditor from '~/components/ui/TextEditor.vue'
+import { TextEditor } from '~/components/ui/TextEditor'
 import { useDayNotes } from '~/composables/useDayNotes'
 import { watch } from 'vue'
 

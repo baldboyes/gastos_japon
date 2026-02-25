@@ -1,21 +1,5 @@
 import { readItems, createItem, updateItem, deleteItem } from '@directus/sdk'
-
-export interface TripExpense {
-  id: number
-  fecha: string
-  concepto: string
-  monto: number
-  categoria: string
-  descripcion: string
-  metodo_pago: string
-  es_compartido: boolean
-  viaje_id: number
-  ubicacion_lat?: number
-  ubicacion_lng?: number
-  ciudad?: string
-  prefectura?: string
-  moneda?: string
-}
+import type { TripExpense } from '~/types'
 
 export const useTripExpenses = () => {
   const { getAuthenticatedClient } = useDirectus()
@@ -34,7 +18,7 @@ export const useTripExpenses = () => {
       }))
       
       if (Array.isArray(result)) {
-        expenses.value = result as TripExpense[]
+        expenses.value = result as unknown as TripExpense[]
       } else {
         expenses.value = []
       }
@@ -53,7 +37,7 @@ export const useTripExpenses = () => {
       const client = await getAuthenticatedClient()
       const result = await client.request(createItem('gastos', expense))
       
-      const newExpense = result as TripExpense
+      const newExpense = result as unknown as TripExpense
       expenses.value.unshift(newExpense)
       return newExpense
     } catch (e: any) {
@@ -65,7 +49,7 @@ export const useTripExpenses = () => {
     }
   }
 
-  const updateExpense = async (id: number, updates: Partial<TripExpense>) => {
+  const updateExpense = async (id: number | string, updates: Partial<TripExpense>) => {
     loading.value = true
     error.value = null
     try {
@@ -74,7 +58,7 @@ export const useTripExpenses = () => {
       
       const index = expenses.value.findIndex(e => e.id === id)
       if (index !== -1) {
-        expenses.value[index] = result as TripExpense
+        expenses.value[index] = result as unknown as TripExpense
       }
       return result
     } catch (e: any) {
@@ -86,7 +70,7 @@ export const useTripExpenses = () => {
     }
   }
 
-  const deleteExpense = async (id: number) => {
+  const deleteExpense = async (id: number | string) => {
     loading.value = true
     error.value = null
     try {

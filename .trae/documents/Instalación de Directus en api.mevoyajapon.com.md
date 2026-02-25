@@ -1,9 +1,9 @@
 # Plan de Instalación de Directus CMS
 
-Este plan tiene como objetivo desplegar Directus en `api.mevoyajapon.com`, conectarlo a la base de datos PostgreSQL existente y asegurar que se ejecute automáticamente.
+Este plan tiene como objetivo desplegar Directus en `directus.jizou.io`, conectarlo a la base de datos PostgreSQL existente y asegurar que se ejecute automáticamente.
 
 ## 1. Preparación de la Instalación
-- **Ubicación:** `/var/www/api.mevoyajapon.com` (Directorio ya creado).
+- **Ubicación:** `/var/www/directus.jizou.io` (Directorio ya creado).
 - **Base de Datos:** Se usará la DB `directus` y usuario `directus` creados anteriormente.
 - **Seguridad:** Se generarán claves únicas (`KEY` y `SECRET`) para la seguridad de la API.
 
@@ -21,10 +21,10 @@ Crearé un script que se ejecutará en el servidor para realizar las siguientes 
 
 ## 3. Verificación
 - Comprobar que el error "502 Bad Gateway" desaparece y es reemplazado por la API de Directus.
-- Validar acceso a `https://api.mevoyajapon.com/admin`.
+- Validar acceso a `https://directus.jizou.io/admin`.
 
 ## Credenciales Generadas (Guardar)
 Al finalizar, tendrás un nuevo acceso para el panel de Directus:
-- **URL:** `https://api.mevoyajapon.com/admin`
+- **URL:** `https://directus.jizou.io/admin`
 - **Usuario:** `admin@mevoyajapon.com`
 - **Contraseña:** `DirectusAdmin2026!`

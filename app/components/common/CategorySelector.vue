@@ -9,7 +9,7 @@
         class="flex flex-col items-center gap-2 p-2 rounded-xl border-2 transition-all"
         :class="[
           selected === category.key
-            ? 'border-teal-500 bg-teal-50'
+            ? 'border-red-500 bg-red-50'
             : 'border-gray-200 hover:border-gray-300 bg-white'
         ]"
         @click="$emit('update:modelValue', category.key)"

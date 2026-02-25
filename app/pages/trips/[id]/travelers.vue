@@ -14,6 +14,10 @@ import { toast } from 'vue-sonner'
 import { useDirectus } from '~/composables/useDirectus'
 import { useTrips } from '~/composables/useTrips'
 
+definePageMeta({
+  layout: 'dashboard'
+})
+
 const route = useRoute()
 const tripId = route.params.id as string
 const { user } = useUser()
@@ -124,7 +128,6 @@ const closeInviteModal = () => {
 </script>
 
 <template>
-  <NuxtLayout name="dashboard">
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
         <div class="space-y-6">
           <div class="flex justify-between items-center">
@@ -262,5 +265,4 @@ const closeInviteModal = () => {
       </DialogContent>
     </Dialog>
 
-  </NuxtLayout>
 </template>

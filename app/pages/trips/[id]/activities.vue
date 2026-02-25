@@ -36,6 +36,10 @@ import {
 import LocationMap from '~/components/maps/LocationMap.vue'
 
 
+definePageMeta({
+  layout: 'dashboard'
+})
+
 const route = useRoute()
 const tripId = route.params.id as string
 

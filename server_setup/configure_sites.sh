@@ -34,13 +34,13 @@ server {
 }
 EOF
 
-# 3. Nginx Configuration for api.mevoyajapon.com
-echo "Configuring Nginx for api.mevoyajapon.com..."
-cat <<EOF > /etc/nginx/sites-available/api.mevoyajapon.com
+# 3. Nginx Configuration for directus.jizou.io
+echo "Configuring Nginx for directus.jizou.io..."
+cat <<EOF > /etc/nginx/sites-available/directus.jizou.io
 server {
     listen 80;
-    server_name api.mevoyajapon.com;
-    root /var/www/api.mevoyajapon.com;
+    server_name directus.jizou.io;
+    root /var/www/directus.jizou.io;
 
     # Increase upload size limit to 50MB
     client_max_body_size 50M;
@@ -58,7 +58,7 @@ EOF
 
 # Enable sites
 ln -sf /etc/nginx/sites-available/mevoyajapon.com /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/api.mevoyajapon.com /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/directus.jizou.io /etc/nginx/sites-enabled/
 
 # Disable default if exists
 rm -f /etc/nginx/sites-enabled/default
@@ -83,7 +83,7 @@ apt-get install -y certbot python3-certbot-nginx
 # I'll use a placeholder email admin@mevoyajapon.com
 certbot --nginx -d mevoyajapon.com -d www.mevoyajapon.com --non-interactive --agree-tos -m admin@mevoyajapon.com --redirect
 
-certbot --nginx -d api.mevoyajapon.com --non-interactive --agree-tos -m admin@mevoyajapon.com --redirect
+certbot --nginx -d directus.jizou.io --non-interactive --agree-tos -m admin@mevoyajapon.com --redirect
 
 # 6. Maintenance Scripts
 echo "Creating backup script..."

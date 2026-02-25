@@ -1,7 +1,7 @@
 #!/bin/bash
-# Script to update Nginx client_max_body_size for api.mevoyajapon.com
+# Script to update Nginx client_max_body_size for directus.jizou.io
 
-CONFIG_FILE="/etc/nginx/sites-available/api.mevoyajapon.com"
+CONFIG_FILE="/etc/nginx/sites-available/directus.jizou.io"
 
 echo "Updating Nginx configuration for upload limit..."
 
@@ -11,7 +11,7 @@ if grep -q "client_max_body_size" "$CONFIG_FILE"; then
 else
     echo "Adding client_max_body_size 50M to $CONFIG_FILE"
     # Insert after 'root ...;' line
-    sudo sed -i '/root \/var\/www\/api.mevoyajapon.com;/a \    \n    # Increase upload size limit\n    client_max_body_size 50M;' "$CONFIG_FILE"
+    sudo sed -i '/root \/var\/www\/directus.jizou.io;/a \    \n    # Increase upload size limit\n    client_max_body_size 50M;' "$CONFIG_FILE"
 fi
 
 echo "Testing Nginx configuration..."

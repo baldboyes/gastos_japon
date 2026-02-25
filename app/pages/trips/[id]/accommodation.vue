@@ -45,6 +45,10 @@ import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import { type Task } from '~/types/tasks'
 
+definePageMeta({
+  layout: 'dashboard'
+})
+
 const route = useRoute()
 const tripId = route.params.id as string
 
@@ -121,7 +125,6 @@ const getNights = (start: string, end: string) => {
 </script>
 
 <template>
-  <NuxtLayout name="dashboard">
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         
@@ -344,5 +347,4 @@ const getNights = (start: string, end: string) => {
       @saved="onSaved"
     />
 
-  </NuxtLayout>
 </template>

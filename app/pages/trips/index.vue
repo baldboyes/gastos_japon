@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+
+definePageMeta({
+  middleware: 'auth'
+})
+
 import { 
   Plus, 
   MapPin, 
@@ -13,7 +18,7 @@ import {
 
 import { fileUrl } from '~/utils/directusFiles'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
-import SecureImage from '~/components/ui/SecureImage.vue'
+import { SecureImage } from '~/components/ui/SecureImage'
 import { Button } from '~/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '~/components/ui/card'
 import {
@@ -117,14 +122,8 @@ const handleImageError = (event: Event) => {
 </script>
 
 <template>
-  <NuxtLayout name="default">
-    <header class="flex h-18 shrink-0 items-center gap-2 px-6 sticky top-0 z-10 mb-6">
-      <AppLogo />
-      <div class="ml-auto flex items-center gap-4">
-        <HeaderUserMenu />
-      </div>
-    </header>
-    <div class="max-w-4xl mx-auto p-4 space-y-6">
+
+    <div class="max-w-4xl mx-auto p-4 space-y-6 pt-42">
       <SignedIn>
         <div class="flex justify-between items-center">
           <div>
@@ -132,7 +131,7 @@ const handleImageError = (event: Event) => {
             <p class="text-muted-foreground">Gestiona tus aventuras y presupuestos.</p>
           </div>
           <Button @click="openCreateDialog">
-            <Plus class="mr-2 h-4 w-4" /> Nuevo Viaje
+            <Plus class="mr-2 h-4 w-4" /> Nuevo
           </Button>
         </div>
 
@@ -151,11 +150,10 @@ const handleImageError = (event: Event) => {
 
         <!-- Grid de Viajes -->
         <div v-else class="space-y-12">
-          
           <!-- Próximos Viajes -->
           <div v-if="upcomingTrips.length > 0">
             <h2 class="text-2xl font-bold mb-4" v-if="pastTrips.length > 0">Próximos Viajes</h2>
-            <div class="grid gap-6" :class="{'grid-cols-1': upcomingTrips.length === 1, 'grid-cols-2': upcomingTrips.length > 1}">
+            <div class="grid gap-6 grid-cols-1" :class="{'lg:grid-cols-1': upcomingTrips.length === 1, 'lg:grid-cols-2': upcomingTrips.length > 1}">
               <Card v-for="trip in upcomingTrips" :key="trip.id" class="hover:shadow-md transition-shadow overflow-hidden rounded-2xl border border-slate-200">
                 <div class="aspect-video w-full overflow-hidden bg-muted relative -mt-6">
                   <img 
@@ -296,7 +294,6 @@ const handleImageError = (event: Event) => {
           :trip-to-edit="tripToEdit" 
           @saved="fetchTrips" 
         />
-
         <!-- Alert Dialog Confirmación -->
         <AlertDialog v-model:open="isDeleteOpen">
           <AlertDialogContent>
@@ -314,10 +311,7 @@ const handleImageError = (event: Event) => {
         </AlertDialog>
 
       </SignedIn>
-
-      <!-- Viajes en Grupo - Componente autónomo -->
-      <GroupTripsList />
-
     </div>
-  </NuxtLayout>
+    <!-- Viajes en Grupo - Componente autónomo -->
+    <GroupTripsList />
 </template>

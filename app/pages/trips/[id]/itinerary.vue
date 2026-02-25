@@ -13,6 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
 
+definePageMeta({
+  layout: 'dashboard'
+})
+
 const route = useRoute()
 const tripId = route.params.id as string
 

@@ -35,7 +35,12 @@ onMounted(() => {
   mapboxgl.accessToken = MAPBOX_TOKEN
 
   // Calculate center and bounds from expenses
-  const validExpenses = props.expenses.filter(e => e.location.coordinates.lat !== 0 && e.location.coordinates.lng !== 0)
+  const validExpenses = props.expenses.filter(e => 
+    e.location.coordinates.lat !== 0 && 
+    e.location.coordinates.lng !== 0 && 
+    !isNaN(e.location.coordinates.lat) && 
+    !isNaN(e.location.coordinates.lng)
+  )
 
   let center: [number, number] = [139.6917, 35.6895] // Default to Tokyo
   let zoom = 5
@@ -99,7 +104,12 @@ function addMarkers() {
   // Add new markers
   props.expenses.forEach(expense => {
     // Skip expenses without valid coordinates
-    if (expense.location.coordinates.lat === 0 && expense.location.coordinates.lng === 0) {
+    if (
+      expense.location.coordinates.lat === 0 || 
+      expense.location.coordinates.lng === 0 || 
+      isNaN(expense.location.coordinates.lat) || 
+      isNaN(expense.location.coordinates.lng)
+    ) {
       return
     }
 

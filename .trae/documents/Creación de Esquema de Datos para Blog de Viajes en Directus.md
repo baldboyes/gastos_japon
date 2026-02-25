@@ -3,7 +3,7 @@
 Configuraremos el servidor para que acepte usuarios autenticados por tu instancia de Clerk sin necesidad de configuraciones OIDC complejas o de pago.
 
 ## 1. Configuración del Servidor
-Usaré tus credenciales para configurar el driver de autenticación en `/var/www/api.mevoyajapon.com/.env`.
+Usaré tus credenciales para configurar el driver de autenticación en `/var/www/directus.jizou.io/.env`.
 
 **Variables a inyectar:**
 -   `AUTH_PROVIDERS="clerk"`

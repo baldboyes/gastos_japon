@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-ENV_FILE="/var/www/api.mevoyajapon.com/.env"
+ENV_FILE="/var/www/directus.jizou.io/.env"
 
 echo "Configuring CORS..."
 

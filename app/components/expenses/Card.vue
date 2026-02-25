@@ -21,7 +21,7 @@
               {{ expense.placeName }}
             </h3>
             <div class="flex-shrink-0 font-bold text-gray-900">
-              {{ formatAmount(expense.amount) }}
+              {{ formattedAmount }}
             </div>
           </div>
           <div class="flex items-center gap-2 justify-between">
@@ -60,14 +60,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Expense } from '~/types'
 import { getCategoryInfo } from '~/types'
 import { formatTime } from '~/utils/dates'
+import { useCurrency } from '~/composables/useCurrency'
+import { CURRENCIES } from '~/composables/useSettings'
+import CommonPaymentMethodBadge from '~/components/common/PaymentMethodBadge.vue'
 
-const { formatAmount } = useCurrency()
+const { formatAmount: globalFormat } = useCurrency()
 
 interface Props {
   expense: Expense
+  currency?: string
 }
 
 const props = defineProps<Props>()
@@ -77,4 +82,12 @@ defineEmits<{
 }>()
 
 const categoryInfo = computed(() => getCategoryInfo(props.expense.category))
+
+const formattedAmount = computed(() => {
+  if (props.currency) {
+    const symbol = CURRENCIES.find(c => c.code === props.currency)?.symbol || '$'
+    return `${symbol}${props.expense.amount.toLocaleString()}`
+  }
+  return globalFormat(props.expense.amount)
+})
 </script>

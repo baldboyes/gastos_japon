@@ -1,5 +1,5 @@
 /**
- * Application types for Me voy a Japón
+ * Application types for jizou.io
  */
 
 export type ExpenseCategory = 'food' | 'transport' | 'accommodation' | 'entertainment' | 'shopping' | 'other'
@@ -38,6 +38,24 @@ export interface PlannedExpense {
   location: Location
   paymentMethod: PaymentMethod
   shared: boolean
+}
+
+export interface TripExpense {
+  id: number | string
+  fecha: string
+  concepto: string
+  monto: number
+  categoria: string
+  notes: string // Renamed from descripcion
+  metodo_pago: string
+  es_compartido: boolean
+  viaje_id: number | string
+  ubicacion_lat?: number
+  ubicacion_lng?: number
+  ciudad?: string
+  prefectura?: string
+  moneda?: string
+  estado?: 'real' | 'previsto'
 }
 
 export type Currency = string
