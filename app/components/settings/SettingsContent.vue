@@ -3,23 +3,19 @@
 
     <DrawerHeader class="w-full max-w-xl mx-auto px-0">
       <div class="flex items-center justify-between mb-2">
-        <DrawerTitle>Notificaciones</DrawerTitle>
-        <Button v-if="unreadCount > 0" size="sm" @click="markAllAsRead">
-          Marcar todo como leído
-        </Button>
+        <DrawerTitle>Configuración del viaje</DrawerTitle>
       </div>
     </DrawerHeader>
     <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
       <div class="max-w-xl mx-auto flex gap-16 flex-col lg:flex-row pr-4 pb-8">
 
     <div class="space-y-6">
-      <!-- Account Settings -->
+<!-- Account Settings 
       <Card>
         <CardHeader>
           <CardTitle class="text-lg">Cuenta</CardTitle>
         </CardHeader>
         <CardContent>
-          <!-- Signed In State -->
           <SignedIn>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -31,7 +27,6 @@
                   </div>
                 </div>
               </div>
-              
               <SignOutButton>
                 <Button variant="outline" class="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
@@ -44,8 +39,6 @@
               </SignOutButton>
             </div>
           </SignedIn>
-
-          <!-- Signed Out State -->
           <SignedOut>
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div class="flex items-center gap-3">
@@ -75,7 +68,7 @@
           </SignedOut>
         </CardContent>
       </Card>
-
+-->
       <!-- Currency Setting -->
       <Card>
         <CardHeader>
