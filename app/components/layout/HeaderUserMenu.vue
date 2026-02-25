@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Bell, LogOut, ChevronsUpDown, User } from 'lucide-vue-next'
+import { Bell, LogOut, ChevronsUpDown, User, Settings } from 'lucide-vue-next'
 import { useNotifications } from '~/composables/useNotifications'
 import NotificationsContent from '~/components/notifications/NotificationsContent.vue'
+import PreferencesDrawer from '~/components/settings/PreferencesDrawer.vue'
 import {
   Drawer,
   DrawerContent,
@@ -23,6 +24,7 @@ const router = useRouter()
 const { user } = useUser()
 const clerk = useClerk()
 const { unreadCount, fetchNotifications } = useNotifications()
+const isPreferencesOpen = ref(false)
 
 // Fetch notifications count on mount
 onMounted(() => {
@@ -82,11 +84,21 @@ const handleLogout = async () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem @click="isPreferencesOpen = true" class="cursor-pointer">
+          <Settings class="mr-2 h-4 w-4" />
+          Preferencias
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem @click="handleLogout" class="cursor-pointer text-red-600 focus:text-red-600">
           <LogOut class="mr-2 h-4 w-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <!-- Preferences Drawer -->
+    <Drawer v-model:open="isPreferencesOpen">
+      <PreferencesDrawer />
+    </Drawer>
   </div>
 </template>
