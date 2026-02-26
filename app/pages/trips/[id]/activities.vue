@@ -9,7 +9,7 @@ import { formatTime, formatDateTime, formatDateWithDayShort } from '~/utils/date
 import { formatCurrency } from '~/utils/currency'
 import { cn } from '~/lib/utils'
 import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import ActivityDrawer from '~/components/trips/modals/ActivityDrawer.vue'
+import ActivityDrawer from '~/components/trips/drawers/ActivityDrawer.vue'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
 import TaskModal from '~/components/trips/tasks/TaskModal.vue'

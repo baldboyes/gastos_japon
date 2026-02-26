@@ -38,7 +38,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import TripDrawer from '~/components/trips/modals/TripDrawer.vue'
+import TripDrawer from '~/components/trips/drawers/TripDrawer.vue'
 import GroupTripsList from '~/components/trips/GroupTripsList.vue'
 import UserAvatar from '~/components/common/UserAvatar.vue'
 import { formatDateWithDayShort, formatDate } from '~/utils/dates'

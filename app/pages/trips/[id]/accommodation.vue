@@ -12,7 +12,7 @@ import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
 import { Button } from '~/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
-import AccommodationDrawer from '~/components/trips/modals/AccommodationDrawer.vue'
+import AccommodationDrawer from '~/components/trips/drawers/AccommodationDrawer.vue'
 import LocationMap from '~/components/maps/LocationMap.vue'
 import {
   Tooltip,
