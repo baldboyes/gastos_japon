@@ -40,7 +40,7 @@ const navItems = [
   { label: 'Actividades', icon: Ticket, path: `/trips/${tripId}/activities` },
   { label: 'Seguros', icon: Shield, path: `/trips/${tripId}/insurance` },
   { label: 'Viajeros', icon: Users, path: `/trips/${tripId}/travelers` },
-  { label: 'Gastos y Cartera', icon: History, path: `/trips/${tripId}/gastos` },
+  //{ label: 'Gastos y Cartera', icon: History, path: `/trips/${tripId}/gastos` },
   { label: 'Gastos Día', icon: Banknote, path: `/trips/${tripId}/gastos-dia` },
 ]
 

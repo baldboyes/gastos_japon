@@ -1,5 +1,24 @@
 <template>
     <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
+
+      <!-- Today's Accommodation -->
+      <div v-if="currentAccommodation" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
+        <div class="bg-indigo-50 p-3 rounded-full text-indigo-600 shrink-0">
+          <BedDouble class="w-6 h-6" />
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-gray-900 truncate pr-2">Noche en {{ currentAccommodation.nombre }}</h3>
+            <a v-if="currentAccommodation.enlace_google" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+              <ExternalLink class="w-4 h-4" />
+            </a>
+          </div>
+          <div class="text-sm text-gray-500 flex items-center gap-1 mt-0.5 truncate">
+            <MapPin class="w-3 h-3 shrink-0" />
+            <span class="truncate">{{ currentAccommodation.ubicacion?.city || currentAccommodation.ciudad || 'Ubicación desconocida' }}</span>
+          </div>
+        </div>
+      </div>
       
       <!-- Daily Budget Card -->
       <DashboardTripDailyBudget 
@@ -106,6 +125,8 @@ import { useRoute } from 'vue-router'
 import { formatDate, getDateString } from '~/utils/dates'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
+import { BedDouble, MapPin, ExternalLink } from 'lucide-vue-next'
+import { startOfDay, parseISO } from 'date-fns'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -121,6 +142,7 @@ import DashboardTripDailyBudget from '~/components/dashboard/TripDailyBudget.vue
 import ExpensesPlannedCard from '~/components/expenses/PlannedCard.vue'
 import ExpensesCard from '~/components/expenses/Card.vue'
 import { useTripExpenses } from '~/composables/useTripExpenses'
+import { useTripOrganization } from '~/composables/useTripOrganization'
 import { useTrips } from '~/composables/useTrips'
 import { CURRENCIES } from '~/composables/useSettings'
 import { getCategoryFromDirectus, getPaymentMethodFromDirectus } from '~/utils/directus-mappings'
@@ -134,13 +156,27 @@ const route = useRoute()
 const tripId = computed(() => route.params.id as string)
 
 const { expenses: rawExpenses, fetchExpenses, updateExpense, deleteExpense } = useTripExpenses()
+const { alojamientos, fetchOrganizationData } = useTripOrganization()
 const { currentTrip } = useTrips()
 
 // Load data
 onMounted(() => {
   if (tripId.value) {
     fetchExpenses(tripId.value)
+    fetchOrganizationData(tripId.value)
   }
+})
+
+const currentAccommodation = computed(() => {
+  const today = startOfDay(new Date())
+  
+  return alojamientos.value.find(a => {
+    if (!a.fecha_entrada || !a.fecha_salida) return false
+    const start = startOfDay(parseISO(a.fecha_entrada))
+    const end = startOfDay(parseISO(a.fecha_salida))
+    
+    return today >= start && today < end
+  })
 })
 
 // Budget from Trip

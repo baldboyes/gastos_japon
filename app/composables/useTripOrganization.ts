@@ -248,7 +248,7 @@ export const useTripOrganization = () => {
           type: 'activity',
           date: parseISO(dateStr),
           title: act.nombre,
-          subtitle: act.tipo.charAt(0).toUpperCase() + act.tipo.slice(1),
+          subtitle: act.tipo ? act.tipo.charAt(0).toUpperCase() + act.tipo.slice(1) : 'Actividad',
           originalItem: act
         })
       }
