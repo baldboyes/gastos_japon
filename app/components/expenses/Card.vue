@@ -1,11 +1,11 @@
 <template>
   <Card
-    class="hover:shadow-md transition-shadow cursor-pointer relative"
-    :class="{ 'border-l-[4px] border-l-yellow-400': expense.shared }"
+    class="hover:shadow-md transition-shadow cursor-pointer relative !border-l-[4px] !p-0 !rounded-xl border"
+    :class="categoryBorderColor"
     @click="$emit('click', expense)"
   >
-    <CardContent class="px-4">
-      <div class="flex items-start gap-3">
+    <CardContent class="">
+      <div class="flex items-start justify-between gap-2 py-4">
         <!-- Category Icon -->
         <div
           class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
@@ -16,7 +16,7 @@
 
         <!-- Content -->
         <div class="flex-1 min-w-0">
-          <div class="flex items-start justify-between gap-2 mb-1">
+          <div class="flex items-center justify-between gap-1">
             <h3 class="font-semibold text-gray-900 truncate">
               {{ expense.placeName }}
             </h3>
@@ -24,9 +24,9 @@
               {{ formattedAmount }}
             </div>
           </div>
-          <div class="flex items-center gap-2 justify-between">
+          <div class="flex items-center justify-between gap-1">
             <!-- Time and Location -->
-            <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
               <div class="flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"/>
@@ -60,34 +60,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Expense } from '~/types'
-import { getCategoryInfo } from '~/types'
-import { formatTime } from '~/utils/dates'
-import { useCurrency } from '~/composables/useCurrency'
-import { CURRENCIES } from '~/composables/useSettings'
-import CommonPaymentMethodBadge from '~/components/common/PaymentMethodBadge.vue'
+  import { computed } from 'vue'
+  import { Card, CardContent } from '~/components/ui/card'
+  import type { Expense } from '~/types'
+  import { getCategoryInfo } from '~/types'
+  import { formatTime } from '~/utils/dates'
+  import { useCurrency } from '~/composables/useCurrency'
+  import { CURRENCIES } from '~/composables/useSettings'
+  import CommonPaymentMethodBadge from '~/components/common/PaymentMethodBadge.vue'
 
-const { formatAmount: globalFormat } = useCurrency()
+  const { formatAmount: globalFormat } = useCurrency()
 
-interface Props {
-  expense: Expense
-  currency?: string
-}
-
-const props = defineProps<Props>()
-
-defineEmits<{
-  click: [expense: Expense]
-}>()
-
-const categoryInfo = computed(() => getCategoryInfo(props.expense.category))
-
-const formattedAmount = computed(() => {
-  if (props.currency) {
-    const symbol = CURRENCIES.find(c => c.code === props.currency)?.symbol || '$'
-    return `${symbol}${props.expense.amount.toLocaleString()}`
+  interface Props {
+    expense: Expense
+    currency?: string
   }
-  return globalFormat(props.expense.amount)
-})
+
+  const props = defineProps<Props>()
+
+  defineEmits<{
+    click: [expense: Expense]
+  }>()
+
+  const categoryInfo = computed(() => getCategoryInfo(props.expense.category))
+
+  const categoryBorderColor = computed(() => {
+    return categoryInfo.value.borderColor
+  })
+
+  const formattedAmount = computed(() => {
+    if (props.currency) {
+      const symbol = CURRENCIES.find(c => c.code === props.currency)?.symbol || '$'
+      return `${symbol}${props.expense.amount.toLocaleString()}`
+    }
+    return globalFormat(props.expense.amount)
+  })
 </script>

@@ -10,10 +10,9 @@
 
       <!-- Planned Expenses -->
       <div v-if="todaysPlannedExpenses.length > 0">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
-            <span>📋</span>
-            <span>Gastos Previstos Hoy</span>
+        <div class="flex items-center justify-between mb-3 w-full">
+          <h2 class="text-lg font-semibold text-gray-700 flex items-center justify-between gap-2 w-full">
+            <span>Gastos previstos</span>
             <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
           </h2>
         </div>
@@ -24,19 +23,21 @@
             :planned-expense="planned"
             :currency="budget.currency || undefined"
             @click="handlePlannedExpenseClick"
+            @delete="handleDeletePlanned"
           />
         </div>
       </div>
 
       <!-- Today's Expenses -->
       <div>
+        <!--
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-lg font-semibold text-gray-900">{{ currentDate }}</h3>
           <div class="text-sm font-medium text-gray-600">
             Total: {{ formatAmount(todayTotal) }}
           </div>
         </div>
-
+        -->
         <!-- Empty State -->
         <div
           v-if="todayExpensesMapped.length === 0"
@@ -60,25 +61,15 @@
       </div>
 
       <!-- Floating Action Button -->
-      <div class="fixed bottom-6 right-6 z-50 md:hidden">
+      <div class="fixed bottom-6 right-6 z-50">
         <Button
-          class="h-14 w-14 rounded-full shadow-lg bg-teal-600 hover:bg-teal-700 p-0"
+          class="h-14 w-14 rounded-full shadow-lg bg-red-400 hover:bg-red-500 p-0"
           @click="handleAdd"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-        </Button>
-      </div>
-      
-      <!-- Desktop Add Button -->
-      <div class="hidden md:flex justify-center mt-8">
-        <Button @click="handleAdd" class="bg-teal-600 h-12 px-8 text-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <path d="M12 5v14"/><path d="M5 12h14"/>
-          </svg>
-          Agregar Gasto
         </Button>
       </div>
 
@@ -90,6 +81,22 @@
         :trip-moneda="budget.currency"
         @success="handleDrawerSuccess"
       />
+
+      <!-- Delete Confirmation Dialog -->
+      <AlertDialog v-model:open="isDeletePlannedOpen">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar gasto previsto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se eliminará "{{ plannedExpenseToDelete?.placeName }}" de los gastos previstos. Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction @click="confirmDeletePlanned" class="bg-red-600 hover:bg-red-700 text-white">Eliminar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
 </template>
 
@@ -99,6 +106,16 @@ import { useRoute } from 'vue-router'
 import { formatDate, getDateString } from '~/utils/dates'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 import ExpenseDrawer from '~/components/expenses/ExpenseDrawer.vue'
 import DashboardTripDailyBudget from '~/components/dashboard/TripDailyBudget.vue'
 import ExpensesPlannedCard from '~/components/expenses/PlannedCard.vue'
@@ -116,7 +133,7 @@ definePageMeta({
 const route = useRoute()
 const tripId = computed(() => route.params.id as string)
 
-const { expenses: rawExpenses, fetchExpenses, updateExpense } = useTripExpenses()
+const { expenses: rawExpenses, fetchExpenses, updateExpense, deleteExpense } = useTripExpenses()
 const { currentTrip } = useTrips()
 
 // Load data
@@ -248,6 +265,24 @@ async function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
     })
     
     fetchExpenses(tripId.value)
+  }
+}
+
+// Delete Planned Expense Logic
+const isDeletePlannedOpen = ref(false)
+const plannedExpenseToDelete = ref<PlannedExpense | null>(null)
+
+function handleDeletePlanned(planned: PlannedExpense) {
+  plannedExpenseToDelete.value = planned
+  isDeletePlannedOpen.value = true
+}
+
+async function confirmDeletePlanned() {
+  if (plannedExpenseToDelete.value) {
+    await deleteExpense(plannedExpenseToDelete.value.id)
+    fetchExpenses(tripId.value)
+    isDeletePlannedOpen.value = false
+    plannedExpenseToDelete.value = null
   }
 }
 </script>

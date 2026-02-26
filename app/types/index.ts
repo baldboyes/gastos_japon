@@ -80,15 +80,16 @@ export interface CategoryInfo {
   label: string
   icon: string
   color: string
+  borderColor: string
 }
 
 export const CATEGORIES: CategoryInfo[] = [
-  { key: 'food', label: 'Comida y Bebida', icon: '🍜', color: 'bg-orange-500' },
-  { key: 'transport', label: 'Transporte', icon: '🚇', color: 'bg-blue-500' },
-  { key: 'accommodation', label: 'Alojamiento', icon: '🏨', color: 'bg-purple-500' },
-  { key: 'entertainment', label: 'Entradas', icon: '⛩️', color: 'bg-pink-500' },
-  { key: 'shopping', label: 'Compras', icon: '🛍️', color: 'bg-green-500' },
-  { key: 'other', label: 'Otros', icon: '📦', color: 'bg-gray-500' },
+  { key: 'food', label: 'Comida y Bebida', icon: '🍜', color: 'bg-orange-400', borderColor: 'border-orange-400' },
+  { key: 'transport', label: 'Transporte', icon: '🚇', color: 'bg-blue-400', borderColor: 'border-blue-400' },
+  { key: 'accommodation', label: 'Alojamiento', icon: '🏨', color: 'bg-purple-400', borderColor: 'border-purple-400' },
+  { key: 'entertainment', label: 'Entradas', icon: '⛩️', color: 'bg-pink-400', borderColor: 'border-pink-400' },
+  { key: 'shopping', label: 'Compras', icon: '🛍️', color: 'bg-green-400', borderColor: 'border-green-400' },
+  { key: 'other', label: 'Otros', icon: '📦', color: 'bg-gray-400', borderColor: 'border-gray-400' },
 ]
 
 /**

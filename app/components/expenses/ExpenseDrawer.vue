@@ -207,6 +207,17 @@
       <DrawerFooter class="max-w-3xl mx-auto w-full">
         <div class="flex gap-3 w-full">
           <Button
+            v-if="isEditMode"
+            type="button"
+            variant="ghost"
+            class="text-red-600 hover:text-red-700 hover:bg-red-50 h-14 w-14 p-0 shrink-0 border border-red-200"
+            @click="showDeleteConfirm = true"
+            :disabled="isSubmitting"
+          >
+            <Trash2 class="h-6 w-6" />
+          </Button>
+
+          <Button
             v-if="!isEditMode"
             type="button"
             variant="outline"
@@ -256,11 +267,28 @@
       </DialogFooter>
     </DialogContent>
   </Dialog>
+
+  <!-- Delete Confirmation Dialog -->
+  <AlertDialog v-model:open="showDeleteConfirm">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>¿Eliminar gasto?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Esta acción no se puede deshacer. Se eliminará permanentemente el gasto "{{ form.placeName }}".
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+        <AlertDialogAction @click="handleDelete" class="bg-red-600 hover:bg-red-700 text-white">Eliminar</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, reactive } from 'vue'
 import { toast } from 'vue-sonner'
+import { Trash2 } from 'lucide-vue-next'
 import { 
   Drawer, 
   DrawerContent, 
@@ -269,6 +297,16 @@ import {
   DrawerFooter,
   DrawerDescription 
 } from '~/components/ui/drawer'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 import {
   Dialog,
   DialogContent,
@@ -311,7 +349,7 @@ const currencySymbol = computed(() => {
   return currencyInfo?.symbol || '$'
 })
 
-const { createExpense, updateExpense } = useTripExpenses()
+const { createExpense, updateExpense, deleteExpense } = useTripExpenses()
 const { getCurrentLocation } = useGeolocation()
 
 // Check if we're in edit mode
@@ -339,6 +377,7 @@ const form = reactive({
 const isSubmitting = ref(false)
 const locationCaptured = ref(false)
 const showMapEditor = ref(false)
+const showDeleteConfirm = ref(false)
 
 // Reset form when drawer opens/closes or edit mode changes
 watch(() => props.open, async (newVal) => {
@@ -512,6 +551,24 @@ async function handleSavePlanned() {
   } catch (error) {
     console.error('Error saving planned expense:', error)
     toast.error('Error al guardar el gasto previsto')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+async function handleDelete() {
+  if (!props.expenseToEdit || isSubmitting.value) return
+
+  isSubmitting.value = true
+  try {
+    await deleteExpense(props.expenseToEdit.id as number | string)
+    toast.success('Gasto eliminado')
+    emit('success')
+    isOpen.value = false
+    showDeleteConfirm.value = false
+  } catch (error) {
+    console.error('Error deleting expense:', error)
+    toast.error('Error al eliminar el gasto')
   } finally {
     isSubmitting.value = false
   }

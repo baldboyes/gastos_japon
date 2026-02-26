@@ -68,7 +68,7 @@ const isScrolled = computed(() => y.value > 20)
 
           <!-- Usuario No Logueado -->
           <SignedOut>
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" force-redirect-url="/">
               <Button variant="link" size="sm" class="text-base font-medium">
                 Ver mis viajes
               </Button>

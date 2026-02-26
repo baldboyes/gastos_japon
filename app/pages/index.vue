@@ -171,18 +171,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Banknote, Quote, Wallet, Zap, ChevronDown, Plane, CalendarCheck } from 'lucide-vue-next'
 import { useAuth } from '#imports'
 
 const { userId, isLoaded } = useAuth()
+const { handleSmartRedirect } = useTripRedirect()
 
-watchEffect(() => {
-  if (isLoaded.value && userId.value) {
-    navigateTo('/trips')
+watch([isLoaded, userId], async ([loaded, uid]) => {
+  if (loaded && uid) {
+    await handleSmartRedirect()
   }
-})
+}, { immediate: true })
 
 const faqs = ref([
   {
