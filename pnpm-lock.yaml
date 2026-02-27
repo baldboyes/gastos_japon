@@ -47,6 +47,9 @@ importers:
       nuxt:
         specifier: ^4.1.3
         version: 4.1.3(@parcel/watcher@2.5.1)(@types/node@25.0.3)(@vue/compiler-sfc@3.5.22)(db0@0.3.4)(ioredis@5.8.1)(lightningcss@1.30.1)(magicast@0.3.5)(rollup@4.52.4)(terser@5.44.0)(typescript@5.9.3)(vite@7.1.10(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(yaml@2.8.1)
+      nuxt-i18n-micro:
+        specifier: ^3.12.0
+        version: 3.12.0(magicast@0.3.5)(vite@7.1.10(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.6.3(vue@3.5.22(typescript@5.9.3)))
       nuxt-swiper:
         specifier: ^2.0.1
         version: 2.0.1(magicast@0.3.5)
@@ -841,6 +844,25 @@ packages:
 
   '@floating-ui/vue@1.1.9':
     resolution: {integrity: sha512-BfNqNW6KA83Nexspgb9DZuz578R7HT8MZw1CfK9I6Ah4QReNWEJsXWHN+SdmOVLNGmTPDi+fDT535Df5PzMLbQ==}
+
+  '@i18n-micro/core@1.2.0':
+    resolution: {integrity: sha512-ctUT6QcuNWQ01iMBrhW6zMTS64oq3JRBPpYNdKcGa/AbuyhSSaVptfuo34I4fZgD507C320Cf2wCCYiZ1tpe3w==}
+
+  '@i18n-micro/path-strategy@1.3.0':
+    resolution: {integrity: sha512-7qqPLeROwI69hmPGG6ktwKpryxM9xhKJlYZry4xeUlNF4Jkv8NSNAZoIIdggJX5m5+SP4U0VzLe1Ly/7Kt/NBQ==}
+
+  '@i18n-micro/route-strategy@1.1.4':
+    resolution: {integrity: sha512-m9e8TqD13wA5R+AZd6ed2cA8Rp4RPUd30qjrrO7eo0iVIX9Lqjq7wnj3cSx4PVZ+kkJCM7457VPQQRr2xrKrVA==}
+    engines: {node: '>=18'}
+
+  '@i18n-micro/test-utils@1.2.0':
+    resolution: {integrity: sha512-jKykFyIT1jfa7zTG0qLx+RKroDqqw/jVDUkipks/XBYcHirRhbMMXKetVueU36H7+LRaiRWM4gi0a9mANcBVvQ==}
+
+  '@i18n-micro/types@1.1.5':
+    resolution: {integrity: sha512-88tb/cpfKxA6X5GkURO/dAb5MATNC0A3dBa4Zvh4VBcvl+RXLkJEIWcE4RrOyWdli7NCpuFDkUfM6zZN7px5Ng==}
+
+  '@i18n-micro/types@1.1.6':
+    resolution: {integrity: sha512-bHtQw+81t9CZGFb1JReMReuMi03RFmhzI/3AmZBANXVZ2/Cr9Xk0h6Xv7eXNonbVZOXI0lciWWISDnGGrG+wnQ==}
 
   '@img/colour@1.0.0':
     resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
@@ -1798,6 +1820,10 @@ packages:
     resolution: {integrity: sha512-7F/yz2IphV39hiS2zB4QYVkivrptHHh0K8qJJd9HhuWSdvf8AN7NpebW3CcDZDBQsUPMoDKWsY2WWgW7bqOcfA==}
     engines: {node: '>=18'}
 
+  '@sindresorhus/merge-streams@2.3.0':
+    resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
+    engines: {node: '>=18'}
+
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
@@ -2250,6 +2276,10 @@ packages:
     resolution: {integrity: sha512-Sg0xJUNDU1sJNGdfGWhVHX0kkZ+HWcvmVymJbj6NSgZZmW/8S9Y2HQ5euytnIgakgxN6papOAWiwDo1ctFDcoQ==}
     hasBin: true
 
+  binary-extensions@2.3.0:
+    resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
+    engines: {node: '>=8'}
+
   bindings@1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
 
@@ -2324,6 +2354,10 @@ packages:
 
   cheap-ruler@4.0.0:
     resolution: {integrity: sha512-0BJa8f4t141BYKQyn9NSQt1PguFQXMXwZiA5shfoaBYHAb2fFk2RAX+tiWMoQU+Agtzt3mdt0JtuyshAXqZ+Vw==}
+
+  chokidar@3.6.0:
+    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
+    engines: {node: '>= 8.10.0'}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -2943,6 +2977,10 @@ packages:
     resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
     engines: {node: '>= 0.4'}
 
+  globby@14.1.0:
+    resolution: {integrity: sha512-0Ia46fDOaT7k4og1PDW4YbodWWr3scS2vAr2lTbsplOt2WkKp0vQbkI9wKis/T5LV/dqPjO3bpS/z6GTJB82LA==}
+    engines: {node: '>=18'}
+
   globby@15.0.0:
     resolution: {integrity: sha512-oB4vkQGqlMl682wL1IlWd02tXCbquGWM4voPEI85QmNKCaw8zGTm1f1rubFgkg3Eli2PtKlFgrnmUqasbQWlkw==}
     engines: {node: '>=20'}
@@ -3062,6 +3100,10 @@ packages:
   is-bigint@1.1.0:
     resolution: {integrity: sha512-n4ZT37wG78iz03xPRKJrHTdZbe3IicyucEtdRsV5yglwc3GyUfbAfpSeD0FJ41NbUNSt5wbhqfp1fS+BgnvDFQ==}
     engines: {node: '>= 0.4'}
+
+  is-binary-path@2.1.0:
+    resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
+    engines: {node: '>=8'}
 
   is-boolean-object@1.2.2:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
@@ -3622,6 +3664,11 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
+  nuxt-i18n-micro@3.12.0:
+    resolution: {integrity: sha512-/a7JAGRIkaEuImhVozpo0PYwpLRbYn6MTfX4r5DZidQzWvyLyOclunl5eMMp/Iv/aoo0JE9VqjRhrMsIqURE5A==}
+    peerDependencies:
+      vue-router: '>=4.4.0'
+
   nuxt-swiper@2.0.1:
     resolution: {integrity: sha512-mUAzuGqQHcsqJa1p5y/Hafvurn62o6njHq8DcwQErourkpJpv7z/SnnT0ezXMr7YvDPNg22ayEKGdHkGXXOxMQ==}
 
@@ -4052,6 +4099,10 @@ packages:
 
   readdir-glob@1.1.3:
     resolution: {integrity: sha512-v05I2k7xN8zXvPD9N+z/uhXPaj0sUFCe2rcWZIpBsqxfP7xXFQ0tipAd/wjj1YxWyWtUS5IDJpOG82JKt2EAVA==}
+
+  readdirp@3.6.0:
+    resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
+    engines: {node: '>=8.10.0'}
 
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
@@ -5931,6 +5982,28 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@i18n-micro/core@1.2.0':
+    dependencies:
+      '@i18n-micro/types': 1.1.5
+
+  '@i18n-micro/path-strategy@1.3.0':
+    dependencies:
+      '@i18n-micro/types': 1.1.5
+
+  '@i18n-micro/route-strategy@1.1.4':
+    dependencies:
+      '@i18n-micro/core': 1.2.0
+      '@i18n-micro/types': 1.1.6
+      '@nuxt/schema': 4.1.3
+
+  '@i18n-micro/test-utils@1.2.0':
+    dependencies:
+      '@i18n-micro/core': 1.2.0
+
+  '@i18n-micro/types@1.1.5': {}
+
+  '@i18n-micro/types@1.1.6': {}
+
   '@img/colour@1.0.0': {}
 
   '@img/sharp-darwin-arm64@0.34.4':
@@ -6818,6 +6891,8 @@ snapshots:
 
   '@sindresorhus/is@7.1.0': {}
 
+  '@sindresorhus/merge-streams@2.3.0': {}
+
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@speed-highlight/core@1.2.7': {}
@@ -7340,6 +7415,8 @@ snapshots:
 
   baseline-browser-mapping@2.9.11: {}
 
+  binary-extensions@2.3.0: {}
+
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
@@ -7432,6 +7509,18 @@ snapshots:
       '@kurkle/color': 0.3.4
 
   cheap-ruler@4.0.0: {}
+
+  chokidar@3.6.0:
+    dependencies:
+      anymatch: 3.1.3
+      braces: 3.0.3
+      glob-parent: 5.1.2
+      is-binary-path: 2.1.0
+      is-glob: 4.0.3
+      normalize-path: 3.0.0
+      readdirp: 3.6.0
+    optionalDependencies:
+      fsevents: 2.3.3
 
   chokidar@4.0.3:
     dependencies:
@@ -8103,6 +8192,15 @@ snapshots:
       define-properties: 1.2.1
       gopd: 1.2.0
 
+  globby@14.1.0:
+    dependencies:
+      '@sindresorhus/merge-streams': 2.3.0
+      fast-glob: 3.3.3
+      ignore: 7.0.5
+      path-type: 6.0.0
+      slash: 5.1.0
+      unicorn-magic: 0.3.0
+
   globby@15.0.0:
     dependencies:
       '@sindresorhus/merge-streams': 4.0.0
@@ -8243,6 +8341,10 @@ snapshots:
   is-bigint@1.1.0:
     dependencies:
       has-bigints: 1.1.0
+
+  is-binary-path@2.1.0:
+    dependencies:
+      binary-extensions: 2.3.0
 
   is-boolean-object@1.2.2:
     dependencies:
@@ -8833,6 +8935,26 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
+  nuxt-i18n-micro@3.12.0(magicast@0.3.5)(vite@7.1.10(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.6.3(vue@3.5.22(typescript@5.9.3))):
+    dependencies:
+      '@i18n-micro/core': 1.2.0
+      '@i18n-micro/path-strategy': 1.3.0
+      '@i18n-micro/route-strategy': 1.1.4
+      '@i18n-micro/test-utils': 1.2.0
+      '@i18n-micro/types': 1.1.6
+      '@nuxt/devtools-kit': 2.6.5(magicast@0.3.5)(vite@7.1.10(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))
+      '@nuxt/kit': 4.1.3(magicast@0.3.5)
+      chokidar: 3.6.0
+      globby: 14.1.0
+      ufo: 1.6.1
+      vue-router: 4.6.3(vue@3.5.22(typescript@5.9.3))
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.52.4
+      '@rollup/rollup-win32-x64-msvc': 4.52.4
+    transitivePeerDependencies:
+      - magicast
+      - vite
+
   nuxt-swiper@2.0.1(magicast@0.3.5):
     dependencies:
       '@nuxt/kit': 3.19.3(magicast@0.3.5)
@@ -9421,6 +9543,10 @@ snapshots:
   readdir-glob@1.1.3:
     dependencies:
       minimatch: 5.1.6
+
+  readdirp@3.6.0:
+    dependencies:
+      picomatch: 2.3.1
 
   readdirp@4.1.2: {}
 
