@@ -1,40 +1,42 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Bell, LogOut, ChevronsUpDown, User, Settings } from 'lucide-vue-next'
-import { useNotifications } from '~/composables/useNotifications'
-import NotificationsContent from '~/components/notifications/NotificationsContent.vue'
-import PreferencesDrawer from '~/components/settings/PreferencesDrawer.vue'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from '~/components/ui/drawer'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+  import { ref, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { Bell, LogOut, ChevronsUpDown, User, Settings } from 'lucide-vue-next'
+  import { useNotifications } from '~/composables/useNotifications'
+  import NotificationsContent from '~/components/notifications/NotificationsContent.vue'
+  import PreferencesDrawer from '~/components/settings/PreferencesDrawer.vue'
+  import { useI18n } from '#imports'
+  import {
+    Drawer,
+    DrawerContent,
+    DrawerTrigger,
+  } from '~/components/ui/drawer'
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from '~/components/ui/dropdown-menu'
+  import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 
-const router = useRouter()
-const { user } = useUser()
-const clerk = useClerk()
-const { unreadCount, fetchNotifications } = useNotifications()
-const isPreferencesOpen = ref(false)
+  const router = useRouter()
+  const { $localeRoute, $t } = useI18n()
+  const { user } = useUser()
+  const clerk = useClerk()
+  const { unreadCount, fetchNotifications } = useNotifications()
+  const isPreferencesOpen = ref(false)
 
-// Fetch notifications count on mount
-onMounted(() => {
-  fetchNotifications()
-})
+  // Fetch notifications count on mount
+  onMounted(() => {
+    fetchNotifications()
+  })
 
-const handleLogout = async () => {
-  await clerk.value?.signOut()
-  router.push('/')
-}
+  const handleLogout = async () => {
+    await clerk.value?.signOut()
+    router.push($localeRoute({ name: 'home' }) || '/')
+  }
 </script>
 
 <template>
@@ -74,11 +76,11 @@ const handleLogout = async () => {
             <Avatar class="h-8 w-8 rounded-full">
               <AvatarImage :src="user?.imageUrl || ''" :alt="user?.fullName || ''" />
               <AvatarFallback class="rounded-full bg-slate-100 text-slate-600">
-                 <User class="h-4 w-4" />
+                <User class="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">{{ user?.fullName || 'Usuario' }}</span>
+              <span class="truncate font-semibold">{{ user?.fullName || $t('user_menu.user') }}</span>
               <span class="truncate text-xs text-muted-foreground">{{ user?.primaryEmailAddress?.emailAddress || '' }}</span>
             </div>
           </div>
@@ -86,12 +88,12 @@ const handleLogout = async () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem @click="isPreferencesOpen = true" class="cursor-pointer">
           <Settings class="mr-2 h-4 w-4" />
-          Preferencias
+          {{ $t('user_menu.preferences') }}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem @click="handleLogout" class="cursor-pointer text-red-600 focus:text-red-600">
           <LogOut class="mr-2 h-4 w-4" />
-          Log out
+          {{ $t('user_menu.logout') }}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

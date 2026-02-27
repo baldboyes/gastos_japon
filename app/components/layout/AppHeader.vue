@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from '#imports'
 import { Button } from '@/components/ui/button'
 import AppLogo from '@/components/common/AppLogo.vue'
 import HeaderUserMenu from '@/components/layout/HeaderUserMenu.vue'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
 import { SignInButton, SignedIn, SignedOut, ClerkLoaded, ClerkLoading } from '@clerk/vue'
 import { useWindowScroll } from '@vueuse/core'
-import { Loader2 } from 'lucide-vue-next'
+import { CircleUserRound, Loader2 } from 'lucide-vue-next'
 
 const route = useRoute()
+const { $localeRoute } = useI18n()
 const { y } = useWindowScroll()
 const isScrolled = computed(() => y.value > 20)
 </script>
@@ -31,24 +34,24 @@ const isScrolled = computed(() => y.value > 20)
       <div class="flex items-center gap-4">
         
         <NuxtLink 
-          to="/precios" 
+          :to="$localeRoute({ name: 'precios' })"
           class="text-base font-medium transition-colors hidden sm:block hover:text-red-500"
-          :class="route.path === '/precios' ? 'text-red-400' : 'text-slate-600'"
+          :class="route.path.includes('/precios') || route.path.includes('/pricing') ? 'text-red-400' : 'text-slate-600'"
         >
-          Precios
+          {{ $t('header.pricing') }}
         </NuxtLink>
 
         <NuxtLink 
-          to="/tienda" 
+          :to="$localeRoute({ name: 'tienda' })" 
           class="text-base font-medium transition-colors hidden sm:block hover:text-red-500"
-          :class="route.path === '/tienda' ? 'text-red-400' : 'text-slate-600'"
+          :class="route.path.includes('/tienda') || route.path.includes('/shop') ? 'text-red-400' : 'text-slate-600'"
         >
-          Tienda
+          {{ $t('header.shop') }}
         </NuxtLink>
 
         <ClerkLoading>
-          <div class="flex items-center justify-center">
-             <Loader2 class="h-5 w-5 animate-spin text-slate-600" />
+          <div class="flex items-center justify-center w-9 px-0">
+            <Loader2 class="h-5! w-5! animate-spin text-slate-600" />
           </div>
         </ClerkLoading>
 
@@ -56,11 +59,11 @@ const isScrolled = computed(() => y.value > 20)
           <!-- Usuario Logueado -->
           <SignedIn>
             <NuxtLink 
-              to="/trips" 
+              :to="$localeRoute({ name: 'trips' })" 
               class="text-base font-medium transition-colors hidden sm:block hover:text-red-500"
-              :class="route.path.startsWith('/trips') ? 'text-red-400' : 'text-slate-600'"
+              :class="route.path.includes('/trips') ? 'text-red-400' : 'text-slate-600'"
             >
-              Mis Viajes
+              {{ $t('header.my_trips') }}
             </NuxtLink>
 
             <HeaderUserMenu />
@@ -69,12 +72,17 @@ const isScrolled = computed(() => y.value > 20)
           <!-- Usuario No Logueado -->
           <SignedOut>
             <SignInButton mode="modal" force-redirect-url="/">
-              <Button variant="link" size="sm" class="text-base font-medium">
-                Ver mis viajes
+
+              <Button variant="ghost" size="icon" class="w-9 px-0">
+                <CircleUserRound class="h-5! w-5!" /> 
+                <span class="sr-only">{{ $t('header.sign_in') }}</span>
               </Button>
+
             </SignInButton>
           </SignedOut>
         </ClerkLoaded>
+
+        <LanguageSwitcher />
       </div>
     </div>
   </nav>

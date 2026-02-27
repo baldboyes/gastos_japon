@@ -1,4 +1,12 @@
 <script setup lang="ts">
+  definePageMeta({
+    name: 'privacidad',
+    localeRoutes: {
+      es: '/privacidad',
+      en: '/privacy',
+      ja: '/privacy'
+    }
+  })
   useHead({
     title: 'Privacidad - jizou.io',
     meta: [

@@ -1,8 +1,16 @@
 <script setup lang="ts">
+  definePageMeta({
+    name: 'terminos',
+    localeRoutes: {
+      es: '/terminos',
+      en: '/terms',
+      ja: '/terms'
+    }
+  })
   useHead({
     title: 'Términos y Condiciones - jizou.io',
     meta: [
-      { name: 'description', content: 'Política de Privacidad de jizou.io' }
+      { name: 'description', content: 'Términos y Condiciones de jizou.io' }
     ]
   })
 </script>

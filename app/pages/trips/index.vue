@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { getLocalePrefixFromPath, SUPPORTED_LOCALES } from '~/components/ui/sidebar/utils'
 
 definePageMeta({
   middleware: 'auth'
@@ -47,6 +49,15 @@ import HeaderUserMenu from '~/components/layout/HeaderUserMenu.vue'
 
 // Estado
 const { trips, loading, error, fetchTrips, deleteTrip } = useTrips()
+const route = useRoute()
+
+const localePrefix = computed(() => getLocalePrefixFromPath(route.path))
+const localeCode = computed(() => {
+  const code = localePrefix.value.replace('/', '')
+  return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : 'en'
+})
+
+const tripDetailsPath = (id: string) => `${localePrefix.value}/trips/${id}`
 
 const upcomingTrips = computed(() => {
   const now = new Date()
@@ -127,11 +138,11 @@ const handleImageError = (event: Event) => {
       <SignedIn>
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-3xl font-bold tracking-tight">Mis Viajes</h1>
-            <p class="text-muted-foreground">Gestiona tus aventuras y presupuestos.</p>
+            <h1 class="text-3xl font-bold tracking-tight">{{ $t('header.my_trips') }}</h1>
+            <p class="text-muted-foreground">{{ $t('trips_page.subtitle') }}</p>
           </div>
           <Button @click="openCreateDialog">
-            <Plus class="mr-2 h-4 w-4" /> Nuevo
+            <Plus class="mr-2 h-4 w-4" /> {{ $t('trips_page.new') }}
           </Button>
         </div>
 
@@ -143,16 +154,16 @@ const handleImageError = (event: Event) => {
         <!-- Empty State -->
         <div v-else-if="trips.length === 0" class="text-center py-12 border rounded-lg bg-muted/20 border-dashed">
           <MapPin class="mx-auto h-12 w-12 text-muted-foreground/50" />
-          <h3 class="mt-4 text-lg font-semibold">No hay viajes todavía</h3>
-          <p class="text-muted-foreground mb-4">Empieza creando tu primer viaje para controlar los gastos.</p>
-          <Button @click="openCreateDialog">Crear Viaje</Button>
+          <h3 class="mt-4 text-lg font-semibold">{{ $t('trips_page.empty.title') }}</h3>
+          <p class="text-muted-foreground mb-4">{{ $t('trips_page.empty.subtitle') }}</p>
+          <Button @click="openCreateDialog">{{ $t('trips_page.empty.cta') }}</Button>
         </div>
 
         <!-- Grid de Viajes -->
         <div v-else class="space-y-12">
           <!-- Próximos Viajes -->
           <div v-if="upcomingTrips.length > 0">
-            <h2 class="text-2xl font-bold mb-4" v-if="pastTrips.length > 0">Próximos Viajes</h2>
+            <h2 class="text-2xl font-bold mb-4" v-if="pastTrips.length > 0">{{ $t('trips_page.sections.upcoming') }}</h2>
             <div class="grid gap-6 grid-cols-1" :class="{'lg:grid-cols-1': upcomingTrips.length === 1, 'lg:grid-cols-2': upcomingTrips.length > 1}">
               <Card v-for="trip in upcomingTrips" :key="trip.id" class="hover:shadow-md transition-shadow overflow-hidden rounded-2xl border border-slate-200">
                 <div class="aspect-video w-full overflow-hidden bg-muted relative -mt-6">
@@ -176,19 +187,19 @@ const handleImageError = (event: Event) => {
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                          <span class="sr-only">Abrir menú</span>
+                          <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                           <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="openEditDialog(trip)">
                           <Pencil class="mr-2 h-4 w-4" />
-                          <span>Editar</span>
+                          <span>{{ $t('trips_page.actions.edit') }}</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="handleDeleteClick(trip.id)" class="text-destructive focus:text-destructive">
                           <Trash2 class="mr-2 h-4 w-4" />
-                          <span>Eliminar</span>
+                          <span>{{ $t('trips_page.actions.delete') }}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -213,12 +224,17 @@ const handleImageError = (event: Event) => {
                 <CardContent>
                   <div class="flex items-center mb-3 -mt-8">
                     <CalendarIcon class="mr-1 h-3 w-3" />
-                    del {{ formatDateWithDayShort(trip.fecha_inicio) }} al {{ formatDateWithDayShort(trip.fecha_fin) }}
+                    <template v-if="localeCode === 'ja'">
+                      {{ formatDateWithDayShort(trip.fecha_inicio) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.fecha_fin) }}
+                    </template>
+                    <template v-else>
+                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.fecha_inicio) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.fecha_fin) }}
+                    </template>
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button class="w-full" as-child>
-                    <NuxtLink :to="`/trips/${trip.id}`">Ver Detalles</NuxtLink>
+                    <NuxtLink :to="tripDetailsPath(trip.id)">{{ $t('trips_page.actions.view_details') }}</NuxtLink>
                   </Button>
                 </CardFooter>
               </Card>
@@ -227,7 +243,7 @@ const handleImageError = (event: Event) => {
 
           <!-- Viajes Anteriores -->
           <div v-if="pastTrips.length > 0">
-            <h2 class="text-2xl font-bold mb-4">Viajes Anteriores</h2>
+            <h2 class="text-2xl font-bold mb-4">{{ $t('trips_page.sections.past') }}</h2>
             <div class="grid gap-6 lg:grid-cols-2">
               <Card v-for="trip in pastTrips" :key="trip.id" class="hover:shadow-md transition-shadow overflow-hidden rounded-2xl border border-slate-200">
                 <div class="aspect-video w-full overflow-hidden bg-muted relative -mt-6">
@@ -254,19 +270,19 @@ const handleImageError = (event: Event) => {
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                          <span class="sr-only">Abrir menú</span>
+                          <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                           <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="openEditDialog(trip)">
                           <Pencil class="mr-2 h-4 w-4" />
-                          <span>Editar</span>
+                          <span>{{ $t('trips_page.actions.edit') }}</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="handleDeleteClick(trip.id)" class="text-destructive focus:text-destructive">
                           <Trash2 class="mr-2 h-4 w-4" />
-                          <span>Eliminar</span>
+                          <span>{{ $t('trips_page.actions.delete') }}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -275,12 +291,17 @@ const handleImageError = (event: Event) => {
                 <CardContent>
                   <div class="flex items-center mt-1">
                     <CalendarIcon class="mr-1 h-3 w-3" />
-                    del {{ formatDateWithDayShort(trip.fecha_inicio) }} al {{ formatDateWithDayShort(trip.fecha_fin) }}
+                    <template v-if="localeCode === 'ja'">
+                      {{ formatDateWithDayShort(trip.fecha_inicio) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.fecha_fin) }}
+                    </template>
+                    <template v-else>
+                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.fecha_inicio) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.fecha_fin) }}
+                    </template>
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button class="w-full" as-child>
-                    <NuxtLink :to="`/trips/${trip.id}`">Ver Detalles</NuxtLink>
+                    <NuxtLink :to="tripDetailsPath(trip.id)">{{ $t('trips_page.actions.view_details') }}</NuxtLink>
                   </Button>
                 </CardFooter>
               </Card>
@@ -298,14 +319,12 @@ const handleImageError = (event: Event) => {
         <AlertDialog v-model:open="isDeleteOpen">
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta acción no se puede deshacer. Se eliminará permanentemente el viaje y todos los datos asociados (vuelos, alojamientos, gastos, etc.).
-              </AlertDialogDescription>
+              <AlertDialogTitle>{{ $t('trips_page.delete.title') }}</AlertDialogTitle>
+              <AlertDialogDescription>{{ $t('trips_page.delete.description') }}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Viaje</AlertDialogAction>
+              <AlertDialogCancel>{{ $t('trips_page.delete.cancel') }}</AlertDialogCancel>
+              <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('trips_page.delete.confirm') }}</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

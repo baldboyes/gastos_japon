@@ -1,0 +1,170 @@
+{
+  "header": {
+    "pricing": "Pricing",
+    "shop": "Shop",
+    "my_trips": "My Trips",
+    "view_trips": "View My Trips",
+    "login": "Login"
+  },
+  "footer": {
+    "sections": {
+      "product": "Product",
+      "resources": "Resources",
+      "company": "Company"
+    },
+    "links": {
+      "terms": "Terms and Conditions",
+      "privacy": "Privacy Policy"
+    },
+    "social": {
+      "instagram": "Follow us on Instagram",
+      "x": "Follow us on X",
+      "tiktok": "Follow us on TikTok"
+    }
+  },
+  "user_menu": {
+    "user": "User",
+    "preferences": "Preferences",
+    "logout": "Log out",
+    "language": "Language"
+  },
+  "trips_page": {
+    "subtitle": "Manage your adventures and budgets.",
+    "new": "New",
+    "empty": {
+      "title": "No trips yet",
+      "subtitle": "Start by creating your first trip to track expenses.",
+      "cta": "Create trip"
+    },
+    "sections": {
+      "upcoming": "Upcoming trips",
+      "past": "Past trips"
+    },
+    "actions": {
+      "open_menu": "Open menu",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view_details": "View details"
+    },
+    "dates": {
+      "prefix": "from",
+      "connector": "to"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the trip and all associated data (flights, accommodations, expenses, etc.).",
+      "cancel": "Cancel",
+      "confirm": "Delete trip"
+    }
+  },
+  "welcome": "Welcome",
+  "landing": {
+    "new_version": "New version available",
+    "hero": {
+      "title_start": "Your complete trip,",
+      "title_highlight": "perfectly organized",
+      "subtitle": "Inspired by Jizō, protector of travelers. Organize flights, accommodations, and reservations. Keep your itinerary and expenses under control during your adventure.",
+      "cta_trips": "View my trips",
+      "cta_demo": "Explore demo"
+    },
+    "social_proof": {
+      "quote": "We felt like we had a guardian angel for our trip. <strong>jizou.io</strong> gave us the peace of mind to organize everything and spend without fear in Japan.",
+      "author": "Ana & Carlos",
+      "role": "Frequent Travelers"
+    },
+    "features": {
+      "title": "Your trip, under total control",
+      "subtitle": "From planning to the last expense. Tools designed so you only worry about enjoying yourself.",
+      "integral": {
+        "title": "Integral Management",
+        "desc": "Flights, accommodations, insurance, and reservations. Centralize all your trip logistics in one safe and accessible place."
+      },
+      "itinerary": {
+        "title": "Daily Itinerary",
+        "desc": "Visualize your plan day by day. Tickets, activities, and pending tasks always at hand so you don't miss anything."
+      },
+      "finance": {
+        "title": "Financial Control",
+        "desc": "Monitor your daily budget. Automatic currency conversion to always know how much you are really spending."
+      },
+      "wallet": {
+        "title": "Travel Wallet",
+        "desc": "Manage cash and cards without stress. Record currency exchanges, commissions, and available balance in each payment method to avoid surprises."
+      },
+      "offline": {
+        "title": "Always With You",
+        "desc": "Your guardian never rests, even without internet. Check your itinerary and add expenses in any remote place."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Is jizou.io free to use?",
+      "a1": "Yes, it is a personal open-source project designed to help travelers manage their budget without hidden costs.",
+      "q2": "Does it work without an internet connection?",
+      "a2": "Absolutely. The application is designed as a PWA (Progressive Web App) that stores your data locally and syncs it when you regain connection.",
+      "q3": "Can I export my data?",
+      "a3": "Your data is yours. We will soon enable export to CSV and PDF so you can take your accounting wherever you want.",
+      "q4": "What currencies does it support?",
+      "a4": "It supports any currency in the world, but is especially optimized for trips to Japan with real-time YEN/EUR conversion."
+    }
+  },
+  "pricing_page": {
+    "title": "Plans and Pricing",
+    "subtitle": "Choose the plan that best fits your travel style.",
+    "plans": {
+      "tomodachi": {
+        "name": "Tomodachi",
+        "price": "Free",
+        "features": {
+          "active_trip": "1 active trip",
+          "expense_management": "Expense management"
+        },
+        "cta": "Current Plan"
+      },
+      "nomada": {
+        "badge": "Popular",
+        "name": "Nomad",
+        "price": "Coming Soon",
+        "features": {
+          "unlimited_trips": "Unlimited trips",
+          "realtime_collab": "Real-time collaboration"
+        },
+        "cta": "Coming Soon"
+      },
+      "agency": {
+        "name": "Agency",
+        "price": "Coming Soon",
+        "features": {
+          "white_label": "White label",
+          "priority_support": "Priority support"
+        },
+        "cta": "Coming Soon"
+      }
+    },
+    "meta": {
+      "title": "Pricing - jizou.io",
+      "description": "Plans and pricing for jizou.io"
+    }
+  },
+  "shop_page": {
+    "title": "Shop",
+    "subtitle": "Soon you will find exclusive items for travelers here.",
+    "products": {
+      "hoodie": {
+        "name": "Jizou Traveler Hoodie",
+        "desc": "Organic cotton, perfect for long flights.",
+        "add": "Add"
+      },
+      "cap": {
+        "name": "Minimal Cap",
+        "desc": "Protect yourself from the sun with style.",
+        "add": "Add"
+      },
+      "placeholder": "More products soon..."
+    },
+    "meta": {
+      "title": "Shop - jizou.io",
+      "description": "Shop for traveler items"
+    }
+  }
+}

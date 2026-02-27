@@ -1,8 +1,12 @@
 import { isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns'
 import { useTrips } from './useTrips'
+import { useRoute } from 'vue-router'
+import { useCookie } from '#imports'
 
 export const useTripRedirect = () => {
   const { fetchTrips, trips } = useTrips()
+  const route = useRoute()
+  const userLocale = useCookie<string | null>('user-locale', { default: () => null })
 
   /**
    * Intenta redirigir al usuario al viaje activo si existe,
@@ -25,10 +29,16 @@ export const useTripRedirect = () => {
       return isWithinInterval(now, { start, end })
     })
 
+    const supportedLocales = ['es', 'en', 'ja'] as const
+    const firstSegment = (route.path || '').split('/')[1] || ''
+    const pathLocale = supportedLocales.includes(firstSegment as any) ? firstSegment : null
+    const preferredLocale = pathLocale || (supportedLocales.includes((userLocale.value || '') as any) ? userLocale.value : null) || 'en'
+    const localePrefix = `/${preferredLocale}`
+
     if (activeTrip) {
-      return navigateTo(`/trips/${activeTrip.id}/gastos-dia`)
+      return navigateTo(`${localePrefix}/trips/${activeTrip.id}/gastos-dia`)
     } else {
-      return navigateTo('/trips')
+      return navigateTo(`${localePrefix}/trips`)
     }
   }
 

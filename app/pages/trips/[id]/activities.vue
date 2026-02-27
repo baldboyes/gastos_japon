@@ -35,11 +35,9 @@ import {
 } from '~/components/ui/alert-dialog'
 import LocationMap from '~/components/maps/LocationMap.vue'
 
-
 definePageMeta({
   layout: 'dashboard'
 })
-
 const route = useRoute()
 const tripId = route.params.id as string
 
@@ -121,7 +119,7 @@ const getDuration = (start: string, end: string) => {
 </script>
 
 <template>
-  <NuxtLayout name="dashboard">
+  <div>
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
@@ -307,5 +305,5 @@ const getDuration = (start: string, end: string) => {
       </AlertDialogContent>
     </AlertDialog>
 
-  </NuxtLayout>
+  </div>
 </template>

@@ -1,122 +1,122 @@
 <template>
-    <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
+  <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
 
-      <!-- Today's Accommodation -->
-      <div v-if="currentAccommodation" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
-        <div class="bg-indigo-50 p-3 rounded-full text-indigo-600 shrink-0">
-          <BedDouble class="w-6 h-6" />
+    <!-- Today's Accommodation -->
+    <div v-if="currentAccommodation" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
+      <div class="bg-indigo-50 p-3 rounded-full text-indigo-600 shrink-0">
+        <BedDouble class="w-6 h-6" />
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold text-gray-900 truncate pr-2">Noche en {{ currentAccommodation.nombre }}</h3>
+          <a v-if="currentAccommodation.enlace_google" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+            <ExternalLink class="w-4 h-4" />
+          </a>
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex justify-between items-start">
-            <h3 class="font-bold text-gray-900 truncate pr-2">Noche en {{ currentAccommodation.nombre }}</h3>
-            <a v-if="currentAccommodation.enlace_google" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
-              <ExternalLink class="w-4 h-4" />
-            </a>
-          </div>
-          <div class="text-sm text-gray-500 flex items-center gap-1 mt-0.5 truncate">
-            <MapPin class="w-3 h-3 shrink-0" />
-            <span class="truncate">{{ currentAccommodation.ubicacion?.city || currentAccommodation.ciudad || 'Ubicación desconocida' }}</span>
-          </div>
+        <div class="text-sm text-gray-500 flex items-center gap-1 mt-0.5 truncate">
+          <MapPin class="w-3 h-3 shrink-0" />
+          <span class="truncate">{{ currentAccommodation.ubicacion?.city || currentAccommodation.ciudad || 'Ubicación desconocida' }}</span>
         </div>
       </div>
-      
-      <!-- Daily Budget Card -->
-      <DashboardTripDailyBudget 
-        :daily-limit="budget.dailyLimit"
-        :currency="budget.currency || undefined"
-        :expenses="todayExpensesMapped"
-      />
-
-      <!-- Planned Expenses -->
-      <div v-if="todaysPlannedExpenses.length > 0">
-        <div class="flex items-center justify-between mb-3 w-full">
-          <h2 class="text-lg font-semibold text-gray-700 flex items-center justify-between gap-2 w-full">
-            <span>Gastos previstos</span>
-            <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
-          </h2>
-        </div>
-        <div class="space-y-2">
-          <ExpensesPlannedCard
-            v-for="planned in todaysPlannedExpenses"
-            :key="planned.id"
-            :planned-expense="planned"
-            :currency="budget.currency || undefined"
-            @click="handlePlannedExpenseClick"
-            @delete="handleDeletePlanned"
-          />
-        </div>
-      </div>
-
-      <!-- Today's Expenses -->
-      <div>
-        <!--
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-lg font-semibold text-gray-900">{{ currentDate }}</h3>
-          <div class="text-sm font-medium text-gray-600">
-            Total: {{ formatAmount(todayTotal) }}
-          </div>
-        </div>
-        -->
-        <!-- Empty State -->
-        <div
-          v-if="todayExpensesMapped.length === 0"
-          class="text-center py-12 px-4"
-        >
-          <div class="text-6xl mb-4">💸</div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Sin gastos hoy</h3>
-          <p class="text-sm text-gray-600 mb-6">Toca el botón + para agregar tu primer gasto del día</p>
-        </div>
-
-        <!-- Expense Cards -->
-        <div v-else class="space-y-3">
-          <ExpensesCard
-            v-for="expense in todayExpensesMapped"
-            :key="expense.id"
-            :expense="expense"
-            :currency="budget.currency || undefined"
-            @click="handleExpenseClick"
-          />
-        </div>
-      </div>
-
-      <!-- Floating Action Button -->
-      <div class="fixed bottom-6 right-6 z-50">
-        <Button
-          class="h-14 w-14 rounded-full shadow-lg bg-red-400 hover:bg-red-500 p-0"
-          @click="handleAdd"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </Button>
-      </div>
-
-      <!-- Expense Drawer (Add/Edit) -->
-      <ExpenseDrawer
-        v-model:open="showExpenseDrawer"
-        :trip-id="tripId"
-        :expense-to-edit="expenseToEdit"
-        :trip-moneda="budget.currency"
-        @success="handleDrawerSuccess"
-      />
-
-      <!-- Delete Confirmation Dialog -->
-      <AlertDialog v-model:open="isDeletePlannedOpen">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar gasto previsto?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se eliminará "{{ plannedExpenseToDelete?.placeName }}" de los gastos previstos. Esta acción no se puede deshacer.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction @click="confirmDeletePlanned" class="bg-red-600 hover:bg-red-700 text-white">Eliminar</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
+    
+    <!-- Daily Budget Card -->
+    <DashboardTripDailyBudget 
+      :daily-limit="budget.dailyLimit"
+      :currency="budget.currency || undefined"
+      :expenses="todayExpensesMapped"
+    />
+
+    <!-- Planned Expenses -->
+    <div v-if="todaysPlannedExpenses.length > 0">
+      <div class="flex items-center justify-between mb-3 w-full">
+        <h2 class="text-lg font-semibold text-gray-700 flex items-center justify-between gap-2 w-full">
+          <span>Gastos previstos</span>
+          <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
+        </h2>
+      </div>
+      <div class="space-y-2">
+        <ExpensesPlannedCard
+          v-for="planned in todaysPlannedExpenses"
+          :key="planned.id"
+          :planned-expense="planned"
+          :currency="budget.currency || undefined"
+          @click="handlePlannedExpenseClick"
+          @delete="handleDeletePlanned"
+        />
+      </div>
+    </div>
+
+    <!-- Today's Expenses -->
+    <div>
+      <!--
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-gray-900">{{ currentDate }}</h3>
+        <div class="text-sm font-medium text-gray-600">
+          Total: {{ formatAmount(todayTotal) }}
+        </div>
+      </div>
+      -->
+      <!-- Empty State -->
+      <div
+        v-if="todayExpensesMapped.length === 0"
+        class="text-center py-12 px-4"
+      >
+        <div class="text-6xl mb-4">💸</div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Sin gastos hoy</h3>
+        <p class="text-sm text-gray-600 mb-6">Toca el botón + para agregar tu primer gasto del día</p>
+      </div>
+
+      <!-- Expense Cards -->
+      <div v-else class="space-y-3">
+        <ExpensesCard
+          v-for="expense in todayExpensesMapped"
+          :key="expense.id"
+          :expense="expense"
+          :currency="budget.currency || undefined"
+          @click="handleExpenseClick"
+        />
+      </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+      <Button
+        class="h-14 w-14 rounded-full shadow-lg bg-red-400 hover:bg-red-500 p-0"
+        @click="handleAdd"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </Button>
+    </div>
+
+    <!-- Expense Drawer (Add/Edit) -->
+    <ExpenseDrawer
+      v-model:open="showExpenseDrawer"
+      :trip-id="tripId"
+      :expense-to-edit="expenseToEdit"
+      :trip-moneda="budget.currency"
+      @success="handleDrawerSuccess"
+    />
+
+    <!-- Delete Confirmation Dialog -->
+    <AlertDialog v-model:open="isDeletePlannedOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Eliminar gasto previsto?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Se eliminará "{{ plannedExpenseToDelete?.placeName }}" de los gastos previstos. Esta acción no se puede deshacer.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeletePlanned" class="bg-red-600 hover:bg-red-700 text-white">Eliminar</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </div>
 </template>
 
 <script setup lang="ts">

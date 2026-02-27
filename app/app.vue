@@ -8,7 +8,15 @@
 </template>
 
 <script setup lang="ts">
+  import { onMounted } from 'vue'
+  import { useI18n, useCookie, useSeoMeta, useHead } from '#imports'
   import 'vue-sonner/style.css'
+  
+  // Forzar lectura de cookie de idioma al inicio
+  // Solo ejecutar en cliente para evitar inconsistencias de hidratación inicial si es necesario
+  onMounted(async () => {
+    // La lógica se ha movido a /plugins/01.i18n-restore.ts para ejecutarse antes
+  })
 
   // Meta tags para PWA
   useSeoMeta({

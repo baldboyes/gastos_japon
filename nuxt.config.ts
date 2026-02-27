@@ -21,8 +21,22 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@vite-pwa/nuxt',
     '@clerk/nuxt',
-    'nuxt-swiper'
+    'nuxt-swiper',
+    'nuxt-i18n-micro',
   ],
+  i18n: {
+    locales: [
+      { code: 'es', iso: 'es-ES', dir: 'ltr' },
+      { code: 'en', iso: 'en-US', dir: 'ltr' },
+      { code: 'ja', iso: 'ja-JP', dir: 'ltr' },
+    ],
+    defaultLocale: 'en',
+    translationDir: 'locales',
+    meta: true,
+    strategy: 'prefix',
+    autoDetectLanguage: true,
+    localeCookie: 'user-locale',
+  },
   nitro: {
     preset: 'vercel',
     debug: true,

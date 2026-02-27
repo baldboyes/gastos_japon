@@ -1,0 +1,170 @@
+{
+  "header": {
+    "pricing": "Precios",
+    "shop": "Tienda",
+    "my_trips": "Mis Viajes",
+    "view_trips": "Ver mis viajes",
+    "login": "Iniciar Sesión"
+  },
+  "footer": {
+    "sections": {
+      "product": "Producto",
+      "resources": "Recursos",
+      "company": "Compañía"
+    },
+    "links": {
+      "terms": "Términos y condiciones",
+      "privacy": "Política de privacidad"
+    },
+    "social": {
+      "instagram": "Síguenos en Instagram",
+      "x": "Síguenos en X",
+      "tiktok": "Síguenos en TikTok"
+    }
+  },
+  "user_menu": {
+    "user": "Usuario",
+    "preferences": "Preferencias",
+    "logout": "Cerrar sesión",
+    "language": "Idioma"
+  },
+  "trips_page": {
+    "subtitle": "Gestiona tus aventuras y presupuestos.",
+    "new": "Nuevo",
+    "empty": {
+      "title": "No hay viajes todavía",
+      "subtitle": "Empieza creando tu primer viaje para controlar los gastos.",
+      "cta": "Crear viaje"
+    },
+    "sections": {
+      "upcoming": "Próximos viajes",
+      "past": "Viajes anteriores"
+    },
+    "actions": {
+      "open_menu": "Abrir menú",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "view_details": "Ver detalles"
+    },
+    "dates": {
+      "prefix": "del",
+      "connector": "al"
+    },
+    "delete": {
+      "title": "¿Estás completamente seguro?",
+      "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el viaje y todos los datos asociados (vuelos, alojamientos, gastos, etc.).",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar viaje"
+    }
+  },
+  "welcome": "Bienvenido",
+  "landing": {
+    "new_version": "Nueva versión disponible",
+    "hero": {
+      "title_start": "Tu viaje completo,",
+      "title_highlight": "perfectamente organizado",
+      "subtitle": "Inspirado en Jizō, protector de los viajeros. Organiza vuelos, alojamientos y reservas. Durante tu aventura, lleva tu itinerario y gastos bajo control.",
+      "cta_trips": "Ver mis viajes",
+      "cta_demo": "Explorar demo"
+    },
+    "social_proof": {
+      "quote": "Sentimos que teníamos un ángel de la guarda para nuestro viaje. <strong>jizou.io</strong> nos dio la paz mental para organizar todo y gastar sin miedo en Japón.",
+      "author": "Ana & Carlos",
+      "role": "Viajeros Frecuentes"
+    },
+    "features": {
+      "title": "Tu viaje, bajo control total",
+      "subtitle": "Desde la planificación hasta el último gasto. Herramientas diseñadas para que solo te preocupes de disfrutar.",
+      "integral": {
+        "title": "Gestión Integral",
+        "desc": "Vuelos, alojamientos, seguros y reservas. Centraliza toda la logística de tu viaje en un solo lugar seguro y accesible."
+      },
+      "itinerary": {
+        "title": "Itinerario al Día",
+        "desc": "Visualiza tu plan día a día. Entradas, actividades y tareas pendientes siempre a mano para no perderte nada."
+      },
+      "finance": {
+        "title": "Control Financiero",
+        "desc": "Vigila tu presupuesto diario. Conversión automática de divisas para saber siempre cuánto gastas realmente."
+      },
+      "wallet": {
+        "title": "Cartera de Viaje",
+        "desc": "Gestiona efectivo y tarjetas sin estrés. Registra cambios de divisa, comisiones y saldo disponible en cada medio de pago para evitar sorpresas."
+      },
+      "offline": {
+        "title": "Siempre Contigo",
+        "desc": "Tu guardián no descansa, incluso sin internet. Consulta tu itinerario y añade gastos en cualquier lugar remoto."
+      }
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "q1": "¿Es gratis usar jizou.io?",
+      "a1": "Sí, es un proyecto personal de código abierto diseñado para ayudar a viajeros a gestionar su presupuesto sin costes ocultos.",
+      "q2": "¿Funciona sin conexión a internet?",
+      "a2": "Absolutamente. La aplicación está diseñada como una PWA (Progressive Web App) que almacena tus datos localmente y los sincroniza cuando recuperas la conexión.",
+      "q3": "¿Puedo exportar mis datos?",
+      "a3": "Tus datos son tuyos. Próximamente habilitaremos la exportación a CSV y PDF para que puedas llevar tu contabilidad donde quieras.",
+      "q4": "¿Qué divisas soporta?",
+      "a4": "Soporta cualquier divisa del mundo, pero está especialmente optimizado para viajes a Japón con conversión YEN/EUR en tiempo real."
+    }
+  },
+  "pricing_page": {
+    "title": "Planes y Precios",
+    "subtitle": "Elige el plan que mejor se adapte a tu estilo de viaje.",
+    "plans": {
+      "tomodachi": {
+        "name": "Tomodachi",
+        "price": "Gratis",
+        "features": {
+          "active_trip": "1 viaje activo",
+          "expense_management": "Gestión de gastos"
+        },
+        "cta": "Plan Actual"
+      },
+      "nomada": {
+        "badge": "Popular",
+        "name": "Nómada",
+        "price": "Próximamente",
+        "features": {
+          "unlimited_trips": "Viajes ilimitados",
+          "realtime_collab": "Colaboración en tiempo real"
+        },
+        "cta": "Muy pronto"
+      },
+      "agency": {
+        "name": "Agencia",
+        "price": "Próximamente",
+        "features": {
+          "white_label": "Marca blanca",
+          "priority_support": "Soporte prioritario"
+        },
+        "cta": "Muy pronto"
+      }
+    },
+    "meta": {
+      "title": "Precios - jizou.io",
+      "description": "Planes y precios de jizou.io"
+    }
+  },
+  "shop_page": {
+    "title": "Tienda",
+    "subtitle": "Próximamente encontrarás aquí artículos exclusivos para viajeros.",
+    "products": {
+      "hoodie": {
+        "name": "Sudadera Jizou Traveler",
+        "desc": "Algodón orgánico, perfecta para vuelos largos.",
+        "add": "Añadir"
+      },
+      "cap": {
+        "name": "Gorra Minimal",
+        "desc": "Protégete del sol con estilo.",
+        "add": "Añadir"
+      },
+      "placeholder": "Más productos pronto..."
+    },
+    "meta": {
+      "title": "Tienda - jizou.io",
+      "description": "Tienda de artículos para viajeros"
+    }
+  }
+}
