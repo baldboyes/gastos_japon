@@ -2,12 +2,17 @@
   <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
 
     <div class="flex items-center justify-between gap-8">
-      <div v-if="currentAccommodation">
-        <a v-if="currentAccommodation.enlace_google" :title="currentAccommodation.nombre" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
-          <BedDouble class="w-6 h-6" />
-        </a>
+      <div class="flex items-center gap-2">
+
+        <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child v-if="currentAccommodation">
+          <a v-if="currentAccommodation.enlace_google" :title="`Como llegar a ${currentAccommodation.nombre}`" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+            <span class="sr-only">Abrir enlace de Google Maps</span>
+            <BedDouble class="h-6! w-6!" />
+          </a>
+        </Button>
+
       </div>
-      <Sun class="h-6 w-6 text-orange-400" />
+      <Sun class="h-8 w-8 text-orange-400" />
     </div>
 
 
@@ -116,7 +121,7 @@ import { useRoute } from 'vue-router'
 import { formatDate, getDateString } from '~/utils/dates'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { BedDouble, Sun } from 'lucide-vue-next'
+import { BedDouble, Sun, MoreVertical } from 'lucide-vue-next'
 import { startOfDay, parseISO } from 'date-fns'
 import {
   AlertDialog,

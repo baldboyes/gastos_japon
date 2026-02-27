@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useI18n } from '#imports'
-import { Button } from '@/components/ui/button'
-import AppLogo from '@/components/common/AppLogo.vue'
-import HeaderUserMenu from '@/components/layout/HeaderUserMenu.vue'
-import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
-import { SignInButton, SignedIn, SignedOut, ClerkLoaded, ClerkLoading } from '@clerk/vue'
-import { useWindowScroll } from '@vueuse/core'
-import { CircleUserRound, Loader2 } from 'lucide-vue-next'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useI18n } from '#imports'
+  import { Button } from '@/components/ui/button'
+  import AppLogo from '@/components/common/AppLogo.vue'
+  import HeaderUserMenu from '@/components/layout/HeaderUserMenu.vue'
+  import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+  import { SignInButton, SignedIn, SignedOut, ClerkLoaded, ClerkLoading } from '@clerk/vue'
+  import { useWindowScroll } from '@vueuse/core'
+  import { CircleUserRound, Loader2 } from 'lucide-vue-next'
 
-const route = useRoute()
-const { $localeRoute } = useI18n()
-const { y } = useWindowScroll()
-const isScrolled = computed(() => y.value > 20)
+  const route = useRoute()
+  const { $localeRoute } = useI18n()
+  const { y } = useWindowScroll()
+  const isScrolled = computed(() => y.value > 20)
 </script>
 
 <template>
