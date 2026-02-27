@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: {
-        lang: 'es'
+        lang: 'en'
       }
     },
     pageTransition: { name: 'page' },
@@ -63,13 +63,13 @@ export default defineNuxtConfig({
       name: 'jizou.io',
       short_name: 'jizou.io',
       description: 'Gestiona tu viaje de principio a fin: vuelos, alojamiento, reservas y gastos. Tu compañero de viaje integral, inspirado en Jizo.',
-      theme_color: '#40C4AA',
-      background_color: '#F8FAFC',
+      theme_color: '#ff6467',
+      background_color: '#ffffff',
       display: 'standalone',
       orientation: 'portrait',
       scope: '/',
       start_url: '/',
-      lang: 'es',
+      lang: 'en',
       categories: ['finance', 'travel', 'productivity'],
       icons: [
         {
