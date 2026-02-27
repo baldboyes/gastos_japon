@@ -38,7 +38,7 @@
   <SidebarProvider>
     <TripsSidebar />
     <SidebarInset class="!bg-gray-50 h-svh">
-      <header class="flex h-20 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-17 px-4 sticky top-0 z-10">
+      <header class="flex h-14 lg:h-20 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-17 px-4 sticky top-0 z-10 border-b-1 border-b-gray-200">
         <SidebarTrigger class="-ml-1" />
         <div class="h-4 w-px mx-2 bg-black" />
         <div class="flex flex-col" v-if="currentTrip">

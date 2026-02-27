@@ -1,132 +1,133 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical, FileDown } from 'lucide-vue-next'
-import { useTripOrganization } from '~/composables/useTripOrganization'
-import { useTrips } from '~/composables/useTrips'
-import { useAirlines } from '~/composables/useAirlines'
-import { formatTime } from '~/utils/dates'
-import { formatCurrency } from '~/utils/currency'
-import { groupByDate } from '~/utils/grouping'
-import { cn } from '~/lib/utils'
-import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import FlightDrawer from '~/components/trips/drawers/FlightDrawer.vue'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
-import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
-import TaskModal from '~/components/trips/tasks/TaskModal.vue'
-import { useTripTasks } from '~/composables/useTripTasks'
-import { type Task } from '~/types/tasks'
-import { useDirectusFiles } from '~/composables/useDirectusFiles'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '~/components/ui/alert-dialog'
+  import { ref, onMounted, computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical, FileDown } from 'lucide-vue-next'
+  import { useTripOrganization } from '~/composables/useTripOrganization'
+  import { useTrips } from '~/composables/useTrips'
+  import { useAirlines } from '~/composables/useAirlines'
+  import { formatTime } from '~/utils/dates'
+  import { formatCurrency } from '~/utils/currency'
+  import { groupByDate } from '~/utils/grouping'
+  import { cn } from '~/lib/utils'
+  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import FlightDrawer from '~/components/trips/drawers/FlightDrawer.vue'
+  import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+  import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+  import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+  import { useTripTasks } from '~/composables/useTripTasks'
+  import { type Task } from '~/types/tasks'
+  import { useDirectusFiles } from '~/composables/useDirectusFiles'
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from '~/components/ui/dropdown-menu'
+  import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from '~/components/ui/alert-dialog'
 
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const route = useRoute()
-const tripId = route.params.id as string
-const { downloadFile } = useDirectusFiles()
-
-const { currentTrip } = useTrips()
-const { vuelos, fetchOrganizationData, deleteVuelo } = useTripOrganization()
-const { airlines, fetchAirlines } = useAirlines()
-const { tasks, init: initTasks, updateTask } = useTripTasks()
-
-const isTaskModalOpen = ref(false)
-const selectedTaskToEdit = ref<Task | null>(null)
-
-const allFlightTasks = computed(() => {
-  return tasks.value.filter(t => {
-    // Check direct entity type
-    if (t.entity_type === 'flight') return true
-    
-    // Check group entity type if task doesn't have it set directly
-    const group = typeof t.task_group === 'object' ? t.task_group : null
-    if (group && group.entity_type === 'flight') return true
-    
-    return false
+  definePageMeta({
+    layout: 'dashboard'
   })
-})
 
-const handleEditTask = (task: Task) => {
-  selectedTaskToEdit.value = task
-  isTaskModalOpen.value = true
-}
+  const route = useRoute()
+  const tripId = route.params.id as string
+  const { downloadFile } = useDirectusFiles()
 
-const isModalOpen = ref(false)
-const itemToEdit = ref(null)
+  const { currentTrip } = useTrips()
+  const { vuelos, fetchOrganizationData, deleteVuelo } = useTripOrganization()
+  const { airlines, fetchAirlines } = useAirlines()
+  const { tasks, init: initTasks, updateTask } = useTripTasks()
 
-const isDeleteOpen = ref(false)
-const flightToDelete = ref<number | null>(null)
+  const isTaskModalOpen = ref(false)
+  const selectedTaskToEdit = ref<Task | null>(null)
 
-const confirmDelete = (id: number) => {
-  flightToDelete.value = id
-  isDeleteOpen.value = true
-}
+  const allFlightTasks = computed(() => {
+    return tasks.value.filter(t => {
+      // Check direct entity type
+      if (t.entity_type === 'flight') return true
+      
+      // Check group entity type if task doesn't have it set directly
+      const group = typeof t.task_group === 'object' ? t.task_group : null
+      if (group && group.entity_type === 'flight') return true
+      
+      return false
+    })
+  })
 
-const executeDelete = async () => {
-  if (flightToDelete.value) {
-    await deleteVuelo(flightToDelete.value)
-    isDeleteOpen.value = false
-    flightToDelete.value = null
+  const handleEditTask = (task: Task) => {
+    selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
   }
-}
 
-const handleCreateFlight = () => {
-  itemToEdit.value = null
-  isModalOpen.value = true
-}
+  const isModalOpen = ref(false)
+  const itemToEdit = ref(null)
 
-const handleEditFlight = (v: any) => {
-  itemToEdit.value = v
-  isModalOpen.value = true
-}
+  const isDeleteOpen = ref(false)
+  const flightToDelete = ref<number | null>(null)
 
-const onSaved = () => {
-  fetchOrganizationData(tripId)
-}
+  const confirmDelete = (id: number) => {
+    flightToDelete.value = id
+    isDeleteOpen.value = true
+  }
 
-onMounted(() => {
-  fetchOrganizationData(tripId)
-  fetchAirlines()
-  initTasks(parseInt(tripId))
-})
+  const executeDelete = async () => {
+    if (flightToDelete.value) {
+      await deleteVuelo(flightToDelete.value)
+      isDeleteOpen.value = false
+      flightToDelete.value = null
+    }
+  }
 
-const getAirlineLogo = (name: string) => {
-  if (!name) return undefined
-  const airline = airlines.value.find(a => a.name === name)
-  return airline?.logo || undefined
-}
+  const handleCreateFlight = () => {
+    itemToEdit.value = null
+    isModalOpen.value = true
+  }
 
-const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
+  const handleEditFlight = (v: any) => {
+    itemToEdit.value = v
+    isModalOpen.value = true
+  }
 
-const getDayDiff = (start?: string, end?: string) => {
-  if (!start || !end) return null
-  const d1 = new Date(start); d1.setHours(0,0,0,0)
-  const d2 = new Date(end); d2.setHours(0,0,0,0)
-  const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
-  return diff > 0 ? `+${diff}` : null
-}
+  const onSaved = () => {
+    fetchOrganizationData(tripId)
+  }
+
+  onMounted(() => {
+    fetchOrganizationData(tripId)
+    fetchAirlines()
+    initTasks(parseInt(tripId))
+  })
+
+  const getAirlineLogo = (name: string) => {
+    if (!name) return undefined
+    const airline = airlines.value.find(a => a.name === name)
+    return airline?.logo || undefined
+  }
+
+  const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
+
+  const getDayDiff = (start?: string, end?: string) => {
+    if (!start || !end) return null
+    const d1 = new Date(start); d1.setHours(0,0,0,0)
+    const d2 = new Date(end); d2.setHours(0,0,0,0)
+    const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+    return diff > 0 ? `+${diff}` : null
+  }
 </script>
 
 <template>
+  <div>
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
@@ -293,4 +294,5 @@ const getDayDiff = (start?: string, end?: string) => {
       :item-to-edit="itemToEdit" 
       @saved="onSaved"
     />
+  </div>
 </template>

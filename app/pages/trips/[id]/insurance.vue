@@ -1,104 +1,105 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Shield, Plus, Trash2, Pencil, Phone, MoreVertical, FileDown, PhoneCall, Mail } from 'lucide-vue-next'
-import { useTripOrganization } from '~/composables/useTripOrganization'
-import { useTrips } from '~/composables/useTrips'
-import { useDirectusFiles } from '~/composables/useDirectusFiles'
-import { formatCurrency } from '~/utils/currency'
-import { formatPhoneNumber, formatPhoneForHref } from '~/utils/phone'
-import { cn } from '~/lib/utils'
-import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import InsuranceDrawer from '~/components/trips/drawers/InsuranceDrawer.vue'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
-import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
-import TaskModal from '~/components/trips/tasks/TaskModal.vue'
-import { useTripTasks } from '~/composables/useTripTasks'
-import { type Task } from '~/types/tasks'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '~/components/ui/alert-dialog'
+  import { ref, onMounted, computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { Shield, Plus, Trash2, Pencil, Phone, MoreVertical, FileDown, PhoneCall, Mail } from 'lucide-vue-next'
+  import { useTripOrganization } from '~/composables/useTripOrganization'
+  import { useTrips } from '~/composables/useTrips'
+  import { useDirectusFiles } from '~/composables/useDirectusFiles'
+  import { formatCurrency } from '~/utils/currency'
+  import { formatPhoneNumber, formatPhoneForHref } from '~/utils/phone'
+  import { cn } from '~/lib/utils'
+  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import InsuranceDrawer from '~/components/trips/drawers/InsuranceDrawer.vue'
+  import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+  import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+  import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+  import { useTripTasks } from '~/composables/useTripTasks'
+  import { type Task } from '~/types/tasks'
+  import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from '~/components/ui/alert-dialog'
 
-const route = useRoute()
-const tripId = route.params.id as string
+  const route = useRoute()
+  const tripId = route.params.id as string
 
-const { currentTrip } = useTrips()
-const { downloadFile } = useDirectusFiles()
-const { seguros, fetchOrganizationData, deleteSeguro } = useTripOrganization()
-const { tasks, init: initTasks, updateTask } = useTripTasks()
+  const { currentTrip } = useTrips()
+  const { downloadFile } = useDirectusFiles()
+  const { seguros, fetchOrganizationData, deleteSeguro } = useTripOrganization()
+  const { tasks, init: initTasks, updateTask } = useTripTasks()
 
-const isTaskModalOpen = ref(false)
-const selectedTaskToEdit = ref<Task | null>(null)
+  const isTaskModalOpen = ref(false)
+  const selectedTaskToEdit = ref<Task | null>(null)
 
-const allInsuranceTasks = computed(() => {
-  return tasks.value.filter(t => {
-    // Check direct entity type
-    if (t.entity_type === 'insurance') return true
-    
-    // Check group entity type if task doesn't have it set directly
-    const group = typeof t.task_group === 'object' ? t.task_group : null
-    if (group && group.entity_type === 'insurance') return true
-    
-    return false
+  const allInsuranceTasks = computed(() => {
+    return tasks.value.filter(t => {
+      // Check direct entity type
+      if (t.entity_type === 'insurance') return true
+      
+      // Check group entity type if task doesn't have it set directly
+      const group = typeof t.task_group === 'object' ? t.task_group : null
+      if (group && group.entity_type === 'insurance') return true
+      
+      return false
+    })
   })
-})
 
-const handleEditTask = (task: Task) => {
-  selectedTaskToEdit.value = task
-  isTaskModalOpen.value = true
-}
-
-const isModalOpen = ref(false)
-const itemToEdit = ref(null)
-
-const isDeleteOpen = ref(false)
-const insuranceToDelete = ref<number | null>(null)
-
-const confirmDelete = (id: number) => {
-  insuranceToDelete.value = id
-  isDeleteOpen.value = true
-}
-
-const executeDelete = async () => {
-  if (insuranceToDelete.value) {
-    await deleteSeguro(insuranceToDelete.value)
-    isDeleteOpen.value = false
-    insuranceToDelete.value = null
+  const handleEditTask = (task: Task) => {
+    selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
   }
-}
 
-const handleCreateInsurance = () => {
-  itemToEdit.value = null
-  isModalOpen.value = true
-}
+  const isModalOpen = ref(false)
+  const itemToEdit = ref(null)
 
-const handleEditInsurance = (s: any) => {
-  itemToEdit.value = s
-  isModalOpen.value = true
-}
+  const isDeleteOpen = ref(false)
+  const insuranceToDelete = ref<number | null>(null)
 
-const onSaved = () => {
-  fetchOrganizationData(tripId)
-}
+  const confirmDelete = (id: number) => {
+    insuranceToDelete.value = id
+    isDeleteOpen.value = true
+  }
 
-onMounted(() => {
-  fetchOrganizationData(tripId)
-  initTasks(parseInt(tripId))
-})
+  const executeDelete = async () => {
+    if (insuranceToDelete.value) {
+      await deleteSeguro(insuranceToDelete.value)
+      isDeleteOpen.value = false
+      insuranceToDelete.value = null
+    }
+  }
 
-definePageMeta({
-  layout: 'dashboard'
-})
+  const handleCreateInsurance = () => {
+    itemToEdit.value = null
+    isModalOpen.value = true
+  }
+
+  const handleEditInsurance = (s: any) => {
+    itemToEdit.value = s
+    isModalOpen.value = true
+  }
+
+  const onSaved = () => {
+    fetchOrganizationData(tripId)
+  }
+
+  onMounted(() => {
+    fetchOrganizationData(tripId)
+    initTasks(parseInt(tripId))
+  })
+
+  definePageMeta({
+    layout: 'dashboard'
+  })
 </script>
 
 <template>
+  <div>
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row gap-8 items-start relative">
         <!-- Main Content -->
@@ -243,14 +244,12 @@ definePageMeta({
         </AlertDialogContent>
       </AlertDialog>
     </div>
-
-
-      <InsuranceDrawer 
-        v-model:open="isModalOpen" 
-        :trip-id="tripId" 
-        :current-trip="currentTrip" 
-        :item-to-edit="itemToEdit" 
-        @saved="onSaved"
-      />
-
+    <InsuranceDrawer 
+      v-model:open="isModalOpen" 
+      :trip-id="tripId" 
+      :current-trip="currentTrip" 
+      :item-to-edit="itemToEdit" 
+      @saved="onSaved"
+    />
+  </div>
 </template>

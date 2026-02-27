@@ -133,8 +133,8 @@ const handleImageError = (event: Event) => {
 </script>
 
 <template>
-
-    <div class="max-w-4xl mx-auto p-4 space-y-6 pt-42">
+  <div>
+    <div class="max-w-4xl mx-auto px-4 lg:px-0 space-y-6 pt-42">
       <SignedIn>
         <div class="flex justify-between items-center">
           <div>
@@ -333,4 +333,5 @@ const handleImageError = (event: Event) => {
     </div>
     <!-- Viajes en Grupo - Componente autónomo -->
     <GroupTripsList />
+  </div>
 </template>

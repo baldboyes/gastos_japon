@@ -1,25 +1,16 @@
 <template>
   <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
 
-    <!-- Today's Accommodation -->
-    <div v-if="currentAccommodation" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
-      <div class="bg-indigo-50 p-3 rounded-full text-indigo-600 shrink-0">
-        <BedDouble class="w-6 h-6" />
+    <div class="flex items-center justify-between gap-8">
+      <div v-if="currentAccommodation">
+        <a v-if="currentAccommodation.enlace_google" :title="currentAccommodation.nombre" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+          <BedDouble class="w-6 h-6" />
+        </a>
       </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-start">
-          <h3 class="font-bold text-gray-900 truncate pr-2">Noche en {{ currentAccommodation.nombre }}</h3>
-          <a v-if="currentAccommodation.enlace_google" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
-            <ExternalLink class="w-4 h-4" />
-          </a>
-        </div>
-        <div class="text-sm text-gray-500 flex items-center gap-1 mt-0.5 truncate">
-          <MapPin class="w-3 h-3 shrink-0" />
-          <span class="truncate">{{ currentAccommodation.ubicacion?.city || currentAccommodation.ciudad || 'Ubicación desconocida' }}</span>
-        </div>
-      </div>
+      <Sun class="h-6 w-6 text-orange-400" />
     </div>
-    
+
+
     <!-- Daily Budget Card -->
     <DashboardTripDailyBudget 
       :daily-limit="budget.dailyLimit"
@@ -125,7 +116,7 @@ import { useRoute } from 'vue-router'
 import { formatDate, getDateString } from '~/utils/dates'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { BedDouble, MapPin, ExternalLink } from 'lucide-vue-next'
+import { BedDouble, Sun } from 'lucide-vue-next'
 import { startOfDay, parseISO } from 'date-fns'
 import {
   AlertDialog,

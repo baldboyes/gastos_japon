@@ -1,133 +1,134 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
-import { Users, UserPlus, Mail, Loader2, CheckCircle, AlertCircle, Crown, Trash2, Shield, User, Plus } from 'lucide-vue-next'
-import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '~/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '~/components/ui/dialog'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { Label } from '~/components/ui/label'
-import { Badge } from '~/components/ui/badge'
-import { toast } from 'vue-sonner'
-import { useDirectus } from '~/composables/useDirectus'
-import { useTrips } from '~/composables/useTrips'
+  import { ref, computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { onMounted } from 'vue'
+  import { Users, UserPlus, Mail, Loader2, CheckCircle, AlertCircle, Crown, Trash2, Shield, User, Plus } from 'lucide-vue-next'
+  import { Button } from '~/components/ui/button'
+  import { Input } from '~/components/ui/input'
+  import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '~/components/ui/card'
+  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '~/components/ui/dialog'
+  import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+  import { Label } from '~/components/ui/label'
+  import { Badge } from '~/components/ui/badge'
+  import { toast } from 'vue-sonner'
+  import { useDirectus } from '~/composables/useDirectus'
+  import { useTrips } from '~/composables/useTrips'
 
-definePageMeta({
-  layout: 'dashboard'
-})
+  definePageMeta({
+    layout: 'dashboard'
+  })
 
-const route = useRoute()
-const tripId = route.params.id as string
-const { user } = useUser()
-const { directusUserId } = useDirectus()
-const { trips, travelers, fetchTravelers } = useTrips()
+  const route = useRoute()
+  const tripId = route.params.id as string
+  const { user } = useUser()
+  const { directusUserId } = useDirectus()
+  const { trips, travelers, fetchTravelers } = useTrips()
 
-const isInviteModalOpen = ref(false)
-const inviteEmail = ref('')
-const inviteRole = ref('a78c3ab5-20eb-451f-b93f-c087f500fb47') // Default to App User
-const isInviting = ref(false)
-const inviteResult = ref<{ status: 'success' | 'error', message: string, type?: 'invited' | 'email_sent' } | null>(null)
+  const isInviteModalOpen = ref(false)
+  const inviteEmail = ref('')
+  const inviteRole = ref('a78c3ab5-20eb-451f-b93f-c087f500fb47') // Default to App User
+  const isInviting = ref(false)
+  const inviteResult = ref<{ status: 'success' | 'error', message: string, type?: 'invited' | 'email_sent' } | null>(null)
 
-// Obtener nombre del viaje actual
-const currentTrip = computed(() => trips.value.find(t => t.id === parseInt(tripId)))
+  // Obtener nombre del viaje actual
+  const currentTrip = computed(() => trips.value.find(t => t.id === parseInt(tripId)))
 
-onMounted(() => {
-  fetchTravelers(tripId)
-})
+  onMounted(() => {
+    fetchTravelers(tripId)
+  })
 
-// Determinar si el usuario actual es Owner
-const isCurrentUserOwner = computed(() => {
-  const me = travelers.value.find(t => t.id === directusUserId.value)
-  return me?.role === 'owner' || travelers.value.length === 0 // Fallback si no hay nadie cargado
-})
+  // Determinar si el usuario actual es Owner
+  const isCurrentUserOwner = computed(() => {
+    const me = travelers.value.find(t => t.id === directusUserId.value)
+    return me?.role === 'owner' || travelers.value.length === 0 // Fallback si no hay nadie cargado
+  })
 
-const removeTraveler = async (relationId: string) => {
-  if (!confirm('¿Seguro que quieres eliminar a este viajero del grupo?')) return
+  const removeTraveler = async (relationId: string) => {
+    if (!confirm('¿Seguro que quieres eliminar a este viajero del grupo?')) return
 
-  try {
-    const response = await $fetch('/api/trips/remove-traveler', {
-      method: 'POST',
-      body: { relationId, userId: directusUserId.value }
-    }) as any
+    try {
+      const response = await $fetch('/api/trips/remove-traveler', {
+        method: 'POST',
+        body: { relationId, userId: directusUserId.value }
+      }) as any
 
-    if (response.success) {
-      toast.success('Viajero eliminado')
-      fetchTravelers(tripId)
-    } else {
-      toast.error(response.error || 'Error al eliminar viajero')
+      if (response.success) {
+        toast.success('Viajero eliminado')
+        fetchTravelers(tripId)
+      } else {
+        toast.error(response.error || 'Error al eliminar viajero')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Error de conexión')
     }
-  } catch (error) {
-    console.error(error)
-    toast.error('Error de conexión')
-  }
-}
-
-
-const isValidEmail = computed(() => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail.value)
-})
-
-const handleInvite = async () => {
-  if (!isValidEmail.value) return
-  if (!directusUserId.value) {
-    toast.error('Error de autenticación. Recarga la página.')
-    return
   }
 
-  isInviting.value = true
-  inviteResult.value = null
 
-  try {
-    const response = await $fetch('/api/trips/invite', {
-      method: 'POST',
-      body: {
-        email: inviteEmail.value,
-        role: inviteRole.value,
-        tripId: parseInt(tripId),
-        tripName: currentTrip.value?.nombre || 'Viaje a Japón',
-        inviterName: user.value?.fullName || user.value?.firstName || 'Un usuario',
-        inviterId: directusUserId.value
-      }
-    }) as any
+  const isValidEmail = computed(() => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail.value)
+  })
 
-    if (response.success) {
-      inviteResult.value = {
-        status: 'success',
-        message: response.message,
-        type: response.status
+  const handleInvite = async () => {
+    if (!isValidEmail.value) return
+    if (!directusUserId.value) {
+      toast.error('Error de autenticación. Recarga la página.')
+      return
+    }
+
+    isInviting.value = true
+    inviteResult.value = null
+
+    try {
+      const response = await $fetch('/api/trips/invite', {
+        method: 'POST',
+        body: {
+          email: inviteEmail.value,
+          role: inviteRole.value,
+          tripId: parseInt(tripId),
+          tripName: currentTrip.value?.nombre || 'Viaje a Japón',
+          inviterName: user.value?.fullName || user.value?.firstName || 'Un usuario',
+          inviterId: directusUserId.value
+        }
+      }) as any
+
+      if (response.success) {
+        inviteResult.value = {
+          status: 'success',
+          message: response.message,
+          type: response.status
+        }
+        toast.success(response.message)
+        inviteEmail.value = '' // Limpiar campo si éxito
+      } else {
+        inviteResult.value = {
+          status: 'error',
+          message: response.error || 'Error al enviar invitación'
+        }
+        toast.error(response.error || 'Error al enviar invitación')
       }
-      toast.success(response.message)
-      inviteEmail.value = '' // Limpiar campo si éxito
-    } else {
+    } catch (error: any) {
+      console.error('Error inviting user:', error)
       inviteResult.value = {
         status: 'error',
-        message: response.error || 'Error al enviar invitación'
+        message: 'Error de conexión con el servidor'
       }
-      toast.error(response.error || 'Error al enviar invitación')
+      toast.error('Error al procesar la solicitud')
+    } finally {
+      isInviting.value = false
     }
-  } catch (error: any) {
-    console.error('Error inviting user:', error)
-    inviteResult.value = {
-      status: 'error',
-      message: 'Error de conexión con el servidor'
-    }
-    toast.error('Error al procesar la solicitud')
-  } finally {
-    isInviting.value = false
   }
-}
 
-const closeInviteModal = () => {
-  isInviteModalOpen.value = false
-  inviteEmail.value = ''
-  inviteRole.value = 'a78c3ab5-20eb-451f-b93f-c087f500fb47'
-  inviteResult.value = null
-}
+  const closeInviteModal = () => {
+    isInviteModalOpen.value = false
+    inviteEmail.value = ''
+    inviteRole.value = 'a78c3ab5-20eb-451f-b93f-c087f500fb47'
+    inviteResult.value = null
+  }
 </script>
 
 <template>
+  <div>
     <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-6">
         <div class="space-y-6">
           <div class="flex justify-between items-center">
@@ -264,5 +265,5 @@ const closeInviteModal = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-
+  </div>
 </template>

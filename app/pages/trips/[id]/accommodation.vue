@@ -1,126 +1,126 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { BedDouble, Plus, Trash2, Pencil, Calendar, MapPin, MoreVertical, PhoneCall, Mail, BaggageClaim, Bath, Coffee, Utensils, BedSingle, FileDown } from 'lucide-vue-next'
-import { useTripOrganization } from '~/composables/useTripOrganization'
-import { useTrips } from '~/composables/useTrips'
-import { useDirectusFiles } from '~/composables/useDirectusFiles'
-import { formatDateTime, formatDate, getDaysElapsed, formatDateWithDayShort, formatTime } from '~/utils/dates'
-import { formatCurrency } from '~/utils/currency'
-import { cn } from '~/lib/utils'
-import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
-import { Button } from '~/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
-import { Badge } from '~/components/ui/badge'
-import AccommodationDrawer from '~/components/trips/drawers/AccommodationDrawer.vue'
-import LocationMap from '~/components/maps/LocationMap.vue'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '~/components/ui/tooltip'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '~/components/ui/alert-dialog'
-import UserAvatar from '~/components/common/UserAvatar.vue'
-import { useTripTasks } from '~/composables/useTripTasks'
-import TaskModal from '~/components/trips/tasks/TaskModal.vue'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
-import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
-import { type Task } from '~/types/tasks'
+  import { ref, onMounted, computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { BedDouble, Plus, Trash2, Pencil, Calendar, MapPin, MoreVertical, PhoneCall, Mail, BaggageClaim, Bath, Coffee, Utensils, BedSingle, FileDown } from 'lucide-vue-next'
+  import { useTripOrganization } from '~/composables/useTripOrganization'
+  import { useTrips } from '~/composables/useTrips'
+  import { useDirectusFiles } from '~/composables/useDirectusFiles'
+  import { formatDateTime, formatDate, getDaysElapsed, formatDateWithDayShort, formatTime } from '~/utils/dates'
+  import { formatCurrency } from '~/utils/currency'
+  import { cn } from '~/lib/utils'
+  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import { Button } from '~/components/ui/button'
+  import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
+  import { Badge } from '~/components/ui/badge'
+  import AccommodationDrawer from '~/components/trips/drawers/AccommodationDrawer.vue'
+  import LocationMap from '~/components/maps/LocationMap.vue'
+  import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from '~/components/ui/tooltip'
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from '~/components/ui/dropdown-menu'
+  import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from '~/components/ui/alert-dialog'
+  import UserAvatar from '~/components/common/UserAvatar.vue'
+  import { useTripTasks } from '~/composables/useTripTasks'
+  import TaskModal from '~/components/trips/tasks/TaskModal.vue'
+  import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
+  import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
+  import { type Task } from '~/types/tasks'
 
-definePageMeta({
-  layout: 'dashboard'
-})
-const route = useRoute()
-const tripId = route.params.id as string
-
-const { currentTrip } = useTrips()
-const { alojamientos, fetchOrganizationData, deleteAlojamiento } = useTripOrganization()
-const { tasks, init: initTasks, updateTask } = useTripTasks()
-const { downloadFile } = useDirectusFiles()
-
-const isTaskModalOpen = ref(false)
-const selectedTaskToEdit = ref<Task | null>(null)
-
-const allAccommodationTasks = computed(() => {
-  return tasks.value.filter(t => {
-    // Check direct entity type
-    if (t.entity_type === 'accommodation') return true
-    
-    // Check group entity type if task doesn't have it set directly
-    const group = typeof t.task_group === 'object' ? t.task_group : null
-    if (group && group.entity_type === 'accommodation') return true
-    
-    return false
+  definePageMeta({
+    layout: 'dashboard'
   })
-})
+  const route = useRoute()
+  const tripId = route.params.id as string
 
-const handleEditTask = (task: Task) => {
-  selectedTaskToEdit.value = task
-  isTaskModalOpen.value = true
-}
+  const { currentTrip } = useTrips()
+  const { alojamientos, fetchOrganizationData, deleteAlojamiento } = useTripOrganization()
+  const { tasks, init: initTasks, updateTask } = useTripTasks()
+  const { downloadFile } = useDirectusFiles()
 
-const isModalOpen = ref(false)
-const itemToEdit = ref(null)
+  const isTaskModalOpen = ref(false)
+  const selectedTaskToEdit = ref<Task | null>(null)
 
-const isDeleteOpen = ref(false)
-const accommodationToDelete = ref<number | null>(null)
+  const allAccommodationTasks = computed(() => {
+    return tasks.value.filter(t => {
+      // Check direct entity type
+      if (t.entity_type === 'accommodation') return true
+      
+      // Check group entity type if task doesn't have it set directly
+      const group = typeof t.task_group === 'object' ? t.task_group : null
+      if (group && group.entity_type === 'accommodation') return true
+      
+      return false
+    })
+  })
 
-const confirmDelete = (id: number) => {
-  accommodationToDelete.value = id
-  isDeleteOpen.value = true
-}
-
-const executeDelete = async () => {
-  if (accommodationToDelete.value) {
-    await deleteAlojamiento(accommodationToDelete.value)
-    isDeleteOpen.value = false
-    accommodationToDelete.value = null
+  const handleEditTask = (task: Task) => {
+    selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
   }
-}
 
-const handleCreateAccommodation = () => {
-  itemToEdit.value = null
-  isModalOpen.value = true
-}
+  const isModalOpen = ref(false)
+  const itemToEdit = ref(null)
 
-const handleEditAccommodation = (a: any) => {
-  itemToEdit.value = a
-  isModalOpen.value = true
-}
+  const isDeleteOpen = ref(false)
+  const accommodationToDelete = ref<number | null>(null)
 
-const onSaved = () => {
-  fetchOrganizationData(tripId)
-}
+  const confirmDelete = (id: number) => {
+    accommodationToDelete.value = id
+    isDeleteOpen.value = true
+  }
 
-onMounted(() => {
-  fetchOrganizationData(tripId)
-  initTasks(parseInt(tripId))
-})
+  const executeDelete = async () => {
+    if (accommodationToDelete.value) {
+      await deleteAlojamiento(accommodationToDelete.value)
+      isDeleteOpen.value = false
+      accommodationToDelete.value = null
+    }
+  }
 
-const getNights = (start: string, end: string) => {
-  if (!start || !end) return 0
-  const d1 = new Date(start)
-  const d2 = new Date(end)
-  return Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
-}
+  const handleCreateAccommodation = () => {
+    itemToEdit.value = null
+    isModalOpen.value = true
+  }
+
+  const handleEditAccommodation = (a: any) => {
+    itemToEdit.value = a
+    isModalOpen.value = true
+  }
+
+  const onSaved = () => {
+    fetchOrganizationData(tripId)
+  }
+
+  onMounted(() => {
+    fetchOrganizationData(tripId)
+    initTasks(parseInt(tripId))
+  })
+
+  const getNights = (start: string, end: string) => {
+    if (!start || !end) return 0
+    const d1 = new Date(start)
+    const d2 = new Date(end)
+    return Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+  }
 </script>
 
 <template>
