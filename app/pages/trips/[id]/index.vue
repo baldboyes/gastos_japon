@@ -16,6 +16,7 @@ const route = useRoute()
 const tripId = route.params.id as string
 const { currentTrip } = useTrips()
 const { rate, loading: rateLoading, fetchRate, lastUpdated } = useExchangeRate()
+const { t } = useI18n()
 
 onMounted(() => {
     fetchRate()
@@ -30,6 +31,12 @@ const daysUntil = computed(() => {
     const diff = start.getTime() - now.getTime()
     return Math.ceil(diff / (1000 * 3600 * 24))
 })
+
+const countdownText = computed(() => {
+    if (daysUntil.value <= 0) return t('trip_overview_page.countdown.in_progress')
+    const unitKey = daysUntil.value === 1 ? 'trip_overview_page.countdown.day' : 'trip_overview_page.countdown.days'
+    return `${daysUntil.value} ${t(unitKey)}`
+})
 </script>
 
 <template>
@@ -38,31 +45,31 @@ const daysUntil = computed(() => {
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Cuenta Atrás</CardTitle>
+                        <CardTitle class="text-sm font-medium">{{ $t('trip_overview_page.countdown.title') }}</CardTitle>
                         <Calendar class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ daysUntil > 0 ? daysUntil + ' días' : '¡En curso!' }}</div>
-                        <p class="text-xs text-muted-foreground">Para el inicio del viaje</p>
+                        <div class="text-2xl font-bold">{{ countdownText }}</div>
+                        <p class="text-xs text-muted-foreground">{{ $t('trip_overview_page.countdown.subtitle') }}</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Presupuesto Diario</CardTitle>
+                        <CardTitle class="text-sm font-medium">{{ $t('trip_overview_page.daily_budget.title') }}</CardTitle>
                         <Banknote class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div class="text-2xl font-bold">
-                            {{ currentTrip?.presupuesto_diario ? formatCurrency(currentTrip.presupuesto_diario, tripCurrency) : 'N/A' }}
+                            {{ currentTrip?.presupuesto_diario ? formatCurrency(currentTrip.presupuesto_diario, tripCurrency) : $t('trip_overview_page.common.na') }}
                         </div>
-                        <p class="text-xs text-muted-foreground">Objetivo de gasto</p>
+                        <p class="text-xs text-muted-foreground">{{ $t('trip_overview_page.daily_budget.subtitle') }}</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Cambio Divisa</CardTitle>
+                        <CardTitle class="text-sm font-medium">{{ $t('trip_overview_page.exchange.title') }}</CardTitle>
                         <ArrowRightLeft class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -72,7 +79,7 @@ const daysUntil = computed(() => {
                         <div v-else>
                             <div class="text-2xl font-bold">1€ = {{ rate ? rate.toFixed(2) : '---' }}¥</div>
                             <p class="text-xs text-muted-foreground">
-                                {{ lastUpdated ? 'Act. ' + lastUpdated.toLocaleDateString() : 'Mercado de divisas' }}
+                                {{ lastUpdated ? $t('trip_overview_page.exchange.updated_prefix') + ' ' + lastUpdated.toLocaleDateString() : $t('trip_overview_page.exchange.market') }}
                             </p>
                         </div>
                     </CardContent>

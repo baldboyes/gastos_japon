@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { Ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useTripOrganization, type Seguro } from '~/composables/useTripOrganization'
 import { useTripItemForm } from '~/composables/useTripItemForm'
 import { 
@@ -37,6 +38,22 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:open', 'saved'])
+const route = useRoute()
+const i18n = useI18n()
+const { t } = i18n
+
+const currentLocale = computed(() => {
+  const candidate = (route.path || '').split('/')[1] || ''
+  const all = i18n?.$getLocales?.() || []
+  const codes = all.map((l: any) => l.code)
+  return codes.includes(candidate) ? candidate : 'en'
+})
+
+const localeTag = computed(() => {
+  if (currentLocale.value === 'es') return 'es-ES'
+  if (currentLocale.value === 'ja') return 'ja-JP'
+  return 'en-US'
+})
 
 const { createSeguro, updateSeguro } = useTripOrganization()
 const { getAuthenticatedClient } = useDirectus()
@@ -62,7 +79,7 @@ const {
   } as FormState),
   createSeguro,
   updateSeguro,
-  'Seguro'
+  String(t('trip_insurance_drawer.item_label'))
 )
 
 // Sync open state
@@ -166,49 +183,49 @@ const onFileUploaded = async () => {
   <Drawer v-model:open="isOpen">
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
-        <DrawerTitle>{{ formData.id ? 'Editar Seguro' : 'Nuevo Seguro' }}</DrawerTitle>
+        <DrawerTitle>{{ formData.id ? $t('trip_insurance_drawer.title.edit') : $t('trip_insurance_drawer.title.new') }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">  
             <div class="grid grid-cols-[2fr_1fr] gap-3">
               <div>
-                <Label>Compañía</Label>
-                <Input v-model="formData.compania" placeholder="Iati, Chapka..." />
+                <Label>{{ $t('trip_insurance_drawer.fields.company') }}</Label>
+                <Input v-model="formData.compania" :placeholder="String($t('trip_insurance_drawer.placeholders.company'))" />
               </div>
               <div>
-                <Label>Nº Póliza</Label>
+                <Label>{{ $t('trip_insurance_drawer.fields.policy_number') }}</Label>
                 <Input v-model="formData.numero_poliza" />
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <Label>Teléfono Asistencia</Label>
-                <Input v-model="formData.telefono_urgencias" placeholder="+34 900..." />
+                <Label>{{ $t('trip_insurance_drawer.fields.assistance_phone') }}</Label>
+                <Input v-model="formData.telefono_urgencias" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_phone'))" />
               </div>
               <div>
-                <Label>Email Asistencia</Label>
-                <Input v-model="formData.email_urgencias" placeholder="email@example.com" />
+                <Label>{{ $t('trip_insurance_drawer.fields.assistance_email') }}</Label>
+                <Input v-model="formData.email_urgencias" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_email'))" />
               </div>
             </div>
             <div class="grid gap-2">
-              <Label>Fechas</Label>
+              <Label>{{ $t('trip_insurance_drawer.fields.dates') }}</Label>
               <div class="flex justify-center bg-background">
                 <RangeCalendar 
                   v-model="dateRange" 
                   class="rounded-md border border-input" 
-                  locale="es-ES" 
+                  :locale="localeTag" 
                   :week-starts-on="1"
                   :number-of-months="numberOfMonths"
                 />
               </div>
               <p class="text-xs text-muted-foreground text-center">
-                Selecciona el día de inicio y el día de fin del seguro.
+                {{ $t('trip_insurance_drawer.hints.date_range') }}
               </p>
             </div>
             <div class="grid grid-cols-3 gap-2">
                <div class="col-span-1">
-                 <Label>Precio</Label>
+                 <Label>{{ $t('trip_insurance_drawer.fields.price') }}</Label>
                  <Input 
                    type="number" 
                    v-model="formData.precio" 
@@ -216,30 +233,30 @@ const onFileUploaded = async () => {
                  />
                </div>
                <div class="col-span-1">
-                 <Label>Moneda</Label>
+                 <Label>{{ $t('trip_insurance_drawer.fields.currency') }}</Label>
                  <CurrencySelector v-model="formData.moneda" />
                </div>
                <div class="col-span-1">
-                 <Label>Estado</Label>
+                 <Label>{{ $t('trip_insurance_drawer.fields.status') }}</Label>
                  <Select v-model="formData.estado_pago">
-                  <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+                  <SelectTrigger><SelectValue :placeholder="String($t('trip_insurance_drawer.placeholders.status'))" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pagado">Pagado</SelectItem>
-                    <SelectItem value="pendiente">Pendiente</SelectItem>
-                    <SelectItem value="parcial">Parcial</SelectItem>
+                    <SelectItem value="pagado">{{ $t('trip_insurance_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pendiente">{{ $t('trip_insurance_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="parcial">{{ $t('trip_insurance_drawer.status.partial') }}</SelectItem>
                   </SelectContent>
                 </Select>
                </div>
             </div>
             <div>
-              <Label>Notas / Coberturas</Label>
-              <Textarea v-model="formData.notas" placeholder="Resumen de coberturas principales..." class="resize-none" />
+              <Label>{{ $t('trip_insurance_drawer.fields.notes') }}</Label>
+              <Textarea v-model="formData.notas" :placeholder="String($t('trip_insurance_drawer.placeholders.notes'))" class="resize-none" />
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
             <div v-if="formData.id" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
-                <Label>Archivos adjuntos</Label>
+                <Label>{{ $t('trip_insurance_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="seguros" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="seguros" @deleted="onFileUploaded" />
@@ -250,13 +267,13 @@ const onFileUploaded = async () => {
               :trip-id="Number(props.tripId)"
               entity-type="insurance"
               :entity-id="String(formData.id)"
-              :title="`Tareas: ${formData.compania || 'Seguro'}`"
+              :title="`${$t('trip_insurance_drawer.tasks.title_prefix')}: ${formData.compania || $t('trip_insurance_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>
       </ScrollArea>
       <DrawerFooter class="max-w-3xl mx-auto w-full">
-        <Button @click="saveInsurance" :disabled="!isValid">Guardar</Button>
+        <Button @click="saveInsurance" :disabled="!isValid">{{ $t('trip_insurance_drawer.actions.save') }}</Button>
       </DrawerFooter>
     </DrawerContent>
   </Drawer>

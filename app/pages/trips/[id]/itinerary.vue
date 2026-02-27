@@ -92,57 +92,57 @@ const handleCreateExpense = async () => {
     <Dialog v-model:open="isExpenseDialogOpen">
       <DialogContent class="sm:max-w-[500px]">
         <DialogHeader>
-            <DialogTitle>Nuevo Gasto Diario</DialogTitle>
-            <DialogDescription>Registra un gasto menor (comida, metro, etc).</DialogDescription>
+            <DialogTitle>{{ $t('trip_itinerary_page.expense_modal.title') }}</DialogTitle>
+            <DialogDescription>{{ $t('trip_itinerary_page.expense_modal.description') }}</DialogDescription>
         </DialogHeader>
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-2 gap-4">
               <div class="grid gap-2">
-              <Label>Fecha</Label><Input type="datetime-local" v-model="expenseForm.fecha" />
+              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.date') }}</Label><Input type="datetime-local" v-model="expenseForm.fecha" />
               </div>
               <div class="grid gap-2">
-              <Label>Monto</Label><Input type="number" v-model="expenseForm.monto" />
+              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.amount') }}</Label><Input type="number" v-model="expenseForm.monto" />
               </div>
           </div>
-          <div><Label>Concepto</Label><Input v-model="expenseForm.concepto" /></div>
+          <div><Label>{{ $t('trip_itinerary_page.expense_modal.fields.concept') }}</Label><Input v-model="expenseForm.concepto" /></div>
           <div class="grid grid-cols-2 gap-4">
               <div>
-                  <Label>Categoría</Label>
+                  <Label>{{ $t('trip_itinerary_page.expense_modal.fields.category') }}</Label>
                   <Select v-model="expenseForm.categoria">
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                          <SelectItem value="food">Comida</SelectItem>
-                          <SelectItem value="transport">Transporte</SelectItem>
-                          <SelectItem value="accommodation">Alojamiento</SelectItem>
-                          <SelectItem value="shopping">Compras</SelectItem>
-                          <SelectItem value="entertainment">Ocio</SelectItem>
-                          <SelectItem value="other">Otros</SelectItem>
+                          <SelectItem value="food">{{ $t('trip_itinerary_page.expense_modal.category.food') }}</SelectItem>
+                          <SelectItem value="transport">{{ $t('trip_itinerary_page.expense_modal.category.transport') }}</SelectItem>
+                          <SelectItem value="accommodation">{{ $t('trip_itinerary_page.expense_modal.category.accommodation') }}</SelectItem>
+                          <SelectItem value="shopping">{{ $t('trip_itinerary_page.expense_modal.category.shopping') }}</SelectItem>
+                          <SelectItem value="entertainment">{{ $t('trip_itinerary_page.expense_modal.category.entertainment') }}</SelectItem>
+                          <SelectItem value="other">{{ $t('trip_itinerary_page.expense_modal.category.other') }}</SelectItem>
                       </SelectContent>
                   </Select>
               </div>
               <div>
-              <Label>Método Pago</Label>
+              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.payment_method') }}</Label>
               <Select v-model="expenseForm.metodo_pago">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                      <SelectItem value="cash">Efectivo</SelectItem>
-                      <SelectItem value="card">Tarjeta</SelectItem>
-                      <SelectItem value="ic">Tarjeta IC</SelectItem>
+                      <SelectItem value="cash">{{ $t('trip_itinerary_page.expense_modal.payment.cash') }}</SelectItem>
+                      <SelectItem value="card">{{ $t('trip_itinerary_page.expense_modal.payment.card') }}</SelectItem>
+                      <SelectItem value="ic">{{ $t('trip_itinerary_page.expense_modal.payment.ic') }}</SelectItem>
                   </SelectContent>
               </Select>
               </div>
           </div>
           <div>
-            <Label>Notas</Label>
+            <Label>{{ $t('trip_itinerary_page.expense_modal.fields.notes') }}</Label>
             <Textarea v-model="expenseForm.descripcion" />
           </div>
           <div class="flex items-center space-x-2">
             <Checkbox :checked="expenseForm.es_compartido" @update:checked="expenseForm.es_compartido = $event" />
-            <Label>Gasto compartido</Label>
+            <Label>{{ $t('trip_itinerary_page.expense_modal.fields.shared') }}</Label>
           </div>
         </div>
         <DialogFooter>
-            <Button @click="handleCreateExpense">Guardar Gasto</Button>
+            <Button @click="handleCreateExpense">{{ $t('trip_itinerary_page.expense_modal.actions.save') }}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

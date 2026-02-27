@@ -5,8 +5,8 @@
       <div class="flex items-center gap-2">
 
         <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child v-if="currentAccommodation">
-          <a v-if="currentAccommodation.enlace_google" :title="`Como llegar a ${currentAccommodation.nombre}`" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
-            <span class="sr-only">Abrir enlace de Google Maps</span>
+          <a v-if="currentAccommodation.enlace_google" :title="$t('trip_daily_expenses_page.actions.directions_prefix') + ' ' + currentAccommodation.nombre" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+            <span class="sr-only">{{ $t('trip_daily_expenses_page.actions.open_maps') }}</span>
             <BedDouble class="h-6! w-6!" />
           </a>
         </Button>
@@ -19,7 +19,7 @@
     <!-- Daily Budget Card -->
     <DashboardTripDailyBudget 
       :daily-limit="budget.dailyLimit"
-      :currency="budget.currency || undefined"
+      :currency="budget.currency || null"
       :expenses="todayExpensesMapped"
     />
 
@@ -27,7 +27,7 @@
     <div v-if="todaysPlannedExpenses.length > 0">
       <div class="flex items-center justify-between mb-3 w-full">
         <h2 class="text-lg font-semibold text-gray-700 flex items-center justify-between gap-2 w-full">
-          <span>Gastos previstos</span>
+          <span>{{ $t('trip_daily_expenses_page.planned.title') }}</span>
           <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
         </h2>
       </div>
@@ -36,7 +36,7 @@
           v-for="planned in todaysPlannedExpenses"
           :key="planned.id"
           :planned-expense="planned"
-          :currency="budget.currency || undefined"
+          :currency="budget.currency || null"
           @click="handlePlannedExpenseClick"
           @delete="handleDeletePlanned"
         />
@@ -59,8 +59,8 @@
         class="text-center py-12 px-4"
       >
         <div class="text-6xl mb-4">💸</div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Sin gastos hoy</h3>
-        <p class="text-sm text-gray-600 mb-6">Toca el botón + para agregar tu primer gasto del día</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $t('trip_daily_expenses_page.empty.title') }}</h3>
+        <p class="text-sm text-gray-600 mb-6">{{ $t('trip_daily_expenses_page.empty.subtitle') }}</p>
       </div>
 
       <!-- Expense Cards -->
@@ -69,7 +69,7 @@
           v-for="expense in todayExpensesMapped"
           :key="expense.id"
           :expense="expense"
-          :currency="budget.currency || undefined"
+        :currency="budget.currency || null"
           @click="handleExpenseClick"
         />
       </div>
@@ -101,14 +101,14 @@
     <AlertDialog v-model:open="isDeletePlannedOpen">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Eliminar gasto previsto?</AlertDialogTitle>
+          <AlertDialogTitle>{{ $t('trip_daily_expenses_page.delete_planned.title') }}</AlertDialogTitle>
           <AlertDialogDescription>
-            Se eliminará "{{ plannedExpenseToDelete?.placeName }}" de los gastos previstos. Esta acción no se puede deshacer.
+            {{ $t('trip_daily_expenses_page.delete_planned.description_prefix') }} "{{ plannedExpenseToDelete?.placeName }}" {{ $t('trip_daily_expenses_page.delete_planned.description_suffix') }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction @click="confirmDeletePlanned" class="bg-red-600 hover:bg-red-700 text-white">Eliminar</AlertDialogAction>
+          <AlertDialogCancel>{{ $t('trip_daily_expenses_page.delete_planned.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeletePlanned" class="bg-red-600 hover:bg-red-700 text-white">{{ $t('trip_daily_expenses_page.delete_planned.confirm') }}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

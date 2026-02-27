@@ -50,6 +50,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:open', 'saved'])
+const { t } = useI18n()
 
 const { createVuelo, updateVuelo } = useTripOrganization()
 const { airlines, fetchAirlines } = useAirlines()
@@ -74,7 +75,7 @@ const {
   }),
   createVuelo,
   updateVuelo,
-  'Vuelo'
+  String(t('trip_flight_drawer.item_label'))
 )
 
 // Sync open state
@@ -110,7 +111,7 @@ const saveFlight = () => {
   handleSave((data) => {
      // Validate at least one segment
      if (!data.escalas || data.escalas.length === 0) {
-         toast.error('Debes añadir al menos un trayecto')
+         toast.error(String(t('trip_flight_drawer.validation.need_one_segment')))
          throw new Error('Validation failed')
      }
 
@@ -224,25 +225,25 @@ const onFileUploaded = async () => {
   <Drawer v-model:open="isOpen">
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
-        <DrawerTitle>{{ formData.id ? 'Editar Vuelo' : 'Nuevo Vuelo' }}</DrawerTitle>
+        <DrawerTitle>{{ formData.id ? $t('trip_flight_drawer.title.edit') : $t('trip_flight_drawer.title.new') }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div class="grid grid-cols-[2fr_1fr] gap-3">
               <div>
-                <Label>Título</Label>
-                <Input v-model="formData.titulo" placeholder="Ej: Vuelo Ida a Japón" class="font-medium" />
+                <Label>{{ $t('trip_flight_drawer.fields.title') }}</Label>
+                <Input v-model="formData.titulo" :placeholder="String($t('trip_flight_drawer.placeholders.title'))" class="font-medium" />
               </div>
               <div>
-                <Label>Localizador</Label>
-                <Input v-model="formData.codigo_reserva" placeholder="Ej: A1B2C3" class="font-mono uppercase" />
+                <Label>{{ $t('trip_flight_drawer.fields.locator') }}</Label>
+                <Input v-model="formData.codigo_reserva" :placeholder="String($t('trip_flight_drawer.placeholders.locator'))" class="font-mono uppercase" />
               </div>
             </div>
             <!-- Price -->
             <div class="grid grid-cols-[2fr_1fr_1fr] gap-3">
               <div>
-                <Label>Precio Total</Label>
+                <Label>{{ $t('trip_flight_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
                   v-model="formData.precio" 
@@ -250,17 +251,17 @@ const onFileUploaded = async () => {
                 />
               </div>
               <div>
-                <Label>Moneda</Label>
+                <Label>{{ $t('trip_flight_drawer.fields.currency') }}</Label>
                 <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
-                <Label>Estado</Label>
+                <Label>{{ $t('trip_flight_drawer.fields.status') }}</Label>
                 <Select v-model="formData.estado_pago">
-                  <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+                  <SelectTrigger><SelectValue :placeholder="String($t('trip_flight_drawer.placeholders.status'))" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pagado">Pagado</SelectItem>
-                    <SelectItem value="pendiente">Pendiente</SelectItem>
-                    <SelectItem value="parcial">Parcial</SelectItem>
+                    <SelectItem value="pagado">{{ $t('trip_flight_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pendiente">{{ $t('trip_flight_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="parcial">{{ $t('trip_flight_drawer.status.partial') }}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -268,19 +269,19 @@ const onFileUploaded = async () => {
             <!-- Escalas Section -->
             <div class="space-y-3">
               <div class="flex justify-between items-center py-2">
-                <Label class="font-bold">Trayectos / Escalas</Label>
-                <Button size="sm" @click="addEscala"><Plus class="h-3 w-3" /> Añadir</Button>
+                <Label class="font-bold">{{ $t('trip_flight_drawer.segments.title') }}</Label>
+                <Button size="sm" @click="addEscala"><Plus class="h-3 w-3" /> {{ $t('trip_flight_drawer.actions.add') }}</Button>
               </div>
               <div v-if="!formData.escalas || formData.escalas.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
-                <p>Añade al menos un trayecto para definir el vuelo.</p>
-                <Button variant="link" size="sm" @click="addEscala">Añadir primero</Button>
+                <p>{{ $t('trip_flight_drawer.segments.empty.title') }}</p>
+                <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_flight_drawer.segments.empty.cta') }}</Button>
               </div>
               <div v-for="(escala, index) in formData.escalas" :key="index" ref="escalaRefs" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
 
                 <div class="flex justify-between items-center pb-6">
                   <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                     <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs">{{ index + 1 }}</div>
-                    Trayecto
+                    {{ $t('trip_flight_drawer.segments.item_title') }}
                   </span>
                   <Button @click="removeEscala(index)" variant="destructive" size="sm">
                     <Trash2 class="h-4 w-4" />
@@ -292,16 +293,16 @@ const onFileUploaded = async () => {
                     <div class="gap-3 space-y-4">
                       <div class="grid grid-cols-[3fr_1fr] gap-3">
                         <div>
-                          <Label>Origen</Label>
-                          <Input class="h-9" v-model="escala.origen" placeholder="Ciudad Origen" />
+                          <Label>{{ $t('trip_flight_drawer.fields.origin') }}</Label>
+                          <Input class="h-9" v-model="escala.origen" :placeholder="String($t('trip_flight_drawer.placeholders.origin'))" />
                         </div>
                         <div>
-                          <Label>Terminal</Label>
-                          <Input class="h-9" v-model="escala.terminal_origen" placeholder="T1" />
+                          <Label>{{ $t('trip_flight_drawer.fields.terminal') }}</Label>
+                          <Input class="h-9" v-model="escala.terminal_origen" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
                         </div>
                       </div>
                       <div>
-                        <Label>Salida</Label>
+                        <Label>{{ $t('trip_flight_drawer.fields.departure') }}</Label>
                         <DateTimePicker 
                           v-model="escala.fecha_salida" 
                           :min="currentTrip?.fecha_inicio || undefined"
@@ -313,16 +314,16 @@ const onFileUploaded = async () => {
                     <div class="gap-3 space-y-4">
                       <div class="grid grid-cols-[3fr_1fr] gap-3">
                         <div>
-                          <Label>Destino</Label>
-                          <Input class="h-9" v-model="escala.destino" placeholder="Ciudad Destino" />
+                          <Label>{{ $t('trip_flight_drawer.fields.destination') }}</Label>
+                          <Input class="h-9" v-model="escala.destino" :placeholder="String($t('trip_flight_drawer.placeholders.destination'))" />
                         </div>
                         <div>
-                          <Label>Terminal</Label>
-                          <Input class="h-9" v-model="escala.terminal_destino" placeholder="T1" />
+                          <Label>{{ $t('trip_flight_drawer.fields.terminal') }}</Label>
+                          <Input class="h-9" v-model="escala.terminal_destino" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
                         </div>
                       </div>
                       <div>
-                        <Label>Llegada</Label>
+                        <Label>{{ $t('trip_flight_drawer.fields.arrival') }}</Label>
                         <DateTimePicker 
                           v-model="escala.fecha_llegada" 
                           :min="currentTrip?.fecha_inicio || undefined"
@@ -334,17 +335,17 @@ const onFileUploaded = async () => {
                   </div>
                   <div class="grid grid-cols-[3fr_1fr] gap-3">
                     <div>
-                      <Label>Aerolínea</Label>
+                      <Label>{{ $t('trip_flight_drawer.fields.airline') }}</Label>
                       <AirlineSelector v-model="escala.aerolinea" />
                     </div>
                     <div>
-                      <Label>Nº Vuelo</Label>
-                      <Input class="h-9" v-model="escala.numero_vuelo" placeholder="IB6800" />
+                      <Label>{{ $t('trip_flight_drawer.fields.flight_number') }}</Label>
+                      <Input class="h-9" v-model="escala.numero_vuelo" :placeholder="String($t('trip_flight_drawer.placeholders.flight_number'))" />
                     </div>
                   </div>
                   <div>
-                    <Label>Notas</Label>
-                    <Textarea v-model="formData.notas" placeholder="Información relevante, asiento, comida, etc." class="resize-none" />
+                    <Label>{{ $t('trip_flight_drawer.fields.notes') }}</Label>
+                    <Textarea v-model="formData.notas" :placeholder="String($t('trip_flight_drawer.placeholders.notes'))" class="resize-none" />
                   </div>
                 </div>
               </div>
@@ -353,7 +354,7 @@ const onFileUploaded = async () => {
           <div class="w-full lg:w-1/3 space-y-8">
             <div v-if="formId" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
-                <Label>Archivos adjuntos</Label>
+                <Label>{{ $t('trip_flight_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="vuelos" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="vuelos" @deleted="onFileUploaded" />
@@ -364,27 +365,27 @@ const onFileUploaded = async () => {
               :trip-id="Number(props.tripId)"
               entity-type="flight"
               :entity-id="String(formId)"
-              :title="`Tareas: ${formData.titulo || 'Vuelo'}`"
+              :title="`${$t('trip_flight_drawer.tasks.title_prefix')}: ${formData.titulo || $t('trip_flight_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>
       </ScrollArea>
       <DrawerFooter class="max-w-3xl mx-auto w-full">
-        <Button @click="saveFlight" :disabled="!isValid">Guardar</Button>
+        <Button @click="saveFlight" :disabled="!isValid">{{ $t('trip_flight_drawer.actions.save') }}</Button>
       </DrawerFooter>
     </DrawerContent>
 
     <AlertDialog v-model:open="isDeleteEscalaOpen">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Eliminar trayecto?</AlertDialogTitle>
+          <AlertDialogTitle>{{ $t('trip_flight_drawer.delete_segment.title') }}</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta acción eliminará este trayecto del vuelo. ¿Estás seguro de que quieres continuar?
+            {{ $t('trip_flight_drawer.delete_segment.description') }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel @click="deleteEscalaIndex = null">Cancelar</AlertDialogCancel>
-          <AlertDialogAction @click="confirmRemoveEscala" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar</AlertDialogAction>
+          <AlertDialogCancel @click="deleteEscalaIndex = null">{{ $t('trip_flight_drawer.delete_segment.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="confirmRemoveEscala" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('trip_flight_drawer.delete_segment.confirm') }}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

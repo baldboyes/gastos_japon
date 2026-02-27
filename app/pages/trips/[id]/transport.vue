@@ -127,17 +127,17 @@
                 <Train class="h-5 w-5" />
               </div>
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Transporte</h2>
-                <p class="text-muted-foreground hidden md:block">Trenes, pases y traslados internos.</p>
+                <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_transport_page.title') }}</h2>
+                <p class="text-muted-foreground hidden md:block">{{ $t('trip_transport_page.subtitle') }}</p>
               </div>
             </div>
-            <Button @click="handleCreateTransport"><Plus class="h-4 w-4" /> Añadir</Button>
+            <Button @click="handleCreateTransport"><Plus class="h-4 w-4" /> {{ $t('trip_transport_page.actions.add') }}</Button>
           </div>
 
           <div v-if="transportes.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Train class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h3 class="text-lg font-semibold text-slate-700">No hay transportes registrados</h3>
-            <p class="max-w-md mx-auto mt-2">Añade tus desplazamientos internos.</p>
+            <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_transport_page.empty.title') }}</h3>
+            <p class="max-w-md mx-auto mt-2">{{ $t('trip_transport_page.empty.subtitle') }}</p>
           </div>
 
           <div v-else class="space-y-4">
@@ -149,19 +149,19 @@
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                          <span class="sr-only">Abrir menú</span>
+                          <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                           <MoreVertical class="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem @click="handleEditTransport(t)">
                           <Pencil class="mr-2 h-4 w-4" />
-                          <span>Editar</span>
+                          <span>{{ $t('trips_page.actions.edit') }}</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="confirmDelete(t.id)" class="text-destructive focus:text-destructive">
                           <Trash2 class="mr-2 h-4 w-4" />
-                          <span>Eliminar</span>
+                          <span>{{ $t('trips_page.actions.delete') }}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -189,14 +189,14 @@
                   <div class="flex justify-between w-full">
                     <CardTitle class="text-lg">
                       <div class="flex items-center gap-2 font-bold text-lg mt-1">
-                        <span>{{ t.origen || 'Origen' }}</span>
+                        <span>{{ t.origen || $t('trip_transport_page.labels.origin_fallback') }}</span>
                         <ArrowRight class="h-4 w-4 text-muted-foreground" />
-                        <span>{{ t.destino || 'Destino' }}</span>
+                        <span>{{ t.destino || $t('trip_transport_page.labels.destination_fallback') }}</span>
                       </div>
                     </CardTitle>
                     <div class="flex items-center gap-2">
                       <div v-if="t.pase_titulo" class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 mr-2">
-                        <span class="font-bold">PASE</span>
+                        <span class="font-bold">{{ $t('trip_transport_page.labels.pass_badge') }}</span>
                       </div>
                       <span v-else :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(t.estado_pago || 'pendiente'))">
                         {{ formatCurrency(t.precio || 0, t.moneda) }}
@@ -206,19 +206,19 @@
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                       <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                        <span class="sr-only">Abrir menú</span>
+                        <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                         <MoreVertical class="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem @click="handleEditTransport(t)">
                         <Pencil class="mr-2 h-4 w-4" />
-                        <span>Editar</span>
+                        <span>{{ $t('trips_page.actions.edit') }}</span>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem @click="confirmDelete(t.id)" class="text-destructive focus:text-destructive">
                         <Trash2 class="mr-2 h-4 w-4" />
-                        <span>Eliminar</span>
+                        <span>{{ $t('trips_page.actions.delete') }}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -268,7 +268,7 @@
                       </div>
 
                       <div v-if="t.notas" class="mt-2 mb-4 p-3 bg-slate-50 rounded-md text-sm text-slate-600">
-                        <span class="font-bold text-xs uppercase text-slate-400 block mb-1">Notas</span>
+                        <span class="font-bold text-xs uppercase text-slate-400 block mb-1">{{ $t('trip_transport_page.labels.notes') }}</span>
                         {{ t.notas }}
                       </div>
 
@@ -277,7 +277,7 @@
                           <Button 
                             :key="item.id"
                             @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                            :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                            :title="$t('trip_transport_page.actions.download_prefix') + ': ' + (item.directus_files_id?.filename_download || item.filename_download)"
                           >
                             <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                           </Button>
@@ -317,14 +317,12 @@
       <AlertDialog v-model:open="isDeleteOpen">
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el transporte y todos sus datos asociados.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{{ $t('trip_transport_page.delete.title') }}</AlertDialogTitle>
+            <AlertDialogDescription>{{ $t('trip_transport_page.delete.description') }}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Transporte</AlertDialogAction>
+            <AlertDialogCancel>{{ $t('trip_transport_page.delete.cancel') }}</AlertDialogCancel>
+            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('trip_transport_page.delete.confirm') }}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

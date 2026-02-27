@@ -57,6 +57,699 @@
       "confirm": "Delete trip"
     }
   },
+  "accommodation_page": {
+    "title": "Accommodation",
+    "actions": {
+      "add": "Add",
+      "open_maps": "Open Google Maps",
+      "call_prefix": "Call:",
+      "call": "Call",
+      "email_prefix": "Email:",
+      "email": "Email",
+      "download_prefix": "Download"
+    },
+    "labels": {
+      "check_in": "Check-in",
+      "check_out": "Check-out",
+      "notes": "Notes"
+    },
+    "room": {
+      "single": "1 single room"
+    },
+    "empty": {
+      "title": "No accommodations yet",
+      "subtitle": "Add your bookings to organize where you'll sleep."
+    },
+    "features": {
+      "luggage_transfer": "Luggage transfer",
+      "private_bath": "Private bathroom"
+    },
+    "meals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "full_board": "Full board"
+    },
+    "tasks": {
+      "title_prefix": "Tasks"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the accommodation and all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete accommodation"
+    }
+  },
+  "trip_overview_page": {
+    "common": {
+      "na": "N/A"
+    },
+    "countdown": {
+      "title": "Countdown",
+      "subtitle": "Until the trip starts",
+      "in_progress": "In progress!",
+      "day": "day",
+      "days": "days"
+    },
+    "daily_budget": {
+      "title": "Daily budget",
+      "subtitle": "Spending target"
+    },
+    "exchange": {
+      "title": "Exchange rate",
+      "updated_prefix": "Upd.",
+      "market": "FX market"
+    }
+  },
+  "trip_flights_page": {
+    "title": "Flights",
+    "subtitle": "Manage your tickets and bookings.",
+    "actions": {
+      "add": "Add",
+      "download_prefix": "Download"
+    },
+    "empty": {
+      "title": "No flights yet",
+      "subtitle": "Add your flights to organize the trip itinerary."
+    },
+    "labels": {
+      "notes": "Notes"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the flight and all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete flight"
+    }
+  },
+  "trip_activities_page": {
+    "title": "Activities",
+    "subtitle": "Tours, visits, and experiences.",
+    "actions": {
+      "add": "Add",
+      "open_maps": "Open Google Maps",
+      "download_prefix": "Download"
+    },
+    "empty": {
+      "title": "No activities yet",
+      "subtitle": "Add your plans to complete the itinerary."
+    },
+    "location": {
+      "none": "No location specified"
+    },
+    "labels": {
+      "notes": "Notes"
+    },
+    "tasks": {
+      "title_prefix": "Tasks"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the activity and all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete activity"
+    }
+  },
+  "trip_insurance_page": {
+    "title": "Insurance",
+    "subtitle": "Travel policies and medical assistance.",
+    "actions": {
+      "add": "Add",
+      "call_prefix": "Call:",
+      "call": "Call",
+      "email_prefix": "Email:",
+      "email": "Email",
+      "download_prefix": "Download"
+    },
+    "empty": {
+      "title": "No insurance yet",
+      "subtitle": "Add your travel insurance to keep the policy handy."
+    },
+    "labels": {
+      "notes": "Notes"
+    },
+    "tasks": {
+      "title_prefix": "Tasks"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the insurance and all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete insurance"
+    }
+  },
+  "trip_tasks_page": {
+    "title": "Tasks",
+    "subtitle": "Organize activities and todos for your trip."
+  },
+  "trip_transport_page": {
+    "title": "Transport",
+    "subtitle": "Trains, passes, and local transfers.",
+    "actions": {
+      "add": "Add",
+      "download_prefix": "Download"
+    },
+    "empty": {
+      "title": "No transports yet",
+      "subtitle": "Add your local rides and transfers."
+    },
+    "labels": {
+      "origin_fallback": "Origin",
+      "destination_fallback": "Destination",
+      "pass_badge": "PASS",
+      "notes": "Notes"
+    },
+    "delete": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete the transport and all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete transport"
+    }
+  },
+  "trip_transport_drawer": {
+    "item_label": "Transport",
+    "title": {
+      "edit": "Edit transport",
+      "new": "New transport"
+    },
+    "fields": {
+      "title": "Title / Name",
+      "category": "Category",
+      "valid_from": "Valid from",
+      "duration": "Duration",
+      "valid_until_calculated": "Valid until (calculated)",
+      "transport_mode": "Transport mode",
+      "origin": "Origin",
+      "departure": "Departure",
+      "destination": "Destination",
+      "arrival": "Arrival",
+      "total_price": "Total price",
+      "currency": "Currency",
+      "status": "Status",
+      "notes": "Notes",
+      "attachments": "Attachments"
+    },
+    "placeholders": {
+      "title": "e.g. JR Pass, Shinkansen to Kyoto...",
+      "associate_pass": "Associate to pass (optional)",
+      "origin": "Station A",
+      "destination": "Station B",
+      "status": "Status"
+    },
+    "category": {
+      "pass": "Pass (period)",
+      "route": "Route (segments)"
+    },
+    "duration_type": {
+      "days": "By days",
+      "hours": "By hours"
+    },
+    "associate": {
+      "none": "None"
+    },
+    "scales": {
+      "title": "Segments / Stops",
+      "item_title": "Segment",
+      "empty": {
+        "title": "Add at least one segment to define the transport.",
+        "cta": "Add first"
+      }
+    },
+    "actions": {
+      "add": "Add",
+      "save": "Save"
+    },
+    "transport_mode": {
+      "train": "Train",
+      "metro": "Metro",
+      "bus": "Bus",
+      "ferry": "Boat / Ferry",
+      "taxi": "Taxi / Car",
+      "walk": "Walk"
+    },
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid"
+    },
+    "defaults": {
+      "pass_name": "Transport pass",
+      "origin": "Origin",
+      "destination": "Destination"
+    },
+    "tasks": {
+      "title_prefix": "Tasks",
+      "entity_fallback": "Transport"
+    }
+  },
+  "trip_accommodation_drawer": {
+    "item_label": "Accommodation",
+    "title": {
+      "edit": "Edit accommodation",
+      "new": "New accommodation"
+    },
+    "fields": {
+      "name": "Accommodation name",
+      "check_in": "Check-in",
+      "check_out": "Check-out",
+      "location": "Location / Address",
+      "total_price": "Total price",
+      "currency": "Currency",
+      "status": "Status",
+      "google_maps_link": "Google Maps link",
+      "phone": "Phone",
+      "email": "Email",
+      "pension": "Meal plan",
+      "notes": "Notes",
+      "attachments": "Attachments"
+    },
+    "placeholders": {
+      "name": "Hotel / Apartment",
+      "location": "Search address...",
+      "status": "Status",
+      "google_maps_link": "Google Maps link",
+      "phone": "Phone number",
+      "email": "Email address",
+      "notes": "Relevant info, access codes, etc."
+    },
+    "toggles": {
+      "private": "Private",
+      "takkyubin": "Takkyubin"
+    },
+    "pension": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "full_board": "Full board"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "partial": "Partial"
+    },
+    "actions": {
+      "save": "Save"
+    },
+    "tasks": {
+      "title_prefix": "Tasks",
+      "entity_fallback": "Accommodation"
+    }
+  },
+  "trip_activity_drawer": {
+    "item_label": "Activity",
+    "title": {
+      "edit": "Edit activity",
+      "new": "New activity"
+    },
+    "description": "Plan your visits and experiences.",
+    "fields": {
+      "name": "Activity name",
+      "start": "Start",
+      "end": "End",
+      "location": "Location",
+      "total_price": "Total price",
+      "currency": "Currency",
+      "status": "Status",
+      "google_maps_link": "Google Maps link",
+      "notes": "Notes",
+      "attachments": "Attachments"
+    },
+    "placeholders": {
+      "name": "Temple visit, tour, etc.",
+      "location": "Search place...",
+      "status": "Status",
+      "google_maps_link": "https://maps.app.goo.gl/...",
+      "notes": "Important information..."
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "partial": "Partial"
+    },
+    "actions": {
+      "save": "Save"
+    },
+    "tasks": {
+      "title_prefix": "Tasks",
+      "entity_fallback": "Activity"
+    }
+  },
+  "trip_flight_drawer": {
+    "item_label": "Flight",
+    "title": {
+      "edit": "Edit flight",
+      "new": "New flight"
+    },
+    "validation": {
+      "need_one_segment": "You must add at least one segment"
+    },
+    "fields": {
+      "title": "Title",
+      "locator": "Locator",
+      "total_price": "Total price",
+      "currency": "Currency",
+      "status": "Status",
+      "origin": "Origin",
+      "destination": "Destination",
+      "terminal": "Terminal",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "airline": "Airline",
+      "flight_number": "Flight no.",
+      "notes": "Notes",
+      "attachments": "Attachments"
+    },
+    "placeholders": {
+      "title": "e.g. Flight to Japan",
+      "locator": "e.g. A1B2C3",
+      "status": "Status",
+      "origin": "Origin city",
+      "destination": "Destination city",
+      "terminal": "T1",
+      "flight_number": "IB6800",
+      "notes": "Relevant info, seat, meal, etc."
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "partial": "Partial"
+    },
+    "segments": {
+      "title": "Segments / Stops",
+      "item_title": "Segment",
+      "empty": {
+        "title": "Add at least one segment to define the flight.",
+        "cta": "Add first"
+      }
+    },
+    "actions": {
+      "add": "Add",
+      "save": "Save"
+    },
+    "delete_segment": {
+      "title": "Delete segment?",
+      "description": "This will remove this segment from the flight. Are you sure you want to continue?",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "tasks": {
+      "title_prefix": "Tasks",
+      "entity_fallback": "Flight"
+    }
+  },
+  "trip_insurance_drawer": {
+    "item_label": "Insurance",
+    "title": {
+      "edit": "Edit insurance",
+      "new": "New insurance"
+    },
+    "fields": {
+      "company": "Company",
+      "policy_number": "Policy no.",
+      "assistance_phone": "Assistance phone",
+      "assistance_email": "Assistance email",
+      "dates": "Dates",
+      "price": "Price",
+      "currency": "Currency",
+      "status": "Status",
+      "notes": "Notes / Coverage",
+      "attachments": "Attachments"
+    },
+    "placeholders": {
+      "company": "Iati, Chapka...",
+      "assistance_phone": "+34 900...",
+      "assistance_email": "email@example.com",
+      "status": "Status",
+      "notes": "Summary of main coverage..."
+    },
+    "hints": {
+      "date_range": "Select the start day and the end day of the insurance."
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "partial": "Partial"
+    },
+    "actions": {
+      "save": "Save"
+    },
+    "tasks": {
+      "title_prefix": "Tasks",
+      "entity_fallback": "Insurance"
+    }
+  },
+  "trip_drawer": {
+    "title": {
+      "edit": "Edit trip",
+      "new": "Create new trip"
+    },
+    "fields": {
+      "name": "Trip name",
+      "destination_country": "Destination",
+      "dates": "Dates",
+      "start": "Start",
+      "end": "End",
+      "daily_budget": "Daily budget",
+      "currency": "Currency",
+      "cover": "Cover"
+    },
+    "placeholders": {
+      "name": "e.g. Japan 2026",
+      "select_country": "Select a country",
+      "search_country": "Search country...",
+      "select_date": "Select date",
+      "daily_budget": "e.g. 10000",
+      "select_city": "Select a city",
+      "search_city": "Search city...",
+      "date": "Date"
+    },
+    "common": {
+      "not_found": "Not found."
+    },
+    "cover": {
+      "cta": "Click to upload cover",
+      "hint": "PNG, JPG (Max. 10MB)",
+      "too_large": "The image is larger than 10MB"
+    },
+    "itinerary": {
+      "title": "Itinerary / Cities",
+      "actions": {
+        "add_city": "Add city"
+      },
+      "empty": {
+        "select_country_first": "Select a country first.",
+        "add_cities": "Add cities and dates to your itinerary."
+      },
+      "fields": {
+        "city": "City",
+        "arrival": "Arrival",
+        "departure": "Departure"
+      }
+    },
+    "actions": {
+      "delete": "Delete",
+      "saving": "Saving...",
+      "update": "Update",
+      "create": "Create trip"
+    },
+    "toasts": {
+      "updated": "Trip updated successfully",
+      "created": "Trip created successfully"
+    }
+  },
+  "trip_itinerary_page": {
+    "expense_modal": {
+      "title": "New daily expense",
+      "description": "Log a small expense (food, metro, etc).",
+      "fields": {
+        "date": "Date",
+        "amount": "Amount",
+        "concept": "Concept",
+        "category": "Category",
+        "payment_method": "Payment method",
+        "notes": "Notes",
+        "shared": "Shared expense"
+      },
+      "category": {
+        "food": "Food",
+        "transport": "Transport",
+        "accommodation": "Accommodation",
+        "shopping": "Shopping",
+        "entertainment": "Entertainment",
+        "other": "Other"
+      },
+      "payment": {
+        "cash": "Cash",
+        "card": "Card",
+        "ic": "IC card"
+      },
+      "actions": {
+        "save": "Save expense"
+      }
+    }
+  },
+  "trip_daily_expenses_page": {
+    "actions": {
+      "directions_prefix": "Directions to",
+      "open_maps": "Open Google Maps link"
+    },
+    "planned": {
+      "title": "Planned expenses"
+    },
+    "empty": {
+      "title": "No expenses today",
+      "subtitle": "Tap the + button to add your first expense of the day"
+    },
+    "delete_planned": {
+      "title": "Delete planned expense?",
+      "description_prefix": "This will remove",
+      "description_suffix": "from planned expenses. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "trip_expenses_page": {
+    "tabs": {
+      "list": "List",
+      "map": "Map",
+      "stats": "Stats",
+      "wallet": "Wallet"
+    },
+    "labels": {
+      "expense_singular": "expense",
+      "expense_plural": "expenses",
+      "day_singular": "day",
+      "day_plural": "days"
+    },
+    "results": {
+      "showing": "Showing",
+      "result_singular": "result",
+      "result_plural": "results",
+      "total_prefix": "Total:"
+    },
+    "empty": {
+      "title": "No expenses",
+      "subtitle": "No expenses found with the applied filters"
+    },
+    "stats": {
+      "empty": {
+        "title": "No stats yet",
+        "subtitle": "Add some expenses to see your stats",
+        "cta": "Add expense"
+      },
+      "overview": {
+        "total": "Total",
+        "daily_average": "Daily average",
+        "days_with_expenses_suffix": "with expenses"
+      },
+      "top_expenses": {
+        "title": "Top expenses"
+      }
+    },
+    "wallet": {
+      "toasts": {
+        "saved": "Exchange saved",
+        "error": "Failed to save exchange"
+      },
+      "summary": {
+        "total_invested": "Total invested",
+        "total_invested_subtitle": "Expenses in EUR + exchanges",
+        "jpy_available": "JPY available",
+        "jpy_available_subtitle": "Current balance (Cash + Card)",
+        "total_exchanged": "Total exchanged",
+        "total_exchanged_subtitle": "Sum of all exchanges"
+      },
+      "payments": {
+        "title": "Payments status (bookings)",
+        "paid_eur": "Paid (EUR)",
+        "paid_eur_subtitle": "Flights, hotels, etc.",
+        "pending_eur": "Pending (EUR)",
+        "pending_eur_subtitle": "To pay",
+        "paid_jpy": "Paid (JPY)",
+        "paid_jpy_subtitle": "Already spent",
+        "pending_jpy": "Pending (JPY)",
+        "pending_jpy_subtitle": "Reserve cash/card"
+      },
+      "history": {
+        "title": "Exchange history",
+        "add": "Add exchange",
+        "empty": {
+          "title": "No exchanges yet",
+          "subtitle": "Add your currency exchanges to keep track."
+        },
+        "rate_prefix": "Rate:"
+      },
+      "modal": {
+        "title": "Log currency exchange",
+        "fields": {
+          "given_eur": "Given (EUR)",
+          "received_jpy": "Received (JPY)",
+          "date": "Date",
+          "place": "Place (exchange / bank)",
+          "destination": "Destination"
+        },
+        "destination": {
+          "cash": "Cash (wallet)",
+          "card": "Card (Revolut/N26)",
+          "suica": "Suica / IC card"
+        },
+        "actions": {
+          "save": "Save"
+        }
+      }
+    }
+  },
+  "trip_travelers_page": {
+    "title": "Travelers",
+    "subtitle": "Manage who participates in this trip.",
+    "labels": {
+      "organizer": "Organizer"
+    },
+    "actions": {
+      "add": "Add",
+      "remove": "Remove",
+      "close": "Close"
+    },
+    "common": {
+      "connection_error": "Connection error",
+      "server_connection_error": "Server connection error"
+    },
+    "remove": {
+      "confirm": "Are you sure you want to remove this traveler from the group?",
+      "success": "Traveler removed",
+      "error": "Failed to remove traveler"
+    },
+    "invite": {
+      "auth_error": "Authentication error. Reload the page.",
+      "default_trip_name": "Trip to Japan",
+      "default_inviter_name": "A user",
+      "request_error": "Failed to process the request"
+    },
+    "invite_card": {
+      "title": "Invite more people",
+      "subtitle": "Share expenses and planning with your friends.",
+      "cta": "Invite now"
+    },
+    "invite_modal": {
+      "title": "Invite to trip",
+      "description": "Enter the email address of the person you want to invite.",
+      "email_placeholder": "name@email.com",
+      "role_label": "Role",
+      "role_placeholder": "Select a role",
+      "email_sent_hint": "The user will receive an email with instructions to sign up.",
+      "sending": "Sending...",
+      "send": "Send invite"
+    },
+    "roles": {
+      "app_user": {
+        "title": "App user",
+        "subtitle": "Can create and edit."
+      },
+      "read_only": {
+        "title": "Read-only",
+        "subtitle": "Can only view information."
+      }
+    }
+  },
   "welcome": "Welcome",
   "landing": {
     "new_version": "New version available",

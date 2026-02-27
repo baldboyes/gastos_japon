@@ -19,8 +19,8 @@ definePageMeta({
             <ListTodo class="h-5 w-5" />
           </div>
           <div>
-            <h2 class="text-2xl font-bold tracking-tight">Tareas</h2>
-            <p class="text-muted-foreground hidden md:block">Organiza las actividades y pendientes de tu viaje.</p>
+            <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_tasks_page.title') }}</h2>
+            <p class="text-muted-foreground hidden md:block">{{ $t('trip_tasks_page.subtitle') }}</p>
           </div>
         </div>
         <TaskBoard :trip-id="tripId" />

@@ -23,6 +23,7 @@
   const { user } = useUser()
   const { directusUserId } = useDirectus()
   const { trips, travelers, fetchTravelers } = useTrips()
+  const { t } = useI18n()
 
   const isInviteModalOpen = ref(false)
   const inviteEmail = ref('')
@@ -31,7 +32,7 @@
   const inviteResult = ref<{ status: 'success' | 'error', message: string, type?: 'invited' | 'email_sent' } | null>(null)
 
   // Obtener nombre del viaje actual
-  const currentTrip = computed(() => trips.value.find(t => t.id === parseInt(tripId)))
+  const currentTrip = computed(() => trips.value.find(t => Number(t.id) === Number(tripId)))
 
   onMounted(() => {
     fetchTravelers(tripId)
@@ -44,7 +45,7 @@
   })
 
   const removeTraveler = async (relationId: string) => {
-    if (!confirm('¿Seguro que quieres eliminar a este viajero del grupo?')) return
+    if (!confirm(String(t('trip_travelers_page.remove.confirm')))) return
 
     try {
       const response = await $fetch('/api/trips/remove-traveler', {
@@ -53,14 +54,14 @@
       }) as any
 
       if (response.success) {
-        toast.success('Viajero eliminado')
+        toast.success(String(t('trip_travelers_page.remove.success')))
         fetchTravelers(tripId)
       } else {
-        toast.error(response.error || 'Error al eliminar viajero')
+        toast.error(response.error || String(t('trip_travelers_page.remove.error')))
       }
     } catch (error) {
       console.error(error)
-      toast.error('Error de conexión')
+      toast.error(String(t('trip_travelers_page.common.connection_error')))
     }
   }
 
@@ -72,7 +73,7 @@
   const handleInvite = async () => {
     if (!isValidEmail.value) return
     if (!directusUserId.value) {
-      toast.error('Error de autenticación. Recarga la página.')
+      toast.error(String(t('trip_travelers_page.invite.auth_error')))
       return
     }
 
@@ -86,8 +87,8 @@
           email: inviteEmail.value,
           role: inviteRole.value,
           tripId: parseInt(tripId),
-          tripName: currentTrip.value?.nombre || 'Viaje a Japón',
-          inviterName: user.value?.fullName || user.value?.firstName || 'Un usuario',
+          tripName: currentTrip.value?.nombre || String(t('trip_travelers_page.invite.default_trip_name')),
+          inviterName: user.value?.fullName || user.value?.firstName || String(t('trip_travelers_page.invite.default_inviter_name')),
           inviterId: directusUserId.value
         }
       }) as any
@@ -111,9 +112,9 @@
       console.error('Error inviting user:', error)
       inviteResult.value = {
         status: 'error',
-        message: 'Error de conexión con el servidor'
+        message: String(t('trip_travelers_page.common.server_connection_error'))
       }
-      toast.error('Error al procesar la solicitud')
+      toast.error(String(t('trip_travelers_page.invite.request_error')))
     } finally {
       isInviting.value = false
     }
@@ -137,18 +138,18 @@
                 <Users class="h-5 w-5" />
               </div>
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Viajeros</h2>
-                <p class="text-muted-foreground">Gestiona quiénes participan en este viaje.</p>
+                <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_travelers_page.title') }}</h2>
+                <p class="text-muted-foreground">{{ $t('trip_travelers_page.subtitle') }}</p>
               </div>
             </div>
-            <Button @click="isInviteModalOpen = true"><Plus class="h-4 w-4" /> Añadir</Button>
+            <Button @click="isInviteModalOpen = true"><Plus class="h-4 w-4" /> {{ $t('trip_travelers_page.actions.add') }}</Button>
           </div>
           <!-- Lista de viajeros -->
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">    
             <!-- Tarjetas de viajeros reales -->
             <Card v-for="traveler in travelers" :key="traveler.id" class="relative overflow-hidden">
               <div v-if="traveler.role === 'owner'" class="absolute top-0 right-0 uppercase bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-bl font-bold flex items-center gap-1">
-                <Crown class="h-3 w-3" /> Organizador
+                <Crown class="h-3 w-3" /> {{ $t('trip_travelers_page.labels.organizer') }}
               </div>
               <CardContent class="p-2">
                 <div class="space-y-8">
@@ -165,7 +166,7 @@
               </CardContent>
               <CardFooter class="px-4 flex justify-end gap-2 absolute bottom-2 right-0" v-if="isCurrentUserOwner && traveler.id !== directusUserId">
                 <Button variant="ghost" size="sm" class="text-red-600 hover:text-red-700 hover:bg-red-50 h-8" @click="removeTraveler(traveler.relationId)">
-                  <Trash2 class="h-3.5 w-3.5 mr-1.5" /> Eliminar
+                  <Trash2 class="h-3.5 w-3.5 mr-1.5" /> {{ $t('trip_travelers_page.actions.remove') }}
                 </Button>
               </CardFooter>
             </Card>
@@ -176,12 +177,12 @@
                 <div class="rounded-full bg-slate-100 p-3 mb-3">
                   <UserPlus class="h-6 w-6 text-slate-400" />
                 </div>
-                <h3 class="font-medium">Invitar a más personas</h3>
+                <h3 class="font-medium">{{ $t('trip_travelers_page.invite_card.title') }}</h3>
                 <p class="text-sm text-muted-foreground mt-1 mb-4 max-w-[200px]">
-                  Comparte los gastos y la planificación con tus amigos.
+                  {{ $t('trip_travelers_page.invite_card.subtitle') }}
                 </p>
                 <Button variant="outline" size="sm" @click="isInviteModalOpen = true">
-                  Invitar ahora
+                  {{ $t('trip_travelers_page.invite_card.cta') }}
                 </Button>
               </CardContent>
             </Card>
@@ -194,9 +195,9 @@
     <Dialog :open="isInviteModalOpen" @update:open="closeInviteModal">
       <DialogContent class="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Invitar al viaje</DialogTitle>
+          <DialogTitle>{{ $t('trip_travelers_page.invite_modal.title') }}</DialogTitle>
           <DialogDescription>
-            Introduce el correo electrónico de la persona que quieres invitar.
+            {{ $t('trip_travelers_page.invite_modal.description') }}
           </DialogDescription>
         </DialogHeader>
         
@@ -206,7 +207,7 @@
             <Input 
               id="email" 
               v-model="inviteEmail" 
-              placeholder="ejemplo@correo.com" 
+              :placeholder="$t('trip_travelers_page.invite_modal.email_placeholder')" 
               type="email" 
               :disabled="isInviting"
               @keyup.enter="handleInvite"
@@ -214,23 +215,23 @@
           </div>
 
           <div class="space-y-2">
-            <Label>Rol</Label>
+            <Label>{{ $t('trip_travelers_page.invite_modal.role_label') }}</Label>
             <Select v-model="inviteRole">
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un rol" />
+                <SelectValue :placeholder="$t('trip_travelers_page.invite_modal.role_placeholder')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="a78c3ab5-20eb-451f-b93f-c087f500fb47">
                     <div class="flex flex-col text-left">
-                      <span class="font-medium">Usuario App</span>
-                      <span class="text-xs text-muted-foreground">Puede crear y editar.</span>
+                      <span class="font-medium">{{ $t('trip_travelers_page.roles.app_user.title') }}</span>
+                      <span class="text-xs text-muted-foreground">{{ $t('trip_travelers_page.roles.app_user.subtitle') }}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="7e0df8d5-c156-4db0-ae0a-aa6d2980c61e">
                      <div class="flex flex-col text-left">
-                      <span class="font-medium">Solo Lectura</span>
-                      <span class="text-xs text-muted-foreground">Solo puede ver información.</span>
+                      <span class="font-medium">{{ $t('trip_travelers_page.roles.read_only.title') }}</span>
+                      <span class="text-xs text-muted-foreground">{{ $t('trip_travelers_page.roles.read_only.subtitle') }}</span>
                     </div>
                   </SelectItem>
                 </SelectGroup>
@@ -248,7 +249,7 @@
             <div class="flex-1">
               <p class="font-medium">{{ inviteResult.message }}</p>
               <p v-if="inviteResult.type === 'email_sent'" class="text-xs mt-1 opacity-90">
-                El usuario recibirá un correo con instrucciones para registrarse.
+                {{ $t('trip_travelers_page.invite_modal.email_sent_hint') }}
               </p>
             </div>
           </div>
@@ -256,11 +257,11 @@
 
         <DialogFooter class="sm:justify-end">
           <Button variant="secondary" @click="closeInviteModal">
-            Cerrar
+            {{ $t('trip_travelers_page.actions.close') }}
           </Button>
           <Button @click="handleInvite" :disabled="!isValidEmail || isInviting">
             <Loader2 v-if="isInviting" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isInviting ? 'Enviando...' : 'Enviar invitación' }}
+            {{ isInviting ? $t('trip_travelers_page.invite_modal.sending') : $t('trip_travelers_page.invite_modal.send') }}
           </Button>
         </DialogFooter>
       </DialogContent>

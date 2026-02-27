@@ -44,7 +44,7 @@
   import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
   import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
   import { type Task } from '~/types/tasks'
-
+  
   definePageMeta({
     layout: 'dashboard'
   })
@@ -135,14 +135,14 @@
               <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-1">
                 <BedDouble class="h-5 w-5" />
               </div>
-              <h2 class="text-2xl font-bold tracking-tight">Alojamiento</h2>
+              <h2 class="text-2xl font-bold tracking-tight">{{ $t('accommodation_page.title') }}</h2>
             </div>
-            <Button @click="handleCreateAccommodation"><Plus class="h-4 w-4" /> Añadir</Button>
+            <Button @click="handleCreateAccommodation"><Plus class="h-4 w-4" /> {{ $t('accommodation_page.actions.add') }}</Button>
           </div>
           <div v-if="alojamientos.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <BedDouble class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h3 class="text-lg font-semibold text-slate-700">No hay alojamientos registrados</h3>
-            <p class="max-w-md mx-auto mt-2">Añade tus reservas para organizar dónde dormirás.</p>
+            <h3 class="text-lg font-semibold text-slate-700">{{ $t('accommodation_page.empty.title') }}</h3>
+            <p class="max-w-md mx-auto mt-2">{{ $t('accommodation_page.empty.subtitle') }}</p>
           </div>
           <template v-else>
             <Card v-for="a in alojamientos" :key="a.id">
@@ -158,19 +158,19 @@
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                      <span class="sr-only">Abrir menú</span>
+                      <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                       <MoreVertical class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem @click="handleEditAccommodation(a)">
                       <Pencil class="mr-2 h-4 w-4" />
-                      <span>Editar</span>
+                      <span>{{ $t('trips_page.actions.edit') }}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem @click="confirmDelete(a.id)" class="text-destructive focus:text-destructive">
                       <Trash2 class="mr-2 h-4 w-4" />
-                      <span>Eliminar</span>
+                      <span>{{ $t('trips_page.actions.delete') }}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -188,14 +188,14 @@
                   <div class="w-full xl:w-2/3 flex flex-col justify-between space-y-6">
                     <div class="flex justify-between gap-4">
                       <div class="space-y-1">
-                        <div class="text-xs font-bold text-slate-500 uppercase">Entrada</div>
+                        <div class="text-xs font-bold text-slate-500 uppercase">{{ $t('accommodation_page.labels.check_in') }}</div>
                         <div class="flex items-center gap-2">
                           <span class="font-medium">{{ formatDateWithDayShort(a.fecha_entrada) }}</span>
                           <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.fecha_entrada) }}</Badge>
                         </div>
                       </div>
                       <div class="space-y-1">
-                        <div class="text-xs font-bold text-slate-500 uppercase">Salida</div>
+                        <div class="text-xs font-bold text-slate-500 uppercase">{{ $t('accommodation_page.labels.check_out') }}</div>
                         <div class="flex items-center gap-2">
                           <span class="font-medium">{{ formatDateWithDayShort(a.fecha_salida) }}</span>
                           <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.fecha_salida) }}</Badge>
@@ -204,25 +204,25 @@
                     </div>
                     <div class="flex items-center gap-2">
                       <BedSingle class="h-4 w-4 text-slate-400" />
-                      <span>1 habitación individual</span>
+                      <span>{{ $t('accommodation_page.room.single') }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-4">
                       <div class="flex items-center justify-start gap-1">
                         <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.ubicacion?.address">
                           <NuxtLink :href="a.enlace_google" target="_blank"> 
-                            <span class="sr-only">Ir a Google Maps</span>
+                            <span class="sr-only">{{ $t('accommodation_page.actions.open_maps') }}</span>
                             <MapPin class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
                         <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.telefono">
-                          <NuxtLink v-if="a.telefono" :title="`Llamar: ${a.telefono}`" :href="`tel:${a.telefono}`"> 
-                            <span class="sr-only">Llamar</span>
+                          <NuxtLink v-if="a.telefono" :title="`${$t('accommodation_page.actions.call_prefix')} ${a.telefono}`" :href="`tel:${a.telefono}`"> 
+                            <span class="sr-only">{{ $t('accommodation_page.actions.call') }}</span>
                             <PhoneCall class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
                         <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.email">
-                          <NuxtLink v-if="a.email" :title="`Enviar correo: ${a.email}`" :href="`mailto:${a.email}`"> 
-                            <span class="sr-only">Enviar correo</span>
+                          <NuxtLink v-if="a.email" :title="`${$t('accommodation_page.actions.email_prefix')} ${a.email}`" :href="`mailto:${a.email}`"> 
+                            <span class="sr-only">{{ $t('accommodation_page.actions.email') }}</span>
                             <Mail class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
@@ -236,7 +236,7 @@
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Traslado de maletas</p>
+                              <p>{{ $t('accommodation_page.features.luggage_transfer') }}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -248,7 +248,7 @@
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Baño privado</p>
+                              <p>{{ $t('accommodation_page.features.private_bath') }}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -262,10 +262,10 @@
                             </TooltipTrigger>
                             <TooltipContent>
                               <p class="flex gap-2">
-                                <span v-if="a.pension?.includes('desayuno')">Desayuno</span>
-                                <span v-if="a.pension?.includes('comida')">Comida</span>
-                                <span v-if="a.pension?.includes('cena')">Cena</span>
-                                <span v-if="a.pension?.includes('completa')">Completa</span>
+                                <span v-if="a.pension?.includes('desayuno')">{{ $t('accommodation_page.meals.breakfast') }}</span>
+                                <span v-if="a.pension?.includes('comida')">{{ $t('accommodation_page.meals.lunch') }}</span>
+                                <span v-if="a.pension?.includes('cena')">{{ $t('accommodation_page.meals.dinner') }}</span>
+                                <span v-if="a.pension?.includes('completa')">{{ $t('accommodation_page.meals.full_board') }}</span>
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -275,14 +275,14 @@
                   </div>
                 </div>
                 <div v-if="a.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
-                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('accommodation_page.labels.notes') }}</p>
                   <p class="whitespace-pre-line">{{ a.notas }}</p>
                 </div>
                 <EntityTasksWidget 
                   :trip-id="parseInt(tripId)"
                   entity-type="accommodation"
                   :entity-id="a.id"
-                  :title="`Tareas: ${a.nombre || 'Alojamiento'}`"
+                  :title="$t('accommodation_page.tasks.title_prefix') + ': ' + (a.nombre || $t('accommodation_page.title'))"
                   class="hidden"
                 />
                 <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
@@ -290,7 +290,7 @@
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                      :title="$t('accommodation_page.actions.download_prefix') + ': ' + (item.directus_files_id?.filename_download || item.filename_download)"
                     >
                       <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
@@ -327,14 +327,12 @@
     <AlertDialog v-model:open="isDeleteOpen">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Esta acción no se puede deshacer. Se eliminará permanentemente el alojamiento y todos sus datos asociados.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{{ $t('accommodation_page.delete.title') }}</AlertDialogTitle>
+          <AlertDialogDescription>{{ $t('accommodation_page.delete.description') }}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Alojamiento</AlertDialogAction>
+          <AlertDialogCancel>{{ $t('accommodation_page.delete.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('accommodation_page.delete.confirm') }}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

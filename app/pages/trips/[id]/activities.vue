@@ -105,7 +105,7 @@
     initTasks(parseInt(tripId))
   })
 
-  const getDuration = (start: string, end: string) => {
+  const getDuration = (start?: string, end?: string) => {
     if (!start || !end) return ''
     const d1 = new Date(start)
     const d2 = new Date(end)
@@ -130,16 +130,16 @@
                 <Camera class="h-5 w-5" />
               </div>
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Actividades</h2>
-                <p class="text-muted-foreground hidden md:block">Excursiones, visitas y experiencias.</p>
+                <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_activities_page.title') }}</h2>
+                <p class="text-muted-foreground hidden md:block">{{ $t('trip_activities_page.subtitle') }}</p>
               </div>
             </div>
-            <Button @click="handleCreateActivity"><Plus class="h-4 w-4" /> Añadir</Button>
+            <Button @click="handleCreateActivity"><Plus class="h-4 w-4" /> {{ $t('trip_activities_page.actions.add') }}</Button>
           </div>
           <div v-if="actividades.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Camera class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h3 class="text-lg font-semibold text-slate-700">No hay actividades registradas</h3>
-            <p class="max-w-md mx-auto mt-2">Añade tus planes para completar el itinerario.</p>
+            <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_activities_page.empty.title') }}</h3>
+            <p class="max-w-md mx-auto mt-2">{{ $t('trip_activities_page.empty.subtitle') }}</p>
           </div>
           <div v-else class="space-y-4">
             <Card v-for="a in actividades" :key="a.id">
@@ -155,19 +155,19 @@
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                      <span class="sr-only">Abrir menú</span>
+                      <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                       <MoreVertical class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem @click="handleEditActivity(a)">
                       <Pencil class="mr-2 h-4 w-4" />
-                      <span>Editar</span>
+                      <span>{{ $t('trips_page.actions.edit') }}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem @click="confirmDelete(a.id)" class="text-destructive focus:text-destructive">
                       <Trash2 class="mr-2 h-4 w-4" />
-                      <span>Eliminar</span>
+                      <span>{{ $t('trips_page.actions.delete') }}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -197,14 +197,14 @@
                     <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                       <MapPin class="h-3 w-3" />
                       <span v-if="a.ubicacion?.address">{{ a.ubicacion.address }}</span>
-                      <span v-else class="italic">Sin ubicación especificada</span>
+                      <span v-else class="italic">{{ $t('trip_activities_page.location.none') }}</span>
                     </div>
 
                     <div class="flex items-center justify-between gap-4">
                       <div class="flex items-center justify-start gap-1">
                         <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.ubicacion?.address">
                           <NuxtLink :href="a.enlace_google" target="_blank"> 
-                            <span class="sr-only">Ir a Google Maps</span>
+                            <span class="sr-only">{{ $t('trip_activities_page.actions.open_maps') }}</span>
                             <MapPin class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
@@ -235,14 +235,14 @@
 
                 </div>
                 <div v-if="a.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
-                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('trip_activities_page.labels.notes') }}</p>
                   <p class="whitespace-pre-line">{{ a.notas }}</p>
                 </div>
                 <EntityTasksWidget 
                   :trip-id="parseInt(tripId)"
                   entity-type="activity"
                   :entity-id="a.id"
-                  :title="`Tareas: ${a.nombre}`"
+                  :title="$t('trip_activities_page.tasks.title_prefix') + ': ' + (a.nombre || '')"
                   class="hidden"
                 />
                 <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
@@ -250,7 +250,7 @@
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                      :title="$t('trip_activities_page.actions.download_prefix') + ': ' + (item.directus_files_id?.filename_download || item.filename_download)"
                     >
                       <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
@@ -293,14 +293,12 @@
     <AlertDialog v-model:open="isDeleteOpen">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Esta acción no se puede deshacer. Se eliminará permanentemente la actividad y todos sus datos asociados.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{{ $t('trip_activities_page.delete.title') }}</AlertDialogTitle>
+          <AlertDialogDescription>{{ $t('trip_activities_page.delete.description') }}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Actividad</AlertDialogAction>
+          <AlertDialogCancel>{{ $t('trip_activities_page.delete.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('trip_activities_page.delete.confirm') }}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -57,6 +57,699 @@
       "confirm": "旅行を削除"
     }
   },
+  "accommodation_page": {
+    "title": "宿泊",
+    "actions": {
+      "add": "追加",
+      "open_maps": "Googleマップを開く",
+      "call_prefix": "電話:",
+      "call": "電話",
+      "email_prefix": "メール:",
+      "email": "メール送信",
+      "download_prefix": "ダウンロード"
+    },
+    "labels": {
+      "check_in": "チェックイン",
+      "check_out": "チェックアウト",
+      "notes": "メモ"
+    },
+    "room": {
+      "single": "シングルルーム1室"
+    },
+    "empty": {
+      "title": "宿泊情報がありません",
+      "subtitle": "予約を追加して宿泊先を整理しましょう。"
+    },
+    "features": {
+      "luggage_transfer": "荷物配送",
+      "private_bath": "専用バスルーム"
+    },
+    "meals": {
+      "breakfast": "朝食",
+      "lunch": "昼食",
+      "dinner": "夕食",
+      "full_board": "フルボード"
+    },
+    "tasks": {
+      "title_prefix": "タスク"
+    },
+    "delete": {
+      "title": "本当に削除しますか？",
+      "description": "この操作は元に戻せません。宿泊情報と関連データが完全に削除されます。",
+      "cancel": "キャンセル",
+      "confirm": "宿泊を削除"
+    }
+  },
+  "trip_overview_page": {
+    "common": {
+      "na": "N/A"
+    },
+    "countdown": {
+      "title": "カウントダウン",
+      "subtitle": "旅行開始まで",
+      "in_progress": "進行中！",
+      "day": "日",
+      "days": "日"
+    },
+    "daily_budget": {
+      "title": "日次予算",
+      "subtitle": "支出目標"
+    },
+    "exchange": {
+      "title": "為替レート",
+      "updated_prefix": "更新",
+      "market": "為替市場"
+    }
+  },
+  "trip_flights_page": {
+    "title": "フライト",
+    "subtitle": "航空券と予約を管理します。",
+    "actions": {
+      "add": "追加",
+      "download_prefix": "ダウンロード"
+    },
+    "empty": {
+      "title": "フライトがありません",
+      "subtitle": "フライトを追加して旅程を整理しましょう。"
+    },
+    "labels": {
+      "notes": "メモ"
+    },
+    "delete": {
+      "title": "本当に削除しますか？",
+      "description": "この操作は元に戻せません。フライトと関連データが完全に削除されます。",
+      "cancel": "キャンセル",
+      "confirm": "フライトを削除"
+    }
+  },
+  "trip_activities_page": {
+    "title": "アクティビティ",
+    "subtitle": "ツアー、観光、体験。",
+    "actions": {
+      "add": "追加",
+      "open_maps": "Googleマップを開く",
+      "download_prefix": "ダウンロード"
+    },
+    "empty": {
+      "title": "アクティビティがありません",
+      "subtitle": "予定を追加して旅程を完成させましょう。"
+    },
+    "location": {
+      "none": "場所未設定"
+    },
+    "labels": {
+      "notes": "メモ"
+    },
+    "tasks": {
+      "title_prefix": "タスク"
+    },
+    "delete": {
+      "title": "本当に削除しますか？",
+      "description": "この操作は元に戻せません。アクティビティと関連データが完全に削除されます。",
+      "cancel": "キャンセル",
+      "confirm": "アクティビティを削除"
+    }
+  },
+  "trip_insurance_page": {
+    "title": "保険",
+    "subtitle": "旅行保険と医療サポート。",
+    "actions": {
+      "add": "追加",
+      "call_prefix": "電話:",
+      "call": "電話",
+      "email_prefix": "メール:",
+      "email": "メール送信",
+      "download_prefix": "ダウンロード"
+    },
+    "empty": {
+      "title": "保険がありません",
+      "subtitle": "旅行保険を追加して証券をすぐ確認できるようにしましょう。"
+    },
+    "labels": {
+      "notes": "メモ"
+    },
+    "tasks": {
+      "title_prefix": "タスク"
+    },
+    "delete": {
+      "title": "本当に削除しますか？",
+      "description": "この操作は元に戻せません。保険と関連データが完全に削除されます。",
+      "cancel": "キャンセル",
+      "confirm": "保険を削除"
+    }
+  },
+  "trip_tasks_page": {
+    "title": "タスク",
+    "subtitle": "旅行の予定とやることを整理します。"
+  },
+  "trip_transport_page": {
+    "title": "交通",
+    "subtitle": "電車、パス、移動手段。",
+    "actions": {
+      "add": "追加",
+      "download_prefix": "ダウンロード"
+    },
+    "empty": {
+      "title": "交通情報がありません",
+      "subtitle": "移動手段を追加しましょう。"
+    },
+    "labels": {
+      "origin_fallback": "出発地",
+      "destination_fallback": "到着地",
+      "pass_badge": "パス",
+      "notes": "メモ"
+    },
+    "delete": {
+      "title": "本当に削除しますか？",
+      "description": "この操作は元に戻せません。交通情報と関連データが完全に削除されます。",
+      "cancel": "キャンセル",
+      "confirm": "交通を削除"
+    }
+  },
+  "trip_transport_drawer": {
+    "item_label": "交通",
+    "title": {
+      "edit": "交通を編集",
+      "new": "交通を追加"
+    },
+    "fields": {
+      "title": "タイトル / 名前",
+      "category": "カテゴリ",
+      "valid_from": "有効開始",
+      "duration": "期間",
+      "valid_until_calculated": "有効終了（自動計算）",
+      "transport_mode": "交通手段",
+      "origin": "出発地",
+      "departure": "出発",
+      "destination": "到着地",
+      "arrival": "到着",
+      "total_price": "合計金額",
+      "currency": "通貨",
+      "status": "状態",
+      "notes": "メモ",
+      "attachments": "添付ファイル"
+    },
+    "placeholders": {
+      "title": "例: JR Pass、京都行き新幹線...",
+      "associate_pass": "パスに紐付け（任意）",
+      "origin": "駅A",
+      "destination": "駅B",
+      "status": "状態"
+    },
+    "category": {
+      "pass": "パス（期間）",
+      "route": "区間（ルート）"
+    },
+    "duration_type": {
+      "days": "日数",
+      "hours": "時間"
+    },
+    "associate": {
+      "none": "なし"
+    },
+    "scales": {
+      "title": "区間 / 乗り継ぎ",
+      "item_title": "区間",
+      "empty": {
+        "title": "交通を定義するために、少なくとも1区間を追加してください。",
+        "cta": "最初の区間を追加"
+      }
+    },
+    "actions": {
+      "add": "追加",
+      "save": "保存"
+    },
+    "transport_mode": {
+      "train": "電車",
+      "metro": "地下鉄",
+      "bus": "バス",
+      "ferry": "船 / フェリー",
+      "taxi": "タクシー / 車",
+      "walk": "徒歩"
+    },
+    "status": {
+      "pending": "未払い",
+      "paid": "支払済み"
+    },
+    "defaults": {
+      "pass_name": "交通パス",
+      "origin": "出発地",
+      "destination": "到着地"
+    },
+    "tasks": {
+      "title_prefix": "タスク",
+      "entity_fallback": "交通"
+    }
+  },
+  "trip_accommodation_drawer": {
+    "item_label": "宿泊",
+    "title": {
+      "edit": "宿泊を編集",
+      "new": "宿泊を追加"
+    },
+    "fields": {
+      "name": "宿泊名",
+      "check_in": "チェックイン",
+      "check_out": "チェックアウト",
+      "location": "場所 / 住所",
+      "total_price": "合計金額",
+      "currency": "通貨",
+      "status": "状態",
+      "google_maps_link": "Googleマップリンク",
+      "phone": "電話",
+      "email": "メール",
+      "pension": "食事プラン",
+      "notes": "メモ",
+      "attachments": "添付ファイル"
+    },
+    "placeholders": {
+      "name": "ホテル / アパート",
+      "location": "住所を検索...",
+      "status": "状態",
+      "google_maps_link": "Googleマップリンク",
+      "phone": "電話番号",
+      "email": "メールアドレス",
+      "notes": "重要情報、入室コードなど"
+    },
+    "toggles": {
+      "private": "貸切",
+      "takkyubin": "宅急便"
+    },
+    "pension": {
+      "breakfast": "朝食",
+      "lunch": "昼食",
+      "dinner": "夕食",
+      "full_board": "フルボード"
+    },
+    "status": {
+      "paid": "支払済み",
+      "pending": "未払い",
+      "partial": "一部"
+    },
+    "actions": {
+      "save": "保存"
+    },
+    "tasks": {
+      "title_prefix": "タスク",
+      "entity_fallback": "宿泊"
+    }
+  },
+  "trip_activity_drawer": {
+    "item_label": "アクティビティ",
+    "title": {
+      "edit": "アクティビティを編集",
+      "new": "アクティビティを追加"
+    },
+    "description": "訪問や体験を計画します。",
+    "fields": {
+      "name": "アクティビティ名",
+      "start": "開始",
+      "end": "終了",
+      "location": "場所",
+      "total_price": "合計金額",
+      "currency": "通貨",
+      "status": "状態",
+      "google_maps_link": "Googleマップリンク",
+      "notes": "メモ",
+      "attachments": "添付ファイル"
+    },
+    "placeholders": {
+      "name": "寺院見学、ツアーなど",
+      "location": "場所を検索...",
+      "status": "状態",
+      "google_maps_link": "https://maps.app.goo.gl/...",
+      "notes": "重要な情報..."
+    },
+    "status": {
+      "paid": "支払済み",
+      "pending": "未払い",
+      "partial": "一部"
+    },
+    "actions": {
+      "save": "保存"
+    },
+    "tasks": {
+      "title_prefix": "タスク",
+      "entity_fallback": "アクティビティ"
+    }
+  },
+  "trip_flight_drawer": {
+    "item_label": "フライト",
+    "title": {
+      "edit": "フライトを編集",
+      "new": "フライトを追加"
+    },
+    "validation": {
+      "need_one_segment": "少なくとも1区間を追加してください"
+    },
+    "fields": {
+      "title": "タイトル",
+      "locator": "予約番号",
+      "total_price": "合計金額",
+      "currency": "通貨",
+      "status": "状態",
+      "origin": "出発地",
+      "destination": "到着地",
+      "terminal": "ターミナル",
+      "departure": "出発",
+      "arrival": "到着",
+      "airline": "航空会社",
+      "flight_number": "便名",
+      "notes": "メモ",
+      "attachments": "添付ファイル"
+    },
+    "placeholders": {
+      "title": "例: 日本行きフライト",
+      "locator": "例: A1B2C3",
+      "status": "状態",
+      "origin": "出発都市",
+      "destination": "到着都市",
+      "terminal": "T1",
+      "flight_number": "IB6800",
+      "notes": "座席、食事などのメモ"
+    },
+    "status": {
+      "paid": "支払済み",
+      "pending": "未払い",
+      "partial": "一部"
+    },
+    "segments": {
+      "title": "区間 / 乗り継ぎ",
+      "item_title": "区間",
+      "empty": {
+        "title": "フライトを定義するために、少なくとも1区間を追加してください。",
+        "cta": "最初の区間を追加"
+      }
+    },
+    "actions": {
+      "add": "追加",
+      "save": "保存"
+    },
+    "delete_segment": {
+      "title": "区間を削除しますか？",
+      "description": "この区間をフライトから削除します。続行しますか？",
+      "cancel": "キャンセル",
+      "confirm": "削除"
+    },
+    "tasks": {
+      "title_prefix": "タスク",
+      "entity_fallback": "フライト"
+    }
+  },
+  "trip_insurance_drawer": {
+    "item_label": "保険",
+    "title": {
+      "edit": "保険を編集",
+      "new": "保険を追加"
+    },
+    "fields": {
+      "company": "会社",
+      "policy_number": "証券番号",
+      "assistance_phone": "サポート電話",
+      "assistance_email": "サポートメール",
+      "dates": "期間",
+      "price": "金額",
+      "currency": "通貨",
+      "status": "状態",
+      "notes": "メモ / 補償内容",
+      "attachments": "添付ファイル"
+    },
+    "placeholders": {
+      "company": "Iati, Chapka...",
+      "assistance_phone": "+34 900...",
+      "assistance_email": "email@example.com",
+      "status": "状態",
+      "notes": "主な補償の概要..."
+    },
+    "hints": {
+      "date_range": "保険の開始日と終了日を選択してください。"
+    },
+    "status": {
+      "paid": "支払済み",
+      "pending": "未払い",
+      "partial": "一部"
+    },
+    "actions": {
+      "save": "保存"
+    },
+    "tasks": {
+      "title_prefix": "タスク",
+      "entity_fallback": "保険"
+    }
+  },
+  "trip_drawer": {
+    "title": {
+      "edit": "旅行を編集",
+      "new": "新しい旅行を作成"
+    },
+    "fields": {
+      "name": "旅行名",
+      "destination_country": "目的地",
+      "dates": "日程",
+      "start": "開始",
+      "end": "終了",
+      "daily_budget": "日次予算",
+      "currency": "通貨",
+      "cover": "カバー"
+    },
+    "placeholders": {
+      "name": "例: 日本 2026",
+      "select_country": "国を選択",
+      "search_country": "国を検索...",
+      "select_date": "日付を選択",
+      "daily_budget": "例: 10000",
+      "select_city": "都市を選択",
+      "search_city": "都市を検索...",
+      "date": "日付"
+    },
+    "common": {
+      "not_found": "見つかりません。"
+    },
+    "cover": {
+      "cta": "クリックしてカバー画像をアップロード",
+      "hint": "PNG, JPG（最大10MB）",
+      "too_large": "画像サイズが10MBを超えています"
+    },
+    "itinerary": {
+      "title": "旅程 / 都市",
+      "actions": {
+        "add_city": "都市を追加"
+      },
+      "empty": {
+        "select_country_first": "先に国を選択してください。",
+        "add_cities": "都市と日付を追加して旅程を作りましょう。"
+      },
+      "fields": {
+        "city": "都市",
+        "arrival": "到着",
+        "departure": "出発"
+      }
+    },
+    "actions": {
+      "delete": "削除",
+      "saving": "保存中...",
+      "update": "更新",
+      "create": "旅行を作成"
+    },
+    "toasts": {
+      "updated": "旅行を更新しました",
+      "created": "旅行を作成しました"
+    }
+  },
+  "trip_itinerary_page": {
+    "expense_modal": {
+      "title": "日次支出を追加",
+      "description": "小さな支出（食事、地下鉄など）を記録します。",
+      "fields": {
+        "date": "日時",
+        "amount": "金額",
+        "concept": "内容",
+        "category": "カテゴリ",
+        "payment_method": "支払い方法",
+        "notes": "メモ",
+        "shared": "割り勘"
+      },
+      "category": {
+        "food": "食事",
+        "transport": "交通",
+        "accommodation": "宿泊",
+        "shopping": "買い物",
+        "entertainment": "娯楽",
+        "other": "その他"
+      },
+      "payment": {
+        "cash": "現金",
+        "card": "カード",
+        "ic": "ICカード"
+      },
+      "actions": {
+        "save": "保存"
+      }
+    }
+  },
+  "trip_daily_expenses_page": {
+    "actions": {
+      "directions_prefix": "行き方:",
+      "open_maps": "Googleマップを開く"
+    },
+    "planned": {
+      "title": "予定の支出"
+    },
+    "empty": {
+      "title": "今日の支出はありません",
+      "subtitle": "＋ボタンから今日の支出を追加できます"
+    },
+    "delete_planned": {
+      "title": "予定の支出を削除しますか？",
+      "description_prefix": "予定の支出から",
+      "description_suffix": "を削除します。この操作は元に戻せません。",
+      "cancel": "キャンセル",
+      "confirm": "削除"
+    }
+  },
+  "trip_expenses_page": {
+    "tabs": {
+      "list": "一覧",
+      "map": "地図",
+      "stats": "統計",
+      "wallet": "財布"
+    },
+    "labels": {
+      "expense_singular": "件",
+      "expense_plural": "件",
+      "day_singular": "日",
+      "day_plural": "日"
+    },
+    "results": {
+      "showing": "表示中",
+      "result_singular": "件",
+      "result_plural": "件",
+      "total_prefix": "合計:"
+    },
+    "empty": {
+      "title": "支出がありません",
+      "subtitle": "選択した条件では支出が見つかりませんでした"
+    },
+    "stats": {
+      "empty": {
+        "title": "統計がありません",
+        "subtitle": "支出を追加すると統計が表示されます",
+        "cta": "支出を追加"
+      },
+      "overview": {
+        "total": "合計",
+        "daily_average": "1日平均",
+        "days_with_expenses_suffix": "支出のある日"
+      },
+      "top_expenses": {
+        "title": "高額支出"
+      }
+    },
+    "wallet": {
+      "toasts": {
+        "saved": "両替を登録しました",
+        "error": "両替の登録に失敗しました"
+      },
+      "summary": {
+        "total_invested": "総投資額",
+        "total_invested_subtitle": "EUR支出 + 両替",
+        "jpy_available": "利用可能な円",
+        "jpy_available_subtitle": "現在残高（現金 + カード）",
+        "total_exchanged": "両替合計",
+        "total_exchanged_subtitle": "すべての両替の合計"
+      },
+      "payments": {
+        "title": "支払い状況（予約）",
+        "paid_eur": "支払済 (EUR)",
+        "paid_eur_subtitle": "フライト、ホテルなど",
+        "pending_eur": "未払い (EUR)",
+        "pending_eur_subtitle": "支払い待ち",
+        "paid_jpy": "支払済 (JPY)",
+        "paid_jpy_subtitle": "支払い済み",
+        "pending_jpy": "未払い (JPY)",
+        "pending_jpy_subtitle": "現金/カードを確保"
+      },
+      "history": {
+        "title": "両替履歴",
+        "add": "両替を追加",
+        "empty": {
+          "title": "両替がありません",
+          "subtitle": "両替を追加して管理しましょう。"
+        },
+        "rate_prefix": "レート:"
+      },
+      "modal": {
+        "title": "両替を記録",
+        "fields": {
+          "given_eur": "支払 (EUR)",
+          "received_jpy": "受取 (JPY)",
+          "date": "日時",
+          "place": "場所（両替所/銀行）",
+          "destination": "入金先"
+        },
+        "destination": {
+          "cash": "現金（財布）",
+          "card": "カード（Revolut/N26）",
+          "suica": "Suica / ICカード"
+        },
+        "actions": {
+          "save": "登録"
+        }
+      }
+    }
+  },
+  "trip_travelers_page": {
+    "title": "同行者",
+    "subtitle": "この旅行に参加する人を管理します。",
+    "labels": {
+      "organizer": "主催者"
+    },
+    "actions": {
+      "add": "追加",
+      "remove": "削除",
+      "close": "閉じる"
+    },
+    "common": {
+      "connection_error": "接続エラー",
+      "server_connection_error": "サーバー接続エラー"
+    },
+    "remove": {
+      "confirm": "この同行者をグループから削除しますか？",
+      "success": "同行者を削除しました",
+      "error": "同行者の削除に失敗しました"
+    },
+    "invite": {
+      "auth_error": "認証エラー。ページを再読み込みしてください。",
+      "default_trip_name": "日本旅行",
+      "default_inviter_name": "ユーザー",
+      "request_error": "リクエストの処理に失敗しました"
+    },
+    "invite_card": {
+      "title": "さらに招待",
+      "subtitle": "支出と計画を友達と共有しましょう。",
+      "cta": "今すぐ招待"
+    },
+    "invite_modal": {
+      "title": "旅行に招待",
+      "description": "招待したい相手のメールアドレスを入力してください。",
+      "email_placeholder": "name@example.com",
+      "role_label": "ロール",
+      "role_placeholder": "ロールを選択",
+      "email_sent_hint": "ユーザーは登録手順が記載されたメールを受け取ります。",
+      "sending": "送信中...",
+      "send": "招待を送信"
+    },
+    "roles": {
+      "app_user": {
+        "title": "アプリユーザー",
+        "subtitle": "作成・編集できます。"
+      },
+      "read_only": {
+        "title": "閲覧のみ",
+        "subtitle": "閲覧のみ可能です。"
+      }
+    }
+  },
   "welcome": "ようこそ",
   "landing": {
     "new_version": "新しいバージョンが利用可能です",

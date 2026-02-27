@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, type Ref } from 'vue'
 import { getLocalTimeZone, today, parseDate, type CalendarDate } from '@internationalized/date'
 import { useMediaQuery } from '@vueuse/core'
 import { DateFormatter } from '@internationalized/date'
+import { useRoute } from 'vue-router'
 import { 
   Loader2, 
   Trash2,
@@ -48,6 +49,22 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:open', 'saved'])
+const route = useRoute()
+const i18n = useI18n()
+const { t } = i18n
+
+const currentLocale = computed(() => {
+  const candidate = (route.path || '').split('/')[1] || ''
+  const all = i18n?.$getLocales?.() || []
+  const codes = all.map((l: any) => l.code)
+  return codes.includes(candidate) ? candidate : 'en'
+})
+
+const localeTag = computed(() => {
+  if (currentLocale.value === 'es') return 'es-ES'
+  if (currentLocale.value === 'ja') return 'ja-JP'
+  return 'en-US'
+})
 
 const { createTrip, updateTrip, loading } = useTrips()
 
@@ -55,19 +72,19 @@ const selectedCountryCode = ref('')
 const openCountry = ref(false)
 const countrySearchQuery = ref('')
 
-const regionNames = new Intl.DisplayNames(['es'], { type: 'region' });
+const regionNames = computed(() => new Intl.DisplayNames([currentLocale.value], { type: 'region' }))
 
 const countries = computed(() => {
   return Country.getAllCountries().map(country => {
     try {
       return {
         ...country,
-        name: regionNames.of(country.isoCode) || country.name
+        name: regionNames.value.of(country.isoCode) || country.name
       }
     } catch (e) {
       return country
     }
-  }).sort((a, b) => a.name.localeCompare(b.name, 'es'))
+  }).sort((a, b) => a.name.localeCompare(b.name, currentLocale.value))
 })
 
 const filteredCountries = computed(() => {
@@ -89,7 +106,6 @@ const getFilteredCities = (query: string) => {
 
 const onCountrySelect = (country: any) => {
   selectedCountryCode.value = country.isoCode
-  console.log('Country:', country)
   openCountry.value = false
   countrySearchQuery.value = ''
   
@@ -209,9 +225,12 @@ const removeDestino = (index: number) => {
 const startDate = ref<any>(today(getLocalTimeZone()))
 const endDate = ref<any>(today(getLocalTimeZone()).add({ days: 7 }))
 
-const df = new DateFormatter('es-ES', {
-  dateStyle: 'long'
-})
+const df = computed(() => new DateFormatter(localeTag.value, { dateStyle: 'long' }))
+
+const formatDateLong = (d: any) => {
+  if (!d) return ''
+  return df.value.format(d.toDate(getLocalTimeZone()))
+}
 
 // Sync start/end dates
 watch(startDate, (newVal) => {
@@ -310,7 +329,7 @@ const handleCoverUpload = async (event: Event) => {
 
   // Validación básica 10MB
   if (file.size > 10 * 1024 * 1024) {
-    console.error('La imagen supera los 10MB')
+    toast.error(String(t('trip_drawer.cover.too_large')))
     return
   }
 
@@ -351,10 +370,10 @@ const handleSubmit = async () => {
   try {
     if (isEditing.value && props.tripToEdit?.id) {
       await updateTrip(props.tripToEdit.id, tripData)
-      toast.success('Viaje actualizado correctamente')
+      toast.success(String(t('trip_drawer.toasts.updated')))
     } else {
       await createTrip(tripData)
-      toast.success('Viaje creado correctamente')
+      toast.success(String(t('trip_drawer.toasts.created')))
     }
     emit('saved')
     isOpen.value = false
@@ -368,18 +387,18 @@ const handleSubmit = async () => {
   <Drawer v-model:open="isOpen">
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl pl-4">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-0">
-        <DrawerTitle>{{ isEditing ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</DrawerTitle>
+        <DrawerTitle>{{ isEditing ? $t('trip_drawer.title.edit') : $t('trip_drawer.title.new') }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl w-full mx-auto flex gap-16 flex-col lg:flex-row pr-4">
           <div class="grid gap-4 py-4 w-full mx-auto">
             <div class="grid grid-cols-3 gap-2">
               <div class="col-span-2">
-                <Label htmlFor="name">Nombre del Viaje</Label>
-                <Input id="name" v-model="formData.nombre" placeholder="Ej: Japón 2026" />
+                <Label htmlFor="name">{{ $t('trip_drawer.fields.name') }}</Label>
+                <Input id="name" v-model="formData.nombre" :placeholder="String($t('trip_drawer.placeholders.name'))" />
               </div>
               <div class="col-span-1">
-                <Label>Destino</Label>
+                <Label>{{ $t('trip_drawer.fields.destination_country') }}</Label>
                 <Popover v-model:open="openCountry">
                   <PopoverTrigger as-child>
                     <Button
@@ -390,7 +409,7 @@ const handleSubmit = async () => {
                     >
                       <span class="truncate flex items-center gap-2">
                         <span v-if="selectedCountryFlag" class="mt-1">{{ selectedCountryFlag }}</span>
-                        {{ selectedCountryName || "Selecciona un país" }}
+                        {{ selectedCountryName || $t('trip_drawer.placeholders.select_country') }}
                       </span>
                       <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -402,7 +421,7 @@ const handleSubmit = async () => {
                         <input 
                           v-model="countrySearchQuery"
                           class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder="Buscar país..."
+                          :placeholder="String($t('trip_drawer.placeholders.search_country'))"
                         />
                       </div>
                     </div>
@@ -426,7 +445,7 @@ const handleSubmit = async () => {
                         {{ country.name }}
                       </div>
                       <div v-if="filteredCountries.length === 0" class="p-4 text-center text-sm text-muted-foreground">
-                        No encontrado.
+                        {{ $t('trip_drawer.common.not_found') }}
                       </div>
                     </div>
                   </PopoverContent>
@@ -434,10 +453,10 @@ const handleSubmit = async () => {
               </div>
             </div>
             <div class="grid gap-2">
-              <Label>Fechas</Label>
+              <Label>{{ $t('trip_drawer.fields.dates') }}</Label>
               <div class="flex flex-col sm:flex-row gap-4">
                 <div class="flex flex-col gap-2 w-full">
-                  <Label class="text-xs text-muted-foreground">Inicio</Label>
+                  <Label class="text-xs text-muted-foreground">{{ $t('trip_drawer.fields.start') }}</Label>
                   <Popover>
                     <PopoverTrigger as-child>
                       <Button
@@ -448,7 +467,7 @@ const handleSubmit = async () => {
                         )"
                       >
                         <CalendarIcon class="mr-2 h-4 w-4" />
-                        {{ startDate ? df.format(startDate.toDate(getLocalTimeZone())) : "Seleccionar fecha" }}
+                        {{ startDate ? formatDateLong(startDate) : $t('trip_drawer.placeholders.select_date') }}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent class="w-auto p-0">
@@ -457,7 +476,7 @@ const handleSubmit = async () => {
                   </Popover>
                 </div>
                 <div class="flex flex-col gap-2 w-full">
-                  <Label class="text-xs text-muted-foreground">Fin</Label>
+                  <Label class="text-xs text-muted-foreground">{{ $t('trip_drawer.fields.end') }}</Label>
                   <Popover>
                     <PopoverTrigger as-child>
                       <Button
@@ -468,7 +487,7 @@ const handleSubmit = async () => {
                         )"
                       >
                         <CalendarIcon class="mr-2 h-4 w-4" />
-                        {{ endDate ? df.format(endDate.toDate(getLocalTimeZone())) : "Seleccionar fecha" }}
+                        {{ endDate ? formatDateLong(endDate) : $t('trip_drawer.placeholders.select_date') }}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent class="w-auto p-0">
@@ -484,19 +503,19 @@ const handleSubmit = async () => {
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="w-full">
-                <Label htmlFor="presupuesto">Presupuesto diario</Label>
-                <Input id="presupuesto" v-model="formData.presupuesto_diario" type="number" placeholder="Ej: 10000" />
+                <Label htmlFor="presupuesto">{{ $t('trip_drawer.fields.daily_budget') }}</Label>
+                <Input id="presupuesto" v-model="formData.presupuesto_diario" type="number" :placeholder="String($t('trip_drawer.placeholders.daily_budget'))" />
               </div>
               <div class="w-full">
                 <div class="flex items-center gap-2 mb-2">
-                  <Label htmlFor="moneda">Moneda</Label>
+                  <Label htmlFor="moneda">{{ $t('trip_drawer.fields.currency') }}</Label>
                   <Loader2 v-if="loadingPreference" class="h-3 w-3 animate-spin text-muted-foreground" />
                 </div>
                 <CurrencySelector v-model="formData.moneda" />
               </div>
             </div>
             <div class="grid gap-2">
-              <Label>Portada</Label>
+              <Label>{{ $t('trip_drawer.fields.cover') }}</Label>
               <div v-if="formData.portada" class="relative aspect-video rounded-md overflow-hidden border group">
                 <SecureImage :src="formData.portada" class="w-full h-full object-cover" />
                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -506,7 +525,7 @@ const handleSubmit = async () => {
                     @click="formData.portada = null"
                   >
                     <Trash2 class="h-4 w-4 mr-2" />
-                    Eliminar
+                    {{ $t('trip_drawer.actions.delete') }}
                   </Button>
                 </div>
               </div>
@@ -516,8 +535,8 @@ const handleSubmit = async () => {
                     <Loader2 v-if="uploadingCover" class="h-8 w-8 text-muted-foreground animate-spin" />
                     <template v-else>
                         <Upload class="w-8 h-8 mb-2 text-muted-foreground" />
-                        <p class="text-sm text-muted-foreground font-medium">Click para subir portada</p>
-                        <p class="text-xs text-muted-foreground">PNG, JPG (Max. 10MB)</p>
+                        <p class="text-sm text-muted-foreground font-medium">{{ $t('trip_drawer.cover.cta') }}</p>
+                        <p class="text-xs text-muted-foreground">{{ $t('trip_drawer.cover.hint') }}</p>
                     </template>
                   </div>
                   <input type="file" class="hidden" accept="image/png, image/jpeg, image/jpg" @change="handleCoverUpload" :disabled="uploadingCover" />
@@ -527,12 +546,12 @@ const handleSubmit = async () => {
 
             <div class="space-y-3">
               <div class="flex justify-between items-center py-2">
-                <Label class="font-bold">Itinerario / Ciudades</Label>
-                <Button size="sm" @click="addDestino" :disabled="!selectedCountryCode"><Plus class="h-3 w-3 mr-1" /> Añadir ciudad</Button>
+                <Label class="font-bold">{{ $t('trip_drawer.itinerary.title') }}</Label>
+                <Button size="sm" @click="addDestino" :disabled="!selectedCountryCode"><Plus class="h-3 w-3 mr-1" /> {{ $t('trip_drawer.itinerary.actions.add_city') }}</Button>
               </div>
               <div v-if="!formData.destinos || formData.destinos.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
-                <p v-if="!selectedCountryCode">Selecciona un país primero.</p>
-                <p v-else>Añade ciudades y fechas a tu itinerario.</p>
+                <p v-if="!selectedCountryCode">{{ $t('trip_drawer.itinerary.empty.select_country_first') }}</p>
+                <p v-else>{{ $t('trip_drawer.itinerary.empty.add_cities') }}</p>
               </div>
               <div v-for="(destino, index) in formData.destinos" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm border space-y-3">
                 <div class="flex justify-between items-center">
@@ -547,7 +566,7 @@ const handleSubmit = async () => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <!-- City Selector -->
                   <div class="col-span-1 md:col-span-2">
-                    <Label class="text-xs mb-1.5 block">Ciudad</Label>
+                    <Label class="text-xs mb-1.5 block">{{ $t('trip_drawer.itinerary.fields.city') }}</Label>
                     <Popover v-model:open="destino._isOpen">
                       <PopoverTrigger as-child>
                         <Button
@@ -556,7 +575,7 @@ const handleSubmit = async () => {
                           :aria-expanded="destino._isOpen"
                           class="w-full justify-between font-normal h-9"
                         >
-                          <span class="truncate">{{ destino.ciudad || "Selecciona una ciudad" }}</span>
+                          <span class="truncate">{{ destino.ciudad || $t('trip_drawer.placeholders.select_city') }}</span>
                           <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -567,7 +586,7 @@ const handleSubmit = async () => {
                             <input 
                               v-model="destino._citySearch"
                               class="flex h-9 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                              placeholder="Buscar ciudad..."
+                              :placeholder="String($t('trip_drawer.placeholders.search_city'))"
                             />
                           </div>
                         </div>
@@ -590,7 +609,7 @@ const handleSubmit = async () => {
                             {{ city.name }}
                           </div>
                           <div v-if="getFilteredCities(destino._citySearch || '').length === 0" class="p-4 text-center text-sm text-muted-foreground">
-                            No encontrado.
+                            {{ $t('trip_drawer.common.not_found') }}
                           </div>
                         </div>
                       </PopoverContent>
@@ -599,7 +618,7 @@ const handleSubmit = async () => {
 
                   <!-- Dates -->
                   <div>
-                    <Label class="text-xs mb-1.5 block">Llegada</Label>
+                    <Label class="text-xs mb-1.5 block">{{ $t('trip_drawer.itinerary.fields.arrival') }}</Label>
                     <Popover>
                       <PopoverTrigger as-child>
                         <Button
@@ -610,7 +629,7 @@ const handleSubmit = async () => {
                           )"
                         >
                           <CalendarIcon class="mr-2 h-4 w-4" />
-                          {{ destino.fecha_inicio ? df.format(destino.fecha_inicio.toDate(getLocalTimeZone())) : "Fecha" }}
+                          {{ destino.fecha_inicio ? formatDateLong(destino.fecha_inicio) : $t('trip_drawer.placeholders.date') }}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent class="w-auto p-0">
@@ -624,7 +643,7 @@ const handleSubmit = async () => {
                     </Popover>
                   </div>
                   <div>
-                    <Label class="text-xs mb-1.5 block">Salida</Label>
+                    <Label class="text-xs mb-1.5 block">{{ $t('trip_drawer.itinerary.fields.departure') }}</Label>
                     <Popover>
                       <PopoverTrigger as-child>
                         <Button
@@ -635,7 +654,7 @@ const handleSubmit = async () => {
                           )"
                         >
                           <CalendarIcon class="mr-2 h-4 w-4" />
-                          {{ destino.fecha_fin ? df.format(destino.fecha_fin.toDate(getLocalTimeZone())) : "Fecha" }}
+                          {{ destino.fecha_fin ? formatDateLong(destino.fecha_fin) : $t('trip_drawer.placeholders.date') }}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent class="w-auto p-0">
@@ -654,14 +673,11 @@ const handleSubmit = async () => {
 
                 
           </div>
-          <div class="w-full lg:w-1/3 space-y-8">
-            aaaaaa
-          </div>
         </div>
       </ScrollArea>
       <DrawerFooter class="max-w-3xl mx-auto w-full">
         <Button type="submit" @click="handleSubmit" :disabled="loading">
-          {{ loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear Viaje') }}
+          {{ loading ? $t('trip_drawer.actions.saving') : (isEditing ? $t('trip_drawer.actions.update') : $t('trip_drawer.actions.create')) }}
         </Button>
       </DrawerFooter>
     </DrawerContent>

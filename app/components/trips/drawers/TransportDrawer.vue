@@ -34,6 +34,7 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   }>()
 
   const emit = defineEmits(['update:open', 'saved'])
+  const { t } = useI18n()
 
   const { createTransporte, updateTransporte } = useTripOrganization()
   const { getAuthenticatedClient } = useDirectus()
@@ -70,7 +71,7 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
     } as FormState),
     createTransporte,
     updateTransporte,
-    'Transporte'
+    String(t('trip_transport_drawer.item_label'))
   )
 
   // Sync open state
@@ -183,12 +184,12 @@ watch(isOpen, (isOpened) => {
       // Default title if empty
       if (!data.nombre) {
         if (data.categoria === 'pase') {
-            data.nombre = `Pase de Transporte`
+            data.nombre = String(t('trip_transport_drawer.defaults.pass_name'))
         } else {
             // Use derived values or fallback to existing ones (if editing) or defaults
             // We cast to any to access the properties we are about to delete
-            const start = derivedOrigen || (data as any).origen || 'Origen'
-            const end = derivedDestino || (data as any).destino || 'Destino'
+            const start = derivedOrigen || (data as any).origen || String(t('trip_transport_drawer.defaults.origin'))
+            const end = derivedDestino || (data as any).destino || String(t('trip_transport_drawer.defaults.destination'))
             data.nombre = `${start} ➝ ${end}`
         }
       }
@@ -272,41 +273,41 @@ watch(isOpen, (isOpened) => {
   <Drawer v-model:open="isOpen">
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
-        <DrawerTitle>{{ formData.id ? 'Editar Transporte' : 'Nuevo Transporte' }}</DrawerTitle>
+        <DrawerTitle>{{ formData.id ? $t('trip_transport_drawer.title.edit') : $t('trip_transport_drawer.title.new') }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div v-if="formData.categoria === 'pase'">
-              <Label>Título / Nombre</Label>
-              <Input v-model="formData.nombre" placeholder="Ej: JR Pass, Shinkansen a Kyoto..." />
+              <Label>{{ $t('trip_transport_drawer.fields.title') }}</Label>
+              <Input v-model="formData.nombre" :placeholder="$t('trip_transport_drawer.placeholders.title')" />
             </div>
 
             <div>
-              <Label>Categoría</Label>
+              <Label>{{ $t('trip_transport_drawer.fields.category') }}</Label>
               <div class="flex gap-2">
                 <Select v-model="formData.categoria" class="flex-1">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pase">Pase (Periodo)</SelectItem>
-                    <SelectItem value="trayecto">Trayecto (Ruta)</SelectItem>
+                    <SelectItem value="pase">{{ $t('trip_transport_drawer.category.pass') }}</SelectItem>
+                    <SelectItem value="trayecto">{{ $t('trip_transport_drawer.category.route') }}</SelectItem>
                   </SelectContent>
                 </Select>
                 
                 <Select v-if="formData.categoria === 'pase'" v-model="formData.tipo_duracion" class="w-32">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dias">Por Días</SelectItem>
-                    <SelectItem value="horas">Por Horas</SelectItem>
+                    <SelectItem value="dias">{{ $t('trip_transport_drawer.duration_type.days') }}</SelectItem>
+                    <SelectItem value="horas">{{ $t('trip_transport_drawer.duration_type.hours') }}</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select v-if="formData.categoria === 'trayecto'" v-model="paseIdString" class="w-full">
                    <SelectTrigger>
-                      <SelectValue placeholder="Asociar a Pase (Opcional)" />
+                      <SelectValue :placeholder="$t('trip_transport_drawer.placeholders.associate_pass')" />
                    </SelectTrigger>
                    <SelectContent>
-                      <SelectItem value="none">Ninguno</SelectItem>
+                      <SelectItem value="none">{{ $t('trip_transport_drawer.associate.none') }}</SelectItem>
                       <SelectItem v-for="pase in availablePasses" :key="pase.id" :value="String(pase.id)">
                         {{ pase.nombre }}
                       </SelectItem>
@@ -319,7 +320,7 @@ watch(isOpen, (isOpened) => {
             <template v-if="formData.categoria === 'pase'">
                <div class="grid grid-cols-2 gap-2">
                   <div>
-                    <Label>Inicio Validez</Label>
+                    <Label>{{ $t('trip_transport_drawer.fields.valid_from') }}</Label>
                     <DateTimePicker 
                       v-model="formData.fecha_inicio" 
                       :min="currentTrip?.fecha_inicio || undefined"
@@ -327,12 +328,12 @@ watch(isOpen, (isOpened) => {
                     />
                   </div>
                   <div>
-                    <Label>Duración</Label>
+                    <Label>{{ $t('trip_transport_drawer.fields.duration') }}</Label>
                     <Input type="number" v-model="formData.duracion_cantidad" min="1" />
                   </div>
                </div>
                <div>
-                  <Label>Fin Validez (Calculado)</Label>
+                  <Label>{{ $t('trip_transport_drawer.fields.valid_until_calculated') }}</Label>
                   <Input :model-value="formatDateTime(formData.fecha_fin)" disabled class="bg-muted" />
                </div>
             </template>
@@ -341,20 +342,20 @@ watch(isOpen, (isOpened) => {
             <template v-if="formData.categoria === 'trayecto'">
                <div class="space-y-3">
                   <div class="flex justify-between items-center py-2">
-                     <Label class="font-bold">Trayectos / Escalas</Label>
-                     <Button size="sm" @click="addEscala"><Plus class="h-3 w-3 mr-1" /> Añadir</Button>
+                     <Label class="font-bold">{{ $t('trip_transport_drawer.scales.title') }}</Label>
+                     <Button size="sm" @click="addEscala"><Plus class="h-3 w-3 mr-1" /> {{ $t('trip_transport_drawer.actions.add') }}</Button>
                   </div>
 
                   <div v-if="formData.escalas.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
-                     <p>Añade al menos un trayecto para definir el transporte.</p>
-                     <Button variant="link" size="sm" @click="addEscala">Añadir primero</Button>
+                     <p>{{ $t('trip_transport_drawer.scales.empty.title') }}</p>
+                     <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_transport_drawer.scales.empty.cta') }}</Button>
                   </div>
 
                   <div v-for="(escala, index) in formData.escalas" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
                      <div class="flex justify-between items-center pb-6">
                         <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                            <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs">{{ index + 1 }}</div>
-                           Trayecto
+                           {{ $t('trip_transport_drawer.scales.item_title') }}
                         </span>
                         <Button @click="removeEscala(index)" variant="destructive" size="sm">
                            <Trash2 class="h-4 w-4" />
@@ -364,37 +365,37 @@ watch(isOpen, (isOpened) => {
                      <div class="space-y-4">
 
                         <div>
-                          <Label>Medio de Transporte</Label>
+                          <Label>{{ $t('trip_transport_drawer.fields.transport_mode') }}</Label>
                           <Select v-model="escala.medio">
                               <SelectTrigger class="h-9"><SelectValue /></SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="tren">Tren</SelectItem>
-                                <SelectItem value="metro">Metro</SelectItem>
-                                <SelectItem value="bus">Autobús</SelectItem>
-                                <SelectItem value="barco">Barco / Ferry</SelectItem>
-                                <SelectItem value="taxi">Taxi / Coche</SelectItem>
-                                <SelectItem value="pie">A pie</SelectItem>
+                                <SelectItem value="tren">{{ $t('trip_transport_drawer.transport_mode.train') }}</SelectItem>
+                                <SelectItem value="metro">{{ $t('trip_transport_drawer.transport_mode.metro') }}</SelectItem>
+                                <SelectItem value="bus">{{ $t('trip_transport_drawer.transport_mode.bus') }}</SelectItem>
+                                <SelectItem value="barco">{{ $t('trip_transport_drawer.transport_mode.ferry') }}</SelectItem>
+                                <SelectItem value="taxi">{{ $t('trip_transport_drawer.transport_mode.taxi') }}</SelectItem>
+                                <SelectItem value="pie">{{ $t('trip_transport_drawer.transport_mode.walk') }}</SelectItem>
                               </SelectContent>
                           </Select>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                            <div class="gap-3 space-y-4">
                               <div>
-                                <Label>Origen</Label>
-                                <Input class="h-9" v-model="escala.origen" placeholder="Estación A" />
+                                <Label>{{ $t('trip_transport_drawer.fields.origin') }}</Label>
+                                <Input class="h-9" v-model="escala.origen" :placeholder="$t('trip_transport_drawer.placeholders.origin')" />
                               </div>
                               <div>
-                                 <Label>Salida</Label>
+                                 <Label>{{ $t('trip_transport_drawer.fields.departure') }}</Label>
                                  <DateTimePicker v-model="escala.fecha_salida" />
                               </div>
                            </div>
                            <div class="gap-3 space-y-4">
                               <div>
-                                 <Label>Destino</Label>
-                                 <Input class="h-9" v-model="escala.destino" placeholder="Estación B" />
+                                 <Label>{{ $t('trip_transport_drawer.fields.destination') }}</Label>
+                                 <Input class="h-9" v-model="escala.destino" :placeholder="$t('trip_transport_drawer.placeholders.destination')" />
                               </div>
                               <div>
-                                 <Label>Llegada</Label>
+                                 <Label>{{ $t('trip_transport_drawer.fields.arrival') }}</Label>
                                  <DateTimePicker v-model="escala.fecha_llegada" />
                               </div>
                            </div>
@@ -406,7 +407,7 @@ watch(isOpen, (isOpened) => {
 
             <div v-if="formData.categoria === 'pase' || (formData.categoria === 'trayecto' && !formData.pase_id)" class="grid grid-cols-[2fr_1fr_1fr] gap-3 mt-2">
               <div>
-                <Label>Precio Total</Label>
+                <Label>{{ $t('trip_transport_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
                   v-model="formData.precio" 
@@ -414,23 +415,23 @@ watch(isOpen, (isOpened) => {
                 />
               </div>
               <div>
-                <Label>Moneda</Label>
+                <Label>{{ $t('trip_transport_drawer.fields.currency') }}</Label>
                 <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
-                <Label>Estado</Label>
+                <Label>{{ $t('trip_transport_drawer.fields.status') }}</Label>
                 <Select v-model="formData.estado_pago">
-                  <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+                  <SelectTrigger><SelectValue :placeholder="$t('trip_transport_drawer.placeholders.status')" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pendiente">Pendiente</SelectItem>
-                    <SelectItem value="pagado">Pagado</SelectItem>
+                    <SelectItem value="pendiente">{{ $t('trip_transport_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="pagado">{{ $t('trip_transport_drawer.status.paid') }}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div>
-               <Label>Notas</Label>
+               <Label>{{ $t('trip_transport_drawer.fields.notes') }}</Label>
                <Textarea v-model="formData.notas" rows="3" />
             </div>
 
@@ -438,7 +439,7 @@ watch(isOpen, (isOpened) => {
           <div class="w-full lg:w-1/3 space-y-8">
             <div v-if="formData.id" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
-                <Label>Archivos adjuntos</Label>
+                <Label>{{ $t('trip_transport_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="transportes" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="transportes" @deleted="onFileUploaded" />
@@ -449,13 +450,13 @@ watch(isOpen, (isOpened) => {
               :trip-id="Number(props.tripId)"
               entity-type="transport"
               :entity-id="String(formData.id)"
-              :title="`Tareas: ${formData.nombre || 'Transporte'}`"
+              :title="`${$t('trip_transport_drawer.tasks.title_prefix')}: ${formData.nombre || $t('trip_transport_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>
       </ScrollArea>
       <DrawerFooter class="max-w-3xl mx-auto w-full">
-        <Button @click="saveTransport" :disabled="!isValid">Guardar</Button>
+        <Button @click="saveTransport" :disabled="!isValid">{{ $t('trip_transport_drawer.actions.save') }}</Button>
       </DrawerFooter>
     </DrawerContent>
   </Drawer>

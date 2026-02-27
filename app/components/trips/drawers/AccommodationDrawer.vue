@@ -43,6 +43,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:open', 'saved'])
+const { t } = useI18n()
 
 const { createAlojamiento, updateAlojamiento } = useTripOrganization()
 const { getAuthenticatedClient } = useDirectus()
@@ -95,14 +96,14 @@ const {
   } as FormState),
   createAlojamiento,
   updateAlojamiento,
-  'Alojamiento'
+  String(t('trip_accommodation_drawer.item_label'))
 )
 
 const pensionOptions = [
-  { value: 'desayuno', label: 'Desayuno' },
-  { value: 'comida', label: 'Comida' },
-  { value: 'cena', label: 'Cena' },
-  { value: 'completa', label: 'Pensión Completa' },
+  { value: 'desayuno', labelKey: 'trip_accommodation_drawer.pension.breakfast' },
+  { value: 'comida', labelKey: 'trip_accommodation_drawer.pension.lunch' },
+  { value: 'cena', labelKey: 'trip_accommodation_drawer.pension.dinner' },
+  { value: 'completa', labelKey: 'trip_accommodation_drawer.pension.full_board' },
 ]
 
 const updatePension = (value: string, event: Event) => {
@@ -190,18 +191,18 @@ const onFileUploaded = async () => {
   <Drawer v-model:open="isOpen">
     <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
       <DrawerHeader class="w-full max-w-7xl mx-auto px-4">
-        <DrawerTitle>{{ formData.id ? 'Editar Alojamiento' : 'Nuevo Alojamiento' }}</DrawerTitle>
+        <DrawerTitle>{{ formData.id ? $t('trip_accommodation_drawer.title.edit') : $t('trip_accommodation_drawer.title.new') }}</DrawerTitle>
       </DrawerHeader>
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div>
-              <Label>Nombre del Alojamiento</Label>
-              <Input v-model="formData.nombre" placeholder="Hotel / Apartamento" />
+              <Label>{{ $t('trip_accommodation_drawer.fields.name') }}</Label>
+              <Input v-model="formData.nombre" :placeholder="String($t('trip_accommodation_drawer.placeholders.name'))" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <Label>Entrada</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.check_in') }}</Label>
                 <DateTimePicker 
                   v-model="formData.fecha_entrada" 
                   :min="currentTrip?.fecha_inicio || undefined"
@@ -210,7 +211,7 @@ const onFileUploaded = async () => {
                 />
               </div>
               <div>
-                <Label>Salida</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.check_out') }}</Label>
                 <DateTimePicker 
                   v-model="formData.fecha_salida" 
                   :min="currentTrip?.fecha_inicio || undefined"
@@ -220,15 +221,15 @@ const onFileUploaded = async () => {
               </div>
             </div>
             <div>
-              <Label>Ubicación / Dirección</Label>
+              <Label>{{ $t('trip_accommodation_drawer.fields.location') }}</Label>
               <LocationSelector 
                 v-model="formData.ubicacion" 
-                placeholder="Buscar dirección..."
+                :placeholder="String($t('trip_accommodation_drawer.placeholders.location'))"
               />
             </div>
             <div class="grid grid-cols-[2fr_1fr_1fr] gap-3">
               <div>
-                <Label>Precio Total</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
                   v-model="formData.precio" 
@@ -236,45 +237,45 @@ const onFileUploaded = async () => {
                 />
               </div>
               <div>
-                <Label>Moneda</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.currency') }}</Label>
                 <CurrencySelector v-model="formData.moneda" />
               </div>
               <div>
-                <Label>Estado</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.status') }}</Label>
                 <Select v-model="formData.estado_pago">
-                <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+                <SelectTrigger><SelectValue :placeholder="String($t('trip_accommodation_drawer.placeholders.status'))" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pagado">Pagado</SelectItem>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="parcial">Parcial</SelectItem>
+                  <SelectItem value="pagado">{{ $t('trip_accommodation_drawer.status.paid') }}</SelectItem>
+                  <SelectItem value="pendiente">{{ $t('trip_accommodation_drawer.status.pending') }}</SelectItem>
+                  <SelectItem value="parcial">{{ $t('trip_accommodation_drawer.status.partial') }}</SelectItem>
                 </SelectContent>
               </Select>
               </div>
             </div>
             <div>
-              <Label>Enlace de Google Maps</Label>
-              <Input v-model="formData.enlace_google" placeholder="Enlace de Google Maps" />
+              <Label>{{ $t('trip_accommodation_drawer.fields.google_maps_link') }}</Label>
+              <Input v-model="formData.enlace_google" :placeholder="String($t('trip_accommodation_drawer.placeholders.google_maps_link'))" />
             </div>
             <div class="flex flex-wrap gap-4">
               <div class="flex items-center gap-2">
                 <Switch v-model="formData.privado" id="privado" />
-                <Label htmlFor="privado">Privado</Label>
+                <Label htmlFor="privado">{{ $t('trip_accommodation_drawer.toggles.private') }}</Label>
               </div>
               <div class="flex items-center gap-2">
                 <Switch v-model="formData.takkyubin" id="takkyubin" />
-                <Label htmlFor="takkyubin">Takkyubin</Label>
+                <Label htmlFor="takkyubin">{{ $t('trip_accommodation_drawer.toggles.takkyubin') }}</Label>
               </div>
             </div>
             <div>
-              <Label>Telefono</Label>
-              <Input v-model="formData.telefono" placeholder="Número de teléfono" />
+              <Label>{{ $t('trip_accommodation_drawer.fields.phone') }}</Label>
+              <Input v-model="formData.telefono" :placeholder="String($t('trip_accommodation_drawer.placeholders.phone'))" />
             </div>
             <div>
-              <Label>Email</Label>
-              <Input v-model="formData.email" placeholder="Correo electrónico" />
+              <Label>{{ $t('trip_accommodation_drawer.fields.email') }}</Label>
+              <Input v-model="formData.email" :placeholder="String($t('trip_accommodation_drawer.placeholders.email'))" />
             </div>
             <div>
-              <Label class="mb-2 block">Pensión</Label>
+              <Label class="mb-2 block">{{ $t('trip_accommodation_drawer.fields.pension') }}</Label>
               <div class="flex flex-wrap gap-4">
                 <div v-for="opt in pensionOptions" :key="opt.value" class="flex items-center space-x-2">
                   <input 
@@ -284,19 +285,19 @@ const onFileUploaded = async () => {
                     @change="updatePension(opt.value, $event)"
                     class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
-                  <Label :for="`pension-native-${opt.value}`" class="cursor-pointer">{{ opt.label }}</Label>
+                  <Label :for="`pension-native-${opt.value}`" class="cursor-pointer">{{ $t(opt.labelKey) }}</Label>
                 </div>
               </div>
             </div>
             <div>
-              <Label>Notas</Label>
-              <Textarea v-model="formData.notas" placeholder="Información relevante, códigos de acceso, etc." class="resize-none" />
+              <Label>{{ $t('trip_accommodation_drawer.fields.notes') }}</Label>
+              <Textarea v-model="formData.notas" :placeholder="String($t('trip_accommodation_drawer.placeholders.notes'))" class="resize-none" />
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
             <div v-if="formId" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
-                <Label>Archivos adjuntos</Label>
+                <Label>{{ $t('trip_accommodation_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="alojamientos" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="alojamientos" @deleted="onFileUploaded" />
@@ -307,13 +308,13 @@ const onFileUploaded = async () => {
               :trip-id="Number(props.tripId)"
               entity-type="accommodation"
               :entity-id="String(formId)"
-              :title="`Tareas: ${formData.nombre || 'Alojamiento'}`"
+              :title="`${$t('trip_accommodation_drawer.tasks.title_prefix')}: ${formData.nombre || $t('trip_accommodation_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>
       </ScrollArea>
       <DrawerFooter class="max-w-3xl mx-auto w-full">
-        <Button @click="saveAccommodation" :disabled="!isValid">Guardar</Button>
+        <Button @click="saveAccommodation" :disabled="!isValid">{{ $t('trip_accommodation_drawer.actions.save') }}</Button>
       </DrawerFooter>
     </DrawerContent>
   </Drawer>

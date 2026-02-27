@@ -110,16 +110,16 @@
                 <Shield class="h-5 w-5" />
               </div>
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Seguros</h2>
-                <p class="text-muted-foreground hidden md:block">Pólizas de viaje y asistencia médica.</p>
+                <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_insurance_page.title') }}</h2>
+                <p class="text-muted-foreground hidden md:block">{{ $t('trip_insurance_page.subtitle') }}</p>
               </div>
             </div>
-            <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> Añadir</Button>
+            <Button @click="handleCreateInsurance"><Plus class="h-4 w-4" /> {{ $t('trip_insurance_page.actions.add') }}</Button>
           </div>
           <div v-if="seguros.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Shield class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h3 class="text-lg font-semibold text-slate-700">No hay seguros registrados</h3>
-            <p class="max-w-md mx-auto mt-2">Añade tu seguro de viaje para tener a mano la póliza.</p>
+            <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_insurance_page.empty.title') }}</h3>
+            <p class="max-w-md mx-auto mt-2">{{ $t('trip_insurance_page.empty.subtitle') }}</p>
           </div>
           <div v-else class="space-y-4">
             <Card v-for="s in seguros" :key="s.id">
@@ -138,19 +138,19 @@
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
-                      <span class="sr-only">Abrir menú</span>
+                      <span class="sr-only">{{ $t('trips_page.actions.open_menu') }}</span>
                       <MoreVertical class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem @click="handleEditInsurance(s)">
                       <Pencil class="mr-2 h-4 w-4" />
-                      <span>Editar</span>
+                      <span>{{ $t('trips_page.actions.edit') }}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem @click="confirmDelete(s.id)" class="text-destructive focus:text-destructive">
                       <Trash2 class="mr-2 h-4 w-4" />
-                      <span>Eliminar</span>
+                      <span>{{ $t('trips_page.actions.delete') }}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -161,14 +161,14 @@
                   <div class="flex items-center justify-start gap-1">
 
                     <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.telefono_urgencias">
-                      <NuxtLink v-if="s.telefono_urgencias" :title="`Llamar: ${s.telefono_urgencias}`" :href="`tel:${s.telefono_urgencias}`"> 
-                        <span class="sr-only">Llamar</span>
+                      <NuxtLink v-if="s.telefono_urgencias" :title="`${$t('trip_insurance_page.actions.call_prefix')} ${s.telefono_urgencias}`" :href="`tel:${s.telefono_urgencias}`"> 
+                        <span class="sr-only">{{ $t('trip_insurance_page.actions.call') }}</span>
                         <PhoneCall class="h-6 w-6" />
                       </NuxtLink>
                     </Button>
                     <Button size="icon" as-child class="h-8 w-8 p-0" v-if="s.email_urgencias">
-                      <NuxtLink v-if="s.email_urgencias" :title="`Enviar correo: ${s.email_urgencias}`" :href="`mailto:${s.email_urgencias}`"> 
-                        <span class="sr-only">Enviar correo</span>
+                      <NuxtLink v-if="s.email_urgencias" :title="`${$t('trip_insurance_page.actions.email_prefix')} ${s.email_urgencias}`" :href="`mailto:${s.email_urgencias}`"> 
+                        <span class="sr-only">{{ $t('trip_insurance_page.actions.email') }}</span>
                         <Mail class="h-6 w-6" />
                       </NuxtLink>
                     </Button>
@@ -180,7 +180,7 @@
                 </div>
 
                 <div v-if="s.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
-                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">Notas</p>
+                  <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('trip_insurance_page.labels.notes') }}</p>
                   <p class="whitespace-pre-line">{{ s.notas }}</p>
                 </div>
 
@@ -188,7 +188,7 @@
                   :trip-id="parseInt(tripId)"
                   entity-type="insurance"
                   :entity-id="s.id"
-                  :title="`Tareas: ${s.compania}`"
+                  :title="$t('trip_insurance_page.tasks.title_prefix') + ': ' + (s.compania || '')"
                   class="hidden"
                 />
 
@@ -198,7 +198,7 @@
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
-                      :title="`Descargar: ${item.directus_files_id?.filename_download || item.filename_download}`"
+                      :title="$t('trip_insurance_page.actions.download_prefix') + ': ' + (item.directus_files_id?.filename_download || item.filename_download)"
                     >
                       <FileDown class="h-6 w-6" /> <span class="truncate w-full max-w-[300px]">{{ item.directus_files_id?.filename_download || item.filename_download }}</span>
                     </Button>
@@ -232,14 +232,12 @@
       <AlertDialog v-model:open="isDeleteOpen">
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el seguro y todos sus datos asociados.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{{ $t('trip_insurance_page.delete.title') }}</AlertDialogTitle>
+            <AlertDialogDescription>{{ $t('trip_insurance_page.delete.description') }}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">Eliminar Seguro</AlertDialogAction>
+            <AlertDialogCancel>{{ $t('trip_insurance_page.delete.cancel') }}</AlertDialogCancel>
+            <AlertDialogAction @click="executeDelete" class="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600">{{ $t('trip_insurance_page.delete.confirm') }}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

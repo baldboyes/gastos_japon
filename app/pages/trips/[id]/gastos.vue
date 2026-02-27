@@ -38,6 +38,7 @@ definePageMeta({
 const router = useRouter()
 const route = useRoute()
 const tripId = computed(() => route.params.id as string)
+const { t } = useI18n()
 
 const { expenses: rawExpenses, fetchExpenses, deleteExpense, updateExpense } = useTripExpenses()
 const { currentTrip } = useTrips()
@@ -149,9 +150,9 @@ const handleWalletSave = async () => {
       lugar: '',
       destino_fondo: 'efectivo'
     }
-    toast.success('Cambio registrado')
+    toast.success(String(t('trip_expenses_page.wallet.toasts.saved')))
   } catch (e) {
-    toast.error('Error al registrar cambio')
+    toast.error(String(t('trip_expenses_page.wallet.toasts.error')))
   }
 }
 
@@ -415,7 +416,7 @@ const topExpenses = computed(() => {
       <div>
         <h1 class="text-3xl font-bold text-gray-900">{{ formatAmount(totalAmount) }}</h1>
         <div class="text-sm text-gray-600">
-          {{ totalExpensesCount }} {{ totalExpensesCount === 1 ? 'gasto' : 'gastos' }}
+          {{ totalExpensesCount }} {{ totalExpensesCount === 1 ? $t('trip_expenses_page.labels.expense_singular') : $t('trip_expenses_page.labels.expense_plural') }}
         </div>
       </div>
       <Button @click="handleAdd" size="icon" class="rounded-full h-12 w-12 shadow-lg bg-teal-600 hover:bg-teal-700">
@@ -425,10 +426,10 @@ const topExpenses = computed(() => {
 
     <Tabs v-model="viewMode" class="w-full">
       <TabsList class="grid w-full grid-cols-4 mb-4">
-        <TabsTrigger value="list">Lista</TabsTrigger>
-        <TabsTrigger value="map">Mapa</TabsTrigger>
-        <TabsTrigger value="stats">Stats</TabsTrigger>
-        <TabsTrigger value="wallet">Cartera</TabsTrigger>
+        <TabsTrigger value="list">{{ $t('trip_expenses_page.tabs.list') }}</TabsTrigger>
+        <TabsTrigger value="map">{{ $t('trip_expenses_page.tabs.map') }}</TabsTrigger>
+        <TabsTrigger value="stats">{{ $t('trip_expenses_page.tabs.stats') }}</TabsTrigger>
+        <TabsTrigger value="wallet">{{ $t('trip_expenses_page.tabs.wallet') }}</TabsTrigger>
       </TabsList>
 
       <div v-if="viewMode === 'list' || viewMode === 'map'" class="mb-4">
@@ -454,8 +455,8 @@ const topExpenses = computed(() => {
       <!-- Results Summary (Only for List and Map) -->
       <div v-if="viewMode !== 'stats' && viewMode !== 'wallet' && hasFilters && filteredExpenses.length > 0" class="mb-4">
         <div class="text-sm text-gray-600 bg-teal-50 px-4 py-2 rounded-lg">
-          Mostrando {{ filteredExpenses.length }} {{ filteredExpenses.length === 1 ? 'resultado' : 'resultados' }}
-          • Total: {{ formatAmount(filteredTotal) }}
+          {{ $t('trip_expenses_page.results.showing') }} {{ filteredExpenses.length }} {{ filteredExpenses.length === 1 ? $t('trip_expenses_page.results.result_singular') : $t('trip_expenses_page.results.result_plural') }}
+          • {{ $t('trip_expenses_page.results.total_prefix') }} {{ formatAmount(filteredTotal) }}
         </div>
       </div>
 
@@ -465,8 +466,8 @@ const topExpenses = computed(() => {
           :expenses="filteredExpenses"
           :planned-expenses="filteredPlannedExpenses"
           :currency="budget.currency || undefined"
-          empty-title="Sin gastos"
-          empty-message="No se encontraron gastos con los filtros aplicados"
+          :empty-title="$t('trip_expenses_page.empty.title')"
+          :empty-message="$t('trip_expenses_page.empty.subtitle')"
           @expense-click="handleExpenseClick"
           @planned-expense-click="handlePlannedExpenseClick"
         />
@@ -488,13 +489,13 @@ const topExpenses = computed(() => {
         <!-- Empty State -->
         <div v-if="expenses.length === 0" class="text-center py-12">
           <div class="text-6xl mb-4">📊</div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-2">Sin Estadísticas</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('trip_expenses_page.stats.empty.title') }}</h2>
           <p class="text-gray-600 mb-6">
-            Agrega algunos gastos para ver tus estadísticas
+            {{ $t('trip_expenses_page.stats.empty.subtitle') }}
           </p>
           <Button @click="handleAdd" class="bg-teal-600 h-14 text-lg">
             <Plus class="mr-2 h-5 w-5" />
-            Agregar Gasto
+            {{ $t('trip_expenses_page.stats.empty.cta') }}
           </Button>
         </div>
 
@@ -503,16 +504,16 @@ const topExpenses = computed(() => {
           <!-- Overview Cards -->
           <div class="grid grid-cols-2 gap-4">
             <DashboardStatsCard
-              label="Total"
+              :label="$t('trip_expenses_page.stats.overview.total')"
               :value="formatAmount(totalSpent)"
-              :subtitle="`${expenses.length} ${expenses.length === 1 ? 'gasto' : 'gastos'}`"
+              :subtitle="`${expenses.length} ${expenses.length === 1 ? $t('trip_expenses_page.labels.expense_singular') : $t('trip_expenses_page.labels.expense_plural')}`"
               icon="💰"
               icon-bg-class="bg-teal-100"
             />
             <DashboardStatsCard
-              label="Promedio Día"
+              :label="$t('trip_expenses_page.stats.overview.daily_average')"
               :value="formatAmount(averageDaily)"
-              :subtitle="`${tripDays} ${tripDays === 1 ? 'día' : 'días'} con gastos`"
+              :subtitle="`${tripDays} ${tripDays === 1 ? $t('trip_expenses_page.labels.day_singular') : $t('trip_expenses_page.labels.day_plural')} ${$t('trip_expenses_page.stats.overview.days_with_expenses_suffix')}`"
               icon="📅"
               icon-bg-class="bg-blue-100"
             />
@@ -530,7 +531,7 @@ const topExpenses = computed(() => {
           <!-- Top Expenses -->
           <Card>
             <CardHeader>
-              <CardTitle class="text-lg">Gastos Más Grandes</CardTitle>
+              <CardTitle class="text-lg">{{ $t('trip_expenses_page.stats.top_expenses.title') }}</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-3">
@@ -566,85 +567,85 @@ const topExpenses = computed(() => {
         <div class="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle class="text-sm font-medium">Inversión Total</CardTitle>
+              <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.summary.total_invested') }}</CardTitle>
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div class="text-2xl font-bold">{{ formatEUR(totalInvestedEUR) }}</div>
-              <p class="text-xs text-muted-foreground">Gastos en EUR + Cambios</p>
+              <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.summary.total_invested_subtitle') }}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle class="text-sm font-medium">Yenes Disponibles</CardTitle>
+              <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.summary.jpy_available') }}</CardTitle>
               <Wallet class="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div class="text-2xl font-bold" :class="currentJPYBalance < 0 ? 'text-red-500' : 'text-green-600'">
                 {{ formatJPY(currentJPYBalance) }}
               </div>
-              <p class="text-xs text-muted-foreground">Saldo actual (Cash + Tarjeta)</p>
+              <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.summary.jpy_available_subtitle') }}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle class="text-sm font-medium">Total Cambiado</CardTitle>
+              <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.summary.total_exchanged') }}</CardTitle>
               <ArrowRightLeft class="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div class="text-2xl font-bold">{{ formatJPY(totalJPYAcquired) }}</div>
-              <p class="text-xs text-muted-foreground">Suma de todos los cambios</p>
+              <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.summary.total_exchanged_subtitle') }}</p>
             </CardContent>
           </Card>
         </div>
 
         <!-- ESTADO DE PAGOS -->
         <div class="space-y-4">
-          <h3 class="text-lg font-semibold tracking-tight">Estado de Pagos (Reservas)</h3>
+          <h3 class="text-lg font-semibold tracking-tight">{{ $t('trip_expenses_page.wallet.payments.title') }}</h3>
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Pagado (EUR)</CardTitle>
+                <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.payments.paid_eur') }}</CardTitle>
                 <div class="h-2 w-2 rounded-full bg-green-500" />
               </CardHeader>
               <CardContent>
                 <div class="text-2xl font-bold">{{ formatEUR(paymentBreakdown.eur.paid) }}</div>
-                <p class="text-xs text-muted-foreground">Vuelos, Hoteles, etc.</p>
+                <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.payments.paid_eur_subtitle') }}</p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Pendiente (EUR)</CardTitle>
+                <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.payments.pending_eur') }}</CardTitle>
                 <div class="h-2 w-2 rounded-full bg-orange-500" />
               </CardHeader>
               <CardContent>
                 <div class="text-2xl font-bold text-orange-600">{{ formatEUR(paymentBreakdown.eur.pending) }}</div>
-                <p class="text-xs text-muted-foreground">Por pagar</p>
+                <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.payments.pending_eur_subtitle') }}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Pagado (JPY)</CardTitle>
+                <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.payments.paid_jpy') }}</CardTitle>
                 <div class="h-2 w-2 rounded-full bg-green-500" />
               </CardHeader>
               <CardContent>
                 <div class="text-2xl font-bold">{{ formatJPY(paymentBreakdown.jpy.paid) }}</div>
-                <p class="text-xs text-muted-foreground">Ya desembolsado</p>
+                <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.payments.paid_jpy_subtitle') }}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle class="text-sm font-medium">Pendiente (JPY)</CardTitle>
+                <CardTitle class="text-sm font-medium">{{ $t('trip_expenses_page.wallet.payments.pending_jpy') }}</CardTitle>
                 <div class="h-2 w-2 rounded-full bg-orange-500" />
               </CardHeader>
               <CardContent>
                 <div class="text-2xl font-bold text-orange-600">{{ formatJPY(paymentBreakdown.jpy.pending) }}</div>
-                <p class="text-xs text-muted-foreground">Reservar efectivo/tarjeta</p>
+                <p class="text-xs text-muted-foreground">{{ $t('trip_expenses_page.wallet.payments.pending_jpy_subtitle') }}</p>
               </CardContent>
             </Card>
           </div>
@@ -655,15 +656,15 @@ const topExpenses = computed(() => {
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <div class="flex items-center gap-2">
               <ArrowRightLeft class="h-5 w-5 text-indigo-500" />
-              <CardTitle class="text-lg">Historial de Cambios</CardTitle>
+              <CardTitle class="text-lg">{{ $t('trip_expenses_page.wallet.history.title') }}</CardTitle>
             </div>
-            <Button size="sm" @click="isWalletModalOpen = true"><Plus class="h-4 w-4 mr-2" /> Añadir Cambio</Button>
+            <Button size="sm" @click="isWalletModalOpen = true"><Plus class="h-4 w-4 mr-2" /> {{ $t('trip_expenses_page.wallet.history.add') }}</Button>
           </CardHeader>
           <CardContent>
             <div v-if="cambios.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
               <Wallet class="mx-auto h-12 w-12 text-slate-300 mb-4" />
-              <h3 class="text-lg font-semibold text-slate-700">No hay cambios registrados</h3>
-              <p class="max-w-md mx-auto mt-2">Añade tus cambios de divisa para llevar el control.</p>
+              <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_expenses_page.wallet.history.empty.title') }}</h3>
+              <p class="max-w-md mx-auto mt-2">{{ $t('trip_expenses_page.wallet.history.empty.subtitle') }}</p>
             </div>
             <div v-else class="space-y-2">
               <div v-for="c in cambios" :key="c.id" class="flex justify-between items-center p-3 border rounded hover:bg-slate-50">
@@ -677,7 +678,7 @@ const topExpenses = computed(() => {
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="text-right text-xs text-muted-foreground">
-                    Rate: {{ (c.destino_jpy / c.origen_eur).toFixed(2) }}
+                    {{ $t('trip_expenses_page.wallet.history.rate_prefix') }} {{ (c.destino_jpy / c.origen_eur).toFixed(2) }}
                   </div>
                   <button @click="deleteCambio(c.id)" class="text-red-400 hover:text-red-600"><Trash2 class="h-4 w-4" /></button>
                 </div>
@@ -700,33 +701,33 @@ const topExpenses = computed(() => {
     <Dialog v-model:open="isWalletModalOpen">
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Registrar Cambio de Divisa</DialogTitle>
+          <DialogTitle>{{ $t('trip_expenses_page.wallet.modal.title') }}</DialogTitle>
         </DialogHeader>
         
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-2 gap-4">
-            <div><Label>Entregado (EUR)</Label><Input type="number" v-model="walletFormData.origen_eur" /></div>
-            <div><Label>Recibido (JPY)</Label><Input type="number" v-model="walletFormData.destino_jpy" /></div>
+            <div><Label>{{ $t('trip_expenses_page.wallet.modal.fields.given_eur') }}</Label><Input type="number" v-model="walletFormData.origen_eur" /></div>
+            <div><Label>{{ $t('trip_expenses_page.wallet.modal.fields.received_jpy') }}</Label><Input type="number" v-model="walletFormData.destino_jpy" /></div>
           </div>
           
-          <div><Label>Fecha</Label><Input type="datetime-local" v-model="walletFormData.fecha" /></div>
-          <div><Label>Lugar (Casa de cambio / Banco)</Label><Input v-model="walletFormData.lugar" /></div>
+          <div><Label>{{ $t('trip_expenses_page.wallet.modal.fields.date') }}</Label><Input type="datetime-local" v-model="walletFormData.fecha" /></div>
+          <div><Label>{{ $t('trip_expenses_page.wallet.modal.fields.place') }}</Label><Input v-model="walletFormData.lugar" /></div>
           
           <div>
-            <Label>Destino del dinero</Label>
+            <Label>{{ $t('trip_expenses_page.wallet.modal.fields.destination') }}</Label>
             <Select v-model="walletFormData.destino_fondo">
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="efectivo">Efectivo (Cartera)</SelectItem>
-                <SelectItem value="tarjeta">Tarjeta (Revolut/N26)</SelectItem>
-                <SelectItem value="suica">Suica / IC Card</SelectItem>
+                <SelectItem value="efectivo">{{ $t('trip_expenses_page.wallet.modal.destination.cash') }}</SelectItem>
+                <SelectItem value="tarjeta">{{ $t('trip_expenses_page.wallet.modal.destination.card') }}</SelectItem>
+                <SelectItem value="suica">{{ $t('trip_expenses_page.wallet.modal.destination.suica') }}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
         <DialogFooter>
-          <Button @click="handleWalletSave">Registrar</Button>
+          <Button @click="handleWalletSave">{{ $t('trip_expenses_page.wallet.modal.actions.save') }}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
