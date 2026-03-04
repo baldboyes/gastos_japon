@@ -12,7 +12,7 @@
       <div class="flex flex-col-reverse lg:flex-row items-start justify-between gap-20 lg:gap-12 text-base transition-all duration-300">
         <div class="flex flex-col gap-8 text-left w-full max-w-[650px]">
           <div class="font-semibold block relative">
-            jizou.io
+            <img src="/logo.png" alt="jizou.io" class="h-8" />
           </div>
           <div>
             {{ $t('landing.hero.subtitle') }}

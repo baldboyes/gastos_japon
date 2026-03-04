@@ -4,19 +4,19 @@
     <AppHeader />
     
     <!-- Main content -->
-    <main class="">
+    <main class="min-h-screen">
       <slot />
     </main>
 
     <!-- Footer -->
-    <AppFooter />
+    
     
     <Toaster position="top-center" />
   </div>
 </template>
 
 <script setup lang="ts">
-import AppHeader from '~/components/layout/AppHeader.vue'
-import AppFooter from '~/components/layout/AppFooter.vue'
-import { Toaster } from '~/components/ui/sonner'
+  import AppHeader from '~/components/layout/AppHeader.vue'
+  import AppFooter from '~/components/layout/AppFooter.vue'
+  import { Toaster } from '~/components/ui/sonner'
 </script>
