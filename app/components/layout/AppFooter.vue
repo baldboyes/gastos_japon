@@ -9,7 +9,6 @@
 <template>
   <footer class="py-20 lg:py-28 bg-red-400 text-white">
     <div class="container mx-auto px-4">
-
       <div class="flex flex-col-reverse lg:flex-row items-start justify-between gap-20 lg:gap-12 text-base transition-all duration-300">
         <div class="flex flex-col gap-8 text-left w-full max-w-[650px]">
           <div class="font-semibold block relative">
