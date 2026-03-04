@@ -9,7 +9,7 @@
     </main>
 
     <!-- Footer -->
-    
+    <AppFooter />
     
     <Toaster position="top-center" />
   </div>
