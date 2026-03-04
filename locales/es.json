@@ -12,6 +12,9 @@
       "resources": "Recursos",
       "company": "Compañía"
     },
+    "actions": {
+      "contact_support": "Contactar Soporte"
+    },
     "links": {
       "terms": "Términos y condiciones",
       "privacy": "Política de privacidad"

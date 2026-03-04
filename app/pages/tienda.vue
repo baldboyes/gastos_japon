@@ -10,46 +10,21 @@
       
       <!-- Productos -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 mt-12">
-        
-        <!-- Sudadera -->
-        <div class="group border border-slate-200 rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col">
-          <div class="aspect-square bg-slate-50 rounded-xl mb-4 overflow-hidden relative">
-            <img src="/sudadera.jpg" alt="Sudadera Jizou" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          </div>
-          <div class="flex flex-col flex-grow justify-between">
-            <div class="text-left">
-              <h3 class="font-semibold text-lg text-slate-900">{{ $t('shop_page.products.hoodie.name') }}</h3>
-              <p class="text-slate-500 text-sm mb-4">{{ $t('shop_page.products.hoodie.desc') }}</p>
-            </div>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-bold text-slate-900">45.00 €</span>
-              <button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
-                {{ $t('shop_page.products.hoodie.add') }}
-              </button>
-            </div>
-          </div>
-        </div>
+        <JizouProductCard
+          :title="String($t('shop_page.products.hoodie.name'))"
+          price="45.00 €"
+          image-url="/sudadera.jpg"
+          variant="default"
+          @add="onAddHoodie"
+        />
 
-        <!-- Gorra -->
-        <div class="group border border-slate-200 rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col">
-          <div class="aspect-square bg-slate-50 rounded-xl mb-4 overflow-hidden relative">
-            <img src="/gorra.jpg" alt="Gorra Jizou" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          </div>
-
-          <div class="flex flex-col flex-grow justify-between">
-            <div class="text-left">
-              <h3 class="font-semibold text-lg text-slate-900">{{ $t('shop_page.products.cap.name') }}</h3>
-              <p class="text-slate-500 text-sm mb-4">{{ $t('shop_page.products.cap.desc') }}</p>
-            </div>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-bold text-slate-900">20.00 €</span>
-              <button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
-                {{ $t('shop_page.products.cap.add') }}
-              </button>
-            </div>
-          </div>
-
-        </div>
+        <JizouProductCard
+          :title="String($t('shop_page.products.cap.name'))"
+          price="20.00 €"
+          image-url="/gorra.jpg"
+          variant="promotional"
+          @add="onAddCap"
+        />
 
         <!-- Placeholder -->
         <div class="border border-slate-200 border-dashed rounded-2xl p-6 bg-slate-50/50 flex flex-col items-center justify-center text-slate-400 min-h-[300px]">
@@ -63,6 +38,7 @@
 
 <script setup lang="ts">
   const { t } = useI18n()
+  import JizouProductCard from '~/components/shop/JizouProductCard.vue'
 
   definePageMeta({
     name: 'tienda'
@@ -79,9 +55,16 @@
   })
 
   useHead({
-    title: t('shop_page.meta.title'),
+    title: String(t('shop_page.meta.title')),
     meta: [
-      { name: 'description', content: t('shop_page.meta.description') }
+      { name: 'description', content: String(t('shop_page.meta.description')) }
     ]
   })
+
+  function onAddHoodie() {
+    // implementar lógica de carrito
+  }
+  function onAddCap() {
+    // implementar lógica de carrito
+  }
 </script>

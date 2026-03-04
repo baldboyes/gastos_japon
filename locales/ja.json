@@ -12,6 +12,9 @@
       "resources": "リソース",
       "company": "会社"
     },
+    "actions": {
+      "contact_support": "サポートに問い合わせる"
+    },
     "links": {
       "terms": "利用規約",
       "privacy": "プライバシーポリシー"
