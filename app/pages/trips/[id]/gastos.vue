@@ -3,10 +3,11 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Wallet, TrendingUp, ArrowRightLeft, Plus, Trash2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
-import { useTripExpenses } from '~/composables/useTripExpenses'
-import { useTrips } from '~/composables/useTrips'
-import { useWallet } from '~/composables/useWallet'
-import type { Expense, PlannedExpense, ExpenseCategory, PaymentMethod, TripExpense, Budget } from '~/types'
+import { useExpensesNew } from '~/composables/useExpensesNew'
+import { useTripsNew } from '~/composables/useTripsNew'
+import { useWalletNew } from '~/composables/useWalletNew'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import type { Expense, PlannedExpense, ExpenseCategory, PaymentMethod, Budget } from '~/types'
 import { getCategoryInfo } from '~/types'
 import type { DateFilterRange } from '~/components/common/DateRangeFilter.vue'
 import { formatDate, getDateString } from '~/utils/dates'
@@ -20,7 +21,6 @@ import DashboardStatsCard from '~/components/dashboard/StatsCard.vue'
 import ChartsDailySpending from '~/components/charts/DailySpending.vue'
 import ChartsCategoryBreakdown from '~/components/charts/CategoryBreakdown.vue'
 import ChartsPaymentMethod from '~/components/charts/PaymentMethod.vue'
-import { DIRECTUS_TO_CATEGORY, DIRECTUS_TO_PAYMENT, getCategoryFromDirectus, getPaymentMethodFromDirectus } from '~/utils/directus-mappings'
 import { CURRENCIES } from '~/composables/useSettings'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '~/components/ui/tabs'
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
@@ -29,7 +29,6 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
-import { Toaster } from '~/components/ui/sonner'
 
 definePageMeta({
   layout: 'dashboard'
@@ -40,34 +39,41 @@ const route = useRoute()
 const tripId = computed(() => route.params.id as string)
 const { t } = useI18n()
 
-const { expenses: rawExpenses, fetchExpenses, deleteExpense, updateExpense } = useTripExpenses()
-const { currentTrip } = useTrips()
+// New Composables
+const { expenses: rawExpenses, fetchExpenses, deleteExpense, updateExpense } = useExpensesNew()
+const { currentTrip, getTrip } = useTripsNew() // Use new Trips composable
 const { 
   cambios, fetchCambios,
   createCambio, deleteCambio, 
   totalInvestedEUR, totalJPYAcquired, currentJPYBalance,
   paymentBreakdown 
-} = useWallet()
+} = useWalletNew()
+const { fetchOrganizationData } = useTripOrganizationNew()
 
 // Load data
-onMounted(() => {
+onMounted(async () => {
   if (tripId.value) {
-    fetchExpenses(tripId.value)
-    fetchCambios(tripId.value)
+    const id = parseInt(tripId.value)
+    // Fetch all necessary data
+    await Promise.all([
+      fetchExpenses(id),
+      fetchCambios(id),
+      fetchOrganizationData(id),
+      getTrip(id) // Ensure currentTrip is populated
+    ])
   }
 })
 
 // Budget from Trip
 const budget = computed<Budget>(() => ({
-  dailyLimit: currentTrip.value?.presupuesto_diario || 0,
-  startDate: currentTrip.value?.fecha_inicio || new Date().toISOString(),
-  currency: currentTrip.value?.moneda || null
+  dailyLimit: currentTrip.value?.daily_budget || 0,
+  startDate: currentTrip.value?.start_date || new Date().toISOString(),
+  currency: currentTrip.value?.currency || null
 }))
 
 // Override currency symbol for this page using trip currency
 const currencySymbol = computed(() => {
   if (!budget.value.currency) return '$'
-  // Find symbol in CURRENCIES list if available, or just use the code
   const currencyInfo = CURRENCIES.find(c => c.code === budget.value.currency)
   return currencyInfo?.symbol || '$'
 })
@@ -82,7 +88,6 @@ const remainingDailyBudget = computed(() => {
   const limit = budget.value.dailyLimit
   if (!limit) return 0
   
-  // Get today in local format YYYY-MM-DD
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
@@ -90,8 +95,6 @@ const remainingDailyBudget = computed(() => {
   const today = `${year}-${month}-${day}`
   
   const todayExpenses = expenses.value.filter(e => {
-    // Check if timestamp string contains today's date
-    // Handles ISO (YYYY-MM-DDTHH:mm:ss) and Directus (YYYY-MM-DD HH:mm:ss) formats
     return e.timestamp.startsWith(today)
   })
   
@@ -115,7 +118,7 @@ const selectedExpense = ref<Expense | null>(null)
 
 // Drawer state
 const showExpenseDrawer = ref(false)
-const expenseToEdit = ref<TripExpense | null>(null)
+const expenseToEdit = ref<Expense | null>(null)
 
 // ------------------------------------------------------------------
 // WALLET LOGIC
@@ -127,31 +130,39 @@ const walletFormData = ref<{
   origen_eur: number
   destino_jpy: number
   lugar: string
-  destino_fondo: 'efectivo' | 'tarjeta' | 'suica'
+  destino_fondo: 'cash' | 'card' | 'ic' // Updated to English
 }>({
   fecha: new Date().toISOString().slice(0, 16),
   origen_eur: 0,
   destino_jpy: 0,
   lugar: '',
-  destino_fondo: 'efectivo'
+  destino_fondo: 'cash'
 })
 
 const handleWalletSave = async () => {
   try {
     await createCambio({
-      ...walletFormData.value,
-      viaje_id: parseInt(tripId.value)
+      date: new Date(walletFormData.value.fecha).toISOString(), // Map to ISO
+      amount_from: walletFormData.value.origen_eur,
+      currency_from: 'EUR',
+      amount_to: walletFormData.value.destino_jpy,
+      currency_to: 'JPY',
+      place: walletFormData.value.lugar,
+      fund_destination: walletFormData.value.destino_fondo,
+      trip_id: parseInt(tripId.value)
     })
     isWalletModalOpen.value = false
+    // Reset form
     walletFormData.value = {
       fecha: new Date().toISOString().slice(0, 16),
       origen_eur: 0,
       destino_jpy: 0,
       lugar: '',
-      destino_fondo: 'efectivo'
+      destino_fondo: 'cash'
     }
     toast.success(String(t('trip_expenses_page.wallet.toasts.saved')))
   } catch (e) {
+    console.error(e)
     toast.error(String(t('trip_expenses_page.wallet.toasts.error')))
   }
 }
@@ -167,54 +178,28 @@ const formatJPY = (v: number) => {
 // DATA MAPPING
 // ------------------------------------------------------------------
 
-const mapToExpense = (e: TripExpense): Expense => ({
-  id: e.id.toString(),
-  timestamp: e.fecha,
-  placeName: e.concepto,
-  amount: e.monto,
-  category: getCategoryFromDirectus(e.categoria),
-  notes: e.notes || '',
-  location: {
-    coordinates: {
-      lat: e.ubicacion_lat || 0,
-      lng: e.ubicacion_lng || 0
-    },
-    city: e.ciudad || '',
-    prefecture: e.prefectura || ''
-  },
-  paymentMethod: getPaymentMethodFromDirectus(e.metodo_pago),
-  shared: e.es_compartido,
-  photo: undefined // TODO: Add photo support if needed
-})
+// No need for mapToExpense! useExpensesNew already returns Expense (AppExpense)
 
-const mapToPlannedExpense = (e: TripExpense): PlannedExpense => ({
-  id: e.id.toString(),
-  plannedDate: e.fecha.split(' ')[0] || e.fecha, // Assuming ISO or YYYY-MM-DD
-  placeName: e.concepto,
-  amount: e.monto,
-  category: getCategoryFromDirectus(e.categoria),
-  notes: e.notes || '',
-  location: {
-    coordinates: {
-      lat: e.ubicacion_lat || 0,
-      lng: e.ubicacion_lng || 0
-    },
-    city: e.ciudad || '',
-    prefecture: e.prefectura || ''
-  },
-  paymentMethod: getPaymentMethodFromDirectus(e.metodo_pago),
-  shared: e.es_compartido
+const mapToPlannedExpense = (e: Expense): PlannedExpense => ({
+  id: e.id,
+  plannedDate: e.timestamp.split(' ')[0] || e.timestamp,
+  placeName: e.placeName,
+  amount: e.amount,
+  category: e.category,
+  notes: e.notes,
+  location: e.location,
+  paymentMethod: e.paymentMethod,
+  shared: e.shared
 })
 
 const expenses = computed(() => {
   return rawExpenses.value
-    .filter(e => e.estado !== 'previsto')
-    .map(mapToExpense)
+    .filter((e: Expense) => e.status !== 'planned')
 })
 
 const plannedExpenses = computed(() => {
   return rawExpenses.value
-    .filter(e => e.estado === 'previsto')
+    .filter((e: Expense) => e.status === 'planned')
     .map(mapToPlannedExpense)
 })
 
@@ -258,27 +243,23 @@ const filteredExpenses = computed(() => {
   return result
 })
 
-// Filtered planned expenses (same filters as regular expenses, except date)
+// Filtered planned expenses
 const filteredPlannedExpenses = computed(() => {
   let result = [...plannedExpenses.value]
 
-  // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(e => e.placeName.toLowerCase().includes(query))
   }
 
-  // Category filter
   if (selectedCategory.value !== 'all') {
     result = result.filter(e => e.category === selectedCategory.value)
   }
 
-  // Payment method filter
   if (selectedPayment.value !== 'all') {
     result = result.filter(e => e.paymentMethod === selectedPayment.value)
   }
 
-  // Shared filter
   if (showSharedOnly.value) {
     result = result.filter(e => e.shared === true)
   }
@@ -321,14 +302,6 @@ function handleDateChange(range: DateFilterRange) {
   dateRange.value = range
 }
 
-function handleClearFilters() {
-  searchQuery.value = ''
-  selectedCategory.value = 'all'
-  selectedPayment.value = 'all'
-  showSharedOnly.value = false
-  dateRange.value = { start: null, end: null }
-}
-
 function handleExpenseClick(expense: Expense) {
   selectedExpense.value = expense
   showExpenseDetail.value = true
@@ -341,19 +314,13 @@ function handleAdd() {
 
 function handleEdit(expense: Expense) {
   showExpenseDetail.value = false
-  // Find original TripExpense
-  const original = rawExpenses.value.find(e => e.id.toString() === expense.id)
-  if (original) {
-    expenseToEdit.value = original
-    showExpenseDrawer.value = true
-  }
+  expenseToEdit.value = expense // Pass directly
+  showExpenseDrawer.value = true
 }
 
 function handleDelete(expense: Expense) {
-  // Find original TripExpense
-  const original = rawExpenses.value.find(e => e.id.toString() === expense.id)
-  if (original) {
-    deleteExpense(original.id)
+  if (expense.id) {
+    deleteExpense(expense.id)
     selectedExpense.value = null
   }
 }
@@ -363,32 +330,27 @@ function handleDrawerSuccess() {
 }
 
 // Handle planned expense click - convert to real expense
-async function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
-  const original = rawExpenses.value.find(e => e.id.toString() === plannedExpense.id)
-  if (original) {
-    // Update estado to 'real'
-    // Also update timestamp to now?
-    const now = new Date()
-    // Format YYYY-MM-DD HH:MM
-    const dateStr = getDateString(now)
-    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
-    const timestamp = `${dateStr} ${timeStr}`
+  async function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
+    const original = rawExpenses.value.find(e => e.id === plannedExpense.id)
+    if (original) {
+      const now = new Date()
+      const dateStr = getDateString(now)
+      const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
+      const timestamp = `${dateStr} ${timeStr}`
 
-    await updateExpense(original.id, {
-      estado: 'real',
-      fecha: timestamp
-    })
-    
-    // Refresh
-    fetchExpenses(tripId.value)
+      await updateExpense(original.id, {
+        timestamp: timestamp,
+        status: 'real'
+      }) 
+      
+      fetchExpenses(tripId.value)
+    }
   }
-}
 
 // ------------------------------------------------------------------
 // STATS LOGIC
 // ------------------------------------------------------------------
 
-// Overall stats
 const totalSpent = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0))
 
 const tripDays = computed(() => {
@@ -401,7 +363,6 @@ const averageDaily = computed(() => {
   return Math.round(totalSpent.value / tripDays.value)
 })
 
-// Top expenses
 const topExpenses = computed(() => {
   return [...expenses.value]
     .sort((a, b) => b.amount - a.amount)
@@ -452,7 +413,7 @@ const topExpenses = computed(() => {
         />
       </div>
 
-      <!-- Results Summary (Only for List and Map) -->
+      <!-- Results Summary -->
       <div v-if="viewMode !== 'stats' && viewMode !== 'wallet' && hasFilters && filteredExpenses.length > 0" class="mb-4">
         <div class="text-sm text-gray-600 bg-teal-50 px-4 py-2 rounded-lg">
           {{ $t('trip_expenses_page.results.showing') }} {{ filteredExpenses.length }} {{ filteredExpenses.length === 1 ? $t('trip_expenses_page.results.result_singular') : $t('trip_expenses_page.results.result_plural') }}
@@ -486,7 +447,6 @@ const topExpenses = computed(() => {
 
       <!-- STATS CONTENT -->
       <TabsContent value="stats">
-        <!-- Empty State -->
         <div v-if="expenses.length === 0" class="text-center py-12">
           <div class="text-6xl mb-4">📊</div>
           <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('trip_expenses_page.stats.empty.title') }}</h2>
@@ -499,9 +459,7 @@ const topExpenses = computed(() => {
           </Button>
         </div>
 
-        <!-- Statistics Content -->
         <div v-else class="space-y-6">
-          <!-- Overview Cards -->
           <div class="grid grid-cols-2 gap-4">
             <DashboardStatsCard
               :label="$t('trip_expenses_page.stats.overview.total')"
@@ -519,16 +477,10 @@ const topExpenses = computed(() => {
             />
           </div>
 
-          <!-- Daily Spending Chart -->
           <ChartsDailySpending :expenses="expenses" :daily-limit="budget.dailyLimit" />
-
-          <!-- Category Breakdown -->
           <ChartsCategoryBreakdown :expenses="expenses" />
-
-          <!-- Payment Methods -->
           <ChartsPaymentMethod :expenses="expenses" />
 
-          <!-- Top Expenses -->
           <Card>
             <CardHeader>
               <CardTitle class="text-lg">{{ $t('trip_expenses_page.stats.top_expenses.title') }}</CardTitle>
@@ -563,7 +515,6 @@ const topExpenses = computed(() => {
 
       <!-- WALLET CONTENT -->
       <TabsContent value="wallet" class="space-y-6">
-        <!-- RESUMEN FINANCIERO -->
         <div class="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -601,7 +552,6 @@ const topExpenses = computed(() => {
           </Card>
         </div>
 
-        <!-- ESTADO DE PAGOS -->
         <div class="space-y-4">
           <h3 class="text-lg font-semibold tracking-tight">{{ $t('trip_expenses_page.wallet.payments.title') }}</h3>
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -651,7 +601,6 @@ const topExpenses = computed(() => {
           </div>
         </div>
 
-        <!-- LISTA DE CAMBIOS -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <div class="flex items-center gap-2">
@@ -670,15 +619,15 @@ const topExpenses = computed(() => {
               <div v-for="c in cambios" :key="c.id" class="flex justify-between items-center p-3 border rounded hover:bg-slate-50">
                 <div>
                   <div class="font-medium flex items-center gap-2">
-                    {{ formatEUR(c.origen_eur) }} <span class="text-muted-foreground">➜</span> {{ formatJPY(c.destino_jpy) }}
+                    {{ formatEUR(c.amount_from) }} <span class="text-muted-foreground">➜</span> {{ formatJPY(c.amount_to) }}
                   </div>
                   <div class="text-xs text-muted-foreground">
-                    {{ new Date(c.fecha).toLocaleDateString() }} • {{ c.lugar }} • <span class="capitalize">{{ c.destino_fondo }}</span>
+                    {{ new Date(c.date).toLocaleDateString() }} • {{ c.place }} • <span class="capitalize">{{ c.fund_destination }}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="text-right text-xs text-muted-foreground">
-                    {{ $t('trip_expenses_page.wallet.history.rate_prefix') }} {{ (c.destino_jpy / c.origen_eur).toFixed(2) }}
+                    {{ $t('trip_expenses_page.wallet.history.rate_prefix') }} {{ (c.rate).toFixed(2) }}
                   </div>
                   <button @click="deleteCambio(c.id)" class="text-red-400 hover:text-red-600"><Trash2 class="h-4 w-4" /></button>
                 </div>
@@ -689,7 +638,6 @@ const topExpenses = computed(() => {
       </TabsContent>
     </Tabs>
 
-    <!-- Expense Detail Dialog -->
     <ExpensesDetailDialog
       v-model="showExpenseDetail"
       :expense="selectedExpense"
@@ -697,7 +645,6 @@ const topExpenses = computed(() => {
       @delete="handleDelete"
     />
 
-    <!-- Wallet Modal -->
     <Dialog v-model:open="isWalletModalOpen">
       <DialogContent>
         <DialogHeader>
@@ -718,8 +665,8 @@ const topExpenses = computed(() => {
             <Select v-model="walletFormData.destino_fondo">
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="efectivo">{{ $t('trip_expenses_page.wallet.modal.destination.cash') }}</SelectItem>
-                <SelectItem value="tarjeta">{{ $t('trip_expenses_page.wallet.modal.destination.card') }}</SelectItem>
+                <SelectItem value="cash">{{ $t('trip_expenses_page.wallet.modal.destination.cash') }}</SelectItem>
+                <SelectItem value="card">{{ $t('trip_expenses_page.wallet.modal.destination.card') }}</SelectItem>
                 <SelectItem value="suica">{{ $t('trip_expenses_page.wallet.modal.destination.suica') }}</SelectItem>
               </SelectContent>
             </Select>
@@ -732,7 +679,6 @@ const topExpenses = computed(() => {
       </DialogContent>
     </Dialog>
 
-    <!-- Expense Drawer (Add/Edit) -->
     <ExpenseDrawer
       v-model:open="showExpenseDrawer"
       :trip-id="tripId"

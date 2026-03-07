@@ -1,26 +1,62 @@
-import { createDirectus, rest, readUsers, createUser, updateUser, staticToken, readItems, deleteItem } from '@directus/sdk'
+import { createDirectus, rest, readUsers, createUser, updateUser, staticToken, readItems, deleteItem, createItem } from '@directus/sdk'
+
+const extractEmailsFromClaims = (claims: any): string[] => {
+  const out = new Set<string>()
+  const push = (v: any) => {
+    if (typeof v === 'string' && v.includes('@')) out.add(v.trim().toLowerCase())
+  }
+
+  if (!claims || typeof claims !== 'object') return []
+
+  push((claims as any).email)
+  push((claims as any).primary_email)
+  push((claims as any).primaryEmail)
+  push((claims as any).email_address)
+
+  const emails = (claims as any).email_addresses
+  if (Array.isArray(emails)) {
+    for (const e of emails) {
+      if (typeof e === 'string') push(e)
+      else push(e?.email_address)
+    }
+  }
+
+  return Array.from(out)
+}
 
 export default defineEventHandler(async (event) => {
   // 1. Validar Autenticación de Clerk
   // Aseguramos que quien llama a este endpoint es un usuario legítimo logueado en Clerk
-  const { userId: clerkUserId } = event.context.auth || {}
+  const authValue = (event.context as any).auth
+  const authContext = typeof authValue === 'function'
+    ? await authValue()
+    : authValue
+  const { userId: clerkUserId, sessionClaims } = authContext || {}
   
   if (!clerkUserId) {
-    console.error('[SYNC] Unauthorized attempt: No Clerk session found')
     return { error: 'Unauthorized', statusCode: 401 }
   }
 
   try {
     const body = await readBody(event)
-    const userEmail = body?.email
+    const claimEmails = extractEmailsFromClaims(sessionClaims)
+    const bodyEmail = String(body?.email || '').trim().toLowerCase()
+    const userEmail = claimEmails.length > 0 ? claimEmails[0] : bodyEmail
     
     if (!userEmail) {
       return { error: 'Email required' }
     }
 
+    if (claimEmails.length > 0 && bodyEmail && !claimEmails.includes(bodyEmail)) {
+      return { error: 'Email mismatch', statusCode: 403 }
+    }
+
     const directusUrl = 'https://directus.jizou.io'
     // Explicación: Usamos credenciales de Admin (Token) para generar el token inicial del usuario.
-    const adminToken = process.env.NUXT_DIRECTUS_ADMIN_TOKEN || 'hYOCsJK_Ros_zlClJynUFlVQT7W_G9La'
+    const adminToken = process.env.NUXT_DIRECTUS_ADMIN_TOKEN || process.env.DIRECTUS_ADMIN_TOKEN
+    if (!adminToken) {
+      return { error: 'Missing DIRECTUS_ADMIN_TOKEN', statusCode: 500 }
+    }
     
     // Conectar a Directus como Admin usando Token Estático
     const adminClient = createDirectus(directusUrl)
@@ -41,31 +77,7 @@ export default defineEventHandler(async (event) => {
     } else {
       // Crear Usuario
       try {
-        // 1. Buscar si hay una invitación pendiente para determinar el rol
-        let userRole = 'a78c3ab5-20eb-451f-b93f-c087f500fb47' // Default: App User Role
-        let invitationId = null
-
-        try {
-          const invitations = await adminClient.request(readItems('invitations', {
-            filter: { 
-              email: { _eq: userEmail },
-              status: { _eq: 'pending' }
-            },
-            limit: 1
-          }))
-          
-          if (invitations && invitations.length > 0) {
-            const inv = invitations[0]
-            // Asegurar que obtenemos el ID del rol (por si Directus lo expande)
-            userRole = typeof inv.role === 'object' ? inv.role.id : inv.role
-            invitationId = inv.id
-            console.log(`[SYNC] Found invitation for ${userEmail}, using role: ${userRole}`)
-          }
-        } catch (e) {
-          console.warn('[SYNC] Error checking invitations (skipping):', e)
-        }
-
-        // 2. Crear el usuario con el rol determinado
+        const userRole = 'a78c3ab5-20eb-451f-b93f-c087f500fb47'
         const newToken = generateSimpleToken()
         directusUser = await adminClient.request(createUser({
           email: userEmail,
@@ -78,19 +90,78 @@ export default defineEventHandler(async (event) => {
         }))
         tokenToReturn = newToken
 
-        // 3. Eliminar la invitación si se procesó correctamente
-        if (invitationId) {
-          try {
-            await adminClient.request(deleteItem('invitations', invitationId))
-          } catch (e) {
-            console.warn('[SYNC] Could not delete invitation after use:', e)
-          }
-        }
-
       } catch (e: any) {
         console.error('[SYNC] Create failed:', e)
         return { error: 'Create user failed', details: e.message }
       }
+    }
+
+    try {
+      const invitations = await adminClient.request(readItems('trip_invitations', {
+        filter: {
+          email: { _eq: userEmail },
+          status: { _starts_with: 'pending' }
+        },
+        limit: -1
+      })) as any[]
+
+      for (const inv of invitations || []) {
+        const invitationTripId = inv.trip_id
+        if (!invitationTripId) continue
+
+        const roleFromField = inv.role === 'read_only' ? 'read_only' : inv.role === 'editor' ? 'editor' : null
+        const rawStatus = String(inv.status || '')
+        const roleFromStatus = rawStatus.startsWith('pending_') ? rawStatus.replace('pending_', '') : null
+        const tripRole = roleFromField || (roleFromStatus === 'read_only' ? 'read_only' : 'editor')
+
+        const existingAssociation = await adminClient.request(readItems('trips_users', {
+          filter: {
+            _and: [
+              { trip_id: { _eq: invitationTripId } },
+              { directus_user_id: { _eq: directusUser.id } }
+            ]
+          },
+          limit: 1
+        })) as any[]
+
+        const legacyAssociation = (!existingAssociation || existingAssociation.length === 0)
+          ? await adminClient.request(readItems('viajes_usuarios', {
+            filter: {
+              _and: [
+                { viaje_id: { _eq: invitationTripId } },
+                { directus_user_id: { _eq: directusUser.id } }
+              ]
+            },
+            limit: 1
+          })) as any[]
+          : []
+
+        if ((!existingAssociation || existingAssociation.length === 0) && (!legacyAssociation || legacyAssociation.length === 0)) {
+          try {
+            await adminClient.request(createItem('trips_users', {
+              trip_id: invitationTripId,
+              directus_user_id: directusUser.id,
+              rol: tripRole,
+              status: 'published'
+            }))
+          } catch (e) {
+            await adminClient.request(createItem('viajes_usuarios', {
+              viaje_id: invitationTripId,
+              directus_user_id: directusUser.id,
+              rol: tripRole,
+              status: 'published'
+            }))
+          }
+        }
+
+        try {
+          await adminClient.request(deleteItem('trip_invitations', inv.id))
+        } catch (e) {
+          console.warn('[SYNC] Could not delete invitation after use:', e)
+        }
+      }
+    } catch (e) {
+      console.warn('[SYNC] Error processing invitations (skipping):', e)
     }
 
     // Actualizar Token (siempre, para garantizar uno válido en cada sesión)

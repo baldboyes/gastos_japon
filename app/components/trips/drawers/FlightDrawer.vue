@@ -2,7 +2,8 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { Plus, Trash2 } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
-import { useTripOrganization, type Vuelo, type EscalaVuelo } from '~/composables/useTripOrganization'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import type { Flight } from '~/types/directus'
 import { useAirlines } from '~/composables/useAirlines'
 import { useTripItemForm } from '~/composables/useTripItemForm'
 import { toast } from 'vue-sonner'
@@ -25,7 +26,7 @@ import AirlineSelector from '~/components/ui/AirlineSelector/AirlineSelector.vue
 import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { readItem } from '@directus/sdk'
 import {
   AlertDialog,
@@ -40,7 +41,8 @@ import {
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
 const route = useRoute()
-const tripId = route.params.id as string
+// tripId might be string from route or number from props
+const routeTripId = route.params.id ? parseInt(route.params.id as string) : undefined
 
 const props = defineProps<{
   open: boolean
@@ -52,9 +54,9 @@ const props = defineProps<{
 const emit = defineEmits(['update:open', 'saved'])
 const { t } = useI18n()
 
-const { createVuelo, updateVuelo } = useTripOrganization()
+const { createFlight, updateFlight } = useTripOrganizationNew()
 const { airlines, fetchAirlines } = useAirlines()
-const { getAuthenticatedClient } = useDirectus()
+const { getClient } = useDirectusRepo()
 
 const escalaRefs = ref<HTMLElement[]>([])
 
@@ -64,17 +66,17 @@ const {
   handleCreate, 
   handleEdit, 
   handleSave 
-} = useTripItemForm<Partial<Vuelo>>(
+} = useTripItemForm<Partial<Flight>>(
   () => ({ 
-    moneda: props.currentTrip?.moneda || 'JPY', 
-    escalas: [] as EscalaVuelo[], 
-    estado_pago: 'pendiente',
-    titulo: '',
-    codigo_reserva: '',
-    adjuntos: []
+    currency: props.currentTrip?.currency || 'JPY', 
+    layovers: [] as any[], 
+    payment_status: 'pending',
+    title: '',
+    booking_reference: '',
+    attachments: []
   }),
-  createVuelo,
-  updateVuelo,
+  createFlight,
+  updateFlight,
   String(t('trip_flight_drawer.item_label'))
 )
 
@@ -88,7 +90,7 @@ const isOpen = computed({
 watch(() => props.itemToEdit, (newItem) => {
   if (newItem) {
     handleEdit(newItem)
-    if (!formData.value.escalas) formData.value.escalas = []
+    if (!formData.value.layovers) formData.value.layovers = []
   } else {
     handleCreate()
   }
@@ -110,24 +112,26 @@ watch(() => isOpen.value, (val) => {
 const saveFlight = () => {
   handleSave((data) => {
      // Validate at least one segment
-     if (!data.escalas || data.escalas.length === 0) {
+     if (!data.layovers || data.layovers.length === 0) {
          toast.error(String(t('trip_flight_drawer.validation.need_one_segment')))
          throw new Error('Validation failed')
      }
 
      // Auto-calculate globals from segments
-     const sorted = [...data.escalas].sort((a: any, b: any) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
+     const sorted = [...data.layovers].sort((a: any, b: any) => new Date(a.departure_time).getTime() - new Date(b.departure_time).getTime())
      
-     data.origen = sorted[0].origen
-     data.destino = sorted[sorted.length - 1].destino
-     data.aerolinea = sorted[0].aerolinea
+     data.departure_airport = sorted[0].departure_airport
+     data.arrival_airport = sorted[sorted.length - 1].arrival_airport
+     data.airline = sorted[0].airline
+     data.departure_time = sorted[0].departure_time
+     data.arrival_time = sorted[sorted.length - 1].arrival_time
 
      // Default title if empty
-     if (!data.titulo) {
-         data.titulo = `${data.origen} ➝ ${data.destino}`
+     if (!data.title) {
+         data.title = `${data.departure_airport} ➝ ${data.arrival_airport}`
      }
      
-     data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+     data.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
      return data
   }, () => {
     emit('saved')
@@ -136,34 +140,34 @@ const saveFlight = () => {
 }
 
 const addEscala = async () => {
-  if (!formData.value.escalas) formData.value.escalas = []
+  if (!formData.value.layovers) formData.value.layovers = []
   
   // Auto-fill logic based on previous segment
   let prevDest = ''
   let prevDate = ''
-  if (formData.value.escalas.length > 0) {
-      const last = formData.value.escalas[formData.value.escalas.length - 1]
-      prevDest = last.destino || ''
+  if (formData.value.layovers.length > 0) {
+      const last = formData.value.layovers[formData.value.layovers.length - 1]
+      prevDest = last.arrival_airport || ''
       // Suggest next flight 2 hours later
-      if (last.fecha_llegada) {
+      if (last.arrival_time) {
         try {
-           const d = new Date(last.fecha_llegada)
+           const d = new Date(last.arrival_time)
            d.setHours(d.getHours() + 2)
            prevDate = d.toISOString().slice(0, 16)
         } catch(e) {}
       }
   }
 
-  formData.value.escalas.push({ 
-    origen: prevDest, 
-    destino: '', 
-    aerolinea: '', 
-    numero_vuelo: '', 
-    terminal_origen: '',
-    terminal_destino: '',
-    notas: '',
-    fecha_salida: prevDate, 
-    fecha_llegada: '' 
+  formData.value.layovers.push({ 
+    departure_airport: prevDest, 
+    arrival_airport: '', 
+    airline: '', 
+    flight_number: '', 
+    terminal_departure: '',
+    terminal_arrival: '',
+    notes: '',
+    departure_time: prevDate, 
+    arrival_time: '' 
   })
 
   await nextTick()
@@ -182,38 +186,38 @@ const removeEscala = (index: number) => {
 }
 
 const confirmRemoveEscala = () => {
-  if (deleteEscalaIndex.value !== null && formData.value.escalas) {
-    formData.value.escalas.splice(deleteEscalaIndex.value, 1)
+  if (deleteEscalaIndex.value !== null && formData.value.layovers) {
+    formData.value.layovers.splice(deleteEscalaIndex.value, 1)
     deleteEscalaIndex.value = null
   }
   isDeleteEscalaOpen.value = false
 }
 
 const isValid = computed(() => {
-  if (!formData.value.titulo) return false
-  if (!formData.value.escalas || formData.value.escalas.length === 0) return false
-  return formData.value.escalas.every((e: any) => e.origen && e.destino && e.fecha_salida)
+  if (!formData.value.title) return false // title is usually auto-filled but good to check
+  if (!formData.value.layovers || formData.value.layovers.length === 0) return false
+  return formData.value.layovers.every((e: any) => e.departure_airport && e.arrival_airport && e.departure_time)
 })
 
 const formId = computed(() => (formData.value as any).id)
-const formAdjuntos = computed(() => (formData.value as any).adjuntos || [])
+const formAdjuntos = computed(() => (formData.value as any).attachments || [])
 
 const onFileUploaded = async () => {
   // @ts-ignore
   if (!formData.value.id) return
   
   try {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     // @ts-ignore
-    const response = await client.request(readItem('vuelos', formData.value.id, {
-      fields: ['adjuntos.directus_files_id.*']
+    const response = await client.request(readItem('flights', formData.value.id, {
+      fields: ['attachments.directus_files_id.*']
     }))
     
     // Update attachments in form data
     // @ts-ignore
-    if (response && response.adjuntos) {
+    if (response && response.attachments) {
        // @ts-ignore
-       formData.value.adjuntos = response.adjuntos
+       formData.value.attachments = response.attachments
     }
   } catch (e) {
     console.error('Error refreshing attachments:', e)
@@ -233,11 +237,11 @@ const onFileUploaded = async () => {
             <div class="grid grid-cols-[2fr_1fr] gap-3">
               <div>
                 <Label>{{ $t('trip_flight_drawer.fields.title') }}</Label>
-                <Input v-model="formData.titulo" :placeholder="String($t('trip_flight_drawer.placeholders.title'))" class="font-medium" />
+                <Input v-model="formData.title" :placeholder="String($t('trip_flight_drawer.placeholders.title'))" class="font-medium" />
               </div>
               <div>
                 <Label>{{ $t('trip_flight_drawer.fields.locator') }}</Label>
-                <Input v-model="formData.codigo_reserva" :placeholder="String($t('trip_flight_drawer.placeholders.locator'))" class="font-mono uppercase" />
+                <Input v-model="formData.booking_reference" :placeholder="String($t('trip_flight_drawer.placeholders.locator'))" class="font-mono uppercase" />
               </div>
             </div>
             <!-- Price -->
@@ -246,22 +250,22 @@ const onFileUploaded = async () => {
                 <Label>{{ $t('trip_flight_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
-                  v-model="formData.precio" 
-                  :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
+                  v-model="formData.price" 
+                  :step="formData.currency === 'JPY' ? '1' : '0.01'" 
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_flight_drawer.fields.currency') }}</Label>
-                <CurrencySelector v-model="formData.moneda" />
+                <CurrencySelector v-model="formData.currency" />
               </div>
               <div>
                 <Label>{{ $t('trip_flight_drawer.fields.status') }}</Label>
-                <Select v-model="formData.estado_pago">
+                <Select v-model="formData.payment_status">
                   <SelectTrigger><SelectValue :placeholder="String($t('trip_flight_drawer.placeholders.status'))" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pagado">{{ $t('trip_flight_drawer.status.paid') }}</SelectItem>
-                    <SelectItem value="pendiente">{{ $t('trip_flight_drawer.status.pending') }}</SelectItem>
-                    <SelectItem value="parcial">{{ $t('trip_flight_drawer.status.partial') }}</SelectItem>
+                    <SelectItem value="paid">{{ $t('trip_flight_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pending">{{ $t('trip_flight_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="refunded">{{ $t('trip_flight_drawer.status.refunded') }}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -272,11 +276,11 @@ const onFileUploaded = async () => {
                 <Label class="font-bold">{{ $t('trip_flight_drawer.segments.title') }}</Label>
                 <Button size="sm" @click="addEscala"><Plus class="h-3 w-3" /> {{ $t('trip_flight_drawer.actions.add') }}</Button>
               </div>
-              <div v-if="!formData.escalas || formData.escalas.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
+              <div v-if="!formData.layovers || formData.layovers.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
                 <p>{{ $t('trip_flight_drawer.segments.empty.title') }}</p>
                 <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_flight_drawer.segments.empty.cta') }}</Button>
               </div>
-              <div v-for="(escala, index) in formData.escalas" :key="index" ref="escalaRefs" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
+              <div v-for="(escala, index) in formData.layovers" :key="index" ref="escalaRefs" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
 
                 <div class="flex justify-between items-center pb-6">
                   <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
@@ -294,19 +298,19 @@ const onFileUploaded = async () => {
                       <div class="grid grid-cols-[3fr_1fr] gap-3">
                         <div>
                           <Label>{{ $t('trip_flight_drawer.fields.origin') }}</Label>
-                          <Input class="h-9" v-model="escala.origen" :placeholder="String($t('trip_flight_drawer.placeholders.origin'))" />
+                          <Input class="h-9" v-model="escala.departure_airport" :placeholder="String($t('trip_flight_drawer.placeholders.origin'))" />
                         </div>
                         <div>
                           <Label>{{ $t('trip_flight_drawer.fields.terminal') }}</Label>
-                          <Input class="h-9" v-model="escala.terminal_origen" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
+                          <Input class="h-9" v-model="escala.terminal_departure" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
                         </div>
                       </div>
                       <div>
                         <Label>{{ $t('trip_flight_drawer.fields.departure') }}</Label>
                         <DateTimePicker 
-                          v-model="escala.fecha_salida" 
-                          :min="currentTrip?.fecha_inicio || undefined"
-                          :max="currentTrip?.fecha_fin || undefined"
+                          v-model="escala.departure_time" 
+                          :min="currentTrip?.start_date || undefined"
+                          :max="currentTrip?.end_date || undefined"
                           default-time="10:00"
                         />
                       </div>
@@ -315,19 +319,19 @@ const onFileUploaded = async () => {
                       <div class="grid grid-cols-[3fr_1fr] gap-3">
                         <div>
                           <Label>{{ $t('trip_flight_drawer.fields.destination') }}</Label>
-                          <Input class="h-9" v-model="escala.destino" :placeholder="String($t('trip_flight_drawer.placeholders.destination'))" />
+                          <Input class="h-9" v-model="escala.arrival_airport" :placeholder="String($t('trip_flight_drawer.placeholders.destination'))" />
                         </div>
                         <div>
                           <Label>{{ $t('trip_flight_drawer.fields.terminal') }}</Label>
-                          <Input class="h-9" v-model="escala.terminal_destino" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
+                          <Input class="h-9" v-model="escala.terminal_arrival" :placeholder="String($t('trip_flight_drawer.placeholders.terminal'))" />
                         </div>
                       </div>
                       <div>
                         <Label>{{ $t('trip_flight_drawer.fields.arrival') }}</Label>
                         <DateTimePicker 
-                          v-model="escala.fecha_llegada" 
-                          :min="currentTrip?.fecha_inicio || undefined"
-                          :max="currentTrip?.fecha_fin || undefined"
+                          v-model="escala.arrival_time" 
+                          :min="currentTrip?.start_date || undefined"
+                          :max="currentTrip?.end_date || undefined"
                           default-time="10:00"
                         />
                       </div>
@@ -336,16 +340,16 @@ const onFileUploaded = async () => {
                   <div class="grid grid-cols-[3fr_1fr] gap-3">
                     <div>
                       <Label>{{ $t('trip_flight_drawer.fields.airline') }}</Label>
-                      <AirlineSelector v-model="escala.aerolinea" />
+                      <AirlineSelector v-model="escala.airline" />
                     </div>
                     <div>
                       <Label>{{ $t('trip_flight_drawer.fields.flight_number') }}</Label>
-                      <Input class="h-9" v-model="escala.numero_vuelo" :placeholder="String($t('trip_flight_drawer.placeholders.flight_number'))" />
+                      <Input class="h-9" v-model="escala.flight_number" :placeholder="String($t('trip_flight_drawer.placeholders.flight_number'))" />
                     </div>
                   </div>
                   <div>
                     <Label>{{ $t('trip_flight_drawer.fields.notes') }}</Label>
-                    <Textarea v-model="formData.notas" :placeholder="String($t('trip_flight_drawer.placeholders.notes'))" class="resize-none" />
+                    <Textarea v-model="escala.notes" :placeholder="String($t('trip_flight_drawer.placeholders.notes'))" class="resize-none" />
                   </div>
                 </div>
               </div>
@@ -355,17 +359,17 @@ const onFileUploaded = async () => {
             <div v-if="formId" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_flight_drawer.fields.attachments') }}</Label>
-                <FileUploader collection="vuelos" :item-id="formId" @uploaded="onFileUploaded" />
+                <FileUploader collection="flights" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
-              <FileList :files="formAdjuntos" collection="vuelos" @deleted="onFileUploaded" />
+              <FileList :files="formAdjuntos" collection="flights" @deleted="onFileUploaded" />
             </div>
             <EntityTasksWidget 
               v-if="formId"
               :key="formId"
-              :trip-id="Number(props.tripId)"
+              :trip-id="Number(routeTripId || props.tripId)"
               entity-type="flight"
               :entity-id="String(formId)"
-              :title="`${$t('trip_flight_drawer.tasks.title_prefix')}: ${formData.titulo || $t('trip_flight_drawer.tasks.entity_fallback')}`"
+              :title="`${$t('trip_flight_drawer.tasks.title_prefix')}: ${formData.title || $t('trip_flight_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>

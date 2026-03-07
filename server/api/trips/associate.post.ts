@@ -9,8 +9,12 @@ export default defineEventHandler(async (event) => {
       return { success: false, error: 'Missing tripId or userId' }
     }
 
-    const directusUrl = 'https://directus.jizou.io'
-    const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || 'DirectusAdmin2026!'
+    const directusUrl = process.env.DIRECTUS_URL || 'https://directus.jizou.io'
+    const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || process.env.NUXT_DIRECTUS_ADMIN_TOKEN
+
+    if (!adminToken) {
+      return { success: false, error: 'Missing DIRECTUS_ADMIN_TOKEN' }
+    }
     
     // Conectar como Admin
     const adminClient = createDirectus(directusUrl)
@@ -18,8 +22,8 @@ export default defineEventHandler(async (event) => {
       .with(rest())
 
     // Crear asociación
-    const result = await adminClient.request(createItem('viajes_usuarios', {
-        viaje_id: tripId,
+    const result = await adminClient.request(createItem('trips_users', {
+        trip_id: tripId,
         directus_user_id: userId,
         rol: 'owner',
         status: 'published'

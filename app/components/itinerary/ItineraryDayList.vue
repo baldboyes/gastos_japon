@@ -6,11 +6,11 @@ import { Card, CardContent } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Plus, Save, ArrowRight, Clock } from 'lucide-vue-next'
 import { TextEditor } from '~/components/ui/TextEditor'
-import { useDayNotes } from '~/composables/useDayNotes'
+import { useDayNotesNew } from '~/composables/useDayNotesNew'
 import { watch } from 'vue'
 
 const props = defineProps<{
-  events: ItineraryDayEvent[]
+  events: any[]
   date: Date
   tripId?: string | number
 }>()
@@ -19,7 +19,7 @@ const emit = defineEmits<{
   (e: 'create-expense'): void
 }>()
 
-const { note, loading: noteLoading, saving: noteSaving, fetchNote, saveNote } = useDayNotes()
+const { note, loading: noteLoading, saving: noteSaving, fetchNote, saveNote } = useDayNotesNew()
 
 const loadNote = () => {
   if (props.tripId && props.date) {
@@ -162,20 +162,20 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
             </div>
           </div>
         </div>
-        <div class="mt-8 mb-8 pt-6">
-          <div class="flex items-center justify-between z-50 absolute">
-            <h3 class="text-lg font-semibold text-slate-800">Plan</h3>
-          </div>
-          <div class="sticky -top-8 h-8 bg-gray-50 z-40"></div>
-          <TextEditor 
-            v-model="note" 
-            placeholder="Escribe aquí tus notas, diario o recordatorios para este día..." 
-            :read-only="noteLoading"
-            :loading="noteSaving"
-            sticky-top="0px"
-            @save="handleSaveNote"
-          />
+      </div>
+      <div class="mt-8 mb-8 pt-6">
+        <div class="flex items-center justify-between z-50 absolute">
+          <h3 class="text-lg font-semibold text-slate-800">Plan</h3>
         </div>
+        <div class="sticky -top-8 h-8 bg-gray-50 z-40"></div>
+        <TextEditor 
+          v-model="note" 
+          placeholder="Escribe aquí tus notas, diario o recordatorios para este día..." 
+          :read-only="noteLoading"
+          :loading="noteSaving"
+          sticky-top="0px"
+          @save="handleSaveNote"
+        />
       </div>
     </div>
   </div>

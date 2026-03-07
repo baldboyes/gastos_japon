@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { type Task, type TaskGroup, TASK_PRIORITIES, TASK_STATUSES } from '~/types/tasks'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
+import { type Task } from '~/types/directus'
+import { TASK_PRIORITIES, TASK_STATUSES } from '~/utils/task-constants'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '~/components/ui/drawer'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { useTripTasks } from '~/composables/useTripTasks'
-import { useTrips } from '~/composables/useTrips'
-import { useDirectus } from '~/composables/useDirectus'
+import { ScrollArea } from '~/components/ui/scroll-area'
+import { useTripTasksNew } from '~/composables/useTripTasksNew'
+import { useTripsNew } from '~/composables/useTripsNew'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 
 const props = defineProps<{
   open: boolean
@@ -22,9 +24,9 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:open', 'saved', 'delete'])
 
-const { createTask, updateTask, deleteTask, taskGroups } = useTripTasks()
-const { travelers, fetchTravelers } = useTrips()
-const { directusUserId } = useDirectus()
+const { createTask, updateTask, deleteTask, tasksByGroup } = useTripTasksNew()
+const { collaborators } = useTripsNew() // Use collaborators instead of travelers if travelers doesn't exist
+const { directusUserId } = useDirectusRepo()
 
 const formData = ref<Partial<Task>>({
   title: '',
@@ -42,19 +44,18 @@ const isEditing = computed(() => !!props.task)
 const isCompleted = computed(() => props.task?.status === 'completed')
 const isLoading = ref(false)
 
+const isOpen = computed({
+  get: () => props.open,
+  set: (val) => emit('update:open', val)
+})
+
+// Mock travelers from collaborators or empty array if not implemented yet
+const travelers = computed(() => collaborators.value || [])
+
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
-    // Cargar viajeros si es necesario
-    if (travelers.value.length === 0 && props.tripId) {
-      fetchTravelers(props.tripId.toString())
-    }
-
     if (props.task) {
       formData.value = { ...props.task }
-      // Manejar relación de grupo si es un objeto
-      if (typeof formData.value.task_group === 'object') {
-        formData.value.task_group = (formData.value.task_group as TaskGroup).id
-      }
       
       // Manejar assigned_to si es un objeto (User expandido)
       if (typeof formData.value.assigned_to === 'object' && formData.value.assigned_to !== null) {
@@ -86,17 +87,17 @@ const handleSave = async () => {
   try {
     // Asegurar payload correcto
     const payload = { ...formData.value }
-    if (payload.due_date === '') payload.due_date = null // Manejar string vacío para fecha
+    if (payload.due_date === '') payload.due_date = undefined // Manejar string vacío para fecha
     
     // Manejar desasignación explícita
     if (payload.assigned_to === 'unassigned') {
-      payload.assigned_to = null as any
+      payload.assigned_to = null
     }
 
     if (isEditing.value && props.task) {
       await updateTask(props.task.id, payload)
     } else {
-      await createTask({ ...payload, created_by: undefined }) // Dejar que el backend maneje el usuario creador
+      await createTask({ ...payload, trip_id: props.tripId }) 
     }
     emit('saved')
     emit('update:open', false)
@@ -124,17 +125,14 @@ const handleDelete = async () => {
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[500px]">
-      <DialogHeader>
-        <DialogTitle>{{ isEditing ? 'Editar Tarea' : 'Nueva Tarea' }}</DialogTitle>
-      </DialogHeader>
-      
-      <div class="grid gap-4 py-4">
-        <div v-if="isCompleted" class="bg-yellow-50 text-yellow-800 p-3 rounded-md text-sm border border-yellow-200 mb-2">
-          Esta tarea está completada y no se puede editar. Cambia su estado a "Pendiente" desde el listado si necesitas modificarla.
-        </div>
+  <Drawer v-model:open="isOpen">
+    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
+      <DrawerHeader class="w-full max-w-3xl mx-auto px-4">
+        <DrawerTitle>{{ isEditing ? 'Editar Tarea' : 'Nueva Tarea' }}</DrawerTitle>
+      </DrawerHeader>
 
+      <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
+        <div class="w-full max-w-3xl mx-auto px-4 grid gap-4 py-4">
         <div class="grid gap-2">
           <Label htmlFor="title">Título</Label>
           <Input id="title" v-model="formData.title" placeholder="Comprar billetes..." :disabled="isCompleted" />
@@ -180,10 +178,13 @@ const handleDelete = async () => {
           <Input id="due_date" type="datetime-local" v-model="formData.due_date" :disabled="isCompleted" />
         </div>
 
-        <!-- Selector de Asignación -->
         <div class="grid gap-2">
           <Label>Asignado a</Label>
-          <Select v-model="formData.assigned_to" :disabled="isCompleted">
+          <Select 
+            :model-value="formData.assigned_to || 'unassigned'" 
+            @update:model-value="(v) => formData.assigned_to = v === 'unassigned' ? undefined : v" 
+            :disabled="isCompleted"
+          >
             <SelectTrigger>
               <SelectValue placeholder="Sin asignar" />
             </SelectTrigger>
@@ -199,38 +200,41 @@ const handleDelete = async () => {
         <div class="grid gap-2">
           <Label>Grupo de Tareas</Label>
           <Select 
-            :model-value="formData.task_group?.toString()" 
-            @update:model-value="v => formData.task_group = parseInt(v)"
+            v-model="formData.task_group" 
             :disabled="isCompleted"
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecciona un grupo..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="g in taskGroups" :key="g.id" :value="g.id.toString()">
-                {{ g.name }}
-              </SelectItem>
+              <SelectItem value="General">General</SelectItem>
+              <SelectItem value="Vuelos">Vuelos</SelectItem>
+              <SelectItem value="Alojamientos">Alojamientos</SelectItem>
+              <SelectItem value="Transporte">Transporte</SelectItem>
+              <SelectItem value="Actividades">Actividades</SelectItem>
+              <SelectItem value="Seguros">Seguros</SelectItem>
             </SelectContent>
           </Select>
         </div>
-      </div>
-      
-      <DialogFooter class="flex justify-between sm:justify-between">
+        </div>
+      </ScrollArea>
+
+      <DrawerFooter class="w-full max-w-3xl mx-auto px-4 flex justify-between sm:justify-between">
         <Button 
           v-if="isEditing" 
           variant="destructive" 
           @click="handleDelete"
-          :disabled="isLoading || isCompleted"
+          :disabled="isLoading"
         >
           Eliminar
         </Button>
         <div class="flex gap-2">
-          <Button variant="outline" @click="$emit('update:open', false)">Cancelar</Button>
-          <Button @click="handleSave" :disabled="isLoading || !formData.title || isCompleted">
+          <Button variant="outline" @click="isOpen = false">Cancelar</Button>
+          <Button @click="handleSave" :disabled="isLoading || !formData.title">
             {{ isLoading ? 'Guardando...' : 'Guardar' }}
           </Button>
         </div>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
 </template>

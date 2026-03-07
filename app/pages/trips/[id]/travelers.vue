@@ -11,37 +11,48 @@
   import { Label } from '~/components/ui/label'
   import { Badge } from '~/components/ui/badge'
   import { toast } from 'vue-sonner'
-  import { useDirectus } from '~/composables/useDirectus'
-  import { useTrips } from '~/composables/useTrips'
+  import { useDirectusRepo } from '~/composables/useDirectusRepo'
+  import { useTripsNew } from '~/composables/useTripsNew'
 
   definePageMeta({
     layout: 'dashboard'
   })
 
   const route = useRoute()
-  const tripId = route.params.id as string
+  const tripId = parseInt(route.params.id as string)
   const { user } = useUser()
-  const { directusUserId } = useDirectus()
-  const { trips, travelers, fetchTravelers } = useTrips()
+  const { directusUserId } = useDirectusRepo()
+  const { currentTrip, collaborators, getTrip } = useTripsNew()
   const { t } = useI18n()
+  const localeCookie = useCookie('user-locale')
+  const currentLocale = computed(() => {
+    const firstSegment = (route.path || '').split('/').filter(Boolean)[0]
+    if (firstSegment === 'es' || firstSegment === 'en' || firstSegment === 'ja') return firstSegment
+    const cookieValue = String(localeCookie.value || '').toLowerCase()
+    const cookieBase = cookieValue.includes('-') ? cookieValue.split('-')[0] : cookieValue
+    if (cookieBase === 'es' || cookieBase === 'en' || cookieBase === 'ja') return cookieBase
+    return 'en'
+  })
 
   const isInviteModalOpen = ref(false)
   const inviteEmail = ref('')
-  const inviteRole = ref('a78c3ab5-20eb-451f-b93f-c087f500fb47') // Default to App User
+  const inviteRole = ref<'editor' | 'read_only'>('editor')
   const isInviting = ref(false)
   const inviteResult = ref<{ status: 'success' | 'error', message: string, type?: 'invited' | 'email_sent' } | null>(null)
 
-  // Obtener nombre del viaje actual
-  const currentTrip = computed(() => trips.value.find(t => Number(t.id) === Number(tripId)))
-
   onMounted(() => {
-    fetchTravelers(tripId)
+    getTrip(tripId)
   })
 
   // Determinar si el usuario actual es Owner
   const isCurrentUserOwner = computed(() => {
-    const me = travelers.value.find(t => t.id === directusUserId.value)
-    return me?.role === 'owner' || travelers.value.length === 0 // Fallback si no hay nadie cargado
+    if (!currentTrip.value?.user_created) return false
+    // Si user_created es objeto
+    if (typeof currentTrip.value.user_created === 'object') {
+        // @ts-ignore
+        return currentTrip.value.user_created.id === directusUserId.value
+    }
+    return currentTrip.value.user_created === directusUserId.value
   })
 
   const removeTraveler = async (relationId: string) => {
@@ -55,7 +66,7 @@
 
       if (response.success) {
         toast.success(String(t('trip_travelers_page.remove.success')))
-        fetchTravelers(tripId)
+        fetchTrip(tripId)
       } else {
         toast.error(response.error || String(t('trip_travelers_page.remove.error')))
       }
@@ -86,10 +97,12 @@
         body: {
           email: inviteEmail.value,
           role: inviteRole.value,
-          tripId: parseInt(tripId),
-          tripName: currentTrip.value?.nombre || String(t('trip_travelers_page.invite.default_trip_name')),
+          tripId: tripId,
+          tripName: currentTrip.value?.title || String(t('trip_travelers_page.invite.default_trip_name')),
           inviterName: user.value?.fullName || user.value?.firstName || String(t('trip_travelers_page.invite.default_inviter_name')),
-          inviterId: directusUserId.value
+          inviterEmail: user.value?.primaryEmailAddress?.emailAddress || user.value?.emailAddresses?.[0]?.emailAddress || undefined,
+          inviterId: directusUserId.value,
+          locale: currentLocale.value
         }
       }) as any
 
@@ -123,7 +136,7 @@
   const closeInviteModal = () => {
     isInviteModalOpen.value = false
     inviteEmail.value = ''
-    inviteRole.value = 'a78c3ab5-20eb-451f-b93f-c087f500fb47'
+    inviteRole.value = 'editor'
     inviteResult.value = null
   }
 </script>
@@ -147,7 +160,7 @@
           <!-- Lista de viajeros -->
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">    
             <!-- Tarjetas de viajeros reales -->
-            <Card v-for="traveler in travelers" :key="traveler.id" class="relative overflow-hidden">
+            <Card v-for="traveler in collaborators" :key="traveler.id" class="relative overflow-hidden">
               <div v-if="traveler.role === 'owner'" class="absolute top-0 right-0 uppercase bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-bl font-bold flex items-center gap-1">
                 <Crown class="h-3 w-3" /> {{ $t('trip_travelers_page.labels.organizer') }}
               </div>
@@ -222,13 +235,13 @@
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="a78c3ab5-20eb-451f-b93f-c087f500fb47">
+                  <SelectItem value="editor">
                     <div class="flex flex-col text-left">
                       <span class="font-medium">{{ $t('trip_travelers_page.roles.app_user.title') }}</span>
                       <span class="text-xs text-muted-foreground">{{ $t('trip_travelers_page.roles.app_user.subtitle') }}</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="7e0df8d5-c156-4db0-ae0a-aa6d2980c61e">
+                  <SelectItem value="read_only">
                      <div class="flex flex-col text-left">
                       <span class="font-medium">{{ $t('trip_travelers_page.roles.read_only.title') }}</span>
                       <span class="text-xs text-muted-foreground">{{ $t('trip_travelers_page.roles.read_only.subtitle') }}</span>

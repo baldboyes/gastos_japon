@@ -1,3 +1,6 @@
+---
+alwaysApply: true
+---
 # Jizou.io Project Rules & Standards
 
 You are an expert Nuxt 4 developer working on the jizou.io project. 

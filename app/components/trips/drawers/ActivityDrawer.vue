@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useTripOrganization, type Actividad } from '~/composables/useTripOrganization'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import type { Activity } from '~/types/directus'
 import { useTripItemForm } from '~/composables/useTripItemForm'
 import { 
   Drawer, 
@@ -20,7 +21,7 @@ import LocationSelector from '~/components/ui/LocationSelector/LocationSelector.
 import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { readItem } from '@directus/sdk'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
@@ -34,12 +35,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:open', 'saved'])
 const { t } = useI18n()
 
-const { createActividad, updateActividad } = useTripOrganization()
-const { getAuthenticatedClient } = useDirectus()
-
-type FormState = Omit<Partial<Actividad>, 'moneda'> & {
-  moneda: string
-}
+const { createActivity, updateActivity } = useTripOrganizationNew()
+const { getClient } = useDirectusRepo()
 
 // Initialize generic form logic
 const { 
@@ -47,17 +44,16 @@ const {
   handleCreate, 
   handleEdit, 
   handleSave 
-} = useTripItemForm<FormState>(
+} = useTripItemForm<Partial<Activity>>(
   () => ({ 
-    moneda: props.currentTrip?.moneda || 'JPY', 
-    precio: 0, 
-    estado_pago: 'pendiente', 
-    notas: '', 
-    ubicacion: { address: '', latitude: 0, longitude: 0, city: '', prefecture: '' },
-    adjuntos: []
-  } as FormState),
-  createActividad,
-  updateActividad,
+    currency: props.currentTrip?.currency || 'JPY', 
+    price: 0, 
+    payment_status: 'pending', 
+    notes: '', 
+    attachments: []
+  }),
+  createActivity,
+  updateActivity,
   String(t('trip_activity_drawer.item_label'))
 )
 
@@ -84,7 +80,7 @@ watch(isOpen, (isOpened) => {
 
 const saveActivity = () => {
   handleSave((data) => {
-     data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+     data.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
      return data
   }, () => {
     emit('saved')
@@ -93,36 +89,55 @@ const saveActivity = () => {
 }
 
 const isValid = computed(() => {
-  if (!formData.value.nombre) return false
-  if (!formData.value.fecha_inicio) return false
-  if (!formData.value.fecha_fin) return false
+  if (!formData.value.title) return false
+  if (!formData.value.start_date) return false
+  // End date optional? In UI it was required, lets keep it consistent with old check if needed
+  // if (!formData.value.end_date) return false 
   return true
 })
 
 const formId = computed(() => (formData.value as any).id)
-const formAdjuntos = computed(() => (formData.value as any).adjuntos || [])
+const formAdjuntos = computed(() => (formData.value as any).attachments || [])
 
 const onFileUploaded = async () => {
   // @ts-ignore
   if (!formData.value.id) return
   
   try {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     // @ts-ignore
-    const response = await client.request(readItem('actividades', formData.value.id, {
-      fields: ['adjuntos.directus_files_id.*']
+    const response = await client.request(readItem('activities', formData.value.id, {
+      fields: ['attachments.directus_files_id.*']
     }))
     
     // Update attachments in form data
     // @ts-ignore
-    if (response && response.adjuntos) {
+    if (response && response.attachments) {
        // @ts-ignore
-       formData.value.adjuntos = response.adjuntos
+       formData.value.attachments = response.attachments
     }
   } catch (e) {
     console.error('Error refreshing attachments:', e)
   }
 }
+
+// Location Helper
+const locationProxy = computed({
+  get: () => ({
+    address: formData.value.address,
+    city: formData.value.city,
+    prefecture: formData.value.prefecture,
+    latitude: formData.value.latitude,
+    longitude: formData.value.longitude
+  }),
+  set: (val: any) => {
+    formData.value.address = val.address
+    formData.value.city = val.city
+    formData.value.prefecture = val.prefecture
+    formData.value.latitude = val.latitude
+    formData.value.longitude = val.longitude
+  }
+})
 </script>
 
 <template>
@@ -138,24 +153,24 @@ const onFileUploaded = async () => {
           <div class="w-full lg:w-2/3 space-y-4 py-4">  
             <div>
               <Label>{{ $t('trip_activity_drawer.fields.name') }}</Label>
-              <Input v-model="formData.nombre" :placeholder="String($t('trip_activity_drawer.placeholders.name'))" />
+              <Input v-model="formData.title" :placeholder="String($t('trip_activity_drawer.placeholders.name'))" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <Label>{{ $t('trip_activity_drawer.fields.start') }}</Label>
                 <DateTimePicker 
-                  v-model="formData.fecha_inicio" 
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
+                  v-model="formData.start_date" 
+                  :min="currentTrip?.start_date || undefined"
+                  :max="currentTrip?.end_date || undefined"
                   default-time="10:00"
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_activity_drawer.fields.end') }}</Label>
                 <DateTimePicker 
-                  v-model="formData.fecha_fin" 
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
+                  v-model="formData.end_date" 
+                  :min="currentTrip?.start_date || undefined"
+                  :max="currentTrip?.end_date || undefined"
                   default-time="12:00"
                 />
               </div>
@@ -163,7 +178,7 @@ const onFileUploaded = async () => {
             <div>
               <Label>{{ $t('trip_activity_drawer.fields.location') }}</Label>
               <LocationSelector 
-                v-model="formData.ubicacion" 
+                v-model="locationProxy" 
                 :placeholder="String($t('trip_activity_drawer.placeholders.location'))"
               />
             </div>
@@ -172,50 +187,50 @@ const onFileUploaded = async () => {
                 <Label>{{ $t('trip_activity_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
-                  v-model="formData.precio" 
-                  :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
+                  v-model="formData.price" 
+                  :step="formData.currency === 'JPY' ? '1' : '0.01'" 
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_activity_drawer.fields.currency') }}</Label>
-                <CurrencySelector v-model="formData.moneda" />
+                <CurrencySelector v-model="formData.currency" />
               </div>
               <div>
                 <Label>{{ $t('trip_activity_drawer.fields.status') }}</Label>
-                <Select v-model="formData.estado_pago">
+                <Select v-model="formData.payment_status">
                   <SelectTrigger><SelectValue :placeholder="String($t('trip_activity_drawer.placeholders.status'))" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pagado">{{ $t('trip_activity_drawer.status.paid') }}</SelectItem>
-                    <SelectItem value="pendiente">{{ $t('trip_activity_drawer.status.pending') }}</SelectItem>
-                    <SelectItem value="parcial">{{ $t('trip_activity_drawer.status.partial') }}</SelectItem>
+                    <SelectItem value="paid">{{ $t('trip_activity_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pending">{{ $t('trip_activity_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="refunded">{{ $t('trip_activity_drawer.status.refunded') }}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div>
               <Label>{{ $t('trip_activity_drawer.fields.google_maps_link') }}</Label>
-              <Input v-model="formData.enlace_google" :placeholder="String($t('trip_activity_drawer.placeholders.google_maps_link'))" />
+              <Input v-model="formData.google_maps_link" :placeholder="String($t('trip_activity_drawer.placeholders.google_maps_link'))" />
             </div>
             <div>
               <Label>{{ $t('trip_activity_drawer.fields.notes') }}</Label>
-              <Textarea v-model="formData.notas" :placeholder="String($t('trip_activity_drawer.placeholders.notes'))" class="resize-none" />
+              <Textarea v-model="formData.notes" :placeholder="String($t('trip_activity_drawer.placeholders.notes'))" class="resize-none" />
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
             <div v-if="formData.id" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_activity_drawer.fields.attachments') }}</Label>
-                <FileUploader collection="actividades" :item-id="formId" @uploaded="onFileUploaded" />
+                <FileUploader collection="activities" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
-              <FileList :files="formAdjuntos" collection="actividades" @deleted="onFileUploaded" />
+              <FileList :files="formAdjuntos" collection="activities" @deleted="onFileUploaded" />
             </div>
             <EntityTasksWidget 
               v-if="formData.id"
               :key="String(formData.id)"
               :trip-id="Number(props.tripId)"
-              entity-type="activity"
+              entity-type="activities"
               :entity-id="String(formData.id)"
-              :title="`${$t('trip_activity_drawer.tasks.title_prefix')}: ${formData.nombre || $t('trip_activity_drawer.tasks.entity_fallback')}`"
+              :title="`${$t('trip_activity_drawer.tasks.title_prefix')}: ${formData.title || $t('trip_activity_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>

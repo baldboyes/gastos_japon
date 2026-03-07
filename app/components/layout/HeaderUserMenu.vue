@@ -2,7 +2,7 @@
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { Bell, LogOut, ChevronsUpDown, User, Settings } from 'lucide-vue-next'
-  import { useNotifications } from '~/composables/useNotifications'
+  import { useNotificationsNew } from '~/composables/useNotificationsNew'
   import NotificationsContent from '~/components/notifications/NotificationsContent.vue'
   import PreferencesDrawer from '~/components/settings/PreferencesDrawer.vue'
   import { useI18n } from '#imports'
@@ -25,7 +25,7 @@
   const { $localeRoute, $t } = useI18n()
   const { user } = useUser()
   const clerk = useClerk()
-  const { unreadCount, fetchNotifications } = useNotifications()
+  const { unreadCount, fetchNotifications } = useNotificationsNew()
   const isPreferencesOpen = ref(false)
 
   // Fetch notifications count on mount

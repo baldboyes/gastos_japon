@@ -1,10 +1,58 @@
 {
+  "tasks": {
+    "actions": {
+      "add": "Añadir tarea"
+    },
+    "priority": {
+      "urgent": "Urgente",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    }
+  },
+  "settings": {
+    "preferences_drawer": {
+      "title": "Preferencias de aplicación",
+      "currency": {
+        "title": "Tu moneda base",
+        "description": "Esta es tu moneda local. Se utilizará para calcular los tipos de cambio y mostrarte el equivalente de tus gastos en tu moneda habitual.",
+        "toast_success": "Preferencia de moneda actualizada",
+        "toast_error": "Error al actualizar la moneda"
+      },
+      "language": {
+        "title": "Idioma",
+        "description": "Se utilizará para mostrar el contenido de la aplicación.",
+        "placeholder": "Selecciona un idioma...",
+        "toast_success": "Idioma actualizado",
+        "locales": {
+          "en": "Inglés",
+          "es": "Español",
+          "ja": "Japonés"
+        }
+      }
+    }
+  },
+  "trip_sidebar": {
+    "dashboard": "Dashboard",
+    "itinerary": "Itinerario",
+    "tasks": "Tareas",
+    "flights": "Vuelos",
+    "accommodation": "Alojamiento",
+    "transport": "Transporte",
+    "activities": "Actividades",
+    "insurance": "Seguros",
+    "travelers": "Viajeros",
+    "expenses": "Gastos",
+    "daily_expenses": "Gastos del día",
+    "options": "Opciones"
+  },
   "header": {
     "pricing": "Precios",
     "shop": "Tienda",
     "my_trips": "Mis Viajes",
     "view_trips": "Ver mis viajes",
-    "login": "Iniciar Sesión"
+    "login": "Iniciar Sesión",
+    "sign_in": "Iniciar sesión"
   },
   "footer": {
     "sections": {
@@ -161,7 +209,9 @@
       "none": "Sin ubicación especificada"
     },
     "labels": {
-      "notes": "Notas"
+      "notes": "Notas",
+      "policy": "Póliza",
+      "days": "Días"
     },
     "tasks": {
       "title_prefix": "Tareas"
@@ -227,6 +277,27 @@
       "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el transporte y todos sus datos asociados.",
       "cancel": "Cancelar",
       "confirm": "Eliminar transporte"
+    }
+  },
+  "trip_transports_page": {
+    "empty": {
+      "title": "Aún no hay transportes",
+      "subtitle": "Añade tus trayectos y traslados locales."
+    },
+    "sections": {
+      "passes": "Pases",
+      "routes": "Rutas"
+    },
+    "labels": {
+      "validity": "Validez",
+      "notes": "Notas",
+      "covered_by_pass": "Cubierto por pase"
+    },
+    "actions": {
+      "download_prefix": "Descargar"
+    },
+    "tasks": {
+      "title_prefix": "Tareas"
     }
   },
   "trip_transport_drawer": {
@@ -347,7 +418,8 @@
     "status": {
       "paid": "Pagado",
       "pending": "Pendiente",
-      "partial": "Parcial"
+      "partial": "Parcial",
+      "refunded": "Reembolsado"
     },
     "actions": {
       "save": "Guardar"
@@ -386,7 +458,8 @@
     "status": {
       "paid": "Pagado",
       "pending": "Pendiente",
-      "partial": "Parcial"
+      "partial": "Parcial",
+      "refunded": "Reembolsado"
     },
     "actions": {
       "save": "Guardar"
@@ -752,6 +825,15 @@
         "subtitle": "Solo puede ver información."
       }
     }
+  },
+  "trip_join_page": {
+    "title": "Unirte al viaje",
+    "description": "Vas a unirte al viaje #{tripId}.",
+    "signed_out": "Inicia sesión (o crea una cuenta) con el email invitado para unirte.",
+    "sign_in_cta": "Iniciar sesión",
+    "signed_in": "Ya has iniciado sesión. Continúa para unirte al viaje.",
+    "join_cta": "Unirme al viaje",
+    "joining": "Uniéndote..."
   },
   "welcome": "Bienvenido",
   "landing": {

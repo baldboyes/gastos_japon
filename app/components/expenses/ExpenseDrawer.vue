@@ -244,7 +244,7 @@
     </DrawerContent>
   </Drawer>
 
-  <!-- Map Editor Dialog (Using standard Dialog as it might work better for full screen map) -->
+  <!-- Map Editor Dialog -->
   <Dialog v-model:open="showMapEditor">
     <DialogContent class="max-w-4xl h-[85vh] flex flex-col p-0">
       <DialogHeader class="px-6 pt-6 pb-4 shrink-0">
@@ -322,17 +322,16 @@ import { Textarea } from '~/components/ui/textarea'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { Button } from '~/components/ui/button'
 import { DateTimePicker } from '~/components/ui/date-time-picker'
-import type { ExpenseCategory, PaymentMethod, TripExpense } from '~/types'
+import type { ExpenseCategory, PaymentMethod, Expense } from '~/types'
 import CategorySelector from '~/components/common/CategorySelector.vue'
-import { CATEGORY_TO_DIRECTUS, PAYMENT_TO_DIRECTUS, getCategoryFromDirectus, getPaymentMethodFromDirectus } from '~/utils/directus-mappings'
 import { CURRENCIES } from '~/composables/useSettings'
-import { useTripExpenses } from '~/composables/useTripExpenses'
+import { useExpensesNew } from '~/composables/useExpensesNew'
 import { useGeolocation } from '~/composables/useGeolocation'
 
 const props = defineProps<{
   open: boolean
-  tripId: string
-  expenseToEdit?: TripExpense | null
+  tripId: string | number
+  expenseToEdit?: Expense | null
   tripMoneda?: string | null
 }>()
 
@@ -349,7 +348,7 @@ const currencySymbol = computed(() => {
   return currencyInfo?.symbol || '$'
 })
 
-const { createExpense, updateExpense, deleteExpense } = useTripExpenses()
+const { createExpense, updateExpense, deleteExpense } = useExpensesNew()
 const { getCurrentLocation } = useGeolocation()
 
 // Check if we're in edit mode
@@ -383,29 +382,28 @@ const showDeleteConfirm = ref(false)
 watch(() => props.open, async (newVal) => {
   if (newVal) {
     if (props.expenseToEdit) {
-      // Load existing expense
+      // Load existing expense (using AppExpense structure - English keys)
       const expense = props.expenseToEdit
-      form.amount = expense.monto.toString()
-      form.placeName = expense.concepto
-      form.category = getCategoryFromDirectus(expense.categoria)
+      form.amount = expense.amount.toString()
+      form.placeName = expense.placeName
+      form.category = expense.category
       
       // Ensure date is in ISO format for the picker
-      // expense.fecha is typically "YYYY-MM-DD HH:MM:SS"
-      form.date = expense.fecha ? expense.fecha.replace(' ', 'T') : new Date().toISOString()
+      form.date = expense.timestamp ? expense.timestamp.replace(' ', 'T') : new Date().toISOString()
       
       form.location = {
         coordinates: {
-          lat: expense.ubicacion_lat || 0,
-          lng: expense.ubicacion_lng || 0
+          lat: expense.location.coordinates.lat || 0,
+          lng: expense.location.coordinates.lng || 0
         },
-        city: expense.ciudad || '',
-        prefecture: expense.prefectura || ''
+        city: expense.location.city || '',
+        prefecture: expense.location.prefecture || ''
       }
-      form.paymentMethod = getPaymentMethodFromDirectus(expense.metodo_pago)
-      form.shared = expense.es_compartido
+      form.paymentMethod = expense.paymentMethod
+      form.shared = expense.shared
       form.notes = expense.notes || ''
 
-      locationCaptured.value = !!(expense.ciudad && expense.prefectura)
+      locationCaptured.value = !!(expense.location.city && expense.location.prefecture)
     } else {
       // New expense
       resetForm()
@@ -486,25 +484,30 @@ async function handleSubmit() {
     const timestamp = formatTimestampForApi(form.date)
 
     const expenseData = {
-      fecha: timestamp,
-      concepto: form.placeName.trim(),
-      monto: parseFloat(form.amount),
-      categoria: CATEGORY_TO_DIRECTUS[form.category],
+      timestamp: timestamp,
+      placeName: form.placeName.trim(),
+      amount: parseFloat(form.amount),
+      category: form.category,
       notes: form.notes.trim(),
-      ubicacion_lat: form.location.coordinates.lat,
-      ubicacion_lng: form.location.coordinates.lng,
-      ciudad: form.location.city,
-      prefectura: form.location.prefecture,
-      metodo_pago: PAYMENT_TO_DIRECTUS[form.paymentMethod],
-      es_compartido: form.shared,
-      viaje_id: props.tripId,
+      location: {
+        coordinates: {
+            lat: form.location.coordinates.lat,
+            lng: form.location.coordinates.lng
+        },
+        city: form.location.city,
+        prefecture: form.location.prefecture
+      },
+      paymentMethod: form.paymentMethod,
+      shared: form.shared,
+      trip_id: props.tripId,
+      status: 'real' // Default to real
     }
 
     if (isEditMode.value && props.expenseToEdit) {
-      await updateExpense(props.expenseToEdit.id as number | string, expenseData)
+      await updateExpense(props.expenseToEdit.id, expenseData)
       toast.success('Gasto actualizado')
     } else {
-      await createExpense({ ...expenseData, estado: 'real' } as any)
+      await createExpense(expenseData as any)
       toast.success('Gasto añadido')
     }
 
@@ -528,22 +531,26 @@ async function handleSavePlanned() {
     const timestamp = formatTimestampForApi(form.date)
 
     const expenseData = {
-      fecha: timestamp,
-      concepto: form.placeName.trim(),
-      monto: parseFloat(form.amount),
-      categoria: CATEGORY_TO_DIRECTUS[form.category],
+      timestamp: timestamp,
+      placeName: form.placeName.trim(),
+      amount: parseFloat(form.amount),
+      category: form.category,
       notes: form.notes.trim(),
-      ubicacion_lat: form.location.coordinates.lat,
-      ubicacion_lng: form.location.coordinates.lng,
-      ciudad: form.location.city,
-      prefectura: form.location.prefecture,
-      metodo_pago: PAYMENT_TO_DIRECTUS[form.paymentMethod],
-      es_compartido: form.shared,
-      viaje_id: props.tripId,
-      estado: 'previsto' as const
+      location: {
+        coordinates: {
+            lat: form.location.coordinates.lat,
+            lng: form.location.coordinates.lng
+        },
+        city: form.location.city,
+        prefecture: form.location.prefecture
+      },
+      paymentMethod: form.paymentMethod,
+      shared: form.shared,
+      trip_id: props.tripId,
+      status: 'planned'
     }
 
-    await createExpense(expenseData)
+    await createExpense(expenseData as any)
     toast.success('Gasto previsto añadido')
 
     emit('success')
@@ -561,7 +568,7 @@ async function handleDelete() {
 
   isSubmitting.value = true
   try {
-    await deleteExpense(props.expenseToEdit.id as number | string)
+    await deleteExpense(props.expenseToEdit.id)
     toast.success('Gasto eliminado')
     emit('success')
     isOpen.value = false

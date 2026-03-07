@@ -2,7 +2,7 @@
  * Reactive currency composable that uses current settings
  */
 
-import type { Currency } from './useSettings'
+import type { Currency } from '~/types'
 
 /**
  * Composable for currency formatting using current settings

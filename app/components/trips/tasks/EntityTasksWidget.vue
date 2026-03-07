@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useTripTasks } from '~/composables/useTripTasks'
-import { type Task } from '~/types/tasks'
+import { useTripTasksNew } from '~/composables/useTripTasksNew'
+import { type Task } from '~/types/directus'
 import { Button } from '~/components/ui/button'
 import { ListTodo, Plus } from 'lucide-vue-next'
-import TaskItem from './TaskItem.vue'
-import TaskModal from './TaskModal.vue'
-import { useDirectus } from '~/composables/useDirectus'
+import TaskItem from '~/components/trips/tasks/TaskItem.vue'
+import TaskModal from '~/components/trips/tasks/TaskModal.vue'
 
 const props = defineProps<{
-  tripId: number
+  tripId: number | string
   entityType: string
   entityId: number | string
   title?: string
 }>()
 
-const { tasks, taskGroups, init, getGenericGroupByType, updateTask, createTask } = useTripTasks()
-const { directusUserId } = useDirectus()
+const { tasks, fetchTasks, updateTask } = useTripTasksNew()
 
 const isModalOpen = ref(false)
 const selectedTask = ref<Task | null>(null)
@@ -24,8 +22,8 @@ const isLoading = ref(false)
 
 // Init tasks if not loaded
 onMounted(() => {
-  if (tasks.value.length === 0) {
-    init(props.tripId)
+  if (tasks.value.length === 0 && props.tripId) {
+    fetchTasks(Number(props.tripId))
   }
 })
 
@@ -39,23 +37,30 @@ const entityTasks = computed(() => {
 
 const pendingCount = computed(() => entityTasks.value.filter(t => t.status !== 'completed' && t.status !== 'cancelled').length)
 
-const handleAddTask = async () => {
-  // Find generic group for this type to use as visual container
-  const genericGroup = getGenericGroupByType(props.entityType)
-  
-  if (genericGroup) {
-    selectedTask.value = null
-    isModalOpen.value = true
-  } else {
-    // If no generic group, maybe trigger init again or fallback
-    await init(props.tripId)
-    isModalOpen.value = true
-  }
+const handleAddTask = () => {
+  selectedTask.value = null
+  isModalOpen.value = true
 }
 
 const handleEditTask = (task: Task) => {
   selectedTask.value = task
   isModalOpen.value = true
+}
+
+// Map entity type to group name for default
+const getGroupNameByType = (type: string) => {
+  const map: Record<string, string> = {
+    flight: 'Vuelos',
+    accommodation: 'Alojamientos',
+    accommodations: 'Alojamientos',
+    transport: 'Transporte',
+    transports: 'Transporte',
+    activity: 'Actividades',
+    activities: 'Actividades',
+    insurance: 'Seguros',
+    insurances: 'Seguros'
+  }
+  return map[type] || 'General'
 }
 </script>
 
@@ -91,11 +96,11 @@ const handleEditTask = (task: Task) => {
     <TaskModal 
       v-model:open="isModalOpen" 
       :task="selectedTask" 
-      :trip-id="tripId"
-      :default-group-id="getGenericGroupByType(entityType)?.id"
+      :trip-id="Number(tripId)"
+      :default-group-id="getGroupNameByType(entityType)"
       :default-entity-type="entityType"
       :default-entity-id="entityId"
-      @saved="init(tripId)"
+      @saved="fetchTasks(Number(tripId))"
     />
   </div>
 </template>

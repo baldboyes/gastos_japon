@@ -33,20 +33,15 @@
             <p class="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               {{ $t('landing.hero.subtitle') }}
             </p>
-
+<!--
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
               <Button as-child size="lg" class="h-12 px-8 text-base bg-slate-950 text-white hover:bg-slate-800 w-full sm:w-auto shadow-lg shadow-slate-950/20">
-                <NuxtLink to="/trips">
+                <NuxtLink to="/">
                   {{ $t('landing.hero.cta_trips') }}
                 </NuxtLink>
               </Button>
-              <Button as-child variant="outline" size="lg" class="h-12 px-8 text-base border-gray-200 text-slate-700 hover:bg-gray-100 hover:text-slate-900 w-full sm:w-auto bg-white">
-                <NuxtLink to="/trips">
-                  {{ $t('landing.hero.cta_demo') }}
-                </NuxtLink>
-              </Button>
             </div>
-
+-->
             <!-- Dashboard Preview -->
             <div class="mt-20 relative rounded-3xl overflow-hidden border border-input shadow-2xl shadow-slate-200/50 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 transition-all">
               <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent z-10"></div>

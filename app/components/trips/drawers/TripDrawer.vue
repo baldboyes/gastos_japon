@@ -15,9 +15,8 @@ import {
   Plus
 } from 'lucide-vue-next'
 
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { readUser } from '@directus/sdk'
-import { fileUrl } from '~/utils/directusFiles'
 import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { SecureImage } from '~/components/ui/SecureImage'
 import { Button } from '~/components/ui/button'
@@ -37,15 +36,17 @@ import {
   DrawerHeader, 
   DrawerTitle, 
   DrawerFooter,
-  DrawerDescription 
 } from '~/components/ui/drawer'
+import { ScrollArea } from '~/components/ui/scroll-area'
 import { toast } from 'vue-sonner'
+import { useTripsNew } from '~/composables/useTripsNew'
+import type { Trip } from '~/types/directus'
 // @ts-ignore
 import { Country, City } from 'country-state-city'
 
 const props = defineProps<{
   open: boolean
-  tripToEdit?: any
+  tripToEdit?: Trip | null
 }>()
 
 const emit = defineEmits(['update:open', 'saved'])
@@ -66,7 +67,8 @@ const localeTag = computed(() => {
   return 'en-US'
 })
 
-const { createTrip, updateTrip, loading } = useTrips()
+// New Composable
+const { createTrip, updateTrip, loading } = useTripsNew()
 
 const selectedCountryCode = ref('')
 const openCountry = ref(false)
@@ -75,7 +77,7 @@ const countrySearchQuery = ref('')
 const regionNames = computed(() => new Intl.DisplayNames([currentLocale.value], { type: 'region' }))
 
 const countries = computed(() => {
-  return Country.getAllCountries().map(country => {
+  return Country.getAllCountries().map((country: any) => {
     try {
       return {
         ...country,
@@ -84,13 +86,13 @@ const countries = computed(() => {
     } catch (e) {
       return country
     }
-  }).sort((a, b) => a.name.localeCompare(b.name, currentLocale.value))
+  }).sort((a: any, b: any) => a.name.localeCompare(b.name, currentLocale.value))
 })
 
 const filteredCountries = computed(() => {
   if (!countrySearchQuery.value) return countries.value
   const query = countrySearchQuery.value.toLowerCase()
-  return countries.value.filter(c => c.name.toLowerCase().includes(query))
+  return countries.value.filter((c: any) => c.name.toLowerCase().includes(query))
 })
 
 const cities = computed(() => {
@@ -101,7 +103,7 @@ const cities = computed(() => {
 const getFilteredCities = (query: string) => {
   if (!query) return cities.value.slice(0, 50)
   const q = query.toLowerCase()
-  return cities.value.filter(c => c.name.toLowerCase().includes(q)).slice(0, 50)
+  return cities.value.filter((c: any) => c.name.toLowerCase().includes(q)).slice(0, 50)
 }
 
 const onCountrySelect = (country: any) => {
@@ -110,24 +112,24 @@ const onCountrySelect = (country: any) => {
   countrySearchQuery.value = ''
   
   // Update formData with country data
-  formData.value.isocode = country.isoCode
-  formData.value.pais = country
+  formData.value.iso_code = country.isoCode
+  formData.value.country = country
   
   // Clear destinations when country changes
-  formData.value.destinos = []
+  formData.value.destinations = []
   
-  // Auto-select currency if available and not in edit mode (or if user hasn't manually changed it yet)
+  // Auto-select currency if available
   if (country.currency) {
-    formData.value.moneda = country.currency
+    formData.value.currency = country.currency
   }
 }
 
 const onCitySelect = (city: any, index: number) => {
-  if (formData.value.destinos[index]) {
-    formData.value.destinos[index].ciudad = city.name
-    formData.value.destinos[index].ciudad_data = city
-    formData.value.destinos[index]._isOpen = false
-    formData.value.destinos[index]._citySearch = ''
+  if (formData.value.destinations[index]) {
+    formData.value.destinations[index].city = city.name
+    formData.value.destinations[index].city_data = city
+    formData.value.destinations[index]._isOpen = false
+    formData.value.destinations[index]._citySearch = ''
   }
 }
 
@@ -142,7 +144,7 @@ const selectedCountryFlag = computed(() => {
 })
 
 const { uploadFile } = useDirectusFiles()
-const { getAuthenticatedClient, directusUserId } = useDirectus()
+const { getClient, directusUserId } = useDirectusRepo()
 
 // Estado
 const uploadingCover = ref(false)
@@ -156,22 +158,24 @@ const fetchUserPreference = async () => {
   
   try {
     loadingPreference.value = true
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     
     if (!directusUserId.value) {
       console.warn('No Directus User ID found')
       return
     }
 
+    // Assuming user collection still has 'moneda' or similar field? 
+    // We didn't migrate users collection, it's system.
+    // Assuming 'moneda' field exists on directus_users as before.
     const userData = await client.request(readUser(directusUserId.value, {
-      fields: ['moneda']
+      fields: ['moneda'] // Keeping 'moneda' if it's a custom field on user
     }))
     
-    if (userData && userData.moneda) {
-      defaultCurrency.value = userData.moneda
-      // If we are in create mode, update the form immediately
+    if (userData && (userData as any).moneda) {
+      defaultCurrency.value = (userData as any).moneda
       if (!props.tripToEdit) {
-        formData.value.moneda = userData.moneda
+        formData.value.currency = (userData as any).moneda
       }
     }
   } catch (e) {
@@ -181,44 +185,44 @@ const fetchUserPreference = async () => {
   }
 }
 
-// Formulario
+// Formulario (English keys)
 const formData = ref<{
-  nombre: string
-  portada: string | null
-  presupuesto_diario: number | undefined
-  moneda: string
-  isocode: string
-  pais: any
-  destinos: Array<{
-    ciudad: string
-    fecha_inicio: any
-    fecha_fin: any
-    ciudad_data?: any
+  title: string
+  cover_image: string | null
+  daily_budget: number | undefined
+  currency: string
+  iso_code: string
+  country: any
+  destinations: Array<{
+    city: string
+    start_date: any
+    end_date: any
+    city_data?: any
     _isOpen?: boolean
     _citySearch?: string
   }>
 }>({
-  nombre: '',
-  portada: null,
-  presupuesto_diario: undefined,
-  moneda: '',
-  isocode: '',
-  pais: null,
-  destinos: []
+  title: '',
+  cover_image: null,
+  daily_budget: undefined,
+  currency: '',
+  iso_code: '',
+  country: null,
+  destinations: []
 })
 
 const addDestino = () => {
-  formData.value.destinos.push({
-    ciudad: '',
-    fecha_inicio: null,
-    fecha_fin: null,
+  formData.value.destinations.push({
+    city: '',
+    start_date: null,
+    end_date: null,
     _isOpen: false,
     _citySearch: ''
   })
 }
 
 const removeDestino = (index: number) => {
-  formData.value.destinos.splice(index, 1)
+  formData.value.destinations.splice(index, 1)
 }
 
 // Fechas
@@ -240,7 +244,6 @@ watch(startDate, (newVal) => {
 })
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
-const numberOfMonths = computed(() => isDesktop.value ? 2 : 1)
 
 onMounted(() => {
   fetchUserPreference()
@@ -252,7 +255,6 @@ const isOpen = computed({
   set: (val) => emit('update:open', val)
 })
 
-// Fetch preference when drawer opens for new trip
 watch(() => props.open, (isOpen) => {
   if (isOpen && !props.tripToEdit) {
     fetchUserPreference()
@@ -262,39 +264,39 @@ watch(() => props.open, (isOpen) => {
 // Watch changes in tripToEdit
 watch(() => props.tripToEdit, (trip) => {
   if (trip) {
-    formData.value.nombre = trip.nombre
-    formData.value.portada = trip.portada
-    formData.value.presupuesto_diario = trip.presupuesto_diario
-    formData.value.moneda = trip.moneda
-    formData.value.isocode = trip.isocode
-    // Handle repeater field (array)
-    formData.value.pais = Array.isArray(trip.pais) && trip.pais.length > 0 ? trip.pais[0] : trip.pais
+    formData.value.title = trip.title
+    formData.value.cover_image = trip.cover_image || null
+    formData.value.daily_budget = trip.daily_budget
+    formData.value.currency = trip.currency || ''
+    formData.value.iso_code = trip.iso_code || ''
+    
+    // Handle country array/json
+    formData.value.country = Array.isArray(trip.country) && trip.country.length > 0 ? trip.country[0] : trip.country
     
     // Handle destinations
-    if (trip.destinos && Array.isArray(trip.destinos)) {
-      formData.value.destinos = trip.destinos.map((d: any) => ({
-        ciudad: d.ciudad,
-        fecha_inicio: d.fecha_inicio ? parseDate(d.fecha_inicio) : null,
-        fecha_fin: d.fecha_fin ? parseDate(d.fecha_fin) : null,
-        ciudad_data: d.ciudad_data,
+    if (trip.destinations && Array.isArray(trip.destinations)) {
+      formData.value.destinations = trip.destinations.map((d: any) => ({
+        city: d.city,
+        start_date: d.start_date ? parseDate(d.start_date) : null,
+        end_date: d.end_date ? parseDate(d.end_date) : null,
+        city_data: d.city_data,
         _isOpen: false,
         _citySearch: ''
       }))
     } else {
-      formData.value.destinos = []
+      formData.value.destinations = []
     }
     
-    // Set selected country for UI
-    if (trip.isocode) {
-      selectedCountryCode.value = trip.isocode
+    if (trip.iso_code) {
+      selectedCountryCode.value = trip.iso_code
     } else {
       selectedCountryCode.value = ''
     }
     
     try {
-      if (trip.fecha_inicio) {
-        startDate.value = parseDate(trip.fecha_inicio)
-        endDate.value = trip.fecha_fin ? parseDate(trip.fecha_fin) : startDate.value
+      if (trip.start_date) {
+        startDate.value = parseDate(trip.start_date)
+        endDate.value = trip.end_date ? parseDate(trip.end_date) : startDate.value
       } else {
          startDate.value = today(getLocalTimeZone())
          endDate.value = today(getLocalTimeZone()).add({ days: 7 })
@@ -305,14 +307,14 @@ watch(() => props.tripToEdit, (trip) => {
       endDate.value = today(getLocalTimeZone()).add({ days: 7 })
     }
   } else {
-    // Reset form for create
-    formData.value.nombre = ''
-    formData.value.portada = null
-    formData.value.presupuesto_diario = undefined
-    formData.value.moneda = defaultCurrency.value
-    formData.value.isocode = ''
-    formData.value.pais = null
-    formData.value.destinos = []
+    // Reset form
+    formData.value.title = ''
+    formData.value.cover_image = null
+    formData.value.daily_budget = undefined
+    formData.value.currency = defaultCurrency.value
+    formData.value.iso_code = ''
+    formData.value.country = null
+    formData.value.destinations = []
     selectedCountryCode.value = ''
     startDate.value = today(getLocalTimeZone())
     endDate.value = today(getLocalTimeZone()).add({ days: 7 })
@@ -327,7 +329,6 @@ const handleCoverUpload = async (event: Event) => {
   const file = input.files[0]
   if (!file) return
 
-  // Validación básica 10MB
   if (file.size > 10 * 1024 * 1024) {
     toast.error(String(t('trip_drawer.cover.too_large')))
     return
@@ -336,7 +337,7 @@ const handleCoverUpload = async (event: Event) => {
   uploadingCover.value = true
   try {
     const fileId = await uploadFile(file)
-    formData.value.portada = fileId
+    formData.value.cover_image = fileId
   } catch (e) {
     console.error('Error uploading cover:', e)
   } finally {
@@ -346,24 +347,22 @@ const handleCoverUpload = async (event: Event) => {
 }
 
 const handleSubmit = async () => {
-  if (!formData.value.nombre || !startDate.value) return
+  if (!formData.value.title || !startDate.value) return
 
   const tripData = {
-    nombre: formData.value.nombre,
-    portada: formData.value.portada,
-    presupuesto_diario: formData.value.presupuesto_diario,
-    moneda: formData.value.moneda,
-    fecha_inicio: startDate.value.toString(),
-    fecha_fin: endDate.value?.toString() || startDate.value.toString(),
-    isocode: formData.value.isocode,
-    // Send as array for repeater field
-    pais: formData.value.pais ? [formData.value.pais] : null,
-    // Send destinations with dates as strings
-    destinos: formData.value.destinos.map(d => ({
-      ciudad: d.ciudad,
-      fecha_inicio: d.fecha_inicio ? d.fecha_inicio.toString() : null,
-      fecha_fin: d.fecha_fin ? d.fecha_fin.toString() : null,
-      ciudad_data: d.ciudad_data
+    title: formData.value.title,
+    cover_image: formData.value.cover_image,
+    daily_budget: formData.value.daily_budget,
+    currency: formData.value.currency,
+    start_date: startDate.value.toString(),
+    end_date: endDate.value?.toString() || startDate.value.toString(),
+    iso_code: formData.value.iso_code,
+    country: formData.value.country ? [formData.value.country] : null,
+    destinations: formData.value.destinations.map(d => ({
+      city: d.city,
+      start_date: d.start_date ? d.start_date.toString() : null,
+      end_date: d.end_date ? d.end_date.toString() : null,
+      city_data: d.city_data
     }))
   }
 
@@ -395,7 +394,7 @@ const handleSubmit = async () => {
             <div class="grid grid-cols-3 gap-2">
               <div class="col-span-2">
                 <Label htmlFor="name">{{ $t('trip_drawer.fields.name') }}</Label>
-                <Input id="name" v-model="formData.nombre" :placeholder="String($t('trip_drawer.placeholders.name'))" />
+                <Input id="name" v-model="formData.title" :placeholder="String($t('trip_drawer.placeholders.name'))" />
               </div>
               <div class="col-span-1">
                 <Label>{{ $t('trip_drawer.fields.destination_country') }}</Label>
@@ -431,7 +430,7 @@ const handleSubmit = async () => {
                         :key="country.isoCode"
                         @click="onCountrySelect(country)"
                         :class="cn(
-                          'relative flex select-none items- gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                          'relative flex select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer',
                           selectedCountryCode === country.isoCode ? 'bg-accent' : ''
                         )"
                       >
@@ -504,25 +503,25 @@ const handleSubmit = async () => {
             <div class="grid grid-cols-2 gap-2">
               <div class="w-full">
                 <Label htmlFor="presupuesto">{{ $t('trip_drawer.fields.daily_budget') }}</Label>
-                <Input id="presupuesto" v-model="formData.presupuesto_diario" type="number" :placeholder="String($t('trip_drawer.placeholders.daily_budget'))" />
+                <Input id="presupuesto" v-model="formData.daily_budget" type="number" :placeholder="String($t('trip_drawer.placeholders.daily_budget'))" />
               </div>
               <div class="w-full">
                 <div class="flex items-center gap-2 mb-2">
                   <Label htmlFor="moneda">{{ $t('trip_drawer.fields.currency') }}</Label>
                   <Loader2 v-if="loadingPreference" class="h-3 w-3 animate-spin text-muted-foreground" />
                 </div>
-                <CurrencySelector v-model="formData.moneda" />
+                <CurrencySelector v-model="formData.currency" />
               </div>
             </div>
             <div class="grid gap-2">
               <Label>{{ $t('trip_drawer.fields.cover') }}</Label>
-              <div v-if="formData.portada" class="relative aspect-video rounded-md overflow-hidden border group">
-                <SecureImage :src="formData.portada" class="w-full h-full object-cover" />
+              <div v-if="formData.cover_image" class="relative aspect-video rounded-md overflow-hidden border group">
+                <SecureImage :src="formData.cover_image" class="w-full h-full object-cover" />
                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Button 
                     variant="destructive" 
                     size="sm" 
-                    @click="formData.portada = null"
+                    @click="formData.cover_image = null"
                   >
                     <Trash2 class="h-4 w-4 mr-2" />
                     {{ $t('trip_drawer.actions.delete') }}
@@ -549,11 +548,11 @@ const handleSubmit = async () => {
                 <Label class="font-bold">{{ $t('trip_drawer.itinerary.title') }}</Label>
                 <Button size="sm" @click="addDestino" :disabled="!selectedCountryCode"><Plus class="h-3 w-3 mr-1" /> {{ $t('trip_drawer.itinerary.actions.add_city') }}</Button>
               </div>
-              <div v-if="!formData.destinos || formData.destinos.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
+              <div v-if="!formData.destinations || formData.destinations.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
                 <p v-if="!selectedCountryCode">{{ $t('trip_drawer.itinerary.empty.select_country_first') }}</p>
                 <p v-else>{{ $t('trip_drawer.itinerary.empty.add_cities') }}</p>
               </div>
-              <div v-for="(destino, index) in formData.destinos" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm border space-y-3">
+              <div v-for="(destino, index) in formData.destinations" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm border space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                     <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-xs">{{ index + 1 }}</div>
@@ -575,7 +574,7 @@ const handleSubmit = async () => {
                           :aria-expanded="destino._isOpen"
                           class="w-full justify-between font-normal h-9"
                         >
-                          <span class="truncate">{{ destino.ciudad || $t('trip_drawer.placeholders.select_city') }}</span>
+                          <span class="truncate">{{ destino.city || $t('trip_drawer.placeholders.select_city') }}</span>
                           <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -597,13 +596,13 @@ const handleSubmit = async () => {
                             @click="onCitySelect(city, index)"
                             :class="cn(
                               'relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer',
-                              destino.ciudad === city.name ? 'bg-accent' : ''
+                              destino.city === city.name ? 'bg-accent' : ''
                             )"
                           >
                             <Check
                               :class="cn(
                                 'mr-2 h-4 w-4',
-                                destino.ciudad === city.name ? 'opacity-100' : 'opacity-0'
+                                destino.city === city.name ? 'opacity-100' : 'opacity-0'
                               )"
                             />
                             {{ city.name }}
@@ -625,16 +624,16 @@ const handleSubmit = async () => {
                           variant="outline"
                           :class="cn(
                             'w-full justify-start text-left font-normal h-9',
-                            !destino.fecha_inicio && 'text-muted-foreground'
+                            !destino.start_date && 'text-muted-foreground'
                           )"
                         >
                           <CalendarIcon class="mr-2 h-4 w-4" />
-                          {{ destino.fecha_inicio ? formatDateLong(destino.fecha_inicio) : $t('trip_drawer.placeholders.date') }}
+                          {{ destino.start_date ? formatDateLong(destino.start_date) : $t('trip_drawer.placeholders.date') }}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent class="w-auto p-0">
                         <Calendar 
-                          v-model="destino.fecha_inicio" 
+                          v-model="destino.start_date" 
                           initial-focus 
                           :min-value="startDate"
                           :max-value="endDate"
@@ -650,18 +649,18 @@ const handleSubmit = async () => {
                           variant="outline"
                           :class="cn(
                             'w-full justify-start text-left font-normal h-9',
-                            !destino.fecha_fin && 'text-muted-foreground'
+                            !destino.end_date && 'text-muted-foreground'
                           )"
                         >
                           <CalendarIcon class="mr-2 h-4 w-4" />
-                          {{ destino.fecha_fin ? formatDateLong(destino.fecha_fin) : $t('trip_drawer.placeholders.date') }}
+                          {{ destino.end_date ? formatDateLong(destino.end_date) : $t('trip_drawer.placeholders.date') }}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent class="w-auto p-0">
                         <Calendar 
-                          v-model="destino.fecha_fin" 
+                          v-model="destino.end_date" 
                           initial-focus 
-                          :min-value="destino.fecha_inicio || startDate"
+                          :min-value="destino.start_date || startDate"
                           :max-value="endDate"
                         />
                       </PopoverContent>

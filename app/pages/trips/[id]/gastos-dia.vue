@@ -5,7 +5,7 @@
       <div class="flex items-center gap-2">
 
         <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child v-if="currentAccommodation">
-          <a v-if="currentAccommodation.enlace_google" :title="$t('trip_daily_expenses_page.actions.directions_prefix') + ' ' + currentAccommodation.nombre" :href="currentAccommodation.enlace_google" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
+          <a v-if="currentAccommodation.google_maps_link" :title="$t('trip_daily_expenses_page.actions.directions_prefix') + ' ' + currentAccommodation.name" :href="currentAccommodation.google_maps_link" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
             <span class="sr-only">{{ $t('trip_daily_expenses_page.actions.open_maps') }}</span>
             <BedDouble class="h-6! w-6!" />
           </a>
@@ -20,7 +20,7 @@
     <DashboardTripDailyBudget 
       :daily-limit="budget.dailyLimit"
       :currency="budget.currency || null"
-      :expenses="todayExpensesMapped"
+      :expenses="todayExpenses"
     />
 
     <!-- Planned Expenses -->
@@ -36,7 +36,7 @@
           v-for="planned in todaysPlannedExpenses"
           :key="planned.id"
           :planned-expense="planned"
-          :currency="budget.currency || null"
+          :currency="budget.currency || undefined"
           @click="handlePlannedExpenseClick"
           @delete="handleDeletePlanned"
         />
@@ -55,7 +55,7 @@
       -->
       <!-- Empty State -->
       <div
-        v-if="todayExpensesMapped.length === 0"
+        v-if="todayExpenses.length === 0"
         class="text-center py-12 px-4"
       >
         <div class="text-6xl mb-4">💸</div>
@@ -66,10 +66,10 @@
       <!-- Expense Cards -->
       <div v-else class="space-y-3">
         <ExpensesCard
-          v-for="expense in todayExpensesMapped"
+          v-for="expense in todayExpenses"
           :key="expense.id"
           :expense="expense"
-        :currency="budget.currency || null"
+          :currency="budget.currency || undefined"
           @click="handleExpenseClick"
         />
       </div>
@@ -118,10 +118,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { formatDate, getDateString } from '~/utils/dates'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { BedDouble, Sun, MoreVertical } from 'lucide-vue-next'
+import { BedDouble, Sun } from 'lucide-vue-next'
 import { startOfDay, parseISO } from 'date-fns'
 import {
   AlertDialog,
@@ -137,27 +136,26 @@ import ExpenseDrawer from '~/components/expenses/ExpenseDrawer.vue'
 import DashboardTripDailyBudget from '~/components/dashboard/TripDailyBudget.vue'
 import ExpensesPlannedCard from '~/components/expenses/PlannedCard.vue'
 import ExpensesCard from '~/components/expenses/Card.vue'
-import { useTripExpenses } from '~/composables/useTripExpenses'
-import { useTripOrganization } from '~/composables/useTripOrganization'
-import { useTrips } from '~/composables/useTrips'
-import { CURRENCIES } from '~/composables/useSettings'
-import { getCategoryFromDirectus, getPaymentMethodFromDirectus } from '~/utils/directus-mappings'
-import type { Expense, PlannedExpense, TripExpense, Budget } from '~/types'
+import { useExpensesNew } from '~/composables/useExpensesNew'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import { useTripsNew } from '~/composables/useTripsNew'
+import type { Expense, PlannedExpense, Budget } from '~/types'
 
 definePageMeta({
   layout: 'dashboard'
 })
 
 const route = useRoute()
-const tripId = computed(() => route.params.id as string)
+const tripId = computed(() => Number(route.params.id))
 
-const { expenses: rawExpenses, fetchExpenses, updateExpense, deleteExpense } = useTripExpenses()
-const { alojamientos, fetchOrganizationData } = useTripOrganization()
-const { currentTrip } = useTrips()
+const { expenses, fetchExpenses, updateExpense, deleteExpense } = useExpensesNew()
+const { accommodations, fetchOrganizationData } = useTripOrganizationNew()
+const { currentTrip, getTrip } = useTripsNew()
 
 // Load data
 onMounted(() => {
-  if (tripId.value) {
+  if (tripId.value && !Number.isNaN(tripId.value)) {
+    getTrip(tripId.value)
     fetchExpenses(tripId.value)
     fetchOrganizationData(tripId.value)
   }
@@ -166,10 +164,10 @@ onMounted(() => {
 const currentAccommodation = computed(() => {
   const today = startOfDay(new Date())
   
-  return alojamientos.value.find(a => {
-    if (!a.fecha_entrada || !a.fecha_salida) return false
-    const start = startOfDay(parseISO(a.fecha_entrada))
-    const end = startOfDay(parseISO(a.fecha_salida))
+  return accommodations.value.find(a => {
+    if (!a.check_in || !a.check_out) return false
+    const start = startOfDay(parseISO(a.check_in))
+    const end = startOfDay(parseISO(a.check_out))
     
     return today >= start && today < end
   })
@@ -177,62 +175,10 @@ const currentAccommodation = computed(() => {
 
 // Budget from Trip
 const budget = computed<Budget>(() => ({
-  dailyLimit: currentTrip.value?.presupuesto_diario || 0,
-  startDate: currentTrip.value?.fecha_inicio || new Date().toISOString(),
-  currency: currentTrip.value?.moneda || null
+  dailyLimit: currentTrip.value?.daily_budget || 0,
+  startDate: currentTrip.value?.start_date || new Date().toISOString(),
+  currency: currentTrip.value?.currency || null
 }))
-
-// Currency formatting helper
-const currencySymbol = computed(() => {
-  if (!budget.value.currency) return '$'
-  const currencyInfo = CURRENCIES.find(c => c.code === budget.value.currency)
-  return currencyInfo?.symbol || '$'
-})
-
-const formatAmount = (amount: number) => {
-  return `${currencySymbol.value}${amount.toLocaleString()}`
-}
-
-const currentDate = computed(() => formatDate(new Date()))
-
-// Mappers
-const mapToExpense = (e: TripExpense): Expense => ({
-  id: e.id.toString(),
-  timestamp: e.fecha,
-  placeName: e.concepto,
-  amount: e.monto,
-  category: getCategoryFromDirectus(e.categoria),
-  notes: e.notes || '',
-  location: {
-    coordinates: {
-      lat: e.ubicacion_lat || 0,
-      lng: e.ubicacion_lng || 0
-    },
-    city: e.ciudad || '',
-    prefecture: e.prefectura || ''
-  },
-  paymentMethod: getPaymentMethodFromDirectus(e.metodo_pago),
-  shared: e.es_compartido
-})
-
-const mapToPlannedExpense = (e: TripExpense): PlannedExpense => ({
-  id: e.id.toString(),
-  plannedDate: e.fecha.split(' ')[0] || e.fecha,
-  placeName: e.concepto,
-  amount: e.monto,
-  category: getCategoryFromDirectus(e.categoria),
-  notes: e.notes || '',
-  location: {
-    coordinates: {
-      lat: e.ubicacion_lat || 0,
-      lng: e.ubicacion_lng || 0
-    },
-    city: e.ciudad || '',
-    prefecture: e.prefectura || ''
-  },
-  paymentMethod: getPaymentMethodFromDirectus(e.metodo_pago),
-  shared: e.es_compartido
-})
 
 // Filter for today
 const todayString = computed(() => {
@@ -243,26 +189,25 @@ const todayString = computed(() => {
   return `${year}-${month}-${day}`
 })
 
-const todayExpensesMapped = computed(() => {
-  return rawExpenses.value
-    .filter(e => e.estado !== 'previsto' && e.fecha.startsWith(todayString.value))
-    .map(mapToExpense)
+const todayExpenses = computed(() => {
+  return expenses.value
+    .filter(e => e.status !== 'planned' && e.timestamp.startsWith(todayString.value))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 })
 
 const todaysPlannedExpenses = computed(() => {
-  return rawExpenses.value
-    .filter(e => e.estado === 'previsto' && e.fecha.startsWith(todayString.value))
-    .map(mapToPlannedExpense)
+  return expenses.value
+    .filter(e => e.status === 'planned' && e.timestamp.startsWith(todayString.value))
+    .map(e => ({
+      ...e,
+      plannedDate: e.timestamp.slice(0, 10)
+    } as unknown as PlannedExpense))
 })
 
-const todayTotal = computed(() =>
-  todayExpensesMapped.value.reduce((sum, exp) => sum + exp.amount, 0)
-)
 
 // Drawer state
 const showExpenseDrawer = ref(false)
-const expenseToEdit = ref<TripExpense | null>(null)
+const expenseToEdit = ref<Expense | null>(null)
 
 function handleAdd() {
   expenseToEdit.value = null
@@ -270,11 +215,8 @@ function handleAdd() {
 }
 
 function handleExpenseClick(expense: Expense) {
-  const original = rawExpenses.value.find(e => e.id.toString() === expense.id)
-  if (original) {
-    expenseToEdit.value = original
-    showExpenseDrawer.value = true
-  }
+  expenseToEdit.value = expense
+  showExpenseDrawer.value = true
 }
 
 function handleDrawerSuccess() {
@@ -283,17 +225,12 @@ function handleDrawerSuccess() {
 
 // Handle planned expense click - convert to real expense
 async function handlePlannedExpenseClick(plannedExpense: PlannedExpense) {
-  const original = rawExpenses.value.find(e => e.id.toString() === plannedExpense.id)
+  const original = expenses.value.find(e => e.id === plannedExpense.id)
   if (original) {
     const now = new Date()
-    // Format YYYY-MM-DD HH:MM
-    const dateStr = todayString.value
-    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
-    const timestamp = `${dateStr} ${timeStr}`
-
     await updateExpense(original.id, {
-      estado: 'real',
-      fecha: timestamp
+      status: 'real',
+      timestamp: now.toISOString()
     })
     
     fetchExpenses(tripId.value)

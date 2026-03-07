@@ -15,14 +15,12 @@ import {
   Trash2,
   MoreVertical,
   Calendar as CalendarIcon,
-  Upload
 } from 'lucide-vue-next'
 
 import { fileUrl } from '~/utils/directusFiles'
-import { useDirectusFiles } from '~/composables/useDirectusFiles'
 import { SecureImage } from '~/components/ui/SecureImage'
 import { Button } from '~/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '~/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '~/components/ui/card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,12 +41,12 @@ import {
 import TripDrawer from '~/components/trips/drawers/TripDrawer.vue'
 import GroupTripsList from '~/components/trips/GroupTripsList.vue'
 import UserAvatar from '~/components/common/UserAvatar.vue'
-import { formatDateWithDayShort, formatDate } from '~/utils/dates'
-import AppLogo from '~/components/common/AppLogo.vue'
-import HeaderUserMenu from '~/components/layout/HeaderUserMenu.vue'
+import { formatDateWithDayShort } from '~/utils/dates'
+import { useTripsNew } from '~/composables/useTripsNew'
+import type { Trip } from '~/types/directus'
 
 // Estado
-const { trips, loading, error, fetchTrips, deleteTrip } = useTrips()
+const { trips, loading, error, fetchTrips, deleteTrip } = useTripsNew()
 const route = useRoute()
 
 const localePrefix = computed(() => getLocalePrefixFromPath(route.path))
@@ -57,20 +55,19 @@ const localeCode = computed(() => {
   return (SUPPORTED_LOCALES as readonly string[]).includes(code) ? code : 'en'
 })
 
-const tripDetailsPath = (id: string) => `${localePrefix.value}/trips/${id}`
+const tripDetailsPath = (id: string | number) => `${localePrefix.value}/trips/${id}`
 
 const upcomingTrips = computed(() => {
   const now = new Date()
   now.setHours(0, 0, 0, 0)
   
-  return trips.value.filter((trip: any) => {
-    if (!trip.fecha_fin) return true
-    const endDate = new Date(trip.fecha_fin)
+  return trips.value.filter((trip: Trip) => {
+    if (!trip.end_date) return true
+    const endDate = new Date(trip.end_date)
     return endDate >= now
-  }).sort((a: any, b: any) => {
-    // Ordenar por fecha_inicio ascendente (más cercanos a hoy primero)
-    const dateA = new Date(a.fecha_inicio || 0).getTime()
-    const dateB = new Date(b.fecha_inicio || 0).getTime()
+  }).sort((a: Trip, b: Trip) => {
+    const dateA = new Date(a.start_date || 0).getTime()
+    const dateB = new Date(b.start_date || 0).getTime()
     return dateA - dateB
   })
 })
@@ -79,22 +76,21 @@ const pastTrips = computed(() => {
   const now = new Date()
   now.setHours(0, 0, 0, 0)
   
-  return trips.value.filter((trip: any) => {
-    if (!trip.fecha_fin) return false
-    const endDate = new Date(trip.fecha_fin)
+  return trips.value.filter((trip: Trip) => {
+    if (!trip.end_date) return false
+    const endDate = new Date(trip.end_date)
     return endDate < now
-  }).sort((a: any, b: any) => {
-    // Ordenar por fecha_inicio descendente (más recientes primero)
-    const dateA = new Date(a.fecha_inicio || 0).getTime()
-    const dateB = new Date(b.fecha_inicio || 0).getTime()
+  }).sort((a: Trip, b: Trip) => {
+    const dateA = new Date(a.start_date || 0).getTime()
+    const dateB = new Date(b.start_date || 0).getTime()
     return dateB - dateA
   })
 })
 
 const isOpen = ref(false)
-const tripToEdit = ref(null)
+const tripToEdit = ref<Trip | null>(null)
 const isDeleteOpen = ref(false)
-const tripToDelete = ref<string | null>(null)
+const tripToDelete = ref<number | null>(null)
 
 // Cargar viajes al montar
 onMounted(() => {
@@ -107,12 +103,12 @@ const openCreateDialog = () => {
   isOpen.value = true
 }
 
-const openEditDialog = (trip: any) => {
+const openEditDialog = (trip: Trip) => {
   tripToEdit.value = trip
   isOpen.value = true
 }
 
-const handleDeleteClick = (id: string) => {
+const handleDeleteClick = (id: number) => {
   tripToDelete.value = id
   isDeleteOpen.value = true
 }
@@ -168,15 +164,15 @@ const handleImageError = (event: Event) => {
               <Card v-for="trip in upcomingTrips" :key="trip.id" class="hover:shadow-md transition-shadow overflow-hidden rounded-2xl border border-slate-200">
                 <div class="aspect-video w-full overflow-hidden bg-muted relative -mt-6">
                   <img 
-                    v-if="trip.portada" 
-                    :src="fileUrl(trip.portada)" 
-                    :alt="trip.nombre" 
+                    v-if="trip.cover_image" 
+                    :src="fileUrl(trip.cover_image)" 
+                    :alt="trip.title" 
                     class="w-full h-full object-cover transition-transform hover:scale-105 duration-500 hidden"
                   />
                   <SecureImage 
-                    v-if="trip.portada" 
-                    :src="trip.portada" 
-                    :alt="trip.nombre" 
+                    v-if="trip.cover_image" 
+                    :src="trip.cover_image" 
+                    :alt="trip.title" 
                     class="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
                     @error="handleImageError" 
                   />
@@ -208,27 +204,27 @@ const handleImageError = (event: Event) => {
                     <UserAvatar :user="trip.user_created" size="sm" :show-name="true" />
                   </div>
                   <div class="absolute bottom-4 left-4 flex -space-x-2">
-                    <template v-if="trip.colaboradores && trip.colaboradores.length">
+                    <template v-if="trip.collaborators && trip.collaborators.length">
                       <UserAvatar 
-                          v-for="collab in trip.colaboradores" 
-                          :key="collab.directus_user_id?.id || collab.id" 
-                          :user="collab.directus_user_id" 
+                          v-for="collab in trip.collaborators" 
+                          :key="collab.id || collab" 
+                          :user="collab" 
                           size="sm"
                       />
                     </template>
                   </div>
                 </div>
                 <CardHeader class="">
-                  <CardTitle class="text-xl">{{ trip.nombre }}</CardTitle>
+                  <CardTitle class="text-xl">{{ trip.title }}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div class="flex items-center mb-3 -mt-8">
                     <CalendarIcon class="mr-1 h-3 w-3" />
                     <template v-if="localeCode === 'ja'">
-                      {{ formatDateWithDayShort(trip.fecha_inicio) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.fecha_fin) }}
+                      {{ formatDateWithDayShort(trip.start_date) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.end_date) }}
                     </template>
                     <template v-else>
-                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.fecha_inicio) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.fecha_fin) }}
+                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.start_date) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.end_date) }}
                     </template>
                   </div>
                 </CardContent>
@@ -248,15 +244,15 @@ const handleImageError = (event: Event) => {
               <Card v-for="trip in pastTrips" :key="trip.id" class="hover:shadow-md transition-shadow overflow-hidden rounded-2xl border border-slate-200">
                 <div class="aspect-video w-full overflow-hidden bg-muted relative -mt-6">
                   <img 
-                    v-if="trip.portada" 
-                    :src="fileUrl(trip.portada)" 
-                    :alt="trip.nombre" 
+                    v-if="trip.cover_image" 
+                    :src="fileUrl(trip.cover_image)" 
+                    :alt="trip.title" 
                     class="w-full h-full object-cover transition-transform hover:scale-105 duration-500 hidden"
                   />
                   <SecureImage 
-                    v-if="trip.portada" 
-                    :src="trip.portada" 
-                    :alt="trip.nombre" 
+                    v-if="trip.cover_image" 
+                    :src="trip.cover_image" 
+                    :alt="trip.title" 
                     class="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
                     @error="handleImageError" 
                   />
@@ -266,7 +262,7 @@ const handleImageError = (event: Event) => {
                 </div>
                 <CardHeader class="pb-2">
                   <div class="flex justify-between items-start">
-                    <CardTitle class="text-xl">{{ trip.nombre }}</CardTitle>
+                    <CardTitle class="text-xl">{{ trip.title }}</CardTitle>
                     <DropdownMenu>
                       <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="icon" class="h-8 w-8 p-0">
@@ -292,10 +288,10 @@ const handleImageError = (event: Event) => {
                   <div class="flex items-center mt-1">
                     <CalendarIcon class="mr-1 h-3 w-3" />
                     <template v-if="localeCode === 'ja'">
-                      {{ formatDateWithDayShort(trip.fecha_inicio) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.fecha_fin) }}
+                      {{ formatDateWithDayShort(trip.start_date) }}{{ $t('trips_page.dates.connector') }}{{ formatDateWithDayShort(trip.end_date) }}
                     </template>
                     <template v-else>
-                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.fecha_inicio) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.fecha_fin) }}
+                      {{ $t('trips_page.dates.prefix') }} {{ formatDateWithDayShort(trip.start_date) }} {{ $t('trips_page.dates.connector') }} {{ formatDateWithDayShort(trip.end_date) }}
                     </template>
                   </div>
                 </CardContent>

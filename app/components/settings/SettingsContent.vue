@@ -9,66 +9,7 @@
     <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
       <div class="max-w-xl mx-auto flex gap-16 flex-col lg:flex-row pr-4 pb-8">
 
-    <div class="space-y-6">
-<!-- Account Settings 
-      <Card>
-        <CardHeader>
-          <CardTitle class="text-lg">Cuenta</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SignedIn>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div>
-                  <div class="font-medium text-slate-900">Sesión iniciada</div>
-                  <div class="text-sm text-slate-500">
-                    {{ user?.firstName || 'Usuario' }} {{ user?.lastName || '' }}<br />
-                    <pre>{{ user?.emailAddresses?.[0]?.emailAddress || 'No email' }}</pre>
-                  </div>
-                </div>
-              </div>
-              <SignOutButton>
-                <Button variant="outline" class="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" x2="9" y1="12" y2="12"/>
-                  </svg>
-                  Cerrar sesión
-                </Button>
-              </SignOutButton>
-            </div>
-          </SignedIn>
-          <SignedOut>
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-slate-100 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">No has iniciado sesión</div>
-                  <div class="text-sm text-slate-500">Inicia sesión para sincronizar tus datos</div>
-                </div>
-              </div>
-              
-              <SignInButton mode="modal">
-                <Button class="bg-teal-600 hover:bg-teal-700 text-white w-full sm:w-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                    <polyline points="10 17 15 12 10 7"/>
-                    <line x1="15" x2="3" y1="12" y2="12"/>
-                  </svg>
-                  Iniciar sesión
-                </Button>
-              </SignInButton>
-            </div>
-          </SignedOut>
-        </CardContent>
-      </Card>
--->
+    <div class="space-y-6 w-full">
       <!-- Currency Setting -->
       <Card>
         <CardHeader>
@@ -151,79 +92,51 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { CurrencySelector } from '~/components/ui/CurrencySelector'
 import { CURRENCIES } from '~/composables/useSettings'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '~/components/ui/alert-dialog'
+import { useTripsNew } from '~/composables/useTripsNew'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 
-const { user } = useUser()
-const { settings, setCurrency, getCurrencyInfo } = useSettings()
-const { budget, updateBudget, expenses, getTotalSpent, clearAllData, exportData, importData } = useExpenses()
-const { markSetupComplete, isSetupComplete } = useFirstTimeSetup()
-const { currentTrip, updateTrip } = useTrips()
+const { currentTrip, updateTrip } = useTripsNew()
 
-const selectedCurrency = computed(() => currentTrip.value?.moneda || settings.value.currency)
+const selectedCurrency = computed(() => currentTrip.value?.currency || 'JPY')
 const currencyInfo = computed(() => {
-  const code = currentTrip.value?.moneda || settings.value.currency
-  if (!code) return null
+  const code = currentTrip.value?.currency || 'JPY'
   return CURRENCIES.find(c => c.code === code) || null
 })
 
 const dailyLimitInput = ref(
   currentTrip.value 
-    ? (currentTrip.value.presupuesto_diario?.toString() || '')
-    : (budget.value.dailyLimit > 0 ? budget.value.dailyLimit.toString() : '')
+    ? (currentTrip.value.daily_budget?.toString() || '')
+    : ''
 )
 
 const displayDailyLimit = computed(() => 
   currentTrip.value 
-    ? (currentTrip.value.presupuesto_diario || 0)
-    : budget.value.dailyLimit
+    ? (currentTrip.value.daily_budget || 0)
+    : 0
 )
-
-const totalSpent = computed(() => getTotalSpent())
-const isFirstTime = ref(!isSetupComplete())
-
-// Delete dialog state
-const showDeleteDialog = ref(false)
-const hasExportedBeforeDelete = ref(false)
-
-// File input ref
-const fileInput = ref<HTMLInputElement | null>(null)
 
 // Watch for budget changes from external sources
 watch(() => currentTrip.value, (trip) => {
-  if (trip && trip.presupuesto_diario) {
-    dailyLimitInput.value = trip.presupuesto_diario.toString()
+  if (trip && trip.daily_budget) {
+    dailyLimitInput.value = trip.daily_budget.toString()
   }
 }, { deep: true })
 
-watch(() => budget.value.dailyLimit, (newLimit) => {
-  if (!currentTrip.value) {
-    dailyLimitInput.value = newLimit.toString()
-  }
-})
-
 async function handleCurrencyChange(currency: Currency) {
   if (currentTrip.value) {
-    await updateTrip(currentTrip.value.id, { moneda: currency })
+    await updateTrip(currentTrip.value.id, { currency: currency })
   }
-  setCurrency(currency)
-  // Mark setup as complete when currency is changed
-  markSetupComplete()
-  isFirstTime.value = false
 }
 
 async function handleBudgetChange() {
   const newLimit = parseFloat(dailyLimitInput.value)
   if (!isNaN(newLimit) && newLimit > 0) {
     if (currentTrip.value) {
-      await updateTrip(currentTrip.value.id, { presupuesto_diario: newLimit })
+      await updateTrip(currentTrip.value.id, { daily_budget: newLimit })
     }
-    updateBudget({ dailyLimit: newLimit })
-    // Mark setup as complete when budget is set
-    markSetupComplete()
-    isFirstTime.value = false
   } else {
     // Reset to current budget if invalid
-    dailyLimitInput.value = currentTrip.value?.presupuesto_diario?.toString() || budget.value.dailyLimit.toString()
+    dailyLimitInput.value = currentTrip.value?.daily_budget?.toString() || ''
   }
 }
 
@@ -231,90 +144,5 @@ function formatCurrency(amount: number): string {
   const info = currencyInfo.value
   if (!info) return amount.toLocaleString()
   return `${info.symbol}${amount.toLocaleString()}`
-}
-
-// Export/Delete handlers
-function handleExportBeforeDelete() {
-  try {
-    const jsonData = exportData()
-    const blob = new Blob([jsonData], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `gastos-japon-backup-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-    hasExportedBeforeDelete.value = true
-  } catch (error) {
-    console.error('Error exporting data:', error)
-    alert('Error al exportar los datos')
-  }
-}
-
-function handleCancelDelete() {
-  hasExportedBeforeDelete.value = false
-}
-
-function handleDeleteAll() {
-  clearAllData()
-  showDeleteDialog.value = false
-  hasExportedBeforeDelete.value = false
-  // Optionally show success message
-  alert('Todos los gastos han sido eliminados')
-}
-
-// Export handler
-function handleExport() {
-  try {
-    const jsonData = exportData()
-    const blob = new Blob([jsonData], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `gastos-japon-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('Error exporting data:', error)
-    alert('Error al exportar los datos')
-  }
-}
-
-// Import handlers
-function triggerImport() {
-  fileInput.value?.click()
-}
-
-function handleImport(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  
-  if (!file) return
-
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    try {
-      const content = e.target?.result as string
-      const success = importData(content)
-
-      if (success) {
-        alert('Datos importados correctamente')
-        // Reset file input
-        if (fileInput.value) {
-          fileInput.value.value = ''
-        }
-      } else {
-        alert('Error al importar los datos. Verifica el formato del archivo.')
-      }
-    } catch (error) {
-      console.error('Error importing data:', error)
-      alert('Error al importar los datos')
-    }
-  }
-  reader.readAsText(file)
 }
 </script>

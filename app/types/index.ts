@@ -25,6 +25,7 @@ export interface Expense {
   location: Location
   paymentMethod: PaymentMethod
   shared: boolean
+  status: 'real' | 'planned' // Added status field
   photo?: string // Optional base64 or URL
 }
 

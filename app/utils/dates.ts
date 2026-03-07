@@ -144,6 +144,14 @@ export const getDayDiff = (start?: string, end?: string) => {
   return diff > 0 ? `+${diff}` : null
 }
 
+export const getDurationDays = (start?: string, end?: string) => {
+  if (!start || !end) return 0
+  const d1 = new Date(start); d1.setHours(0, 0, 0, 0)
+  const d2 = new Date(end); d2.setHours(0, 0, 0, 0)
+  const diff = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+  return Math.max(0, diff) + 1
+}
+
 /**
  * Get date string in YYYY-MM-DD format from timestamp
  * Handles both "YYYY-MM-DD HH:MM" format and ISO format

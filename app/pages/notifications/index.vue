@@ -107,12 +107,13 @@ import { useRouter } from 'vue-router'
 import { Bell, BellOff, Info, AlertTriangle, CheckCircle, AlertOctagon, Mail, Check, Trash2 } from 'lucide-vue-next'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
-import { useNotifications, type Notification } from '~/composables/useNotifications'
-import { useDirectus } from '~/composables/useDirectus'
+import { useNotificationsNew } from '~/composables/useNotificationsNew'
+import type { Notification } from '~/types/directus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
-const { directusUserId } = useDirectus()
+const { directusUserId } = useDirectusRepo()
 const { 
   notifications, 
   isLoading, 
@@ -121,7 +122,7 @@ const {
   markAsRead, 
   markAllAsRead,
   deleteNotification
-} = useNotifications()
+} = useNotificationsNew()
 
 onMounted(() => {
   fetchNotifications()

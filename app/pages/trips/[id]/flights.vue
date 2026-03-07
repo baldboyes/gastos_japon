@@ -2,20 +2,20 @@
   import { ref, onMounted, computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { Plane, Plus, Trash2, Pencil, ArrowRight, Calendar, MoreVertical, FileDown } from 'lucide-vue-next'
-  import { useTripOrganization } from '~/composables/useTripOrganization'
-  import { useTrips } from '~/composables/useTrips'
+  import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+  import { useTripsNew } from '~/composables/useTripsNew'
   import { useAirlines } from '~/composables/useAirlines'
   import { formatTime } from '~/utils/dates'
   import { formatCurrency } from '~/utils/currency'
   import { groupByDate } from '~/utils/grouping'
   import { cn } from '~/lib/utils'
-  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import { getPaymentStatusPillClass } from '~/utils/payment-status'
   import FlightDrawer from '~/components/trips/drawers/FlightDrawer.vue'
   import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
   import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
   import TaskModal from '~/components/trips/tasks/TaskModal.vue'
-  import { useTripTasks } from '~/composables/useTripTasks'
-  import { type Task } from '~/types/tasks'
+  import { useTripTasksNew } from '~/composables/useTripTasksNew'
+  import { type Task } from '~/types/directus'
   import { useDirectusFiles } from '~/composables/useDirectusFiles'
   import {
     DropdownMenu,
@@ -41,13 +41,13 @@
   })
 
   const route = useRoute()
-  const tripId = route.params.id as string
+  const tripId = parseInt(route.params.id as string)
   const { downloadFile } = useDirectusFiles()
 
-  const { currentTrip } = useTrips()
-  const { vuelos, fetchOrganizationData, deleteVuelo } = useTripOrganization()
+  const { currentTrip } = useTripsNew()
+  const { flights, fetchOrganizationData, deleteFlight } = useTripOrganizationNew()
   const { airlines, fetchAirlines } = useAirlines()
-  const { tasks, init: initTasks, updateTask } = useTripTasks()
+  const { tasks, fetchTasks, updateTask } = useTripTasksNew()
 
   const isTaskModalOpen = ref(false)
   const selectedTaskToEdit = ref<Task | null>(null)
@@ -58,8 +58,9 @@
       if (t.entity_type === 'flight') return true
       
       // Check group entity type if task doesn't have it set directly
-      const group = typeof t.task_group === 'object' ? t.task_group : null
-      if (group && group.entity_type === 'flight') return true
+      // In new schema task_group is string or object depending on fetch depth, 
+      // but simpler check:
+      if (!t.entity_type && t.task_group === 'Vuelos') return true
       
       return false
     })
@@ -67,6 +68,11 @@
 
   const handleEditTask = (task: Task) => {
     selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
+  }
+
+  const handleAddTask = () => {
+    selectedTaskToEdit.value = null
     isTaskModalOpen.value = true
   }
 
@@ -83,7 +89,7 @@
 
   const executeDelete = async () => {
     if (flightToDelete.value) {
-      await deleteVuelo(flightToDelete.value)
+      await deleteFlight(flightToDelete.value)
       isDeleteOpen.value = false
       flightToDelete.value = null
     }
@@ -106,7 +112,7 @@
   onMounted(() => {
     fetchOrganizationData(tripId)
     fetchAirlines()
-    initTasks(parseInt(tripId))
+    fetchTasks(tripId)
   })
 
   const getAirlineLogo = (name: string) => {
@@ -115,7 +121,7 @@
     return airline?.logo || undefined
   }
 
-  const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'fecha_salida')
+  const getEscalasGrouped = (escalas?: any[]) => groupByDate(escalas, 'departure_time')
 
   const getDayDiff = (start?: string, end?: string) => {
     if (!start || !end) return null
@@ -144,22 +150,22 @@
             </div>
             <Button @click="handleCreateFlight"><Plus class="h-4 w-4" /> {{ $t('trip_flights_page.actions.add') }}</Button>
           </div>
-          <div v-if="vuelos.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+          <div v-if="flights.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Plane class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_flights_page.empty.title') }}</h3>
             <p class="max-w-md mx-auto mt-2">{{ $t('trip_flights_page.empty.subtitle') }}</p>
           </div>
           <div v-else class="space-y-4">
-            <Card v-for="v in vuelos" :key="v.id">
+            <Card v-for="v in flights" :key="v.id">
               <CardHeader class="flex flex-row items-start justify-between gap-4">
                 <div class="flex justify-between w-full">
                   <CardTitle class="text-lg">
-                    <span>{{ v.titulo }}</span>
-                    <span v-if="v.codigo_reserva" class="opacity-80 text-sm ml-2">{{ v.codigo_reserva }}</span>
+                    <span>{{ v.title }}</span>
+                    <span v-if="v.booking_reference" class="opacity-80 text-sm ml-2">{{ v.booking_reference }}</span>
                   </CardTitle>
                   <div class="flex items-center gap-2">
-                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(v.estado_pago || 'pendiente'))">
-                      {{ formatCurrency(v.precio || 0, v.moneda) }}
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getPaymentStatusPillClass(v.payment_status || 'pending'))">
+                      {{ formatCurrency(v.price || 0, v.currency) }}
                     </span>
                   </div>
                 </div>
@@ -186,8 +192,8 @@
               <CardContent>
                 <div class="w-full">
                   <!-- Escalas Display -->
-                  <div v-if="v.escalas && v.escalas.length > 0" class="mb-4">
-                    <div v-for="(group, gIndex) in getEscalasGrouped(v.escalas)" :key="gIndex" class="mb-4 last:mb-0 space-y-2">
+                  <div v-if="v.layovers && v.layovers.length > 0" class="mb-4">
+                    <div v-for="(group, gIndex) in getEscalasGrouped(v.layovers)" :key="gIndex" class="mb-4 last:mb-0 space-y-2">
                       <h4 class="font-medium flex items-center gap-2">
                         <Calendar class="h-4 w-4" /> {{ group.date }}
                       </h4>
@@ -198,8 +204,8 @@
                               <!-- Logo Aerolínea -->
                               <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 p-1">
                                 <img 
-                                  v-if="getAirlineLogo(escala.aerolinea)" 
-                                  :src="getAirlineLogo(escala.aerolinea)" 
+                                  v-if="getAirlineLogo(escala.airline)" 
+                                  :src="getAirlineLogo(escala.airline)" 
                                   class="h-full w-full object-contain"
                                   alt=""
                                 />
@@ -209,24 +215,24 @@
                               <!-- Detalles Trayecto -->
                               <div>
                                 <div class="flex items-center gap-2 font-bold text-base text-slate-800">
-                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_salida) }}</Badge>
-                                  <span>{{ escala.origen }}</span> <span v-if="escala.terminal_origen" class="opacity-50 text-xs">{{ escala.terminal_origen }}</span>
+                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.departure_time) }}</Badge>
+                                  <span>{{ escala.departure_airport }}</span> <span v-if="escala.terminal_departure" class="opacity-50 text-xs">{{ escala.terminal_departure }}</span>
                                   <ArrowRight class="h-4 w-4 text-muted-foreground mx-1" />
-                                  <span v-if="escala.terminal_destino" class="opacity-50 text-xs">{{ escala.terminal_destino }}</span> <span>{{ escala.destino }}</span>
-                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.fecha_llegada) }}</Badge>
-                                    <sup v-if="getDayDiff(escala.fecha_salida, escala.fecha_llegada)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.fecha_salida, escala.fecha_llegada) }}</sup>
+                                  <span v-if="escala.terminal_arrival" class="opacity-50 text-xs">{{ escala.terminal_arrival }}</span> <span>{{ escala.arrival_airport }}</span>
+                                  <Badge variant="outline" class="font-mono text-xs">{{ formatTime(escala.arrival_time) }}</Badge>
+                                    <sup v-if="getDayDiff(escala.departure_time, escala.arrival_time)" class="text-xs text-red-500 font-bold ml-0.5">{{ getDayDiff(escala.departure_time, escala.arrival_time) }}</sup>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
-                                  <div v-if="escala.aerolinea" class="font-medium text-slate-700">
-                                    {{ escala.aerolinea }}
+                                  <div v-if="escala.airline" class="font-medium text-slate-700">
+                                    {{ escala.airline }}
                                   </div>
-                                  <div v-if="escala.numero_vuelo" class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
-                                    {{ escala.numero_vuelo }}
+                                  <div v-if="escala.flight_number" class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-700">
+                                    {{ escala.flight_number }}
                                   </div>
                                 </div>
-                                <div v-if="escala.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                                <div v-if="escala.notes" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
                                   <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('trip_flights_page.labels.notes') }}</p>
-                                  <p class="whitespace-pre-line">{{ escala.notas }}</p>
+                                  <p class="whitespace-pre-line">{{ escala.notes }}</p>
                                 </div>
                               </div>
                             </div>
@@ -238,8 +244,8 @@
                   </div>
                 </div>
                 <!-- Adjuntos -->
-                <div v-if="v.adjuntos" class="flex items-center gap-2 mt-4">
-                  <div v-for="item in v.adjuntos" :key="item.id">
+                <div v-if="v.attachments" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in v.attachments" :key="item.id">
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
@@ -257,8 +263,9 @@
         <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
           <TasksSidebar 
             :tasks="allFlightTasks"
-            @update:status="(id, status) => updateTask(id, { status })"
+            @update:status="(id, status) => updateTask(Number(id), { status })"
             @edit="handleEditTask"
+            @add="handleAddTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
@@ -269,8 +276,10 @@
     <TaskModal 
       v-model:open="isTaskModalOpen" 
       :task="selectedTaskToEdit" 
-      :trip-id="parseInt(tripId)"
-      @saved="initTasks(parseInt(tripId))"
+      :trip-id="tripId"
+      default-group-id="Vuelos"
+      default-entity-type="flight"
+      @saved="fetchTasks(tripId)"
     />
     <!-- Alert Dialog Confirmación -->
     <AlertDialog v-model:open="isDeleteOpen">

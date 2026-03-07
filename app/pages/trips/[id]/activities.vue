@@ -2,19 +2,19 @@
   import { ref, onMounted, computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { Camera, Plus, Trash2, Pencil, Calendar, MapPin, Clock, MoreVertical, FileDown } from 'lucide-vue-next'
-  import { useTripOrganization } from '~/composables/useTripOrganization'
-  import { useTrips } from '~/composables/useTrips'
+  import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+  import { useTripsNew } from '~/composables/useTripsNew'
   import { useDirectusFiles } from '~/composables/useDirectusFiles'
   import { formatTime, formatDateTime, formatDateWithDayShort } from '~/utils/dates'
   import { formatCurrency } from '~/utils/currency'
   import { cn } from '~/lib/utils'
-  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import { getPaymentStatusPillClass } from '~/utils/payment-status'
   import ActivityDrawer from '~/components/trips/drawers/ActivityDrawer.vue'
   import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
   import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
   import TaskModal from '~/components/trips/tasks/TaskModal.vue'
-  import { useTripTasks } from '~/composables/useTripTasks'
-  import { type Task } from '~/types/tasks'
+  import { useTripTasksNew } from '~/composables/useTripTasksNew'
+  import { type Task } from '~/types/directus'
   import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,11 +39,11 @@
     layout: 'dashboard'
   })
   const route = useRoute()
-  const tripId = route.params.id as string
+  const tripId = parseInt(route.params.id as string)
 
-  const { currentTrip } = useTrips()
-  const { actividades, fetchOrganizationData, deleteActividad } = useTripOrganization()
-  const { tasks, init: initTasks, updateTask } = useTripTasks()
+  const { currentTrip } = useTripsNew()
+  const { activities, fetchOrganizationData, deleteActivity } = useTripOrganizationNew()
+  const { tasks, fetchTasks, updateTask } = useTripTasksNew()
   const { downloadFile } = useDirectusFiles()
 
   const isTaskModalOpen = ref(false)
@@ -52,11 +52,10 @@
   const allActivityTasks = computed(() => {
     return tasks.value.filter(t => {
       // Check direct entity type
-      if (t.entity_type === 'activity') return true
+      if (t.entity_type === 'activity' || t.entity_type === 'activities') return true
       
       // Check group entity type if task doesn't have it set directly
-      const group = typeof t.task_group === 'object' ? t.task_group : null
-      if (group && group.entity_type === 'activity') return true
+      if (!t.entity_type && t.task_group === 'Actividades') return true
       
       return false
     })
@@ -64,6 +63,11 @@
 
   const handleEditTask = (task: Task) => {
     selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
+  }
+
+  const handleAddTask = () => {
+    selectedTaskToEdit.value = null
     isTaskModalOpen.value = true
   }
 
@@ -80,7 +84,7 @@
 
   const executeDelete = async () => {
     if (activityToDelete.value) {
-      await deleteActividad(activityToDelete.value)
+      await deleteActivity(activityToDelete.value)
       isDeleteOpen.value = false
       activityToDelete.value = null
     }
@@ -102,7 +106,7 @@
 
   onMounted(() => {
     fetchOrganizationData(tripId)
-    initTasks(parseInt(tripId))
+    fetchTasks(tripId)
   })
 
   const getDuration = (start?: string, end?: string) => {
@@ -136,19 +140,19 @@
             </div>
             <Button @click="handleCreateActivity"><Plus class="h-4 w-4" /> {{ $t('trip_activities_page.actions.add') }}</Button>
           </div>
-          <div v-if="actividades.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+          <div v-if="activities.length === 0" class=" px-4 md:px-0 text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <Camera class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">{{ $t('trip_activities_page.empty.title') }}</h3>
             <p class="max-w-md mx-auto mt-2">{{ $t('trip_activities_page.empty.subtitle') }}</p>
           </div>
           <div v-else class="space-y-4">
-            <Card v-for="a in actividades" :key="a.id">
+            <Card v-for="a in activities" :key="a.id">
               <CardHeader class="flex flex-row items-start justify-between pb-2">
                 <div class="flex justify-between w-full">
-                  <CardTitle class="text-lg">{{ a.nombre }}</CardTitle>
+                  <CardTitle class="text-lg">{{ a.title }}</CardTitle>
                   <div class="flex items-center gap-2">
-                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(a.estado_pago || 'pendiente'))">
-                      {{ formatCurrency(a.precio || 0, a.moneda) }}
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getPaymentStatusPillClass(a.payment_status || 'pending'))">
+                      {{ formatCurrency(a.price || 0, a.currency) }}
                     </span>
                   </div>
                 </div>
@@ -175,10 +179,10 @@
               <CardContent>
                 <div class="flex flex-col xl:flex-row gap-8 w-full">
                   <div class="w-full xl:w-1/3">
-                    <div v-if="a.ubicacion?.latitude && a.ubicacion?.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
+                    <div v-if="a.latitude && a.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
                       <LocationMap 
-                        :latitude="a.ubicacion.latitude" 
-                        :longitude="a.ubicacion.longitude"
+                        :latitude="a.latitude" 
+                        :longitude="a.longitude"
                       />
                     </div>
                   </div>
@@ -186,24 +190,24 @@
                     <div class="flex flex-wrap gap-4">
                       <div class="flex items-center gap-2">
                         <Calendar class="h-4 w-4 text-slate-400" />
-                        <span class="font-medium">{{ formatDateWithDayShort(a.fecha_inicio) }}</span>
+                        <span class="font-medium">{{ formatDateWithDayShort(a.start_date) }}</span>
                       </div>
                       <div class="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock class="h-4 w-4 text-slate-400" />
-                        <span>{{ formatTime(a.fecha_inicio) }} - {{ formatTime(a.fecha_fin) }}</span>
-                        <Badge variant="secondary" class="ml-1 text-[10px]">{{ getDuration(a.fecha_inicio, a.fecha_fin) }}</Badge>
+                        <span>{{ formatTime(a.start_date) }} - {{ formatTime(a.end_date) }}</span>
+                        <Badge variant="secondary" class="ml-1 text-[10px]">{{ getDuration(a.start_date, a.end_date) }}</Badge>
                       </div>
                     </div>
                     <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                       <MapPin class="h-3 w-3" />
-                      <span v-if="a.ubicacion?.address">{{ a.ubicacion.address }}</span>
+                      <span v-if="a.address">{{ a.address }}</span>
                       <span v-else class="italic">{{ $t('trip_activities_page.location.none') }}</span>
                     </div>
 
                     <div class="flex items-center justify-between gap-4">
                       <div class="flex items-center justify-start gap-1">
-                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.ubicacion?.address">
-                          <NuxtLink :href="a.enlace_google" target="_blank"> 
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.address">
+                          <NuxtLink :href="a.google_maps_link" target="_blank"> 
                             <span class="sr-only">{{ $t('trip_activities_page.actions.open_maps') }}</span>
                             <MapPin class="h-6 w-6" />
                           </NuxtLink>
@@ -234,19 +238,19 @@
 
 
                 </div>
-                <div v-if="a.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                <div v-if="a.notes" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
                   <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('trip_activities_page.labels.notes') }}</p>
-                  <p class="whitespace-pre-line">{{ a.notas }}</p>
+                  <p class="whitespace-pre-line">{{ a.notes }}</p>
                 </div>
                 <EntityTasksWidget 
-                  :trip-id="parseInt(tripId)"
+                  :trip-id="tripId"
                   entity-type="activity"
                   :entity-id="a.id"
-                  :title="$t('trip_activities_page.tasks.title_prefix') + ': ' + (a.nombre || '')"
+                  :title="$t('trip_activities_page.tasks.title_prefix') + ': ' + (a.title || '')"
                   class="hidden"
                 />
-                <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
-                  <div v-for="item in a.adjuntos" :key="item.id">
+                <div v-if="a.attachments" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in a.attachments" :key="item.id">
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
@@ -264,8 +268,9 @@
         <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
           <TasksSidebar 
             :tasks="allActivityTasks"
-            @update:status="(id, status) => updateTask(id, { status })"
+            @update:status="(id, status) => updateTask(Number(id), { status })"
             @edit="handleEditTask"
+            @add="handleAddTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
@@ -285,8 +290,10 @@
     <TaskModal 
       v-model:open="isTaskModalOpen" 
       :task="selectedTaskToEdit" 
-      :trip-id="parseInt(tripId)"
-      @saved="initTasks(parseInt(tripId))"
+      :trip-id="tripId"
+      default-group-id="Actividades"
+      default-entity-type="activity"
+      @saved="fetchTasks(tripId)"
     />
 
     <!-- Alert Dialog Confirmación -->

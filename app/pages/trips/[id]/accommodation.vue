@@ -2,13 +2,13 @@
   import { ref, onMounted, computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { BedDouble, Plus, Trash2, Pencil, Calendar, MapPin, MoreVertical, PhoneCall, Mail, BaggageClaim, Bath, Coffee, Utensils, BedSingle, FileDown } from 'lucide-vue-next'
-  import { useTripOrganization } from '~/composables/useTripOrganization'
-  import { useTrips } from '~/composables/useTrips'
+  import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+  import { useTripsNew } from '~/composables/useTripsNew'
   import { useDirectusFiles } from '~/composables/useDirectusFiles'
   import { formatDateTime, formatDate, getDaysElapsed, formatDateWithDayShort, formatTime } from '~/utils/dates'
   import { formatCurrency } from '~/utils/currency'
   import { cn } from '~/lib/utils'
-  import { getStatusColor, getStatusLabel } from '~/utils/trip-status'
+  import { getPaymentStatusPillClass } from '~/utils/payment-status'
   import { Button } from '~/components/ui/button'
   import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
   import { Badge } from '~/components/ui/badge'
@@ -39,21 +39,21 @@
     AlertDialogTitle,
   } from '~/components/ui/alert-dialog'
   import UserAvatar from '~/components/common/UserAvatar.vue'
-  import { useTripTasks } from '~/composables/useTripTasks'
+  import { useTripTasksNew } from '~/composables/useTripTasksNew'
   import TaskModal from '~/components/trips/tasks/TaskModal.vue'
   import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
   import TasksSidebar from '~/components/trips/tasks/TasksSidebar.vue'
-  import { type Task } from '~/types/tasks'
+  import { type Task } from '~/types/directus'
   
   definePageMeta({
     layout: 'dashboard'
   })
   const route = useRoute()
-  const tripId = route.params.id as string
+  const tripId = parseInt(route.params.id as string)
 
-  const { currentTrip } = useTrips()
-  const { alojamientos, fetchOrganizationData, deleteAlojamiento } = useTripOrganization()
-  const { tasks, init: initTasks, updateTask } = useTripTasks()
+  const { currentTrip } = useTripsNew()
+  const { accommodations, fetchOrganizationData, deleteAccommodation } = useTripOrganizationNew()
+  const { tasks, fetchTasks, updateTask } = useTripTasksNew()
   const { downloadFile } = useDirectusFiles()
 
   const isTaskModalOpen = ref(false)
@@ -62,11 +62,10 @@
   const allAccommodationTasks = computed(() => {
     return tasks.value.filter(t => {
       // Check direct entity type
-      if (t.entity_type === 'accommodation') return true
+      if (t.entity_type === 'accommodation' || t.entity_type === 'accommodations') return true
       
       // Check group entity type if task doesn't have it set directly
-      const group = typeof t.task_group === 'object' ? t.task_group : null
-      if (group && group.entity_type === 'accommodation') return true
+      if (!t.entity_type && t.task_group === 'Alojamientos') return true
       
       return false
     })
@@ -74,6 +73,11 @@
 
   const handleEditTask = (task: Task) => {
     selectedTaskToEdit.value = task
+    isTaskModalOpen.value = true
+  }
+
+  const handleAddTask = () => {
+    selectedTaskToEdit.value = null
     isTaskModalOpen.value = true
   }
 
@@ -90,7 +94,7 @@
 
   const executeDelete = async () => {
     if (accommodationToDelete.value) {
-      await deleteAlojamiento(accommodationToDelete.value)
+      await deleteAccommodation(accommodationToDelete.value)
       isDeleteOpen.value = false
       accommodationToDelete.value = null
     }
@@ -112,7 +116,7 @@
 
   onMounted(() => {
     fetchOrganizationData(tripId)
-    initTasks(parseInt(tripId))
+    fetchTasks(tripId)
   })
 
   const getNights = (start: string, end: string) => {
@@ -139,19 +143,19 @@
             </div>
             <Button @click="handleCreateAccommodation"><Plus class="h-4 w-4" /> {{ $t('accommodation_page.actions.add') }}</Button>
           </div>
-          <div v-if="alojamientos.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
+          <div v-if="accommodations.length === 0" class="text-center py-16 border rounded-lg bg-slate-50 border-dashed text-muted-foreground">
             <BedDouble class="mx-auto h-12 w-12 text-slate-300 mb-4" />
             <h3 class="text-lg font-semibold text-slate-700">{{ $t('accommodation_page.empty.title') }}</h3>
             <p class="max-w-md mx-auto mt-2">{{ $t('accommodation_page.empty.subtitle') }}</p>
           </div>
           <template v-else>
-            <Card v-for="a in alojamientos" :key="a.id">
+            <Card v-for="a in accommodations" :key="a.id">
               <CardHeader class="flex flex-row items-start justify-between gap-4">
                 <div class="flex justify-between w-full">
-                  <CardTitle class="text-lg">{{ a.nombre }}</CardTitle>
+                  <CardTitle class="text-lg">{{ a.name }}</CardTitle>
                   <div class="flex items-center gap-2">
-                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getStatusColor(a.estado_pago || 'pendiente'))">
-                      {{ formatCurrency(a.precio || 0, a.moneda) }}
+                    <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getPaymentStatusPillClass(a.payment_status || 'pending'))">
+                      {{ formatCurrency(a.price || 0, a.currency) }}
                     </span>
                   </div>
                 </div>
@@ -178,10 +182,10 @@
               <CardContent>
                 <div class="flex flex-col xl:flex-row gap-8 w-full">
                   <div class="w-full xl:w-1/3">
-                    <div v-if="a.ubicacion?.latitude && a.ubicacion?.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
+                    <div v-if="a.latitude && a.longitude" class="h-[200px] w-full rounded-md overflow-hidden relative">
                       <LocationMap 
-                        :latitude="a.ubicacion.latitude" 
-                        :longitude="a.ubicacion.longitude"
+                        :latitude="a.latitude" 
+                        :longitude="a.longitude"
                       />
                     </div>
                   </div>
@@ -190,15 +194,15 @@
                       <div class="space-y-1">
                         <div class="text-xs font-bold text-slate-500 uppercase">{{ $t('accommodation_page.labels.check_in') }}</div>
                         <div class="flex items-center gap-2">
-                          <span class="font-medium">{{ formatDateWithDayShort(a.fecha_entrada) }}</span>
-                          <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.fecha_entrada) }}</Badge>
+                          <span class="font-medium">{{ formatDateWithDayShort(a.check_in) }}</span>
+                          <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.check_in) }}</Badge>
                         </div>
                       </div>
                       <div class="space-y-1">
                         <div class="text-xs font-bold text-slate-500 uppercase">{{ $t('accommodation_page.labels.check_out') }}</div>
                         <div class="flex items-center gap-2">
-                          <span class="font-medium">{{ formatDateWithDayShort(a.fecha_salida) }}</span>
-                          <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.fecha_salida) }}</Badge>
+                          <span class="font-medium">{{ formatDateWithDayShort(a.check_out) }}</span>
+                          <Badge variant="outline" class="font-mono text-xs">{{ formatTime(a.check_out) }}</Badge>
                         </div>
                       </div>
                     </div>
@@ -208,14 +212,14 @@
                     </div>
                     <div class="flex items-center justify-between gap-4">
                       <div class="flex items-center justify-start gap-1">
-                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.ubicacion?.address">
-                          <NuxtLink :href="a.enlace_google" target="_blank"> 
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.address">
+                          <NuxtLink :href="a.google_maps_link" target="_blank"> 
                             <span class="sr-only">{{ $t('accommodation_page.actions.open_maps') }}</span>
                             <MapPin class="h-6 w-6" />
                           </NuxtLink>
                         </Button>
-                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.telefono">
-                          <NuxtLink v-if="a.telefono" :title="`${$t('accommodation_page.actions.call_prefix')} ${a.telefono}`" :href="`tel:${a.telefono}`"> 
+                        <Button size="icon" as-child class="h-8 w-8 p-0" v-if="a.phone">
+                          <NuxtLink v-if="a.phone" :title="`${$t('accommodation_page.actions.call_prefix')} ${a.phone}`" :href="`tel:${a.phone}`"> 
                             <span class="sr-only">{{ $t('accommodation_page.actions.call') }}</span>
                             <PhoneCall class="h-6 w-6" />
                           </NuxtLink>
@@ -228,7 +232,7 @@
                         </Button>
                       </div>
                       <div class="flex items-center justify-end gap-2">
-                        <TooltipProvider v-if="a.takkyubin">
+                        <TooltipProvider v-if="a.has_luggage_forwarding">
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2">
@@ -240,7 +244,7 @@
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="a.privado">
+                        <TooltipProvider v-if="a.is_private">
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2">
@@ -252,20 +256,19 @@
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="a.pension?.includes('desayuno') || a.pension?.includes('comida') || a.pension?.includes('cena') || a.pension?.includes('completa')">
+                        <TooltipProvider v-if="a.board_basis?.includes('breakfast') || a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')">
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2 flex items-center gap-6">
-                                <Coffee v-if="a.pension?.includes('desayuno')" class="h-5 w-5 text-gray-500" />
-                                <Utensils v-if="a.pension?.includes('comida') || a.pension?.includes('cena') || a.pension?.includes('completa')" class="h-5 w-5 text-gray-500" />
+                                <Coffee v-if="a.board_basis?.includes('breakfast')" class="h-5 w-5 text-gray-500" />
+                                <Utensils v-if="a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')" class="h-5 w-5 text-gray-500" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p class="flex gap-2">
-                                <span v-if="a.pension?.includes('desayuno')">{{ $t('accommodation_page.meals.breakfast') }}</span>
-                                <span v-if="a.pension?.includes('comida')">{{ $t('accommodation_page.meals.lunch') }}</span>
-                                <span v-if="a.pension?.includes('cena')">{{ $t('accommodation_page.meals.dinner') }}</span>
-                                <span v-if="a.pension?.includes('completa')">{{ $t('accommodation_page.meals.full_board') }}</span>
+                                <span v-if="a.board_basis?.includes('breakfast')">{{ $t('accommodation_page.meals.breakfast') }}</span>
+                                <span v-if="a.board_basis?.includes('half_board')">{{ $t('accommodation_page.meals.half_board') }}</span>
+                                <span v-if="a.board_basis?.includes('full_board')">{{ $t('accommodation_page.meals.full_board') }}</span>
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -274,19 +277,19 @@
                     </div>
                   </div>
                 </div>
-                <div v-if="a.notas" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
+                <div v-if="a.notes" class="mt-4 p-3 bg-yellow-50/50 border border-yellow-100 rounded-md text-sm text-slate-600">
                   <p class="font-medium text-yellow-700 text-xs uppercase mb-1">{{ $t('accommodation_page.labels.notes') }}</p>
-                  <p class="whitespace-pre-line">{{ a.notas }}</p>
+                  <p class="whitespace-pre-line">{{ a.notes }}</p>
                 </div>
                 <EntityTasksWidget 
-                  :trip-id="parseInt(tripId)"
+                  :trip-id="tripId"
                   entity-type="accommodation"
                   :entity-id="a.id"
-                  :title="$t('accommodation_page.tasks.title_prefix') + ': ' + (a.nombre || $t('accommodation_page.title'))"
+                  :title="$t('accommodation_page.tasks.title_prefix') + ': ' + (a.name || $t('accommodation_page.title'))"
                   class="hidden"
                 />
-                <div v-if="a.adjuntos" class="flex items-center gap-2 mt-4">
-                  <div v-for="item in a.adjuntos" :key="item.id">
+                <div v-if="Array.isArray(a.attachments) && a.attachments.length" class="flex items-center gap-2 mt-4">
+                  <div v-for="item in (a.attachments as any[])" :key="item.id">
                     <Button 
                       :key="item.id"
                       @click="downloadFile(item.directus_files_id?.id || item.id, item.directus_files_id?.filename_download || item.filename_download)"
@@ -305,8 +308,9 @@
         <div class="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-8">
           <TasksSidebar 
             :tasks="allAccommodationTasks"
-            @update:status="(id, status) => updateTask(id, { status })"
+            @update:status="(id, status) => updateTask(Number(id), { status })"
             @edit="handleEditTask"
+            @add="handleAddTask"
           />
           <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
@@ -319,8 +323,10 @@
     <TaskModal 
       v-model:open="isTaskModalOpen" 
       :task="selectedTaskToEdit" 
-      :trip-id="parseInt(tripId)"
-      @saved="initTasks(parseInt(tripId))"
+      :trip-id="tripId"
+      default-group-id="Alojamientos"
+      default-entity-type="accommodation"
+      @saved="fetchTasks(tripId)"
     />
 
     <!-- Alert Dialog Confirmación -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
-  import { useTripOrganization, type Transporte, type Escala } from '~/composables/useTripOrganization'
+  import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+  import type { Transport } from '~/types/directus'
   import { useTripItemForm } from '~/composables/useTripItemForm'
   import { addDays, addHours, formatDateTime, formatDate } from '~/utils/dates'
   import { differenceInDays, differenceInHours } from 'date-fns'
@@ -21,7 +22,7 @@ import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.
 import { DateTimePicker } from '~/components/ui/date-time-picker'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   import FileList from '~/components/ui/FileList/FileList.vue'
-  import { useDirectus } from '~/composables/useDirectus'
+  import { useDirectusRepo } from '~/composables/useDirectusRepo'
   import { readItem } from '@directus/sdk'
   import { Plus, Trash2 } from 'lucide-vue-next'
   import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
@@ -36,20 +37,15 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   const emit = defineEmits(['update:open', 'saved'])
   const { t } = useI18n()
 
-  const { createTransporte, updateTransporte } = useTripOrganization()
-  const { getAuthenticatedClient } = useDirectus()
+  const { createTransport, updateTransport, transports } = useTripOrganizationNew()
+  const { getClient } = useDirectusRepo()
 
-  type FormState = Omit<Partial<Transporte>, 'moneda' | 'escalas'> & {
+  type FormState = Partial<Transport> & {
     duracion_cantidad?: number
-    moneda: string
-    escalas: Escala[]
-    pase_id?: number | null
   }
 
-  const { transportes } = useTripOrganization()
-
   const availablePasses = computed(() => {
-    return transportes.value.filter(t => t.categoria === 'pase')
+    return transports.value.filter(t => t.category === 'pass')
   })
 
   // Initialize generic form logic
@@ -60,17 +56,18 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
     handleSave 
   } = useTripItemForm<FormState>(
     () => ({ 
-      moneda: props.currentTrip?.moneda || 'JPY', 
-      categoria: 'trayecto', 
-      escalas: [] as Escala[], 
-      precio: 0, 
-      estado_pago: 'pendiente', 
-      tipo_duracion: 'dias',
+      currency: props.currentTrip?.currency || 'JPY', 
+      category: 'route', 
+      stops: [], 
+      price: 0, 
+      payment_status: 'pending', 
+      duration_type: 'days',
       duracion_cantidad: 1,
-      pase_id: null
-    } as FormState),
-    createTransporte,
-    updateTransporte,
+      pass_id: null,
+      attachments: []
+    } as unknown as FormState),
+    createTransport,
+    updateTransport,
     String(t('trip_transport_drawer.item_label'))
   )
 
@@ -84,26 +81,27 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   watch(() => props.itemToEdit, (newItem) => {
     if (newItem) {
       handleEdit(newItem)
-      if (!formData.value.escalas) formData.value.escalas = []
+      if (!formData.value.stops) formData.value.stops = []
       
-      // Ensure pase_id is set correctly from the edited item
+      // Ensure pass_id is set correctly from the edited item
       // Directus might return an object or an ID, handle both
-      if (newItem.pase_id) {
-          if (typeof newItem.pase_id === 'object' && newItem.pase_id !== null) {
-              formData.value.pase_id = (newItem.pase_id as any).id
+      if (newItem.pass_id) {
+          if (typeof newItem.pass_id === 'object' && newItem.pass_id !== null) {
+              // @ts-ignore
+              formData.value.pass_id = (newItem.pass_id as any).id
           } else {
-              formData.value.pase_id = newItem.pase_id
+              formData.value.pass_id = newItem.pass_id
           }
       } else {
-          formData.value.pase_id = null
+          formData.value.pass_id = null
       }
 
       // Calculate duration if editing a pass
-      if (newItem.categoria === 'pase' && newItem.fecha_inicio && newItem.fecha_fin) {
-          if (newItem.tipo_duracion === 'horas') {
-            formData.value.duracion_cantidad = differenceInHours(new Date(newItem.fecha_fin), new Date(newItem.fecha_inicio))
+      if (newItem.category === 'pass' && newItem.start_date && newItem.end_date) {
+          if (newItem.duration_type === 'hours') {
+            formData.value.duracion_cantidad = differenceInHours(new Date(newItem.end_date), new Date(newItem.start_date))
           } else {
-            formData.value.duracion_cantidad = differenceInDays(new Date(newItem.fecha_fin), new Date(newItem.fecha_inicio)) + 1
+            formData.value.duracion_cantidad = differenceInDays(new Date(newItem.end_date), new Date(newItem.start_date)) + 1
           }
       }
     } else {
@@ -118,54 +116,55 @@ watch(isOpen, (isOpened) => {
 })
 
 // Watch for changes to calculate End Date
-  watch([() => formData.value.fecha_inicio, () => formData.value.duracion_cantidad, () => formData.value.tipo_duracion], () => {
-    if (formData.value.categoria !== 'pase') return
-    if (!formData.value.fecha_inicio) return
+  watch([() => formData.value.start_date, () => formData.value.duracion_cantidad, () => formData.value.duration_type], () => {
+    if (formData.value.category !== 'pass') return
+    if (!formData.value.start_date) return
 
     const amount = Number(formData.value.duracion_cantidad || 0)
     if (amount <= 0) return
 
-    if (formData.value.tipo_duracion === 'horas') {
-      formData.value.fecha_fin = addHours(formData.value.fecha_inicio, amount)
+    if (formData.value.duration_type === 'hours') {
+      formData.value.end_date = addHours(formData.value.start_date, amount)
     } else {
       const daysToAdd = Math.max(0, amount - 1)
-      formData.value.fecha_fin = addDays(formData.value.fecha_inicio, daysToAdd)
+      formData.value.end_date = addDays(formData.value.start_date, daysToAdd)
     }
   })
 
   // Watch for pass selection to auto-set price/payment
-  watch(() => formData.value.pase_id, (newVal) => {
-    if (newVal && formData.value.categoria === 'trayecto') {
-      formData.value.precio = 0
-      formData.value.estado_pago = 'pagado'
+  watch(() => formData.value.pass_id, (newVal) => {
+    if (newVal && formData.value.category === 'route') {
+      formData.value.price = 0
+      formData.value.payment_status = 'paid'
     }
   })
 
   const saveTransport = () => {
     handleSave((data) => {
       // Remove UI-only field
+      // @ts-ignore
       delete data.duracion_cantidad
       
       // Calculate derived values for logic but remove them before sending
       let derivedOrigen = ''
       let derivedDestino = ''
       
-      if (data.categoria === 'trayecto' && data.escalas && data.escalas.length > 0) {
-        const sorted = [...data.escalas].sort((a: any, b: any) => new Date(a.fecha_salida).getTime() - new Date(b.fecha_salida).getTime())
+      if (data.category === 'route' && data.stops && data.stops.length > 0) {
+        const sorted = [...data.stops].sort((a: any, b: any) => new Date(a.departure_time).getTime() - new Date(b.departure_time).getTime())
         
         const first = sorted[0]
         const last = sorted[sorted.length - 1]
         
         if (first && last) {
-            data.fecha_inicio = first.fecha_salida
-            data.fecha_fin = last.fecha_llegada
+            data.start_date = first.departure_time
+            data.end_date = last.arrival_time
             
-            derivedOrigen = first.origen
-            derivedDestino = last.destino
+            derivedOrigen = first.departure_place
+            derivedDestino = last.arrival_place
         }
         
         // Clean up system fields from nested scales to ensure clean JSON
-        data.escalas = data.escalas.map((e: any) => {
+        data.stops = data.stops.map((e: any) => {
           const clean = { ...e }
           // @ts-ignore
           delete clean.user_created
@@ -182,30 +181,30 @@ watch(isOpen, (isOpened) => {
       }
 
       // Default title if empty
-      if (!data.nombre) {
-        if (data.categoria === 'pase') {
-            data.nombre = String(t('trip_transport_drawer.defaults.pass_name'))
+      if (!data.name) {
+        if (data.category === 'pass') {
+            data.name = String(t('trip_transport_drawer.defaults.pass_name'))
         } else {
             // Use derived values or fallback to existing ones (if editing) or defaults
             // We cast to any to access the properties we are about to delete
-            const start = derivedOrigen || (data as any).origen || String(t('trip_transport_drawer.defaults.origin'))
-            const end = derivedDestino || (data as any).destino || String(t('trip_transport_drawer.defaults.destination'))
-            data.nombre = `${start} ➝ ${end}`
+            const start = derivedOrigen || (data as any).departure_place || String(t('trip_transport_drawer.defaults.origin'))
+            const end = derivedDestino || (data as any).arrival_place || String(t('trip_transport_drawer.defaults.destination'))
+            data.name = `${start} ➝ ${end}`
         }
       }
       
-      // Ensure pase_id is an ID (Directus expects ID, not object)
-      if (data.pase_id && typeof data.pase_id === 'object') {
+      // Ensure pass_id is an ID (Directus expects ID, not object)
+      if (data.pass_id && typeof data.pass_id === 'object') {
           // @ts-ignore
-          data.pase_id = (data.pase_id as any).id
+          data.pass_id = (data.pass_id as any).id
       }
 
       // Remove calculated fields that don't exist in backend
-      delete (data as any).origen
-      delete (data as any).destino
-      delete (data as any).medio
+      delete (data as any).departure_place
+      delete (data as any).arrival_place
+      delete (data as any).type
       
-      data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+      data.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
       return data
     }, () => {
       emit('saved')
@@ -215,31 +214,31 @@ watch(isOpen, (isOpened) => {
 
   const isValid = computed(() => {
     // if (!formData.value.nombre) return false
-    if (formData.value.categoria === 'pase') {
-      return formData.value.fecha_inicio && formData.value.fecha_fin
+    if (formData.value.category === 'pass') {
+      return formData.value.start_date && formData.value.end_date
     }
     return true
   })
 
   const formId = computed(() => (formData.value as any).id)
-  const formAdjuntos = computed(() => (formData.value as any).adjuntos || [])
+  const formAdjuntos = computed(() => (formData.value as any).attachments || [])
 
   const onFileUploaded = async () => {
     // @ts-ignore
     if (!formData.value.id) return
     
     try {
-      const client = await getAuthenticatedClient()
+      const client = await getClient()
       // @ts-ignore
-      const response = await client.request(readItem('transportes', formData.value.id, {
-        fields: ['adjuntos.directus_files_id.*']
+      const response = await client.request(readItem('transports', formData.value.id, {
+        fields: ['attachments.directus_files_id.*']
       }))
       
       // Update attachments in form data
       // @ts-ignore
-      if (response && response.adjuntos) {
+      if (response && response.attachments) {
         // @ts-ignore
-        formData.value.adjuntos = response.adjuntos
+        formData.value.attachments = response.attachments
       }
     } catch (e) {
       console.error('Error refreshing attachments:', e)
@@ -248,23 +247,26 @@ watch(isOpen, (isOpened) => {
 
   // Escalas Logic
   const addEscala = () => {
-    formData.value.escalas.push({
-      fecha_salida: formData.value.fecha_inicio || new Date().toISOString(),
-      fecha_llegada: formData.value.fecha_inicio || new Date().toISOString(),
-      origen: '',
-      destino: '',
-      medio: 'tren'
+    if (!formData.value.stops) formData.value.stops = []
+    formData.value.stops.push({
+      departure_time: formData.value.start_date || new Date().toISOString(),
+      arrival_time: formData.value.start_date || new Date().toISOString(),
+      departure_place: '',
+      arrival_place: '',
+      type: 'train'
     })
   }
 
   const removeEscala = (index: number) => {
-    formData.value.escalas.splice(index, 1)
+    if (formData.value.stops) {
+      formData.value.stops.splice(index, 1)
+    }
   }
 
   const paseIdString = computed({
-    get: () => formData.value.pase_id ? String(formData.value.pase_id) : 'none',
+    get: () => formData.value.pass_id ? String(formData.value.pass_id) : 'none',
     set: (val: string) => {
-      formData.value.pase_id = val === 'none' ? null : Number(val)
+      formData.value.pass_id = val === 'none' ? null : String(val)
     }
   })
 </script>
@@ -278,38 +280,38 @@ watch(isOpen, (isOpened) => {
       <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
         <div class="max-w-7xl mx-auto flex gap-16 flex-col lg:flex-row px-4">
           <div class="w-full lg:w-2/3 space-y-4 py-4">
-            <div v-if="formData.categoria === 'pase'">
+            <div v-if="formData.category === 'pass'">
               <Label>{{ $t('trip_transport_drawer.fields.title') }}</Label>
-              <Input v-model="formData.nombre" :placeholder="$t('trip_transport_drawer.placeholders.title')" />
+              <Input v-model="formData.name" :placeholder="$t('trip_transport_drawer.placeholders.title')" />
             </div>
 
             <div>
               <Label>{{ $t('trip_transport_drawer.fields.category') }}</Label>
               <div class="flex gap-2">
-                <Select v-model="formData.categoria" class="flex-1">
+                <Select v-model="formData.category" class="flex-1">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pase">{{ $t('trip_transport_drawer.category.pass') }}</SelectItem>
-                    <SelectItem value="trayecto">{{ $t('trip_transport_drawer.category.route') }}</SelectItem>
+                    <SelectItem value="pass">{{ $t('trip_transport_drawer.category.pass') }}</SelectItem>
+                    <SelectItem value="route">{{ $t('trip_transport_drawer.category.route') }}</SelectItem>
                   </SelectContent>
                 </Select>
                 
-                <Select v-if="formData.categoria === 'pase'" v-model="formData.tipo_duracion" class="w-32">
+                <Select v-if="formData.category === 'pass'" v-model="formData.duration_type" class="w-32">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dias">{{ $t('trip_transport_drawer.duration_type.days') }}</SelectItem>
-                    <SelectItem value="horas">{{ $t('trip_transport_drawer.duration_type.hours') }}</SelectItem>
+                    <SelectItem value="days">{{ $t('trip_transport_drawer.duration_type.days') }}</SelectItem>
+                    <SelectItem value="hours">{{ $t('trip_transport_drawer.duration_type.hours') }}</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select v-if="formData.categoria === 'trayecto'" v-model="paseIdString" class="w-full">
+                <Select v-if="formData.category === 'route'" v-model="paseIdString" class="w-full">
                    <SelectTrigger>
                       <SelectValue :placeholder="$t('trip_transport_drawer.placeholders.associate_pass')" />
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="none">{{ $t('trip_transport_drawer.associate.none') }}</SelectItem>
                       <SelectItem v-for="pase in availablePasses" :key="pase.id" :value="String(pase.id)">
-                        {{ pase.nombre }}
+                        {{ pase.name }}
                       </SelectItem>
                    </SelectContent>
                 </Select>
@@ -317,14 +319,14 @@ watch(isOpen, (isOpened) => {
             </div>
 
             <!-- PASE -->
-            <template v-if="formData.categoria === 'pase'">
+            <template v-if="formData.category === 'pass'">
                <div class="grid grid-cols-2 gap-2">
                   <div>
                     <Label>{{ $t('trip_transport_drawer.fields.valid_from') }}</Label>
                     <DateTimePicker 
-                      v-model="formData.fecha_inicio" 
-                      :min="currentTrip?.fecha_inicio || undefined"
-                      :max="currentTrip?.fecha_fin || undefined"
+                      v-model="formData.start_date" 
+                      :min="currentTrip?.start_date || undefined"
+                      :max="currentTrip?.end_date || undefined"
                     />
                   </div>
                   <div>
@@ -334,24 +336,24 @@ watch(isOpen, (isOpened) => {
                </div>
                <div>
                   <Label>{{ $t('trip_transport_drawer.fields.valid_until_calculated') }}</Label>
-                  <Input :model-value="formatDateTime(formData.fecha_fin)" disabled class="bg-muted" />
+                  <Input :model-value="formatDateTime(formData.end_date)" disabled class="bg-muted" />
                </div>
             </template>
 
             <!-- TRAYECTO (ESCALAS) -->
-            <template v-if="formData.categoria === 'trayecto'">
+            <template v-if="formData.category === 'route'">
                <div class="space-y-3">
                   <div class="flex justify-between items-center py-2">
                      <Label class="font-bold">{{ $t('trip_transport_drawer.scales.title') }}</Label>
                      <Button size="sm" @click="addEscala"><Plus class="h-3 w-3 mr-1" /> {{ $t('trip_transport_drawer.actions.add') }}</Button>
                   </div>
 
-                  <div v-if="formData.escalas.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
+                  <div v-if="!formData.stops || formData.stops.length === 0" class="text-sm text-center py-6 border-2 border-dashed rounded-lg bg-slate-50 text-muted-foreground">
                      <p>{{ $t('trip_transport_drawer.scales.empty.title') }}</p>
                      <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_transport_drawer.scales.empty.cta') }}</Button>
                   </div>
 
-                  <div v-for="(escala, index) in formData.escalas" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
+                  <div v-for="(escala, index) in formData.stops" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
                      <div class="flex justify-between items-center pb-6">
                         <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                            <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs">{{ index + 1 }}</div>
@@ -366,15 +368,15 @@ watch(isOpen, (isOpened) => {
 
                         <div>
                           <Label>{{ $t('trip_transport_drawer.fields.transport_mode') }}</Label>
-                          <Select v-model="escala.medio">
+                          <Select v-model="escala.type">
                               <SelectTrigger class="h-9"><SelectValue /></SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="tren">{{ $t('trip_transport_drawer.transport_mode.train') }}</SelectItem>
+                                <SelectItem value="train">{{ $t('trip_transport_drawer.transport_mode.train') }}</SelectItem>
                                 <SelectItem value="metro">{{ $t('trip_transport_drawer.transport_mode.metro') }}</SelectItem>
                                 <SelectItem value="bus">{{ $t('trip_transport_drawer.transport_mode.bus') }}</SelectItem>
-                                <SelectItem value="barco">{{ $t('trip_transport_drawer.transport_mode.ferry') }}</SelectItem>
+                                <SelectItem value="ferry">{{ $t('trip_transport_drawer.transport_mode.ferry') }}</SelectItem>
                                 <SelectItem value="taxi">{{ $t('trip_transport_drawer.transport_mode.taxi') }}</SelectItem>
-                                <SelectItem value="pie">{{ $t('trip_transport_drawer.transport_mode.walk') }}</SelectItem>
+                                <SelectItem value="walk">{{ $t('trip_transport_drawer.transport_mode.walk') }}</SelectItem>
                               </SelectContent>
                           </Select>
                         </div>
@@ -382,21 +384,21 @@ watch(isOpen, (isOpened) => {
                            <div class="gap-3 space-y-4">
                               <div>
                                 <Label>{{ $t('trip_transport_drawer.fields.origin') }}</Label>
-                                <Input class="h-9" v-model="escala.origen" :placeholder="$t('trip_transport_drawer.placeholders.origin')" />
+                                <Input class="h-9" v-model="escala.departure_place" :placeholder="$t('trip_transport_drawer.placeholders.origin')" />
                               </div>
                               <div>
                                  <Label>{{ $t('trip_transport_drawer.fields.departure') }}</Label>
-                                 <DateTimePicker v-model="escala.fecha_salida" />
+                                 <DateTimePicker v-model="escala.departure_time" />
                               </div>
                            </div>
                            <div class="gap-3 space-y-4">
                               <div>
                                  <Label>{{ $t('trip_transport_drawer.fields.destination') }}</Label>
-                                 <Input class="h-9" v-model="escala.destino" :placeholder="$t('trip_transport_drawer.placeholders.destination')" />
+                                 <Input class="h-9" v-model="escala.arrival_place" :placeholder="$t('trip_transport_drawer.placeholders.destination')" />
                               </div>
                               <div>
                                  <Label>{{ $t('trip_transport_drawer.fields.arrival') }}</Label>
-                                 <DateTimePicker v-model="escala.fecha_llegada" />
+                                 <DateTimePicker v-model="escala.arrival_time" />
                               </div>
                            </div>
                         </div>
@@ -405,26 +407,26 @@ watch(isOpen, (isOpened) => {
                </div>
             </template>
 
-            <div v-if="formData.categoria === 'pase' || (formData.categoria === 'trayecto' && !formData.pase_id)" class="grid grid-cols-[2fr_1fr_1fr] gap-3 mt-2">
+            <div v-if="formData.category === 'pass' || (formData.category === 'route' && !formData.pass_id)" class="grid grid-cols-[2fr_1fr_1fr] gap-3 mt-2">
               <div>
                 <Label>{{ $t('trip_transport_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
-                  v-model="formData.precio" 
-                  :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
+                  v-model="formData.price" 
+                  :step="formData.currency === 'JPY' ? '1' : '0.01'" 
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_transport_drawer.fields.currency') }}</Label>
-                <CurrencySelector v-model="formData.moneda" />
+                <CurrencySelector v-model="formData.currency" />
               </div>
               <div>
                 <Label>{{ $t('trip_transport_drawer.fields.status') }}</Label>
-                <Select v-model="formData.estado_pago">
+                <Select v-model="formData.payment_status">
                   <SelectTrigger><SelectValue :placeholder="$t('trip_transport_drawer.placeholders.status')" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pendiente">{{ $t('trip_transport_drawer.status.pending') }}</SelectItem>
-                    <SelectItem value="pagado">{{ $t('trip_transport_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pending">{{ $t('trip_transport_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="paid">{{ $t('trip_transport_drawer.status.paid') }}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -432,7 +434,7 @@ watch(isOpen, (isOpened) => {
 
             <div>
                <Label>{{ $t('trip_transport_drawer.fields.notes') }}</Label>
-               <Textarea v-model="formData.notas" rows="3" />
+               <Textarea v-model="formData.notes" rows="3" />
             </div>
 
           </div>
@@ -440,17 +442,17 @@ watch(isOpen, (isOpened) => {
             <div v-if="formData.id" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_transport_drawer.fields.attachments') }}</Label>
-                <FileUploader collection="transportes" :item-id="formId" @uploaded="onFileUploaded" />
+                <FileUploader collection="transports" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
-              <FileList :files="formAdjuntos" collection="transportes" @deleted="onFileUploaded" />
+              <FileList :files="formAdjuntos" collection="transports" @deleted="onFileUploaded" />
             </div>
             <EntityTasksWidget 
               v-if="formData.id"
               :key="String(formData.id)"
               :trip-id="Number(props.tripId)"
-              entity-type="transport"
+              entity-type="transports"
               :entity-id="String(formData.id)"
-              :title="`${$t('trip_transport_drawer.tasks.title_prefix')}: ${formData.nombre || $t('trip_transport_drawer.tasks.entity_fallback')}`"
+              :title="`${$t('trip_transport_drawer.tasks.title_prefix')}: ${formData.name || $t('trip_transport_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>

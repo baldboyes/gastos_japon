@@ -2,7 +2,8 @@
 import { ref, computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTripOrganization, type Seguro } from '~/composables/useTripOrganization'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import type { Insurance } from '~/types/directus'
 import { useTripItemForm } from '~/composables/useTripItemForm'
 import { 
   Drawer, 
@@ -24,7 +25,7 @@ import { Textarea } from '~/components/ui/textarea'
 import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { readItem } from '@directus/sdk'
 import { RangeCalendar } from '~/components/ui/range-calendar'
 import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
@@ -55,15 +56,8 @@ const localeTag = computed(() => {
   return 'en-US'
 })
 
-const { createSeguro, updateSeguro } = useTripOrganization()
-const { getAuthenticatedClient } = useDirectus()
-
-// Extend Seguro to include fields used in the UI but missing/different in the interface
-type FormState = Omit<Partial<Seguro>, 'moneda'> & {
-  moneda: string
-  telefono_urgencias?: string
-  notas?: string
-}
+const { createInsurance, updateInsurance } = useTripOrganizationNew()
+const { getClient } = useDirectusRepo()
 
 // Initialize generic form logic
 const { 
@@ -71,14 +65,14 @@ const {
   handleCreate, 
   handleEdit, 
   handleSave 
-} = useTripItemForm<FormState>(
+} = useTripItemForm<Partial<Insurance>>(
   () => ({ 
-    moneda: props.currentTrip?.moneda || 'JPY', 
-    estado_pago: 'pendiente',
-    adjuntos: []
-  } as FormState),
-  createSeguro,
-  updateSeguro,
+    currency: props.currentTrip?.currency || 'JPY', 
+    payment_status: 'pending',
+    attachments: []
+  }),
+  createInsurance,
+  updateInsurance,
   String(t('trip_insurance_drawer.item_label'))
 )
 
@@ -101,10 +95,10 @@ watch(() => props.itemToEdit, (newItem) => {
   if (newItem) {
     handleEdit(newItem)
     // Initialize dateRange from existing data
-    if (newItem.fecha_inicio) {
+    if (newItem.start_date) {
       try {
-        const start = parseDate(newItem.fecha_inicio)
-        const end = newItem.fecha_fin ? parseDate(newItem.fecha_fin) : start
+        const start = parseDate(newItem.start_date)
+        const end = newItem.end_date ? parseDate(newItem.end_date) : start
         dateRange.value = { start, end }
       } catch (e) {
         console.error('Error parsing dates:', e)
@@ -130,16 +124,16 @@ watch(isOpen, (isOpened) => {
 watch(dateRange, (newRange) => {
   if (newRange?.start) {
     // @ts-ignore
-    formData.value.fecha_inicio = newRange.start.toString()
+    formData.value.start_date = newRange.start.toString()
     // @ts-ignore
-    formData.value.fecha_fin = newRange.end ? newRange.end.toString() : newRange.start.toString()
+    formData.value.end_date = newRange.end ? newRange.end.toString() : newRange.start.toString()
   }
 })
 
 
 const saveInsurance = () => {
   handleSave((data) => {
-     data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+     data.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
      return data
   }, () => {
     emit('saved')
@@ -148,30 +142,30 @@ const saveInsurance = () => {
 }
 
 const isValid = computed(() => {
-  if (!formData.value.compania) return false
-  if (!formData.value.numero_poliza) return false
+  if (!formData.value.provider) return false
+  if (!formData.value.policy_number) return false
   return true
 })
 
 const formId = computed(() => (formData.value as any).id)
-const formAdjuntos = computed(() => (formData.value as any).adjuntos || [])
+const formAdjuntos = computed(() => (formData.value as any).attachments || [])
 
 const onFileUploaded = async () => {
   // @ts-ignore
   if (!formData.value.id) return
   
   try {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     // @ts-ignore
-    const response = await client.request(readItem('seguros', formData.value.id, {
-      fields: ['adjuntos.directus_files_id.*']
+    const response = await client.request(readItem('insurances', formData.value.id, {
+      fields: ['attachments.directus_files_id.*']
     }))
     
     // Update attachments in form data
     // @ts-ignore
-    if (response && response.adjuntos) {
+    if (response && response.attachments) {
        // @ts-ignore
-       formData.value.adjuntos = response.adjuntos
+       formData.value.attachments = response.attachments
     }
   } catch (e) {
     console.error('Error refreshing attachments:', e)
@@ -191,21 +185,21 @@ const onFileUploaded = async () => {
             <div class="grid grid-cols-[2fr_1fr] gap-3">
               <div>
                 <Label>{{ $t('trip_insurance_drawer.fields.company') }}</Label>
-                <Input v-model="formData.compania" :placeholder="String($t('trip_insurance_drawer.placeholders.company'))" />
+                <Input v-model="formData.provider" :placeholder="String($t('trip_insurance_drawer.placeholders.company'))" />
               </div>
               <div>
                 <Label>{{ $t('trip_insurance_drawer.fields.policy_number') }}</Label>
-                <Input v-model="formData.numero_poliza" />
+                <Input v-model="formData.policy_number" />
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <Label>{{ $t('trip_insurance_drawer.fields.assistance_phone') }}</Label>
-                <Input v-model="formData.telefono_urgencias" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_phone'))" />
+                <Input v-model="formData.emergency_phone" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_phone'))" />
               </div>
               <div>
                 <Label>{{ $t('trip_insurance_drawer.fields.assistance_email') }}</Label>
-                <Input v-model="formData.email_urgencias" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_email'))" />
+                <Input v-model="formData.emergency_email" :placeholder="String($t('trip_insurance_drawer.placeholders.assistance_email'))" />
               </div>
             </div>
             <div class="grid gap-2">
@@ -228,46 +222,46 @@ const onFileUploaded = async () => {
                  <Label>{{ $t('trip_insurance_drawer.fields.price') }}</Label>
                  <Input 
                    type="number" 
-                   v-model="formData.precio" 
-                   :step="formData.moneda === 'JPY' ? '1' : '0.01'"
+                   v-model="formData.price" 
+                   :step="formData.currency === 'JPY' ? '1' : '0.01'"
                  />
                </div>
                <div class="col-span-1">
                  <Label>{{ $t('trip_insurance_drawer.fields.currency') }}</Label>
-                 <CurrencySelector v-model="formData.moneda" />
+                 <CurrencySelector v-model="formData.currency" />
                </div>
                <div class="col-span-1">
                  <Label>{{ $t('trip_insurance_drawer.fields.status') }}</Label>
-                 <Select v-model="formData.estado_pago">
+                 <Select v-model="formData.payment_status">
                   <SelectTrigger><SelectValue :placeholder="String($t('trip_insurance_drawer.placeholders.status'))" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pagado">{{ $t('trip_insurance_drawer.status.paid') }}</SelectItem>
-                    <SelectItem value="pendiente">{{ $t('trip_insurance_drawer.status.pending') }}</SelectItem>
-                    <SelectItem value="parcial">{{ $t('trip_insurance_drawer.status.partial') }}</SelectItem>
+                    <SelectItem value="paid">{{ $t('trip_insurance_drawer.status.paid') }}</SelectItem>
+                    <SelectItem value="pending">{{ $t('trip_insurance_drawer.status.pending') }}</SelectItem>
+                    <SelectItem value="refunded">{{ $t('trip_insurance_drawer.status.refunded') }}</SelectItem>
                   </SelectContent>
                 </Select>
                </div>
             </div>
             <div>
               <Label>{{ $t('trip_insurance_drawer.fields.notes') }}</Label>
-              <Textarea v-model="formData.notas" :placeholder="String($t('trip_insurance_drawer.placeholders.notes'))" class="resize-none" />
+              <Textarea v-model="formData.notes" :placeholder="String($t('trip_insurance_drawer.placeholders.notes'))" class="resize-none" />
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
             <div v-if="formData.id" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_insurance_drawer.fields.attachments') }}</Label>
-                <FileUploader collection="seguros" :item-id="formId" @uploaded="onFileUploaded" />
+                <FileUploader collection="insurances" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
-              <FileList :files="formAdjuntos" collection="seguros" @deleted="onFileUploaded" />
+              <FileList :files="formAdjuntos" collection="insurances" @deleted="onFileUploaded" />
             </div>
             <EntityTasksWidget 
               v-if="formData.id"
               :key="String(formData.id)"
               :trip-id="Number(props.tripId)"
-              entity-type="insurance"
+              entity-type="insurances"
               :entity-id="String(formData.id)"
-              :title="`${$t('trip_insurance_drawer.tasks.title_prefix')}: ${formData.compania || $t('trip_insurance_drawer.tasks.entity_fallback')}`"
+              :title="`${$t('trip_insurance_drawer.tasks.title_prefix')}: ${formData.provider || $t('trip_insurance_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>

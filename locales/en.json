@@ -1,10 +1,58 @@
 {
+  "tasks": {
+    "actions": {
+      "add": "Add task"
+    },
+    "priority": {
+      "urgent": "Urgent",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "settings": {
+    "preferences_drawer": {
+      "title": "App preferences",
+      "currency": {
+        "title": "Your base currency",
+        "description": "This is your local currency. It will be used to calculate exchange rates and show your expenses in your usual currency.",
+        "toast_success": "Currency preference updated",
+        "toast_error": "Failed to update currency"
+      },
+      "language": {
+        "title": "Language",
+        "description": "It will be used to display the app content.",
+        "placeholder": "Select a language...",
+        "toast_success": "Language updated",
+        "locales": {
+          "en": "English",
+          "es": "Spanish",
+          "ja": "Japanese"
+        }
+      }
+    }
+  },
+  "trip_sidebar": {
+    "dashboard": "Dashboard",
+    "itinerary": "Itinerary",
+    "tasks": "Tasks",
+    "flights": "Flights",
+    "accommodation": "Accommodation",
+    "transport": "Transport",
+    "activities": "Activities",
+    "insurance": "Insurance",
+    "travelers": "Travelers",
+    "expenses": "Expenses",
+    "daily_expenses": "Daily expenses",
+    "options": "Options"
+  },
   "header": {
     "pricing": "Pricing",
     "shop": "Shop",
     "my_trips": "My Trips",
     "view_trips": "View My Trips",
-    "login": "Login"
+    "login": "Login",
+    "sign_in": "Sign in"
   },
   "footer": {
     "sections": {
@@ -161,7 +209,9 @@
       "none": "No location specified"
     },
     "labels": {
-      "notes": "Notes"
+      "notes": "Notes",
+      "policy": "Policy",
+      "days": "Days"
     },
     "tasks": {
       "title_prefix": "Tasks"
@@ -227,6 +277,27 @@
       "description": "This action cannot be undone. This will permanently delete the transport and all associated data.",
       "cancel": "Cancel",
       "confirm": "Delete transport"
+    }
+  },
+  "trip_transports_page": {
+    "empty": {
+      "title": "No transports yet",
+      "subtitle": "Add your local rides and transfers."
+    },
+    "sections": {
+      "passes": "Passes",
+      "routes": "Routes"
+    },
+    "labels": {
+      "validity": "Validity",
+      "notes": "Notes",
+      "covered_by_pass": "Covered by pass"
+    },
+    "actions": {
+      "download_prefix": "Download"
+    },
+    "tasks": {
+      "title_prefix": "Tasks"
     }
   },
   "trip_transport_drawer": {
@@ -347,7 +418,8 @@
     "status": {
       "paid": "Paid",
       "pending": "Pending",
-      "partial": "Partial"
+      "partial": "Partial",
+      "refunded": "Refunded"
     },
     "actions": {
       "save": "Save"
@@ -386,7 +458,8 @@
     "status": {
       "paid": "Paid",
       "pending": "Pending",
-      "partial": "Partial"
+      "partial": "Partial",
+      "refunded": "Refunded"
     },
     "actions": {
       "save": "Save"
@@ -752,6 +825,15 @@
         "subtitle": "Can only view information."
       }
     }
+  },
+  "trip_join_page": {
+    "title": "Join trip",
+    "description": "You're joining trip #{tripId}.",
+    "signed_out": "Sign in (or create an account) with the invited email to join.",
+    "sign_in_cta": "Sign in",
+    "signed_in": "You're signed in. Continue to join the trip.",
+    "join_cta": "Join trip",
+    "joining": "Joining..."
   },
   "welcome": "Welcome",
   "landing": {

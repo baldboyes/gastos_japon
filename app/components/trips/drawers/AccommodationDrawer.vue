@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useTripOrganization, type Alojamiento } from '~/composables/useTripOrganization'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import type { Accommodation } from '~/types/directus'
 import { useTripItemForm } from '~/composables/useTripItemForm'
 import { 
   Drawer, 
@@ -22,7 +23,8 @@ import LocationSelector from '~/components/ui/LocationSelector/LocationSelector.
 import CurrencySelector from '~/components/ui/CurrencySelector/CurrencySelector.vue'
 import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
 import FileList from '~/components/ui/FileList/FileList.vue'
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
+import { readItem } from '@directus/sdk'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,34 +47,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:open', 'saved'])
 const { t } = useI18n()
 
-const { createAlojamiento, updateAlojamiento } = useTripOrganization()
-const { getAuthenticatedClient } = useDirectus()
-
-type FormState = {
-  id?: number
-  viaje_id?: number
-  nombre?: string
-  moneda: string
-  precio?: number
-  estado_pago?: 'pagado' | 'pendiente' | 'parcial'
-  notas?: string
-  ubicacion: {
-    address?: string
-    latitude: number | undefined
-    longitude: number | undefined
-    city: string
-    prefecture: string
-  }
-  pension: string[] | null
-  privado: boolean
-  takkyubin: boolean
-  telefono?: string
-  email?: string
-  enlace_google?: string
-  fecha_entrada?: string
-  fecha_salida?: string
-  adjuntos?: any[]
-}
+const { createAccommodation, updateAccommodation } = useTripOrganizationNew()
+const { getClient } = useDirectusRepo()
 
 // Initialize generic form logic
 const { 
@@ -80,35 +56,35 @@ const {
   handleCreate, 
   handleEdit, 
   handleSave 
-} = useTripItemForm<FormState>(
+} = useTripItemForm<Partial<Accommodation>>(
   () => ({ 
-    moneda: props.currentTrip?.moneda || 'JPY', 
-    precio: 0, 
-    estado_pago: 'pendiente', 
-    notas: '', 
-    ubicacion: { address: '', city: '', prefecture: '', latitude: 0, longitude: 0 },
-    pension: [],
-    privado: false,
-    takkyubin: false,
-    telefono: '',
+    currency: props.currentTrip?.currency || 'JPY', 
+    price: 0, 
+    payment_status: 'pending', 
+    notes: '', 
+    board_basis: [],
+    is_private: false,
+    has_luggage_forwarding: false,
+    phone: '',
     email: '',
-    enlace_google: ''
-  } as FormState),
-  createAlojamiento,
-  updateAlojamiento,
+    google_maps_link: '',
+    attachments: []
+  }),
+  createAccommodation,
+  updateAccommodation,
   String(t('trip_accommodation_drawer.item_label'))
 )
 
 const pensionOptions = [
-  { value: 'desayuno', labelKey: 'trip_accommodation_drawer.pension.breakfast' },
-  { value: 'comida', labelKey: 'trip_accommodation_drawer.pension.lunch' },
-  { value: 'cena', labelKey: 'trip_accommodation_drawer.pension.dinner' },
-  { value: 'completa', labelKey: 'trip_accommodation_drawer.pension.full_board' },
+  { value: 'breakfast', labelKey: 'trip_accommodation_drawer.pension.breakfast' },
+  { value: 'half_board', labelKey: 'trip_accommodation_drawer.pension.half_board' },
+  { value: 'full_board', labelKey: 'trip_accommodation_drawer.pension.full_board' },
+  { value: 'none', labelKey: 'trip_accommodation_drawer.pension.none' },
 ]
 
 const updatePension = (value: string, event: Event) => {
   const isChecked = (event.target as HTMLInputElement).checked
-  const current = new Set(formData.value.pension || [])
+  const current = new Set(formData.value.board_basis || [])
   
   if (isChecked) {
     current.add(value)
@@ -116,7 +92,7 @@ const updatePension = (value: string, event: Event) => {
     current.delete(value)
   }
   
-  formData.value.pension = Array.from(current)
+  formData.value.board_basis = Array.from(current)
 }
 
 // Sync open state
@@ -130,8 +106,8 @@ watch(() => props.itemToEdit, (newItem) => {
   if (newItem) {
     handleEdit(newItem)
     // Ensure pension is array if null from DB
-    if (!formData.value.pension) {
-      formData.value.pension = []
+    if (!formData.value.board_basis) {
+      formData.value.board_basis = []
     }
   } else {
     handleCreate()
@@ -146,7 +122,7 @@ watch(isOpen, (isOpened) => {
 
 const saveAccommodation = () => {
   handleSave((data) => {
-     data.viaje_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+     data.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
      return data
   }, () => {
     emit('saved')
@@ -155,36 +131,54 @@ const saveAccommodation = () => {
 }
 
 const isValid = computed(() => {
-  if (!formData.value.nombre) return false
-  if (!formData.value.fecha_entrada) return false
-  if (!formData.value.fecha_salida) return false
+  if (!formData.value.name) return false
+  if (!formData.value.check_in) return false
+  if (!formData.value.check_out) return false
   return true
 })
 
 const formId = computed(() => (formData.value as any).id)
-const formAdjuntos = computed(() => (formData.value as any).adjuntos || [])
+const formAdjuntos = computed(() => (formData.value as any).attachments || [])
 
 const onFileUploaded = async () => {
   // @ts-ignore
   if (!formData.value.id) return
   
   try {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     // @ts-ignore
-    const response = await client.request(readItem('alojamientos', formData.value.id, {
-      fields: ['adjuntos.directus_files_id.*']
+    const response = await client.request(readItem('accommodations', formData.value.id, {
+      fields: ['attachments.directus_files_id.*']
     }))
     
     // Update attachments in form data
     // @ts-ignore
-    if (response && response.adjuntos) {
+    if (response && response.attachments) {
        // @ts-ignore
-       formData.value.adjuntos = response.adjuntos
+       formData.value.attachments = response.attachments
     }
   } catch (e) {
     console.error('Error refreshing attachments:', e)
   }
 }
+
+// Location Helper
+const locationProxy = computed({
+  get: () => ({
+    address: formData.value.address,
+    city: formData.value.city,
+    prefecture: formData.value.prefecture,
+    latitude: formData.value.latitude,
+    longitude: formData.value.longitude
+  }),
+  set: (val: any) => {
+    formData.value.address = val.address
+    formData.value.city = val.city
+    formData.value.prefecture = val.prefecture
+    formData.value.latitude = val.latitude
+    formData.value.longitude = val.longitude
+  }
+})
 </script>
 
 <template>
@@ -198,24 +192,24 @@ const onFileUploaded = async () => {
           <div class="w-full lg:w-2/3 space-y-4 py-4">
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.name') }}</Label>
-              <Input v-model="formData.nombre" :placeholder="String($t('trip_accommodation_drawer.placeholders.name'))" />
+              <Input v-model="formData.name" :placeholder="String($t('trip_accommodation_drawer.placeholders.name'))" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <Label>{{ $t('trip_accommodation_drawer.fields.check_in') }}</Label>
                 <DateTimePicker 
-                  v-model="formData.fecha_entrada" 
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
+                  v-model="formData.check_in" 
+                  :min="currentTrip?.start_date || undefined"
+                  :max="currentTrip?.end_date || undefined"
                   default-time="15:00"
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_accommodation_drawer.fields.check_out') }}</Label>
                 <DateTimePicker 
-                  v-model="formData.fecha_salida" 
-                  :min="currentTrip?.fecha_inicio || undefined"
-                  :max="currentTrip?.fecha_fin || undefined"
+                  v-model="formData.check_out" 
+                  :min="currentTrip?.start_date || undefined"
+                  :max="currentTrip?.end_date || undefined"
                   default-time="11:00"
                 />
               </div>
@@ -223,7 +217,7 @@ const onFileUploaded = async () => {
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.location') }}</Label>
               <LocationSelector 
-                v-model="formData.ubicacion" 
+                v-model="locationProxy" 
                 :placeholder="String($t('trip_accommodation_drawer.placeholders.location'))"
               />
             </div>
@@ -232,43 +226,43 @@ const onFileUploaded = async () => {
                 <Label>{{ $t('trip_accommodation_drawer.fields.total_price') }}</Label>
                 <Input 
                   type="number" 
-                  v-model="formData.precio" 
-                  :step="formData.moneda === 'JPY' ? '1' : '0.01'" 
+                  v-model="formData.price" 
+                  :step="formData.currency === 'JPY' ? '1' : '0.01'" 
                 />
               </div>
               <div>
                 <Label>{{ $t('trip_accommodation_drawer.fields.currency') }}</Label>
-                <CurrencySelector v-model="formData.moneda" />
+                <CurrencySelector v-model="formData.currency" />
               </div>
               <div>
                 <Label>{{ $t('trip_accommodation_drawer.fields.status') }}</Label>
-                <Select v-model="formData.estado_pago">
+                <Select v-model="formData.payment_status">
                 <SelectTrigger><SelectValue :placeholder="String($t('trip_accommodation_drawer.placeholders.status'))" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pagado">{{ $t('trip_accommodation_drawer.status.paid') }}</SelectItem>
-                  <SelectItem value="pendiente">{{ $t('trip_accommodation_drawer.status.pending') }}</SelectItem>
-                  <SelectItem value="parcial">{{ $t('trip_accommodation_drawer.status.partial') }}</SelectItem>
+                  <SelectItem value="paid">{{ $t('trip_accommodation_drawer.status.paid') }}</SelectItem>
+                  <SelectItem value="pending">{{ $t('trip_accommodation_drawer.status.pending') }}</SelectItem>
+                  <SelectItem value="refunded">{{ $t('trip_accommodation_drawer.status.refunded') }}</SelectItem>
                 </SelectContent>
               </Select>
               </div>
             </div>
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.google_maps_link') }}</Label>
-              <Input v-model="formData.enlace_google" :placeholder="String($t('trip_accommodation_drawer.placeholders.google_maps_link'))" />
+              <Input v-model="formData.google_maps_link" :placeholder="String($t('trip_accommodation_drawer.placeholders.google_maps_link'))" />
             </div>
             <div class="flex flex-wrap gap-4">
               <div class="flex items-center gap-2">
-                <Switch v-model="formData.privado" id="privado" />
+                <Switch v-model="formData.is_private" id="privado" />
                 <Label htmlFor="privado">{{ $t('trip_accommodation_drawer.toggles.private') }}</Label>
               </div>
               <div class="flex items-center gap-2">
-                <Switch v-model="formData.takkyubin" id="takkyubin" />
+                <Switch v-model="formData.has_luggage_forwarding" id="takkyubin" />
                 <Label htmlFor="takkyubin">{{ $t('trip_accommodation_drawer.toggles.takkyubin') }}</Label>
               </div>
             </div>
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.phone') }}</Label>
-              <Input v-model="formData.telefono" :placeholder="String($t('trip_accommodation_drawer.placeholders.phone'))" />
+              <Input v-model="formData.phone" :placeholder="String($t('trip_accommodation_drawer.placeholders.phone'))" />
             </div>
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.email') }}</Label>
@@ -281,7 +275,7 @@ const onFileUploaded = async () => {
                   <input 
                     type="checkbox"
                     :id="`pension-native-${opt.value}`"
-                    :checked="(formData.pension || []).includes(opt.value)"
+                    :checked="(formData.board_basis || []).includes(opt.value)"
                     @change="updatePension(opt.value, $event)"
                     class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
@@ -291,24 +285,24 @@ const onFileUploaded = async () => {
             </div>
             <div>
               <Label>{{ $t('trip_accommodation_drawer.fields.notes') }}</Label>
-              <Textarea v-model="formData.notas" :placeholder="String($t('trip_accommodation_drawer.placeholders.notes'))" class="resize-none" />
+              <Textarea v-model="formData.notes" :placeholder="String($t('trip_accommodation_drawer.placeholders.notes'))" class="resize-none" />
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
             <div v-if="formId" class="pb-8 border-b border-dashed">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_accommodation_drawer.fields.attachments') }}</Label>
-                <FileUploader collection="alojamientos" :item-id="formId" @uploaded="onFileUploaded" />
+                <FileUploader collection="accommodations" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
-              <FileList :files="formAdjuntos" collection="alojamientos" @deleted="onFileUploaded" />
+              <FileList :files="formAdjuntos" collection="accommodations" @deleted="onFileUploaded" />
             </div>
             <EntityTasksWidget 
               v-if="formId"
               :key="formId"
               :trip-id="Number(props.tripId)"
-              entity-type="accommodation"
+              entity-type="accommodations"
               :entity-id="String(formId)"
-              :title="`${$t('trip_accommodation_drawer.tasks.title_prefix')}: ${formData.nombre || $t('trip_accommodation_drawer.tasks.entity_fallback')}`"
+              :title="`${$t('trip_accommodation_drawer.tasks.title_prefix')}: ${formData.name || $t('trip_accommodation_drawer.tasks.entity_fallback')}`"
             />
           </div>
         </div>

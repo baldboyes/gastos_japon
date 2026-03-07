@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTripOrganization } from '~/composables/useTripOrganization'
-import { useTripExpenses } from '~/composables/useTripExpenses'
-import { useTripTasks } from '~/composables/useTripTasks'
-import { useItinerary } from '~/composables/useItinerary'
+import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import { useExpensesNew } from '~/composables/useExpensesNew'
+import { useTripTasksNew } from '~/composables/useTripTasksNew'
+import { useItineraryNew } from '~/composables/useItineraryNew'
 import { Button } from '~/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
@@ -12,6 +12,9 @@ import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
+import ItineraryDaysSwiper from '~/components/itinerary/ItineraryDaysSwiper.vue'
+import ItineraryDayList from '~/components/itinerary/ItineraryDayList.vue'
+import type { ExpenseCategory, PaymentMethod } from '~/types'
 
 definePageMeta({
   layout: 'dashboard'
@@ -20,9 +23,9 @@ definePageMeta({
 const route = useRoute()
 const tripId = route.params.id as string
 
-const { fetchOrganizationData } = useTripOrganization()
-const { fetchExpenses, createExpense } = useTripExpenses()
-const { fetchTasks } = useTripTasks()
+const { fetchOrganizationData } = useTripOrganizationNew()
+const { fetchExpenses, createExpense } = useExpensesNew()
+const { fetchTasks } = useTripTasksNew()
 
 const { 
   selectedDate, 
@@ -30,46 +33,63 @@ const {
   daysWithEvents, 
   selectedDayDetails,
   selectDate
-} = useItinerary()
+} = useItineraryNew()
 
 // Expense State
 const isExpenseDialogOpen = ref(false)
 const expenseForm = ref({
-  fecha: new Date().toISOString().slice(0, 16),
-  concepto: '',
-  monto: 0,
-  categoria: 'food',
-  descripcion: '',
-  metodo_pago: 'cash',
-  es_compartido: false,
-  moneda: 'JPY'
+  date: new Date().toISOString().slice(0, 16),
+  concept: '',
+  amount: 0,
+  category: 'food' as ExpenseCategory,
+  notes: '',
+  paymentMethod: 'cash' as PaymentMethod,
+  shared: false,
+  currency: 'JPY'
 })
 
 onMounted(async () => {
-  await fetchOrganizationData(tripId)
-  await fetchExpenses(tripId)
-  await fetchTasks(parseInt(tripId))
+  const id = parseInt(tripId)
+  await Promise.all([
+    fetchOrganizationData(id),
+    fetchExpenses(id),
+    fetchTasks(id)
+  ])
   initSelectedDate()
 })
 
 const handleCreateExpense = async () => {
-  if (!expenseForm.value.concepto || !expenseForm.value.monto) return
+  if (!expenseForm.value.concept || !expenseForm.value.amount) return
   try {
+    const timestamp = new Date(expenseForm.value.date).toISOString().replace('T', ' ').slice(0, 16)
+    
     await createExpense({
-      ...expenseForm.value,
-      viaje_id: parseInt(tripId),
-      fecha: new Date(expenseForm.value.fecha).toISOString()
+      timestamp: timestamp,
+      placeName: expenseForm.value.concept,
+      amount: Number(expenseForm.value.amount),
+      category: expenseForm.value.category,
+      notes: expenseForm.value.notes,
+      location: {
+          coordinates: { lat: 0, lng: 0 }, // Default location
+          city: '',
+          prefecture: ''
+      },
+      paymentMethod: expenseForm.value.paymentMethod,
+      shared: expenseForm.value.shared,
+      trip_id: parseInt(tripId),
+      status: 'real'
     })
+    
     isExpenseDialogOpen.value = false
     expenseForm.value = {
-      fecha: new Date().toISOString().slice(0, 16),
-      concepto: '',
-      monto: 0,
-      categoria: 'food',
-      descripcion: '',
-      metodo_pago: 'cash',
-      es_compartido: false,
-      moneda: 'JPY'
+      date: new Date().toISOString().slice(0, 16),
+      concept: '',
+      amount: 0,
+      category: 'food',
+      notes: '',
+      paymentMethod: 'cash',
+      shared: false,
+      currency: 'JPY'
     }
   } catch(e) { console.error(e) }
 }
@@ -98,17 +118,17 @@ const handleCreateExpense = async () => {
         <div class="grid gap-4 py-4">
           <div class="grid grid-cols-2 gap-4">
               <div class="grid gap-2">
-              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.date') }}</Label><Input type="datetime-local" v-model="expenseForm.fecha" />
+              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.date') }}</Label><Input type="datetime-local" v-model="expenseForm.date" />
               </div>
               <div class="grid gap-2">
-              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.amount') }}</Label><Input type="number" v-model="expenseForm.monto" />
+              <Label>{{ $t('trip_itinerary_page.expense_modal.fields.amount') }}</Label><Input type="number" v-model="expenseForm.amount" />
               </div>
           </div>
-          <div><Label>{{ $t('trip_itinerary_page.expense_modal.fields.concept') }}</Label><Input v-model="expenseForm.concepto" /></div>
+          <div><Label>{{ $t('trip_itinerary_page.expense_modal.fields.concept') }}</Label><Input v-model="expenseForm.concept" /></div>
           <div class="grid grid-cols-2 gap-4">
               <div>
                   <Label>{{ $t('trip_itinerary_page.expense_modal.fields.category') }}</Label>
-                  <Select v-model="expenseForm.categoria">
+                  <Select v-model="expenseForm.category">
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                           <SelectItem value="food">{{ $t('trip_itinerary_page.expense_modal.category.food') }}</SelectItem>
@@ -122,7 +142,7 @@ const handleCreateExpense = async () => {
               </div>
               <div>
               <Label>{{ $t('trip_itinerary_page.expense_modal.fields.payment_method') }}</Label>
-              <Select v-model="expenseForm.metodo_pago">
+              <Select v-model="expenseForm.paymentMethod">
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                       <SelectItem value="cash">{{ $t('trip_itinerary_page.expense_modal.payment.cash') }}</SelectItem>
@@ -134,10 +154,10 @@ const handleCreateExpense = async () => {
           </div>
           <div>
             <Label>{{ $t('trip_itinerary_page.expense_modal.fields.notes') }}</Label>
-            <Textarea v-model="expenseForm.descripcion" />
+            <Textarea v-model="expenseForm.notes" />
           </div>
           <div class="flex items-center space-x-2">
-            <Checkbox :checked="expenseForm.es_compartido" @update:checked="expenseForm.es_compartido = $event" />
+            <Checkbox :checked="expenseForm.shared" @update:checked="expenseForm.shared = $event" />
             <Label>{{ $t('trip_itinerary_page.expense_modal.fields.shared') }}</Label>
           </div>
         </div>

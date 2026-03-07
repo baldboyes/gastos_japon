@@ -1,10 +1,58 @@
 {
+  "tasks": {
+    "actions": {
+      "add": "タスクを追加"
+    },
+    "priority": {
+      "urgent": "緊急",
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    }
+  },
+  "settings": {
+    "preferences_drawer": {
+      "title": "アプリ設定",
+      "currency": {
+        "title": "基準通貨",
+        "description": "これはあなたのローカル通貨です。為替レートの計算や、支出を普段の通貨で表示するために使用されます。",
+        "toast_success": "通貨設定を更新しました",
+        "toast_error": "通貨の更新に失敗しました"
+      },
+      "language": {
+        "title": "言語",
+        "description": "アプリの表示言語として使用されます。",
+        "placeholder": "言語を選択...",
+        "toast_success": "言語を更新しました",
+        "locales": {
+          "en": "英語",
+          "es": "スペイン語",
+          "ja": "日本語"
+        }
+      }
+    }
+  },
+  "trip_sidebar": {
+    "dashboard": "ダッシュボード",
+    "itinerary": "旅程",
+    "tasks": "タスク",
+    "flights": "フライト",
+    "accommodation": "宿泊",
+    "transport": "交通",
+    "activities": "アクティビティ",
+    "insurance": "保険",
+    "travelers": "旅行者",
+    "expenses": "支出",
+    "daily_expenses": "今日の支出",
+    "options": "設定"
+  },
   "header": {
     "pricing": "料金",
     "shop": "ショップ",
     "my_trips": "私の旅行",
     "view_trips": "旅行を見る",
-    "login": "ログイン"
+    "login": "ログイン",
+    "sign_in": "ログイン"
   },
   "footer": {
     "sections": {
@@ -161,7 +209,9 @@
       "none": "場所未設定"
     },
     "labels": {
-      "notes": "メモ"
+      "notes": "メモ",
+      "policy": "保険証券",
+      "days": "日数"
     },
     "tasks": {
       "title_prefix": "タスク"
@@ -227,6 +277,27 @@
       "description": "この操作は元に戻せません。交通情報と関連データが完全に削除されます。",
       "cancel": "キャンセル",
       "confirm": "交通を削除"
+    }
+  },
+  "trip_transports_page": {
+    "empty": {
+      "title": "交通手段がまだありません",
+      "subtitle": "移動や乗り継ぎを追加しましょう。"
+    },
+    "sections": {
+      "passes": "パス",
+      "routes": "ルート"
+    },
+    "labels": {
+      "validity": "有効期間",
+      "notes": "メモ",
+      "covered_by_pass": "パスでカバー"
+    },
+    "actions": {
+      "download_prefix": "ダウンロード"
+    },
+    "tasks": {
+      "title_prefix": "タスク"
     }
   },
   "trip_transport_drawer": {
@@ -347,7 +418,8 @@
     "status": {
       "paid": "支払済み",
       "pending": "未払い",
-      "partial": "一部"
+      "partial": "一部",
+      "refunded": "返金済み"
     },
     "actions": {
       "save": "保存"
@@ -386,7 +458,8 @@
     "status": {
       "paid": "支払済み",
       "pending": "未払い",
-      "partial": "一部"
+      "partial": "一部",
+      "refunded": "返金済み"
     },
     "actions": {
       "save": "保存"
@@ -752,6 +825,15 @@
         "subtitle": "閲覧のみ可能です。"
       }
     }
+  },
+  "trip_join_page": {
+    "title": "旅行に参加",
+    "description": "旅行 #{tripId} に参加します。",
+    "signed_out": "招待されたメールアドレスでログイン（またはアカウント作成）してください。",
+    "sign_in_cta": "ログイン",
+    "signed_in": "ログイン済みです。参加するために続行してください。",
+    "join_cta": "旅行に参加する",
+    "joining": "参加中..."
   },
   "welcome": "ようこそ",
   "landing": {

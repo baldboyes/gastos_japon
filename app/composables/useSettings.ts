@@ -91,17 +91,32 @@ export const CURRENCIES: CurrencyInfo[] = [
  * Composable for settings management
  */
 export function useSettings() {
-  const { budget, updateBudget } = useExpenses()
+  const currency = useState<Currency | null>('app-settings-currency', () => null)
+
+  if (import.meta.client) {
+    try {
+      const raw = localStorage.getItem('app-settings')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed?.currency) currency.value = parsed.currency
+      }
+    } catch {}
+  }
 
   const settings = computed(() => ({
-    currency: budget.value.currency
+    currency: currency.value
   }))
 
   /**
    * Update currency setting
    */
-  function setCurrency(currency: Currency): void {
-    updateBudget({ currency })
+  function setCurrency(nextCurrency: Currency): void {
+    currency.value = nextCurrency
+    if (import.meta.client) {
+      try {
+        localStorage.setItem('app-settings', JSON.stringify({ currency: nextCurrency }))
+      } catch {}
+    }
   }
 
   /**

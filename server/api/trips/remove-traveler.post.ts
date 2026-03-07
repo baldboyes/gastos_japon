@@ -9,15 +9,27 @@ export default defineEventHandler(async (event) => {
       return { success: false, error: 'Missing required fields' }
     }
 
-    const directusUrl = 'https://directus.jizou.io'
-    const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || 'DirectusAdmin2026!'
+    const directusUrl = process.env.DIRECTUS_URL || 'https://directus.jizou.io'
+    const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || process.env.NUXT_DIRECTUS_ADMIN_TOKEN
+
+    if (!adminToken) {
+      return { success: false, error: 'Missing DIRECTUS_ADMIN_TOKEN' }
+    }
     
     const adminClient = createDirectus(directusUrl)
       .with(staticToken(adminToken))
       .with(rest())
 
     // 1. Obtener la relación para verificar permisos
-    const relation = await adminClient.request(readItem('viajes_usuarios', relationId))
+    let relation: any = null
+    let relationCollection: 'trips_users' | 'viajes_usuarios' = 'trips_users'
+
+    try {
+      relation = await adminClient.request(readItem('trips_users', relationId))
+    } catch (e) {
+      relationCollection = 'viajes_usuarios'
+      relation = await adminClient.request(readItem('viajes_usuarios', relationId))
+    }
 
     if (!relation) {
       return { success: false, error: 'Relation not found' }
@@ -25,11 +37,11 @@ export default defineEventHandler(async (event) => {
 
     // Lógica de reasignación de items antes de eliminar
     try {
-      const tripId = relation.viaje_id
+      const tripId = relationCollection === 'trips_users' ? relation.trip_id : relation.viaje_id
       const removedUserId = relation.directus_user_id
 
       // Obtener el creador del viaje
-      const trip = await adminClient.request(readItem('viajes', tripId, {
+      const trip = await adminClient.request(readItem('trips', tripId, {
         fields: ['user_created']
       }))
 
@@ -41,7 +53,7 @@ export default defineEventHandler(async (event) => {
       // Si el usuario que se elimina NO es el creador del viaje (evitar bucles raros)
       // y tenemos un ID de propietario válido
       if (removedUserId && tripOwnerId && removedUserId !== tripOwnerId) {
-        const collections = ['alojamientos', 'vuelos', 'transportes', 'actividades', 'seguros', 'gastos']
+        const collections = ['accommodations', 'flights', 'transports', 'activities', 'insurances', 'expenses']
         
         // Ejecutamos las actualizaciones en paralelo
         await Promise.all(collections.map(async (collection) => {
@@ -49,7 +61,7 @@ export default defineEventHandler(async (event) => {
             await adminClient.request(updateItems(collection as any, {
               filter: {
                 _and: [
-                  { viaje_id: { _eq: tripId } },
+                  { trip_id: { _eq: tripId } },
                   { user_created: { _eq: removedUserId } }
                 ]
               },
@@ -78,7 +90,7 @@ export default defineEventHandler(async (event) => {
     // Por ahora, asumimos que el frontend ya validó si es Owner.
     
     // Eliminar la relación
-    await adminClient.request(deleteItem('viajes_usuarios', relationId))
+    await adminClient.request(deleteItem(relationCollection, relationId))
 
     return { success: true }
 

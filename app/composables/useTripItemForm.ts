@@ -11,9 +11,13 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
   const formData = ref<T>(defaultValues())
 
   // Watch for JPY currency to round price
-  watch(() => formData.value.moneda, (newVal) => {
-    if (newVal === 'JPY' && formData.value.precio) {
-      formData.value.precio = Math.round(formData.value.precio)
+  watch(() => [formData.value.moneda, formData.value.currency], ([newMoneda, newCurrency]) => {
+    const currency = newCurrency || newMoneda
+    const price = formData.value.price || formData.value.precio
+
+    if (currency === 'JPY' && price) {
+      if (formData.value.price) formData.value.price = Math.round(formData.value.price)
+      if (formData.value.precio) formData.value.precio = Math.round(formData.value.precio)
     }
   })
 
@@ -41,8 +45,10 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
     formData.value = JSON.parse(JSON.stringify(item))
     
     // Ensure integer for JPY (in case data came from DB with decimals)
-    if (formData.value.moneda === 'JPY' && formData.value.precio) {
-       formData.value.precio = Math.round(formData.value.precio)
+    const currency = formData.value.currency || formData.value.moneda
+    if (currency === 'JPY') {
+      if (formData.value.price) formData.value.price = Math.round(formData.value.price)
+      if (formData.value.precio) formData.value.precio = Math.round(formData.value.precio)
     }
     
     activeModal.value = true
