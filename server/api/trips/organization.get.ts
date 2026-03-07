@@ -70,14 +70,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
 
-  const [linksNew, linksLegacy, ownerTrips] = await Promise.all([
+  const [links, ownerTrips] = await Promise.all([
     adminClient.request(readItems('trips_users', {
       filter: { _and: [{ trip_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
-      fields: ['id'],
-      limit: 1
-    })).catch(() => []) as any,
-    adminClient.request(readItems('viajes_usuarios', {
-      filter: { _and: [{ viaje_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
       fields: ['id'],
       limit: 1
     })).catch(() => []) as any,
@@ -88,7 +83,7 @@ export default defineEventHandler(async (event) => {
     })).catch(() => []) as any
   ])
 
-  const ok = (linksNew && linksNew.length > 0) || (linksLegacy && linksLegacy.length > 0) || (ownerTrips && ownerTrips.length > 0)
+  const ok = (links && links.length > 0) || (ownerTrips && ownerTrips.length > 0)
   if (!ok) {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
@@ -110,4 +105,3 @@ export default defineEventHandler(async (event) => {
 
   return { flights, accommodations, transports, activities, insurances }
 })
-

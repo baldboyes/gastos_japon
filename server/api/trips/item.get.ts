@@ -77,20 +77,13 @@ export default defineEventHandler(async (event) => {
   const ownerId = typeof trip?.user_created === 'object' && trip?.user_created !== null ? trip.user_created.id : trip?.user_created
 
   if (ownerId !== directusUserId) {
-    const [linksNew, linksLegacy] = await Promise.all([
-      adminClient.request(readItems('trips_users', {
-        filter: { _and: [{ trip_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
-        fields: ['id'],
-        limit: 1
-      })).catch(() => []) as any,
-      adminClient.request(readItems('viajes_usuarios', {
-        filter: { _and: [{ viaje_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
-        fields: ['id'],
-        limit: 1
-      })).catch(() => []) as any
-    ])
+    const links = await adminClient.request(readItems('trips_users', {
+      filter: { _and: [{ trip_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
+      fields: ['id'],
+      limit: 1
+    })).catch(() => []) as any
 
-    const ok = (linksNew && linksNew.length > 0) || (linksLegacy && linksLegacy.length > 0)
+    const ok = links && links.length > 0
     if (!ok) {
       throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
     }

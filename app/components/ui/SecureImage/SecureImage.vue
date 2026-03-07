@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { fileUrl } from '~/utils/directusFiles'
-import { useDirectus } from '~/composables/useDirectus'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 
 const props = defineProps<{
   src: string | null | undefined
@@ -13,7 +13,7 @@ const emit = defineEmits(['error'])
 
 const imageUrl = ref<string | undefined>(undefined)
 const loading = ref(false)
-const { token } = useDirectus()
+const { token } = useDirectusRepo()
 
 const loadImage = async () => {
   if (!props.src) {

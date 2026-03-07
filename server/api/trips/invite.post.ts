@@ -64,19 +64,7 @@ export default defineEventHandler(async (event) => {
         limit: 1
       }))
 
-      const legacyAssociation = (!existingAssociation || existingAssociation.length === 0)
-        ? await adminClient.request(readItems('viajes_usuarios', {
-          filter: {
-            _and: [
-              { viaje_id: { _eq: tripId } },
-              { directus_user_id: { _eq: existingUser.id } }
-            ]
-          },
-          limit: 1
-        }))
-        : []
-
-      if ((existingAssociation && existingAssociation.length > 0) || (legacyAssociation && legacyAssociation.length > 0)) {
+      if (existingAssociation && existingAssociation.length > 0) {
         return { success: false, error: 'User already in trip' }
       }
 

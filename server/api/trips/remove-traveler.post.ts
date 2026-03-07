@@ -22,14 +22,8 @@ export default defineEventHandler(async (event) => {
 
     // 1. Obtener la relación para verificar permisos
     let relation: any = null
-    let relationCollection: 'trips_users' | 'viajes_usuarios' = 'trips_users'
 
-    try {
-      relation = await adminClient.request(readItem('trips_users', relationId))
-    } catch (e) {
-      relationCollection = 'viajes_usuarios'
-      relation = await adminClient.request(readItem('viajes_usuarios', relationId))
-    }
+    relation = await adminClient.request(readItem('trips_users', relationId))
 
     if (!relation) {
       return { success: false, error: 'Relation not found' }
@@ -37,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
     // Lógica de reasignación de items antes de eliminar
     try {
-      const tripId = relationCollection === 'trips_users' ? relation.trip_id : relation.viaje_id
+      const tripId = relation.trip_id
       const removedUserId = relation.directus_user_id
 
       // Obtener el creador del viaje
@@ -90,7 +84,7 @@ export default defineEventHandler(async (event) => {
     // Por ahora, asumimos que el frontend ya validó si es Owner.
     
     // Eliminar la relación
-    await adminClient.request(deleteItem(relationCollection, relationId))
+    await adminClient.request(deleteItem('trips_users', relationId))
 
     return { success: true }
 

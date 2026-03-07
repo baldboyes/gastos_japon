@@ -30,35 +30,22 @@ export default defineEventHandler(async (event) => {
   })) as any[]
 
   if (!relations || relations.length === 0) {
-    const legacyRelations = await adminClient.request(readItems('viajes_usuarios', {
-      filter: { viaje_id: { _eq: tripId } },
-      fields: [
-        'id',
-        'directus_user_id.id',
-        'directus_user_id.first_name',
-        'directus_user_id.last_name',
-        'directus_user_id.email',
-        'directus_user_id.avatar_url',
-        'rol'
-      ],
-      limit: -1
-    })) as any[]
+    const users = ownerId
+      ? await adminClient.request(readUsers({ filter: { id: { _eq: ownerId } }, limit: 1 }))
+      : []
 
-    const collaborators = (legacyRelations || [])
-      .map((r: any) => {
-        const u = r.directus_user_id
-        if (!u) return null
-        return {
-          id: u.id,
-          first_name: u.first_name,
-          last_name: u.last_name,
-          email: u.email,
-          avatar_url: u.avatar_url,
-          relationId: r.id,
-          role: ownerId && u.id === ownerId ? 'owner' : (r.rol || 'collaborator')
-        }
-      })
-      .filter(Boolean)
+    const owner = Array.isArray(users) && users.length > 0 ? users[0] : null
+    const collaborators = owner
+      ? [{
+          id: owner.id,
+          first_name: owner.first_name,
+          last_name: owner.last_name,
+          email: owner.email,
+          avatar_url: owner.avatar_url,
+          relationId: null,
+          role: 'owner'
+        }]
+      : []
 
     return { collaborators }
   }

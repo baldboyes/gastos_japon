@@ -62,26 +62,15 @@ export default defineEventHandler(async (event) => {
     return { trips: [] }
   }
 
-  const [linksNew, linksLegacy] = await Promise.all([
-    adminClient.request(readItems('trips_users', {
-      filter: { directus_user_id: { _eq: directusUserId } },
-      fields: ['trip_id'],
-      limit: -1
-    })).catch(() => []) as any,
-    adminClient.request(readItems('viajes_usuarios', {
-      filter: { directus_user_id: { _eq: directusUserId } },
-      fields: ['viaje_id'],
-      limit: -1
-    })).catch(() => []) as any
-  ])
+  const links = await adminClient.request(readItems('trips_users', {
+    filter: { directus_user_id: { _eq: directusUserId } },
+    fields: ['trip_id'],
+    limit: -1
+  })).catch(() => []) as any
 
   const invitedTripIds = new Set<number>()
-  for (const r of (linksNew || [])) {
+  for (const r of (links || [])) {
     const id = Number((r as any)?.trip_id)
-    if (Number.isFinite(id)) invitedTripIds.add(id)
-  }
-  for (const r of (linksLegacy || [])) {
-    const id = Number((r as any)?.viaje_id)
     if (Number.isFinite(id)) invitedTripIds.add(id)
   }
 

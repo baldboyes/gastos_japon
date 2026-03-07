@@ -1,10 +1,10 @@
 import { uploadFiles, createItem, deleteItem, deleteFile } from '@directus/sdk'
 
 export const useDirectusFiles = () => {
-  const { getAuthenticatedClient, token, url } = useDirectus()
+  const { getClient, token, url } = useDirectusRepo()
 
   const uploadFile = async (file: File) => {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     const formData = new FormData()
     formData.append('title', file.name)
     formData.append('file', file)
@@ -24,7 +24,7 @@ export const useDirectusFiles = () => {
   }
 
   const attachFileToItem = async (collection: string, itemId: number, fileId: string) => {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     const junctionTable = `${collection}_files`
     const payload = {
       [`${collection}_id`]: itemId,
@@ -40,10 +40,10 @@ export const useDirectusFiles = () => {
   }
 
   const removeFile = async (collection: string, junctionId: number | string, fileId: string) => {
-    const client = await getAuthenticatedClient()
+    const client = await getClient()
     const junctionTable = `${collection}_files`
     
-    console.log(`[Directus Files] Iniciando eliminación. Colección: ${junctionTable}, ID Relación: ${junctionId}, ID Archivo: ${fileId} - Usuario: ${client.getToken() ? 'Autenticado' : 'Anonimo'}`)
+    console.log(`[Directus Files] Iniciando eliminación. Colección: ${junctionTable}, ID Relación: ${junctionId}, ID Archivo: ${fileId} - Usuario: ${token.value ? 'Autenticado' : 'Anonimo'}`)
 
     try {
         // 1. Eliminar la relación (registro en la tabla intermedia)
@@ -67,7 +67,7 @@ export const useDirectusFiles = () => {
 
   const downloadFile = async (fileId: string, filename: string) => {
     try {
-        await getAuthenticatedClient() // Asegurar token actualizado
+        await getClient() // Asegurar token actualizado
 
         const headers: HeadersInit = {}
         if (token.value) {

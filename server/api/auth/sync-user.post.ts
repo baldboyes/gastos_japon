@@ -124,34 +124,13 @@ export default defineEventHandler(async (event) => {
           limit: 1
         })) as any[]
 
-        const legacyAssociation = (!existingAssociation || existingAssociation.length === 0)
-          ? await adminClient.request(readItems('viajes_usuarios', {
-            filter: {
-              _and: [
-                { viaje_id: { _eq: invitationTripId } },
-                { directus_user_id: { _eq: directusUser.id } }
-              ]
-            },
-            limit: 1
-          })) as any[]
-          : []
-
-        if ((!existingAssociation || existingAssociation.length === 0) && (!legacyAssociation || legacyAssociation.length === 0)) {
-          try {
-            await adminClient.request(createItem('trips_users', {
-              trip_id: invitationTripId,
-              directus_user_id: directusUser.id,
-              rol: tripRole,
-              status: 'published'
-            }))
-          } catch (e) {
-            await adminClient.request(createItem('viajes_usuarios', {
-              viaje_id: invitationTripId,
-              directus_user_id: directusUser.id,
-              rol: tripRole,
-              status: 'published'
-            }))
-          }
+        if (!existingAssociation || existingAssociation.length === 0) {
+          await adminClient.request(createItem('trips_users', {
+            trip_id: invitationTripId,
+            directus_user_id: directusUser.id,
+            rol: tripRole,
+            status: 'published'
+          }))
         }
 
         try {
