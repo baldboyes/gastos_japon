@@ -259,6 +259,19 @@ const handleImageError = (event: Event) => {
                   <div v-else class="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-muted/50">
                     <MapPin class="h-12 w-12" />
                   </div>
+                  <div class="absolute top-4 left-4 pl-1 pr-4 py-1 rounded-full bg-white/50">
+                    <UserAvatar :user="trip.user_created" size="sm" :show-name="true" />
+                  </div>
+                  <div class="absolute bottom-4 left-4 flex -space-x-2">
+                    <template v-if="trip.collaborators && trip.collaborators.length">
+                      <UserAvatar 
+                          v-for="collab in trip.collaborators" 
+                          :key="collab.id || collab" 
+                          :user="collab" 
+                          size="sm"
+                      />
+                    </template>
+                  </div>
                 </div>
                 <CardHeader class="pb-2">
                   <div class="flex justify-between items-start">

@@ -9,6 +9,7 @@ import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { ScrollArea } from '~/components/ui/scroll-area'
+import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { useTripTasksNew } from '~/composables/useTripTasksNew'
 import { useTripsNew } from '~/composables/useTripsNew'
 import { useDirectusRepo } from '~/composables/useDirectusRepo'
@@ -25,7 +26,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:open', 'saved', 'delete'])
 
 const { createTask, updateTask, deleteTask, tasksByGroup } = useTripTasksNew()
-const { collaborators } = useTripsNew() // Use collaborators instead of travelers if travelers doesn't exist
+const { collaborators, currentTrip } = useTripsNew() // Use collaborators instead of travelers if travelers doesn't exist
 const { directusUserId } = useDirectusRepo()
 
 const formData = ref<Partial<Task>>({
@@ -39,6 +40,21 @@ const formData = ref<Partial<Task>>({
   entity_type: undefined,
   entity_id: undefined
 })
+
+const toIsoLocal = (v: any): string | null => {
+  if (!v) return null
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v)) return v
+
+  const d = new Date(v)
+  if (Number.isNaN(d.getTime())) return null
+
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const da = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${da}T${h}:${min}`
+}
 
 const isEditing = computed(() => !!props.task)
 const isCompleted = computed(() => props.task?.status === 'completed')
@@ -66,6 +82,8 @@ watch(() => props.open, (isOpen) => {
       if (formData.value.assigned_to === null) {
         formData.value.assigned_to = undefined
       }
+
+      formData.value.due_date = toIsoLocal((formData.value as any).due_date) || null
     } else {
       formData.value = {
         title: '',
@@ -76,7 +94,8 @@ watch(() => props.open, (isOpen) => {
         task_group: props.defaultGroupId,
         assigned_to: directusUserId.value || undefined, // Default to current user
         entity_type: props.defaultEntityType as any,
-        entity_id: props.defaultEntityId
+        entity_id: props.defaultEntityId,
+        due_date: null
       }
     }
   }
@@ -85,13 +104,21 @@ watch(() => props.open, (isOpen) => {
 const handleSave = async () => {
   isLoading.value = true
   try {
-    // Asegurar payload correcto
-    const payload = { ...formData.value }
-    if (payload.due_date === '') payload.due_date = undefined // Manejar string vacío para fecha
-    
-    // Manejar desasignación explícita
-    if (payload.assigned_to === 'unassigned') {
-      payload.assigned_to = null
+    const assignedToRaw: any = (formData.value as any).assigned_to
+    const assignedTo = assignedToRaw && typeof assignedToRaw === 'object'
+      ? String(assignedToRaw.id || '')
+      : (assignedToRaw === null ? null : (assignedToRaw ? String(assignedToRaw) : null))
+
+    const payload: Partial<Task> = {
+      title: formData.value.title,
+      description: formData.value.description,
+      priority: formData.value.priority,
+      status: formData.value.status,
+      due_date: toIsoLocal(formData.value.due_date),
+      task_group: formData.value.task_group,
+      assigned_to: assignedTo as any,
+      entity_type: formData.value.entity_type,
+      entity_id: formData.value.entity_id
     }
 
     if (isEditing.value && props.task) {
@@ -175,14 +202,19 @@ const handleDelete = async () => {
         
         <div class="grid gap-2">
           <Label htmlFor="due_date">Fecha Límite</Label>
-          <Input id="due_date" type="datetime-local" v-model="formData.due_date" :disabled="isCompleted" />
+          <DateTimePicker
+            v-model="formData.due_date as any"
+            :min="currentTrip?.start_date || undefined"
+            :max="currentTrip?.end_date || undefined"
+            full-width
+          />
         </div>
 
         <div class="grid gap-2">
           <Label>Asignado a</Label>
           <Select 
-            :model-value="formData.assigned_to || 'unassigned'" 
-            @update:model-value="(v) => formData.assigned_to = v === 'unassigned' ? undefined : v" 
+            :model-value="(formData.assigned_to ?? 'unassigned') as any" 
+            @update:model-value="(v) => formData.assigned_to = v === 'unassigned' ? null : String(v)" 
             :disabled="isCompleted"
           >
             <SelectTrigger>
@@ -190,7 +222,7 @@ const handleDelete = async () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="unassigned">Sin asignar</SelectItem>
-              <SelectItem v-for="t in travelers" :key="t.id" :value="t.id">
+              <SelectItem v-for="t in travelers" :key="t.id" :value="String(t.id)">
                 {{ t.first_name }} {{ t.last_name }}
               </SelectItem>
             </SelectContent>

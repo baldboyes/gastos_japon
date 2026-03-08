@@ -32,28 +32,33 @@ export const useTripsNew = () => {
         sort: ['-start_date'],
         fields: [
           '*',
-          // Assuming user_created and collaborators relations are set up similarly in Directus
-          'user_created.first_name',
-          'user_created.last_name',
-          'user_created.avatar_url'
-          // Collaborators expansion might need adjustment depending on how M2M is set up in new schema
+          'user_created'
         ]
       }))
       
-      if (Array.isArray(result)) {
-        trips.value = result as Trip[]
-      } else {
-        trips.value = []
-      }
+      const baseTrips = Array.isArray(result) ? result as any[] : []
+      const enriched = await Promise.all(baseTrips.map(async (trip: any) => {
+        const collabRes = await $fetch('/api/trips/collaborators', {
+          method: 'GET',
+          query: { tripId: trip.id }
+        }).catch(() => null) as any
 
+        const collabs = Array.isArray(collabRes?.collaborators) ? collabRes.collaborators : []
+        const owner = collabs.find((c: any) => c?.role === 'owner') || collabs.find((c: any) => String(c?.id) === String(trip?.user_created)) || null
+        const collaboratorsForCard = owner ? collabs.filter((c: any) => String(c?.id) !== String(owner?.id)) : collabs
+
+        return {
+          ...trip,
+          user_created: owner || trip.user_created,
+          collaborators: collaboratorsForCard
+        }
+      }))
+
+      trips.value = enriched as Trip[]
     } catch (e: any) {
-      try {
-        const res = await $fetch('/api/trips/my') as any
-        trips.value = Array.isArray(res?.trips) ? res.trips : []
-      } catch (fallbackError: any) {
-        console.error('Error fetching trips (new):', e)
-        error.value = e.message || 'Error al cargar los viajes'
-      }
+      console.error('Error fetching trips (new):', e)
+      error.value = e.message || 'Error al cargar los viajes'
+      trips.value = []
     } finally {
       loading.value = false
     }

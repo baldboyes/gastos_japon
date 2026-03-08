@@ -25,7 +25,6 @@ import FileUploader from '~/components/ui/FileUploader/FileUploader.vue'
   import { useDirectusRepo } from '~/composables/useDirectusRepo'
   import { readItem } from '@directus/sdk'
   import { Plus, Trash2 } from 'lucide-vue-next'
-  import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
   const props = defineProps<{
     open: boolean
@@ -439,21 +438,13 @@ watch(isOpen, (isOpened) => {
 
           </div>
           <div class="w-full lg:w-1/3 space-y-8">
-            <div v-if="formData.id" class="pb-8 border-b border-dashed">
+            <div v-if="formData.id" class="pb-8">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_transport_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="transports" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="transports" @deleted="onFileUploaded" />
             </div>
-            <EntityTasksWidget 
-              v-if="formData.id"
-              :key="String(formData.id)"
-              :trip-id="Number(props.tripId)"
-              entity-type="transports"
-              :entity-id="String(formData.id)"
-              :title="`${$t('trip_transport_drawer.tasks.title_prefix')}: ${formData.name || $t('trip_transport_drawer.tasks.entity_fallback')}`"
-            />
           </div>
         </div>
       </ScrollArea>

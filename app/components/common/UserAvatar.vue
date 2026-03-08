@@ -29,9 +29,9 @@ const initials = computed(() => {
 
 const avatarSrc = computed(() => {
   if (!props.user) return ''
-  const url = (props.user.avatar_url || '') + '?width=64'
-  // Eliminar espacios y backticks si existen (limpieza de datos sucios)
-  return url.replace(/[`\s]/g, '')
+  const raw = (props.user.avatar_url || '').replace(/[`\s]/g, '')
+  if (!raw) return ''
+  return raw.includes('?') ? `${raw}&width=64` : `${raw}?width=64`
 })
 
 const fullName = computed(() => {
@@ -43,7 +43,7 @@ const fullName = computed(() => {
 <template>
   <div class="flex items-center gap-2" :title="fullName">
     <Avatar :size="size" class="border-2 border-white bg-white shadow-sm">
-      <AvatarImage :src="avatarSrc" :alt="fullName" />
+      <AvatarImage v-if="avatarSrc" :src="avatarSrc" :alt="fullName" />
       <AvatarFallback class="bg-teal-100 text-teal-700 font-medium">{{ initials }}</AvatarFallback>
     </Avatar>
     <span v-if="showName" class="text-sm font-medium text-gray-700">

@@ -113,7 +113,7 @@ import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
-const { directusUserId } = useDirectusRepo()
+const { directusUserId, getClient } = useDirectusRepo()
 const { 
   notifications, 
   isLoading, 
@@ -169,6 +169,9 @@ const handleAction = async (notification: Notification) => {
 }
 
 const handleInviteResponse = async (notification: Notification, accept: boolean) => {
+  if (!directusUserId.value) {
+    try { await getClient() } catch {}
+  }
   if (!directusUserId.value) return
 
   try {
@@ -177,7 +180,8 @@ const handleInviteResponse = async (notification: Notification, accept: boolean)
       body: {
         notificationId: notification.id,
         accept: accept,
-        userId: directusUserId.value
+        userId: directusUserId.value,
+        actionLink: notification.action_link
       }
     }) as any
 

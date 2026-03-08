@@ -14,18 +14,18 @@ export const useNotificationsNew = () => {
   })
 
   const fetchNotifications = async () => {
-    if (!directusUserId.value) return
-
     isLoading.value = true
     try {
       const client = await getClient()
+      if (!directusUserId.value) return
       const response = await client.request(readItems('notifications', {
         filter: {
           recipient_id: {
             _eq: directusUserId.value
           }
         },
-        sort: ['-date_created']
+        sort: ['-date_created'],
+        limit: -1
       }))
       
       notifications.value = response as Notification[]

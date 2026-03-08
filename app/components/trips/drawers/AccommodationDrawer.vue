@@ -35,7 +35,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
 const props = defineProps<{
   open: boolean
@@ -289,21 +288,13 @@ const locationProxy = computed({
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
-            <div v-if="formId" class="pb-8 border-b border-dashed">
+            <div v-if="formId" class="pb-8">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_accommodation_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="accommodations" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="accommodations" @deleted="onFileUploaded" />
             </div>
-            <EntityTasksWidget 
-              v-if="formId"
-              :key="formId"
-              :trip-id="Number(props.tripId)"
-              entity-type="accommodations"
-              :entity-id="String(formId)"
-              :title="`${$t('trip_accommodation_drawer.tasks.title_prefix')}: ${formData.name || $t('trip_accommodation_drawer.tasks.entity_fallback')}`"
-            />
           </div>
         </div>
       </ScrollArea>

@@ -164,7 +164,7 @@ export interface Transport {
 export interface Trip {
   id: number
   status: Status
-  user_created: string
+  user_created: string | DirectusUser
   date_created: string
   title: string
   start_date: string
@@ -185,6 +185,15 @@ export interface TripsUser {
   directus_user_id: string
   rol: TripUserRole
   status: 'published' | 'draft'
+}
+
+export interface DirectusUser {
+  id: string
+  first_name?: string | null
+  last_name?: string | null
+  email?: string | null
+  avatar?: string | null
+  avatar_url?: string | null
 }
 
 export interface TripInvitation {
@@ -227,7 +236,8 @@ export interface Task {
   priority: 'low' | 'medium' | 'high' | 'urgent'
   due_date?: string
   trip_id?: number | Trip
-  assigned_to?: string
+  user_created?: string | DirectusUser
+  assigned_to?: string | DirectusUser
   entity_type?: string
   entity_id?: string | number
   task_group?: string | number

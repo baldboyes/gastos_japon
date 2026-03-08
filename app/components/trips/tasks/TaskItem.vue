@@ -5,8 +5,10 @@ import { TASK_PRIORITIES } from '~/utils/task-constants'
 import { CheckCircle2, Circle, Calendar, User, Link2, ArrowRight } from 'lucide-vue-next'
 import { cn } from '~/lib/utils'
 import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import { useTripsNew } from '~/composables/useTripsNew'
 import UserAvatar from '~/components/common/UserAvatar.vue'
 import { formatDateWithDayShort, formatTime } from '~/utils/dates'
+import type { DirectusUser } from '~/types/directus'
 const props = defineProps<{
   task: Task
 }>()
@@ -14,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:status', 'edit'])
 
 const { flights, accommodations, activities, insurances, transports } = useTripOrganizationNew()
+const { collaborators } = useTripsNew()
 
 const priorityColor = computed(() => {
   return TASK_PRIORITIES.find(p => p.value === props.task.priority)?.color || 'bg-gray-100 text-gray-800'
@@ -31,6 +34,31 @@ const isOverdue = computed(() => {
     if (!props.task.due_date || isCompleted.value) return false
     return new Date(props.task.due_date) < new Date()
   })
+
+const userById = computed(() => {
+  const m = new Map<string, any>()
+  for (const u of collaborators.value || []) {
+    if (u?.id) m.set(String(u.id), u)
+  }
+  return m
+})
+
+const creatorUser = computed<DirectusUser | null>(() => {
+  const v: any = (props.task as any).user_created
+  if (v && typeof v === 'object') return v
+  if (typeof v === 'string') return userById.value.get(v) || null
+  return null
+})
+
+const assignedUser = computed<DirectusUser | null>(() => {
+  const v: any = (props.task as any).assigned_to
+  if (v && typeof v === 'object') return v
+  if (typeof v === 'string') return userById.value.get(v) || null
+  return null
+})
+
+const showAssigned = computed(() => !!assignedUser.value && (!creatorUser.value || assignedUser.value.id !== creatorUser.value.id))
+const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
 
   // Resolve Entity Name
   const resolvedEntityName = computed(() => {
@@ -81,32 +109,40 @@ const isOverdue = computed(() => {
         <h4 :class="cn('font-medium text-sm leading-tight', isCompleted && 'line-through text-muted-foreground')">
           {{ task.title }}
         </h4>
-        <div 
-            v-if="task.priority !== 'medium' && !isCompleted" 
-            class="w-2 h-2 rounded-full shrink-0" 
-            :class="{
-                'bg-red-500': task.priority === 'urgent',
-                'bg-orange-400': task.priority === 'high',
-                'bg-blue-400': task.priority === 'low'
-            }"
-            :title="$t('tasks.priority.' + task.priority)"
-        ></div>
+        <div class="flex items-center gap-2 shrink-0">
+          <div 
+              v-if="task.priority !== 'medium' && !isCompleted" 
+              class="w-2 h-2 rounded-full shrink-0" 
+              :class="{
+                  'bg-red-500': task.priority === 'urgent',
+                  'bg-orange-400': task.priority === 'high',
+                  'bg-blue-400': task.priority === 'low'
+              }"
+              :title="$t('tasks.priority.' + task.priority)"
+          ></div>
+        </div>
       </div>
       
       <p v-if="task.description" class="text-xs text-muted-foreground mt-1 line-clamp-2">
         {{ task.description }}
       </p>
-
-      <div class="flex items-center gap-3 mt-2">
-          <div v-if="task.due_date" class="flex items-center gap-1 text-xs text-muted-foreground" :class="{'text-red-500 font-medium': isOverdue && !isCompleted}">
-            <Calendar class="h-3 w-3" />
-            {{ formatDateWithDayShort(task.due_date) }}
-          </div>
-          
-          <div v-if="resolvedEntityName" class="flex items-center gap-1 text-xs text-primary/80 font-medium bg-primary/5 px-1.5 py-0.5 rounded">
-            <Link2 class="h-3 w-3" />
-            <span class="truncate max-w-[120px]">{{ resolvedEntityName }}</span>
-          </div>
+      <div class="flex justify-between items-center gap-3 mt-2">
+        <div class="flex items-center gap-3 mt-2">
+            <div v-if="task.due_date" class="flex items-center gap-1 text-xs text-muted-foreground" :class="{'text-red-500 font-medium': isOverdue && !isCompleted}">
+              <Calendar class="h-3 w-3" />
+              {{ formatDateWithDayShort(task.due_date) }}
+            </div>
+            
+            <div v-if="resolvedEntityName" class="flex items-center gap-1 text-xs text-primary/80 font-medium bg-primary/5 px-1.5 py-0.5 rounded">
+              <Link2 class="h-3 w-3" />
+              <span class="truncate max-w-[120px]">{{ resolvedEntityName }}</span>
+            </div>
+        </div>
+        <div v-if="showCreator || showAssigned" class="flex items-center gap-1">
+          <UserAvatar v-if="showCreator" :user="creatorUser" size="sm" />
+          <ArrowRight v-if="showCreator && showAssigned" class="h-3 w-3 text-muted-foreground" />
+          <UserAvatar v-if="showAssigned" :user="assignedUser" size="sm" />
+        </div>
       </div>
     </div>
   </div>

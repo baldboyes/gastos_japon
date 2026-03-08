@@ -38,7 +38,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
 const route = useRoute()
 // tripId might be string from route or number from props
@@ -356,21 +355,13 @@ const onFileUploaded = async () => {
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8">
-            <div v-if="formId" class="pb-8 border-b border-dashed">
+            <div v-if="formId" class="pb-8">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_flight_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="flights" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="flights" @deleted="onFileUploaded" />
             </div>
-            <EntityTasksWidget 
-              v-if="formId"
-              :key="formId"
-              :trip-id="Number(routeTripId || props.tripId)"
-              entity-type="flight"
-              :entity-id="String(formId)"
-              :title="`${$t('trip_flight_drawer.tasks.title_prefix')}: ${formData.title || $t('trip_flight_drawer.tasks.entity_fallback')}`"
-            />
           </div>
         </div>
       </ScrollArea>

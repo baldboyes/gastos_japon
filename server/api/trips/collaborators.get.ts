@@ -29,48 +29,60 @@ export default defineEventHandler(async (event) => {
     limit: -1
   })) as any[]
 
-  if (!relations || relations.length === 0) {
-    const users = ownerId
-      ? await adminClient.request(readUsers({ filter: { id: { _eq: ownerId } }, limit: 1 }))
-      : []
-
-    const owner = Array.isArray(users) && users.length > 0 ? users[0] : null
-    const collaborators = owner
-      ? [{
-          id: owner.id,
-          first_name: owner.first_name,
-          last_name: owner.last_name,
-          email: owner.email,
-          avatar_url: owner.avatar_url,
-          relationId: null,
-          role: 'owner'
-        }]
-      : []
-
-    return { collaborators }
-  }
+  const ownerUsers = ownerId
+    ? await adminClient.request(readUsers({
+        filter: { id: { _eq: ownerId } },
+        fields: ['id', 'first_name', 'last_name', 'email', 'avatar_url'],
+        limit: 1
+      })).catch(() => [])
+    : []
+  const owner = Array.isArray(ownerUsers) && ownerUsers.length > 0 ? ownerUsers[0] : null
 
   const userIds = (relations || []).map((r: any) => r.directus_user_id).filter(Boolean)
   const users = userIds.length > 0
-    ? await adminClient.request(readUsers({ filter: { id: { _in: userIds } }, limit: -1 }))
+    ? await adminClient.request(readUsers({
+        filter: { id: { _in: userIds } },
+        fields: ['id', 'first_name', 'last_name', 'email', 'avatar_url'],
+        limit: -1
+      })).catch(() => [])
     : []
 
   const userById = new Map((users || []).map((u: any) => [u.id, u]))
 
   const collaborators = (relations || []).map((r: any) => {
-      const u = userById.get(r.directus_user_id)
-      if (!u) return null
-      return {
-        id: u.id,
-        first_name: u.first_name,
-        last_name: u.last_name,
-        email: u.email,
-        avatar_url: u.avatar_url,
-        relationId: r.id,
-        role: ownerId && u.id === ownerId ? 'owner' : (r.rol || 'collaborator')
-      }
-    })
-    .filter(Boolean)
+    const u = userById.get(r.directus_user_id)
+    if (!u) return null
+    return {
+      id: u.id,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      email: u.email,
+      avatar_url: u.avatar_url,
+      relationId: r.id,
+      role: ownerId && u.id === ownerId ? 'owner' : (r.rol || 'collaborator')
+    }
+  }).filter(Boolean) as any[]
+
+  if (owner && owner.id) {
+    const existing = collaborators.find((c: any) => c?.id === owner.id)
+    if (existing) {
+      existing.role = 'owner'
+      if (!existing.avatar_url) existing.avatar_url = owner.avatar_url
+      if (!existing.first_name) existing.first_name = owner.first_name
+      if (!existing.last_name) existing.last_name = owner.last_name
+      if (!existing.email) existing.email = owner.email
+    } else {
+      collaborators.unshift({
+        id: owner.id,
+        first_name: owner.first_name,
+        last_name: owner.last_name,
+        email: owner.email,
+        avatar_url: owner.avatar_url,
+        relationId: null,
+        role: 'owner'
+      })
+    }
+  }
 
   return { collaborators }
 })

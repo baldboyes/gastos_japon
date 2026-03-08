@@ -15,10 +15,11 @@ export const useTripTasksNew = () => {
       const result = await client.request(readItems('tasks', {
         filter: { trip_id: { _eq: tripId } },
         sort: ['due_date'],
-        fields: ['*', 'assigned_to.id', 'assigned_to.first_name', 'assigned_to.last_name', 'assigned_to.avatar']
+        fields: ['*'],
+        limit: -1
       }))
-      
-      tasks.value = result as Task[]
+
+      tasks.value = Array.isArray(result) ? result as Task[] : []
     } catch (e) {
       console.error('Error fetching tasks (new):', e)
     } finally {

@@ -20,6 +20,7 @@ const props = defineProps<{
   max?: string
   defaultTime?: string
   hideTime?: boolean
+  fullWidth?: boolean
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -149,7 +150,7 @@ const onTimeChange = () => {
         <span class="capitalize">{{ formattedDate ? formattedDate : "Seleccionar fecha" }}</span>
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-auto p-0" align="start">
+    <PopoverContent :class="cn(props.fullWidth ? 'w-[--radix-popover-trigger-width]' : 'w-auto', 'p-0')" align="start">
       <Calendar 
         v-model="dateVal" 
         locale="es-ES" 

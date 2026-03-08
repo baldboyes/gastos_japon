@@ -28,7 +28,6 @@ import FileList from '~/components/ui/FileList/FileList.vue'
 import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { readItem } from '@directus/sdk'
 import { RangeCalendar } from '~/components/ui/range-calendar'
-import EntityTasksWidget from '~/components/trips/tasks/EntityTasksWidget.vue'
 
 
 const props = defineProps<{
@@ -248,21 +247,13 @@ const onFileUploaded = async () => {
             </div>
           </div>
           <div class="w-full lg:w-1/3 space-y-8 py-4">
-            <div v-if="formData.id" class="pb-8 border-b border-dashed">
+            <div v-if="formData.id" class="pb-8">
               <div class="flex justify-between items-center mb-2">
                 <Label>{{ $t('trip_insurance_drawer.fields.attachments') }}</Label>
                 <FileUploader collection="insurances" :item-id="formId" @uploaded="onFileUploaded" />
               </div>
               <FileList :files="formAdjuntos" collection="insurances" @deleted="onFileUploaded" />
             </div>
-            <EntityTasksWidget 
-              v-if="formData.id"
-              :key="String(formData.id)"
-              :trip-id="Number(props.tripId)"
-              entity-type="insurances"
-              :entity-id="String(formData.id)"
-              :title="`${$t('trip_insurance_drawer.tasks.title_prefix')}: ${formData.provider || $t('trip_insurance_drawer.tasks.entity_fallback')}`"
-            />
           </div>
         </div>
       </ScrollArea>
