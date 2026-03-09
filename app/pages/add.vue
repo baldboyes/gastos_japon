@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <div v-if="isEditMode">
-          <h1 class="text-2xl font-bold text-gray-900">Editar gasto</h1>
+          <h1 class="text-2xl font-bold text-neutral-900">Editar gasto</h1>
         </div>
         <div v-else class="flex items-center gap-2">
           <button
@@ -13,23 +13,23 @@
             class=" hover:text-teal-600 transition-colors flex items-center gap-2 cursor-pointer"
           >
             <div class="flex items-center gap-2">
-              <span class="font-bold text-base text-gray-800">{{ formatDate(form.date).slice(0, -5) }}</span>
-              <span class="text-base text-gray-800">{{ form.time }}</span>
+              <span class="font-bold text-base text-neutral-800">{{ formatDate(form.date).slice(0, -5) }}</span>
+              <span class="text-base text-neutral-800">{{ form.time }}</span>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-400">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
           </button>
 
-          <div v-if="form.location.city" class="text-base font-bold text-gray-900"> | {{ form.location.city }}</div>
+          <div v-if="form.location.city" class="text-base font-bold text-neutral-900"> | {{ form.location.city }}</div>
 
 
         </div>
 
         
         <button
-          class="text-gray-600 hover:text-gray-900 transition-colors"
+          class="text-neutral-600 hover:text-neutral-900 transition-colors"
           @click="navigateTo('/')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +48,7 @@
             <div>
               <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
               <div class="relative mt-2">
-                <span class="absolute left-2 top-4 text-lg text-gray-600">{{ currencySymbol }}</span>
+                <span class="absolute left-2 top-4 text-lg text-neutral-600">{{ currencySymbol }}</span>
                 <Input
                   id="amount"
                   v-model="form.amount"
@@ -86,7 +86,7 @@
                 :class="[
                   form.paymentMethod === 'cash'
                     ? 'border-teal-500 bg-teal-50'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    : 'border-neutral-200 hover:border-neutral-300 bg-white'
                 ]"
                 @click="form.paymentMethod = 'cash'"
               >
@@ -98,7 +98,7 @@
                 :class="[
                   form.paymentMethod === 'card'
                     ? 'border-teal-500 bg-teal-50'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    : 'border-neutral-200 hover:border-neutral-300 bg-white'
                 ]"
                 @click="form.paymentMethod = 'card'"
               >
@@ -110,7 +110,7 @@
                 :class="[
                   form.paymentMethod === 'ic'
                     ? 'border-teal-500 bg-teal-50'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    : 'border-neutral-200 hover:border-neutral-300 bg-white'
                 ]"
                 @click="form.paymentMethod = 'ic'"
               >
@@ -170,14 +170,14 @@
 
               <!-- Show location info if captured OR in edit mode -->
               <div v-if="locationCaptured || isEditMode" class="space-y-3">
-                <div class="flex items-start gap-2 text-sm text-gray-700 bg-teal-50 p-3 rounded-lg">
+                <div class="flex items-start gap-2 text-sm text-neutral-700 bg-teal-50 p-3 rounded-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-teal-600">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                   <div>
                     <div class="font-medium">{{ form.location.city || 'Sin ubicación' }}</div>
-                    <div class="text-xs text-gray-600">{{ form.location.prefecture || 'Sin prefectura' }}</div>
+                    <div class="text-xs text-neutral-600">{{ form.location.prefecture || 'Sin prefectura' }}</div>
                   </div>
                 </div>
 
@@ -211,10 +211,10 @@
           />
         </div>
         <!-- Shared -->
-        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl cursor-pointer" @click="toggleShared">
+        <div class="flex items-center space-x-3 p-3 bg-neutral-50 rounded-xl cursor-pointer" @click="toggleShared">
           <div
             class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
-            :class="form.shared ? 'bg-teal-600 border-teal-600' : 'bg-white border-gray-300'"
+            :class="form.shared ? 'bg-teal-600 border-teal-600' : 'bg-white border-neutral-300'"
           >
             <svg
               v-if="form.shared"

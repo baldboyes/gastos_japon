@@ -10,12 +10,12 @@
         :class="[
           selected === category.key
             ? 'border-red-500 bg-red-50'
-            : 'border-gray-200 hover:border-gray-300 bg-white'
+            : 'border-neutral-200 hover:border-neutral-300 bg-white'
         ]"
         @click="$emit('update:modelValue', category.key)"
       >
         <div class="text-3xl">{{ category.icon }}</div>
-        <div class="text-xs font-medium text-center text-gray-700">
+        <div class="text-xs font-medium text-center text-neutral-700">
           {{ category.label }}
         </div>
       </button>

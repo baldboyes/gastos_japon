@@ -14,18 +14,18 @@
           <!-- Content -->
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between gap-2 mb-1">
-              <h3 class="font-semibold text-gray-700 truncate pr-8">
+              <h3 class="font-semibold text-neutral-700 truncate pr-8">
                 {{ plannedExpense.placeName }}
               </h3>
               <div class="flex items-center gap-3">
-                <div class="flex-shrink-0 font-bold text-gray-700">
+                <div class="flex-shrink-0 font-bold text-neutral-700">
                   {{ formattedAmount }}
                 </div>
               </div>
             </div>
             <div class="flex items-center gap-2 justify-between">
               <!-- Location -->
-              <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+              <div class="flex items-center gap-2 text-sm text-neutral-500 mb-2">
                 <div class="flex items-center gap-1 truncate">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
@@ -54,7 +54,7 @@
               </div>
             </div>
             <!-- Notes (if present) -->
-            <p v-if="plannedExpense.notes" class="text-sm text-gray-600 mt-2 line-clamp-2 opacity-80">
+            <p v-if="plannedExpense.notes" class="text-sm text-neutral-600 mt-2 line-clamp-2 opacity-80">
               {{ plannedExpense.notes }}
             </p>
           </div>

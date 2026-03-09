@@ -138,8 +138,11 @@ const countdownText = computed(() => {
                         @edit="handleEditTask"
                         @add="handleAddTask"
                     />
-                    <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
-                        &nbsp;
+                    <div class="bg-neutral-800 rounded-2xl overflow-visible mt-4 h-[80px] w-full flex items-center justify-center relative border border-neutral-700">
+                        <div class="text-xs font-normal border border-white bg-neutral-800 text-neutral-200 absolute -top-2 right-4 px-4 rounded-full">Patrocinado</div>
+                        <NuxtLink to="https://www.porjapon.com/" target="_blank" class="flex items-center justify-center gap-2 w-full">
+                            <img src="/anuncio/porjapon.svg" class="size-10" alt="Por Japon" /> <span class="font-semibold text-xl text-white">porjapon.com</span>
+                        </NuxtLink>
                     </div>
                 </div>
             </div>

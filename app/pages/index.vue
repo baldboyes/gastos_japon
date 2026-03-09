@@ -44,9 +44,9 @@
 -->
             <!-- Dashboard Preview -->
             <div class="mt-20 relative rounded-3xl overflow-hidden border border-input shadow-2xl shadow-slate-200/50 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 transition-all">
-              <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent z-10"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-neutral-50 via-transparent to-transparent z-10"></div>
               <!-- Placeholder for app screenshot/mockup -->
-              <div class="aspect-video w-full rounded-lg bg-gray-100 overflow-hidden relative group border border-gray-100">
+              <div class="aspect-video w-full rounded-lg bg-neutral-100 overflow-hidden relative group border border-neutral-100">
                   <div class="absolute inset-0 flex items-center justify-center">
                     <img src="/download.png" alt="Dashboard Preview" class="w-full h-full object-cover object-top" />
                   </div>
@@ -56,7 +56,7 @@
         </section>
 
         <!-- Social Proof / Quote -->
-        <section class="py-24 border-y border-gray-200 bg-white">
+        <section class="py-24 border-y border-neutral-200 bg-white">
           <div class="container mx-auto px-4 text-center">
             <div class="max-w-3xl mx-auto">
               <Quote class="w-12 h-12 text-purple-200 mx-auto mb-6" />
@@ -75,7 +75,7 @@
         </section>
 
         <!-- Features Grid -->
-        <section class="py-32 relative bg-gray-50">
+        <section class="py-32 relative bg-neutral-50">
           <div class="container mx-auto px-4">
               <div class="text-center max-w-2xl mx-auto mb-20">
                 <h2 class="text-3xl md:text-5xl font-bold mb-6 text-slate-900">{{ $t('landing.features.title') }}</h2>
@@ -86,7 +86,7 @@
 
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Feature 1 -->
-                <div class="group p-8 rounded-2xl bg-white border border-gray-200 hover:border-purple-200 hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300">
+                <div class="group p-8 rounded-2xl bg-white border border-neutral-200 hover:border-purple-200 hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300">
                     <div class="h-12 w-12 rounded-lg bg-emerald-50 flex items-center justify-center mb-6 text-emerald-600 group-hover:scale-110 transition-transform">
                       <Plane class="w-6 h-6" />
                     </div>
@@ -97,7 +97,7 @@
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="group p-8 rounded-2xl bg-white border border-gray-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300">
+                <div class="group p-8 rounded-2xl bg-white border border-neutral-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300">
                     <div class="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center mb-6 text-blue-600 group-hover:scale-110 transition-transform">
                       <CalendarCheck class="w-6 h-6" />
                     </div>
@@ -108,7 +108,7 @@
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="group p-8 rounded-2xl bg-white border border-gray-200 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300">
+                <div class="group p-8 rounded-2xl bg-white border border-neutral-200 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300">
                     <div class="h-12 w-12 rounded-lg bg-orange-50 flex items-center justify-center mb-6 text-orange-600 group-hover:scale-110 transition-transform">
                       <Banknote class="w-6 h-6" />
                     </div>
@@ -119,7 +119,7 @@
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="group p-8 rounded-2xl bg-white border border-gray-200 hover:border-pink-200 hover:shadow-xl hover:shadow-pink-100/50 transition-all duration-300 lg:col-span-2">
+                <div class="group p-8 rounded-2xl bg-white border border-neutral-200 hover:border-pink-200 hover:shadow-xl hover:shadow-pink-100/50 transition-all duration-300 lg:col-span-2">
                     <div class="h-12 w-12 rounded-lg bg-pink-50 flex items-center justify-center mb-6 text-pink-600 group-hover:scale-110 transition-transform">
                       <Wallet class="w-6 h-6" />
                     </div>
@@ -130,7 +130,7 @@
                 </div>
                 
                 <!-- Feature 5 -->
-                <div class="group p-8 rounded-2xl bg-white border border-gray-200 hover:border-yellow-200 hover:shadow-xl hover:shadow-yellow-100/50 transition-all duration-300">
+                <div class="group p-8 rounded-2xl bg-white border border-neutral-200 hover:border-yellow-200 hover:shadow-xl hover:shadow-yellow-100/50 transition-all duration-300">
                     <div class="h-12 w-12 rounded-lg bg-yellow-50 flex items-center justify-center mb-6 text-yellow-600 group-hover:scale-110 transition-transform">
                       <Zap class="w-6 h-6" />
                     </div>
@@ -144,17 +144,17 @@
         </section>
 
         <!-- FAQ Section -->
-        <section class="py-24 border-t border-gray-200 bg-white">
+        <section class="py-24 border-t border-neutral-200 bg-white">
           <div class="container mx-auto px-4 max-w-3xl">
               <h2 class="text-3xl font-bold mb-12 text-center text-slate-900">{{ $t('landing.faq.title') }}</h2>
               
               <div class="space-y-4">
-                <div v-for="(faq, index) in faqs" :key="index" class="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
-                    <button @click="faq.open = !faq.open" class="flex items-center justify-between w-full p-6 text-left hover:bg-gray-100 transition-colors">
+                <div v-for="(faq, index) in faqs" :key="index" class="rounded-lg border border-neutral-200 bg-neutral-50 overflow-hidden">
+                    <button @click="faq.open = !faq.open" class="flex items-center justify-between w-full p-6 text-left hover:bg-neutral-100 transition-colors">
                       <span class="font-medium text-lg text-slate-900">{{ $t(faq.questionKey) }}</span>
                       <ChevronDown class="w-5 h-5 text-slate-500 transition-transform duration-300" :class="{ 'rotate-180': faq.open }" />
                     </button>
-                    <div v-show="faq.open" class="px-6 pb-6 text-slate-600 animate-in slide-in-from-top-2 duration-200 border-t border-gray-100">
+                    <div v-show="faq.open" class="px-6 pb-6 text-slate-600 animate-in slide-in-from-top-2 duration-200 border-t border-neutral-100">
                       {{ $t(faq.answerKey) }}
                     </div>
                 </div>

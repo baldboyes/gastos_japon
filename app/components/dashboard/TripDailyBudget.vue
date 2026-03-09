@@ -7,12 +7,12 @@
           @click="toggleDisplay"
         >
           <div class="flex-1 space-y-0">
-            <div class="text-xs text-gray-400 font-normal">
+            <div class="text-xs text-neutral-400 font-normal">
               {{ showRemaining ? 'Restante hoy' : 'Gastado hoy' }}
             </div>
             <div
               class="text-6xl font-bold mb-1 -mt-1"
-              :class="showRemaining && remaining < 0 ? 'text-red-600' : 'text-gray-900'"
+              :class="showRemaining && remaining < 0 ? 'text-red-600' : 'text-neutral-900'"
             >
               {{ formatAmount(showRemaining ? remaining : todaySpent) }}
             </div>
@@ -49,7 +49,7 @@
             </svg>
             <!-- Percentage text in center -->
             <div class="absolute inset-0 flex items-center justify-center">
-              <span class="text-sm font-bold" :class="percentage > 100 ? 'text-red-600' : 'text-gray-900'">
+              <span class="text-sm font-bold" :class="percentage > 100 ? 'text-red-600' : 'text-neutral-900'">
                 {{ percentage }}%
               </span>
             </div>

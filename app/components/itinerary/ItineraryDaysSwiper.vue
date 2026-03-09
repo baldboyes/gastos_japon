@@ -5,7 +5,7 @@
 
   import { format, isSameDay } from 'date-fns'
   import { es } from 'date-fns/locale'
-  import { Plane, Sun, Cloud, CloudRain, Ticket } from 'lucide-vue-next'
+  import { Plane, Ticket } from 'lucide-vue-next'
 
   const props = defineProps<{
     days: any[]
@@ -46,7 +46,7 @@
          <div class="absolute top-0 left-1.5 w-full px-0 pointer-events-none z-0 h-32 flex flex-col">
             <template v-for="dest in day.destinations" :key="dest.id">
               <div 
-                class="bg-gray-300 text-gray-700 relative w-full flex-1 flex items-start pt-3 px-4 text-xs font-bold transition-all"
+                class="bg-neutral-300 text-neutral-700 relative w-full flex-1 flex items-start pt-3 px-4 text-xs font-bold transition-all"
                 :class="[
                   dest.status === 'start' ? 'rounded-l-2xl left-0 right-0 ml-1' : '',
                   dest.status === 'end' ? 'rounded-r-2xl left-0 right-0' : '',
@@ -78,23 +78,18 @@
             
             <!-- Weather Mock -->
             <div class="absolute top-3 right-3">
-                <Sun class="h-4 w-4 text-orange-400" v-if="index % 3 === 0" />
-                <Cloud class="h-4 w-4 text-slate-400" v-else-if="index % 3 === 1" />
-                <CloudRain class="h-4 w-4 text-blue-400" v-else />
+              <div v-for="flight in day.flights" :key="flight.id" class="flex justify-end">
+                <Plane class="h-4 w-4 text-blue-600/80" />
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Flights (Row 1) -->
         <div class="absolute top-17 left-0 w-full px-2 pointer-events-none z-50 flex flex-col items-end gap-1">
-          <div v-for="flight in day.flights" :key="flight.id" class="flex justify-end">
-            <Plane class="h-4 w-4 text-blue-600/80" />
-          </div>
-           <!-- Activities Indicators
            <div v-if="day.activities && day.activities.length > 0" class="flex gap-1">
-              <Ticket v-for="act in day.activities" :key="act.id" class="h-4 w-4 text-purple-600/80" />
+              <Ticket v-if="day.activities" class="h-4 w-4 text-purple-600/80" />
            </div>
-          -->
         </div>
 
         <!-- Accommodations (Row 2) -->

@@ -43,6 +43,7 @@
     "@types/node": "^25.0.3",
     "@vite-pwa/nuxt": "^1.0.6",
     "baseline-browser-mapping": "^2.9.11",
+    "shadcn-vue": "^2.4.3",
     "sharp": "^0.34.4",
     "typescript": "^5.9.3"
   }

@@ -10,6 +10,20 @@
       "low": "Low"
     }
   },
+  "common": {
+    "user": {
+      "unknown": "Unknown user"
+    }
+  },
+  "errors": {
+    "trips": {
+      "fetch_list": "Failed to load trips",
+      "fetch_one": "Failed to load trip",
+      "create": "Failed to create trip",
+      "update": "Failed to update trip",
+      "delete": "Failed to delete trip"
+    }
+  },
   "settings": {
     "preferences_drawer": {
       "title": "App preferences",
@@ -26,9 +40,29 @@
         "toast_success": "Language updated",
         "locales": {
           "en": "English",
-          "es": "Spanish",
-          "ja": "Japanese"
+          "es": "Español",
+          "ja": "日本語"
         }
+      }
+    },
+    "trip_settings_drawer": {
+      "title": "Trip settings",
+      "currency": {
+        "title": "Currency",
+        "description": "Select the currency you will use for your expenses."
+      },
+      "daily_budget": {
+        "title": "Daily budget",
+        "description": "Set your daily spending limit.",
+        "label": "Daily limit",
+        "placeholder_amount": "8000",
+        "placeholder_select_currency": "Select a currency first",
+        "current_prefix": "Current budget:",
+        "none_configured": "No budget configured",
+        "select_currency_hint": "Select a currency to continue"
+      },
+      "version": {
+        "label": "Version"
       }
     }
   },
@@ -45,6 +79,38 @@
     "expenses": "Expenses",
     "daily_expenses": "Daily expenses",
     "options": "Options"
+  },
+  "expenses": {
+    "shared": {
+      "toggle": "Shared expense",
+      "section_title": "Shared expense",
+      "filter_only": "Shared only",
+      "badge": "Shared expense",
+      "participants_label": "Participants",
+      "paid_by_label": "Paid by",
+      "split_label": "Split",
+      "split_equal": "Split equally",
+      "split_custom": "Custom",
+      "amount_label": "Amount",
+      "percentage_label": "Percentage",
+      "validation": {
+        "no_participants": "Select at least one participant",
+        "amounts_must_match_total": "Split amounts must add up to the expense total",
+        "percentages_must_equal_100": "Split percentages must add up to 100%"
+      }
+    },
+    "toasts": {
+      "shared_created": "Shared expense added",
+      "shared_updated": "Shared expense updated",
+      "shared_deleted": "Shared expense deleted",
+      "shared_locked": "Cannot modify a shared expense that has been settled"
+    },
+    "summary": {
+      "title": "Shared expenses summary",
+      "balances_title": "Balances",
+      "transactions_title": "Suggested transfers",
+      "no_shared_expenses": "There are no shared expenses in this trip"
+    }
   },
   "header": {
     "pricing": "Pricing",
@@ -209,9 +275,7 @@
       "none": "No location specified"
     },
     "labels": {
-      "notes": "Notes",
-      "policy": "Policy",
-      "days": "Days"
+      "notes": "Notes"
     },
     "tasks": {
       "title_prefix": "Tasks"
@@ -239,7 +303,9 @@
       "subtitle": "Add your travel insurance to keep the policy handy."
     },
     "labels": {
-      "notes": "Notes"
+      "notes": "Notes",
+      "policy": "Policy",
+      "days": "Days"
     },
     "tasks": {
       "title_prefix": "Tasks"
@@ -688,7 +754,8 @@
       "list": "List",
       "map": "Map",
       "stats": "Stats",
-      "wallet": "Wallet"
+      "wallet": "Wallet",
+      "shared": "Shared"
     },
     "labels": {
       "expense_singular": "expense",
@@ -712,10 +779,18 @@
         "subtitle": "Add some expenses to see your stats",
         "cta": "Add expense"
       },
+      "scope": {
+        "label": "Show stats as",
+        "me": "My share (split)",
+        "trip": "Trip total"
+      },
       "overview": {
         "total": "Total",
         "daily_average": "Daily average",
         "days_with_expenses_suffix": "with expenses"
+      },
+      "shared_by_person": {
+        "title": "Shared expenses split"
       },
       "top_expenses": {
         "title": "Top expenses"
@@ -771,6 +846,44 @@
         "actions": {
           "save": "Save"
         }
+      }
+    },
+    "shared": {
+      "title": "Shared expenses summary",
+      "balances_title": "Balances",
+      "transactions_title": "Suggested transfers",
+      "settlements_title": "Recorded payments",
+      "toasts": {
+        "saved": "Payment recorded",
+        "generated": "Suggested payments generated",
+        "regenerated": "Pending payments regenerated",
+        "completed": "Payment marked as paid",
+        "deleted": "Payment deleted",
+        "error": "Failed to update payments"
+      },
+      "empty": {
+        "title": "No shared expenses yet",
+        "subtitle": "Mark an expense as shared to see the split and balances"
+      },
+      "actions": {
+        "generate_pending": "Generate pending payments",
+        "regenerate_pending": "Regenerate payments",
+        "register_payment": "Record payment",
+        "mark_completed": "Mark as paid",
+        "delete": "Delete"
+      },
+      "regenerate": {
+        "confirm": {
+          "title": "Regenerate pending payments",
+          "description": "Current pending payments will be voided and regenerated based on the current balances. Completed payments won’t be changed.",
+          "cancel": "Cancel",
+          "confirm": "Regenerate"
+        }
+      },
+      "status": {
+        "pending": "Pending",
+        "completed": "Paid",
+        "void": "Void"
       }
     }
   },

@@ -279,7 +279,7 @@ const onFileUploaded = async () => {
                 <p>{{ $t('trip_flight_drawer.segments.empty.title') }}</p>
                 <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_flight_drawer.segments.empty.cta') }}</Button>
               </div>
-              <div v-for="(escala, index) in formData.layovers" :key="index" ref="escalaRefs" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
+              <div v-for="(escala, index) in formData.layovers" :key="index" ref="escalaRefs" class="p-4 rounded-lg relative bg-neutral-50 shadow-sm">
 
                 <div class="flex justify-between items-center pb-6">
                   <span class="font-bold text-sm text-slate-600 flex items-center gap-2">

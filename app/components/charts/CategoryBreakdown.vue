@@ -7,7 +7,7 @@
       <div v-if="hasData" class="relative w-[80%] mx-auto">
         <Doughnut :data="chartData" :options="chartOptions" />
       </div>
-      <div v-else class="py-12 text-center text-gray-500">
+      <div v-else class="py-12 text-center text-neutral-500">
         <div class="text-4xl mb-2">📊</div>
         <p class="text-sm">No hay datos para mostrar</p>
       </div>
@@ -26,12 +26,12 @@
             />
             <div class="flex items-center gap-2">
               <span>{{ item.info.icon }}</span>
-              <span class="text-sm font-medium text-gray-700">{{ item.info.label }}</span>
+              <span class="text-sm font-medium text-neutral-700">{{ item.info.label }}</span>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-sm font-semibold text-gray-900">{{ formatAmount(item.total) }}</div>
-            <div class="text-xs text-gray-500">{{ item.percentage }}%</div>
+            <div class="text-sm font-semibold text-neutral-900">{{ formatAmount(item.total) }}</div>
+            <div class="text-xs text-neutral-500">{{ item.percentage }}%</div>
           </div>
         </div>
       </div>

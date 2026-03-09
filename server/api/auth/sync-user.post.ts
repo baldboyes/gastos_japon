@@ -86,6 +86,7 @@ export default defineEventHandler(async (event) => {
           role: userRole, 
           status: 'active',
           provider: 'default',
+          external_identifier: clerkUserId,
           token: newToken
         }))
         tokenToReturn = newToken
@@ -151,19 +152,33 @@ export default defineEventHandler(async (event) => {
       if (body.imageUrl) {
         updatePayload.avatar_url = body.imageUrl
       }
-      await adminClient.request(updateUser(directusUser.id, updatePayload))
+      // Ensure external_identifier is set for existing users
+      if (directusUser && !directusUser.external_identifier) {
+        updatePayload.external_identifier = clerkUserId
+      }
+      if (directusUser) {
+        await adminClient.request(updateUser(directusUser.id, updatePayload))
+      }
     } else if (body.imageUrl) {
        // Si ya existía el usuario, aprovechamos para actualizar el avatar si ha cambiado (o si no lo tenía)
        // Esto se ejecuta en cada login
-       await adminClient.request(updateUser(directusUser.id, { 
-        avatar_url: body.imageUrl 
-      } as any))
+       const updatePayload: any = { avatar_url: body.imageUrl }
+       // Also update external_identifier if missing
+       if (directusUser && !directusUser.external_identifier) {
+         updatePayload.external_identifier = clerkUserId
+       }
+       if (directusUser) {
+         await adminClient.request(updateUser(directusUser.id, updatePayload))
+       }
+    } else if (directusUser && !directusUser.external_identifier) {
+       // Update external_identifier even if no image change
+       await adminClient.request(updateUser(directusUser.id, { external_identifier: clerkUserId } as any))
     }
 
     return { 
       success: true, 
       token: tokenToReturn, 
-      userId: directusUser.id 
+      userId: directusUser?.id 
     }
 
   } catch (error: any) {

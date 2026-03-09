@@ -54,19 +54,19 @@ export interface ParsedClassName {
     /**
      * Modifiers of the class in the order they appear in the class.
      *
-     * @example ['hover', 'dark'] // for `hover:dark:bg-gray-100`
+     * @example ['hover', 'dark'] // for `hover:dark:bg-neutral-100`
      */
     modifiers: string[]
     /**
      * Whether the class has an `!important` modifier.
      *
-     * @example true // for `hover:dark:!bg-gray-100`
+     * @example true // for `hover:dark:!bg-neutral-100`
      */
     hasImportantModifier: boolean
     /**
      * Base class without preceding modifiers.
      *
-     * @example 'bg-gray-100' // for `hover:dark:bg-gray-100`
+     * @example 'bg-neutral-100' // for `hover:dark:bg-neutral-100`
      */
     baseClassName: string
     /**
@@ -77,7 +77,7 @@ export interface ParsedClassName {
      *
      * If a `maybePostfixModifierPosition` is present, tailwind-merge first tries to match the `baseClassName` without the possible postfix modifier to a class group. If that fails, it tries again with the possible postfix modifier.
      *
-     * @example 11 // for `bg-gray-100/50`
+     * @example 11 // for `bg-neutral-100/50`
      */
     maybePostfixModifierPosition: number | undefined
 }

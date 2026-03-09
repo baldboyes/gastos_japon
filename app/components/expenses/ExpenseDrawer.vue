@@ -16,7 +16,7 @@
                   <div>
                     <Label for="amount" class="text-base">Gasto ({{ currencySymbol }}) *</Label>
                     <div class="relative mt-2">
-                      <span class="absolute left-2 top-4 text-lg text-gray-600">{{ currencySymbol }}</span>
+                      <span class="absolute left-2 top-4 text-lg text-neutral-600">{{ currencySymbol }}</span>
                       <Input
                         id="amount"
                         v-model="form.amount"
@@ -54,7 +54,7 @@
                       :class="[
                         form.paymentMethod === 'cash'
                           ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                          : 'border-neutral-200 hover:border-neutral-300 bg-white'
                       ]"
                       @click="form.paymentMethod = 'cash'"
                     >
@@ -66,7 +66,7 @@
                       :class="[
                         form.paymentMethod === 'card'
                           ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                          : 'border-neutral-200 hover:border-neutral-300 bg-white'
                       ]"
                       @click="form.paymentMethod = 'card'"
                     >
@@ -78,7 +78,7 @@
                       :class="[
                         form.paymentMethod === 'ic'
                           ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                          : 'border-neutral-200 hover:border-neutral-300 bg-white'
                       ]"
                       @click="form.paymentMethod = 'ic'"
                     >
@@ -119,14 +119,14 @@
                     </button>
 
                     <div v-if="locationCaptured || isEditMode" class="space-y-3">
-                      <div class="flex items-start gap-2 text-sm text-gray-700 bg-red-50 p-3 rounded-lg">
+                      <div class="flex items-start gap-2 text-sm text-neutral-700 bg-red-50 p-3 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-red-600">
                           <circle cx="12" cy="12" r="10"/>
                           <path d="m9 12 2 2 4-4"/>
                         </svg>
                         <div>
                           <div class="font-medium">{{ form.location.city || 'Sin ubicación' }}</div>
-                          <div class="text-xs text-gray-600">{{ form.location.prefecture || 'Sin prefectura' }}</div>
+                          <div class="text-xs text-neutral-600">{{ form.location.prefecture || 'Sin prefectura' }}</div>
                         </div>
                       </div>
 
@@ -160,10 +160,10 @@
               </div>
 
               <!-- Shared -->
-              <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl cursor-pointer" @click="toggleShared">
+              <div class="flex items-center space-x-3 p-3 bg-neutral-50 rounded-xl cursor-pointer" @click="toggleShared">
                 <div
                   class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
-                  :class="form.shared ? 'bg-red-600 border-red-600' : 'bg-white border-gray-300'"
+                  :class="form.shared ? 'bg-red-600 border-red-600' : 'bg-white border-neutral-300'"
                 >
                   <svg
                     v-if="form.shared"
@@ -181,18 +181,113 @@
                   </svg>
                 </div>
                 <Label class="text-base cursor-pointer flex items-center gap-2 pointer-events-none select-none">
-                  <span>⭐</span>
-                  <span>Gasto destacado</span>
+                  <span>👥</span>
+                  <span>{{ t('expenses.shared.toggle') }}</span>
                 </Label>
               </div>
+
+              <Card v-if="form.shared" class="bg-white">
+                <CardContent class="p-4 space-y-4">
+                  <div class="font-medium text-neutral-900">{{ t('expenses.shared.section_title') }}</div>
+
+                  <div class="space-y-2">
+                    <Label class="text-xs mb-1.5 block text-neutral-500">{{ t('expenses.shared.paid_by_label') }}</Label>
+                    <Select :model-value="paidByTripUserId ? String(paidByTripUserId) : ''" @update:model-value="paidByTripUserId = Number($event)">
+                      <SelectTrigger class="w-full bg-white">
+                        <SelectValue :placeholder="t('expenses.shared.paid_by_label')" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="p in tripParticipants" :key="p.tripUserId" :value="String(p.tripUserId)">
+                          {{ p.label }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div class="space-y-2">
+                    <Label class="text-xs mb-1.5 block text-neutral-500">{{ t('expenses.shared.participants_label') }}</Label>
+                    <div class="space-y-2">
+                      <button
+                        v-for="p in tripParticipants"
+                        :key="p.tripUserId"
+                        type="button"
+                        class="w-full flex items-center justify-between px-3 py-2 rounded-md border bg-white hover:bg-neutral-50 transition-colors"
+                        @click="toggleParticipant(p.tripUserId)"
+                      >
+                        <span class="text-sm font-medium text-neutral-900 truncate">{{ p.label }}</span>
+                        <div
+                          class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
+                          :class="selectedTripUserIds.includes(p.tripUserId) ? 'bg-red-600 border-red-600' : 'bg-white border-neutral-300'"
+                        >
+                          <svg
+                            v-if="selectedTripUserIds.includes(p.tripUserId)"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="white"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <Label class="text-xs mb-1.5 block text-neutral-500">{{ t('expenses.shared.split_label') }}</Label>
+                    <div class="flex gap-2">
+                      <Button type="button" variant="outline" :class="sharedSplitMode === 'equal' ? 'border-red-500 bg-red-50' : ''" @click="setSharedSplitMode('equal')">
+                        {{ t('expenses.shared.split_equal') }}
+                      </Button>
+                      <Button type="button" variant="outline" :class="sharedSplitMode === 'custom' ? 'border-red-500 bg-red-50' : ''" @click="setSharedSplitMode('custom')">
+                        {{ t('expenses.shared.split_custom') }}
+                      </Button>
+                    </div>
+
+                    <div class="space-y-2">
+                      <div v-for="p in selectedParticipants" :key="p.tripUserId" class="grid grid-cols-12 gap-2 items-center">
+                        <div class="col-span-5 text-sm font-medium text-neutral-900 truncate">{{ p.label }}</div>
+                        <div class="col-span-3">
+                          <Input
+                            type="number"
+                            inputmode="decimal"
+                            :disabled="sharedSplitMode === 'equal'"
+                            :model-value="splitDraft[p.tripUserId]?.percentage ?? ''"
+                            :placeholder="t('expenses.shared.percentage_label')"
+                            class="bg-white"
+                            @update:model-value="onPercentageChange(p.tripUserId, $event)"
+                          />
+                        </div>
+                        <div class="col-span-4">
+                          <Input
+                            type="number"
+                            inputmode="decimal"
+                            :disabled="sharedSplitMode === 'equal'"
+                            :model-value="splitDraft[p.tripUserId]?.amount ?? ''"
+                            :placeholder="t('expenses.shared.amount_label')"
+                            class="bg-white"
+                            @update:model-value="onAmountChange(p.tripUserId, $event)"
+                          />
+                        </div>
+                      </div>
+                      <div v-if="sharedSplitError" class="text-sm text-red-600">{{ sharedSplitError }}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </form>
           </div>
 
           <!-- Right Column: Image Placeholder -->
           <div class="w-full lg:w-1/3 space-y-8 py-4">
-             <div class="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center text-gray-500 h-full flex items-center justify-center">
+             <div class="border-2 border-dashed border-neutral-200 rounded-lg p-8 text-center text-neutral-500 h-full flex items-center justify-center">
                <div class="space-y-2">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-gray-400">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-neutral-400">
                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                    <circle cx="9" cy="9" r="2"/>
                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
@@ -289,6 +384,7 @@
 import { ref, computed, watch, reactive } from 'vue'
 import { toast } from 'vue-sonner'
 import { Trash2 } from 'lucide-vue-next'
+import { useI18n } from '#imports'
 import { 
   Drawer, 
   DrawerContent, 
@@ -322,11 +418,15 @@ import { Textarea } from '~/components/ui/textarea'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { Button } from '~/components/ui/button'
 import { DateTimePicker } from '~/components/ui/date-time-picker'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import type { ExpenseCategory, PaymentMethod, Expense } from '~/types'
 import CategorySelector from '~/components/common/CategorySelector.vue'
 import { CURRENCIES } from '~/composables/useSettings'
 import { useExpensesNew } from '~/composables/useExpensesNew'
 import { useGeolocation } from '~/composables/useGeolocation'
+import { useTripsNew } from '~/composables/useTripsNew'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
+import { useSharedExpenses } from '~/composables/useSharedExpenses'
 
 const props = defineProps<{
   open: boolean
@@ -336,6 +436,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:open', 'success'])
+const { t } = useI18n()
 
 const isOpen = computed({
   get: () => props.open,
@@ -350,6 +451,9 @@ const currencySymbol = computed(() => {
 
 const { createExpense, updateExpense, deleteExpense } = useExpensesNew()
 const { getCurrentLocation } = useGeolocation()
+const { collaborators, fetchCollaborators } = useTripsNew()
+const { directusUserId } = useDirectusRepo()
+const { fetchExpenseSplits, upsertExpenseSplits, deleteExpenseSplits } = useSharedExpenses()
 
 // Check if we're in edit mode
 const isEditMode = computed(() => !!props.expenseToEdit)
@@ -378,6 +482,195 @@ const locationCaptured = ref(false)
 const showMapEditor = ref(false)
 const showDeleteConfirm = ref(false)
 
+type TripParticipant = { tripUserId: number; label: string; userId: string | null }
+
+const tripParticipants = computed<TripParticipant[]>(() => {
+  const list = Array.isArray(collaborators.value) ? collaborators.value : []
+  return list
+    .map((c: any) => {
+      const tripUserId = Number(c?.relationId ?? 0)
+      if (!tripUserId) return null
+      const first = String(c?.first_name || '').trim()
+      const last = String(c?.last_name || '').trim()
+      const email = String(c?.email || '').trim()
+      const label = (first || last) ? `${first} ${last}`.trim() : (email || String(c?.id || ''))
+      return { tripUserId, label, userId: c?.id ? String(c.id) : null }
+    })
+    .filter(Boolean) as TripParticipant[]
+})
+
+const selectedTripUserIds = ref<number[]>([])
+const paidByTripUserId = ref<number | null>(null)
+const sharedSplitMode = ref<'equal' | 'custom'>('equal')
+const splitDraft = ref<Record<number, { amount: number; percentage: number }>>({})
+const sharedSplitError = ref<string | null>(null)
+const lastEditedSplitField = ref<'amount' | 'percentage' | null>(null)
+
+const selectedParticipants = computed(() => {
+  const set = new Set(selectedTripUserIds.value.map(Number))
+  return tripParticipants.value.filter(p => set.has(p.tripUserId))
+})
+
+const totalAmount = computed(() => {
+  const n = Math.round(Number(form.amount))
+  return Number.isFinite(n) && n > 0 ? n : 0
+})
+
+watch(totalAmount, () => {
+  if (!form.shared) return
+  if (sharedSplitMode.value === 'equal') {
+    recomputeEqualSplits()
+    return
+  }
+  if (lastEditedSplitField.value === 'amount') recomputeFromAmounts()
+  else recomputeFromPercentages()
+})
+
+function ensurePaidByIsValid() {
+  if (!paidByTripUserId.value || !selectedTripUserIds.value.includes(paidByTripUserId.value)) {
+    const fallback = selectedTripUserIds.value[0] || null
+    paidByTripUserId.value = fallback
+  }
+}
+
+function recomputeEqualSplits() {
+  sharedSplitError.value = null
+  const total = totalAmount.value
+  const ids = selectedTripUserIds.value
+  if (!total || ids.length === 0) return
+
+  const base = Math.floor(total / ids.length)
+  const remainder = total % ids.length
+
+  const next: Record<number, { amount: number; percentage: number }> = {}
+  ids.forEach((id, idx) => {
+    const amount = base + (idx < remainder ? 1 : 0)
+    const percentage = total ? Number(((amount / total) * 100).toFixed(2)) : 0
+    next[id] = { amount, percentage }
+  })
+  splitDraft.value = next
+}
+
+function recomputeFromPercentages() {
+  sharedSplitError.value = null
+  const total = totalAmount.value
+  const ids = selectedTripUserIds.value
+  if (!total || ids.length === 0) return
+
+  const raw = ids.map(id => {
+    const p = Number(splitDraft.value[id]?.percentage ?? 0)
+    return { id, p: Number.isFinite(p) ? p : 0 }
+  })
+
+  const sumP = raw.reduce((acc, r) => acc + r.p, 0)
+  if (Math.abs(sumP - 100) > 0.01) {
+    sharedSplitError.value = t('expenses.shared.validation.percentages_must_equal_100')
+    return
+  }
+
+  const floors = raw.map(r => {
+    const exact = (total * r.p) / 100
+    return { id: r.id, exact, floor: Math.floor(exact), frac: exact - Math.floor(exact) }
+  })
+
+  let remaining = total - floors.reduce((acc, r) => acc + r.floor, 0)
+  floors.sort((a, b) => b.frac - a.frac)
+
+  const next: Record<number, { amount: number; percentage: number }> = {}
+  for (const r of floors) {
+    const add = remaining > 0 ? 1 : 0
+    if (remaining > 0) remaining -= 1
+    const amount = r.floor + add
+    next[r.id] = { amount, percentage: Number(((amount / total) * 100).toFixed(2)) }
+  }
+
+  splitDraft.value = next
+}
+
+function recomputeFromAmounts() {
+  sharedSplitError.value = null
+  const total = totalAmount.value
+  const ids = selectedTripUserIds.value
+  if (!total || ids.length === 0) return
+
+  const sum = ids.reduce((acc, id) => acc + Number(splitDraft.value[id]?.amount ?? 0), 0)
+  if (sum !== total) {
+    sharedSplitError.value = t('expenses.shared.validation.amounts_must_match_total')
+    return
+  }
+
+  const next: Record<number, { amount: number; percentage: number }> = {}
+  ids.forEach((id) => {
+    const amount = Math.round(Number(splitDraft.value[id]?.amount ?? 0))
+    next[id] = { amount, percentage: total ? Number(((amount / total) * 100).toFixed(2)) : 0 }
+  })
+  splitDraft.value = next
+}
+
+function setSharedSplitMode(mode: 'equal' | 'custom') {
+  sharedSplitMode.value = mode
+  if (mode === 'equal') {
+    recomputeEqualSplits()
+  } else {
+    lastEditedSplitField.value = lastEditedSplitField.value || 'percentage'
+    if (lastEditedSplitField.value === 'amount') recomputeFromAmounts()
+    else recomputeFromPercentages()
+  }
+}
+
+function toggleParticipant(tripUserId: number) {
+  const id = Number(tripUserId)
+  if (!id) return
+  const idx = selectedTripUserIds.value.indexOf(id)
+  if (idx === -1) selectedTripUserIds.value.push(id)
+  else selectedTripUserIds.value.splice(idx, 1)
+
+  const next: Record<number, { amount: number; percentage: number }> = {}
+  for (const pid of selectedTripUserIds.value) {
+    next[pid] = splitDraft.value[pid] || { amount: 0, percentage: 0 }
+  }
+  splitDraft.value = next
+  ensurePaidByIsValid()
+
+  if (sharedSplitMode.value === 'equal') {
+    recomputeEqualSplits()
+  } else if (lastEditedSplitField.value === 'amount') {
+    recomputeFromAmounts()
+  } else {
+    recomputeFromPercentages()
+  }
+}
+
+function onPercentageChange(tripUserId: number, value: string | number) {
+  lastEditedSplitField.value = 'percentage'
+  const v = Number(value)
+  splitDraft.value[tripUserId] = {
+    amount: Number(splitDraft.value[tripUserId]?.amount ?? 0),
+    percentage: Number.isFinite(v) ? v : 0
+  }
+  recomputeFromPercentages()
+}
+
+function onAmountChange(tripUserId: number, value: string | number) {
+  lastEditedSplitField.value = 'amount'
+  const v = Math.round(Number(value))
+  splitDraft.value[tripUserId] = {
+    amount: Number.isFinite(v) ? v : 0,
+    percentage: Number(splitDraft.value[tripUserId]?.percentage ?? 0)
+  }
+  recomputeFromAmounts()
+}
+
+async function loadSharedDefaults() {
+  await fetchCollaborators(Number(props.tripId))
+
+  selectedTripUserIds.value = tripParticipants.value.map(p => p.tripUserId)
+  const current = tripParticipants.value.find(p => p.userId && directusUserId.value && p.userId === directusUserId.value)
+  paidByTripUserId.value = current?.tripUserId || selectedTripUserIds.value[0] || null
+  sharedSplitMode.value = 'equal'
+  recomputeEqualSplits()
+}
+
 // Reset form when drawer opens/closes or edit mode changes
 watch(() => props.open, async (newVal) => {
   if (newVal) {
@@ -401,12 +694,47 @@ watch(() => props.open, async (newVal) => {
       }
       form.paymentMethod = expense.paymentMethod
       form.shared = expense.shared
+      paidByTripUserId.value = expense.paidByTripUserId ?? null
       form.notes = expense.notes || ''
 
       locationCaptured.value = !!(expense.location.city && expense.location.prefecture)
+
+      if (form.shared) {
+        await fetchCollaborators(Number(props.tripId))
+        if (!paidByTripUserId.value) {
+          const current = tripParticipants.value.find(p => p.userId && directusUserId.value && p.userId === directusUserId.value)
+          paidByTripUserId.value = current?.tripUserId || tripParticipants.value[0]?.tripUserId || null
+        }
+
+        const splits = await fetchExpenseSplits(props.tripId, expense.id).catch(() => [])
+        if (splits.length) {
+          selectedTripUserIds.value = splits.map(s => Number(s.trip_user_id as any)).filter(Boolean)
+          const next: Record<number, { amount: number; percentage: number }> = {}
+          for (const s of splits as any[]) {
+            const id = Number(s.trip_user_id)
+            const amount = Number(s.amount)
+            const perc = s.percentage !== null && s.percentage !== undefined
+              ? Number(s.percentage)
+              : (totalAmount.value ? Number(((amount / totalAmount.value) * 100).toFixed(2)) : 0)
+            next[id] = { amount, percentage: perc }
+          }
+          splitDraft.value = next
+          sharedSplitMode.value = 'custom'
+          lastEditedSplitField.value = 'amount'
+          recomputeFromAmounts()
+        } else {
+          await loadSharedDefaults()
+        }
+      }
     } else {
       // New expense
       resetForm()
+      selectedTripUserIds.value = []
+      paidByTripUserId.value = null
+      splitDraft.value = {}
+      sharedSplitMode.value = 'equal'
+      sharedSplitError.value = null
+      lastEditedSplitField.value = null
       
       // Auto-capture location for new expenses
       const result = await getCurrentLocation()
@@ -414,6 +742,8 @@ watch(() => props.open, async (newVal) => {
         form.location = { ...result }
         locationCaptured.value = true
       }
+
+      await loadSharedDefaults()
     }
   }
 })
@@ -446,6 +776,16 @@ function handleLocationChange(data: { lat: number; lng: number; city: string; pr
 // Toggle shared
 function toggleShared() {
   form.shared = !form.shared
+  if (form.shared) {
+    sharedSplitMode.value = 'equal'
+    if (selectedTripUserIds.value.length === 0) {
+      selectedTripUserIds.value = tripParticipants.value.map(p => p.tripUserId)
+    }
+    ensurePaidByIsValid()
+    recomputeEqualSplits()
+  } else {
+    sharedSplitError.value = null
+  }
 }
 
 // Form validation
@@ -462,6 +802,13 @@ const isFormValid = computed(() => {
   )
 })
 
+const isSharedValid = computed(() => {
+  if (!form.shared) return true
+  if (selectedTripUserIds.value.length === 0) return false
+  if (!paidByTripUserId.value) return false
+  return !sharedSplitError.value
+})
+
 // Helper to format date for API (YYYY-MM-DD HH:MM)
 function formatTimestampForApi(isoString: string): string {
   if (!isoString) return ''
@@ -474,13 +821,49 @@ function formatTimestampForApi(isoString: string): string {
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
+function buildSplitsForSave() {
+  const total = totalAmount.value
+  if (!total) return []
+  return selectedTripUserIds.value.map((tripUserId) => {
+    const amount = Math.round(Number(splitDraft.value[tripUserId]?.amount ?? 0))
+    const percentage = Number(splitDraft.value[tripUserId]?.percentage ?? 0)
+    return { trip_user_id: tripUserId, amount, percentage }
+  })
+}
+
+function validateSharedBeforeSave(): string | null {
+  if (!form.shared) return null
+  if (selectedTripUserIds.value.length === 0) return t('expenses.shared.validation.no_participants')
+  if (!paidByTripUserId.value) return t('expenses.shared.validation.no_participants')
+  const splits = buildSplitsForSave()
+  if (splits.some(s => !Number.isFinite(s.amount) || s.amount < 0)) return t('expenses.shared.validation.amounts_must_match_total')
+  const sumAmounts = splits.reduce((acc, s) => acc + Number(s.amount || 0), 0)
+  if (sumAmounts !== totalAmount.value) return t('expenses.shared.validation.amounts_must_match_total')
+  if (sharedSplitMode.value === 'custom') {
+    if (lastEditedSplitField.value === 'amount') {
+      const sum = selectedTripUserIds.value.reduce((acc, id) => acc + Number(splitDraft.value[id]?.amount ?? 0), 0)
+      if (sum !== totalAmount.value) return t('expenses.shared.validation.amounts_must_match_total')
+    } else {
+      const sum = selectedTripUserIds.value.reduce((acc, id) => acc + Number(splitDraft.value[id]?.percentage ?? 0), 0)
+      if (Math.abs(sum - 100) > 0.01) return t('expenses.shared.validation.percentages_must_equal_100')
+    }
+  }
+  return null
+}
+
 // Submit handler
 async function handleSubmit() {
-  if (!isFormValid.value || isSubmitting.value) return
+  if (!isFormValid.value || !isSharedValid.value || isSubmitting.value) return
 
   isSubmitting.value = true
 
   try {
+    const sharedError = validateSharedBeforeSave()
+    if (sharedError) {
+      toast.error(sharedError)
+      return
+    }
+
     const timestamp = formatTimestampForApi(form.date)
 
     const expenseData = {
@@ -499,23 +882,52 @@ async function handleSubmit() {
       },
       paymentMethod: form.paymentMethod,
       shared: form.shared,
+      paidByTripUserId: form.shared ? paidByTripUserId.value : null,
       trip_id: props.tripId,
       status: 'real' // Default to real
     }
 
     if (isEditMode.value && props.expenseToEdit) {
-      await updateExpense(props.expenseToEdit.id, expenseData)
-      toast.success('Gasto actualizado')
+      const wasShared = !!props.expenseToEdit.shared
+      if (wasShared) {
+        const currentSplits = await fetchExpenseSplits(props.tripId, props.expenseToEdit.id)
+        if (currentSplits.some(s => !!s.settled)) throw new Error('shared_expense_locked')
+      }
+
+      if (wasShared && !form.shared) {
+        await deleteExpenseSplits(props.tripId, props.expenseToEdit.id)
+        await updateExpense(props.expenseToEdit.id, expenseData)
+        toast.success('Gasto actualizado')
+      } else {
+        await updateExpense(props.expenseToEdit.id, expenseData)
+        if (form.shared) {
+          await upsertExpenseSplits(props.tripId, props.expenseToEdit.id, buildSplitsForSave())
+          toast.success(t('expenses.toasts.shared_updated'))
+        } else {
+          toast.success('Gasto actualizado')
+        }
+      }
     } else {
-      await createExpense(expenseData as any)
-      toast.success('Gasto añadido')
+      const created = await createExpense(expenseData as any)
+      if (form.shared) {
+        try {
+          await upsertExpenseSplits(props.tripId, created.id, buildSplitsForSave())
+          toast.success(t('expenses.toasts.shared_created'))
+        } catch (e) {
+          await deleteExpense(created.id).catch(() => null)
+          throw e
+        }
+      } else {
+        toast.success('Gasto añadido')
+      }
     }
 
     emit('success')
     isOpen.value = false
   } catch (error) {
     console.error('Error saving expense:', error)
-    toast.error('Error al guardar el gasto')
+    if ((error as any)?.message === 'shared_expense_locked') toast.error(t('expenses.toasts.shared_locked'))
+    else toast.error('Error al guardar el gasto')
   } finally {
     isSubmitting.value = false
   }
@@ -523,11 +935,17 @@ async function handleSubmit() {
 
 // Save as planned expense handler
 async function handleSavePlanned() {
-  if (!isFormValid.value || isSubmitting.value) return
+  if (!isFormValid.value || !isSharedValid.value || isSubmitting.value) return
 
   isSubmitting.value = true
 
   try {
+    const sharedError = validateSharedBeforeSave()
+    if (sharedError) {
+      toast.error(sharedError)
+      return
+    }
+
     const timestamp = formatTimestampForApi(form.date)
 
     const expenseData = {
@@ -546,18 +964,30 @@ async function handleSavePlanned() {
       },
       paymentMethod: form.paymentMethod,
       shared: form.shared,
+      paidByTripUserId: form.shared ? paidByTripUserId.value : null,
       trip_id: props.tripId,
       status: 'planned'
     }
 
-    await createExpense(expenseData as any)
-    toast.success('Gasto previsto añadido')
+    const created = await createExpense(expenseData as any)
+    if (form.shared) {
+      try {
+        await upsertExpenseSplits(props.tripId, created.id, buildSplitsForSave())
+        toast.success(t('expenses.toasts.shared_created'))
+      } catch (e) {
+        await deleteExpense(created.id).catch(() => null)
+        throw e
+      }
+    } else {
+      toast.success('Gasto previsto añadido')
+    }
 
     emit('success')
     isOpen.value = false
   } catch (error) {
     console.error('Error saving planned expense:', error)
-    toast.error('Error al guardar el gasto previsto')
+    if ((error as any)?.message === 'shared_expense_locked') toast.error(t('expenses.toasts.shared_locked'))
+    else toast.error('Error al guardar el gasto previsto')
   } finally {
     isSubmitting.value = false
   }
@@ -568,6 +998,10 @@ async function handleDelete() {
 
   isSubmitting.value = true
   try {
+    if (props.expenseToEdit.shared) {
+      const splits = await fetchExpenseSplits(props.tripId, props.expenseToEdit.id)
+      if (splits.some(s => !!s.settled)) throw new Error('shared_expense_locked')
+    }
     await deleteExpense(props.expenseToEdit.id)
     toast.success('Gasto eliminado')
     emit('success')
@@ -575,7 +1009,8 @@ async function handleDelete() {
     showDeleteConfirm.value = false
   } catch (error) {
     console.error('Error deleting expense:', error)
-    toast.error('Error al eliminar el gasto')
+    if ((error as any)?.message === 'shared_expense_locked') toast.error(t('expenses.toasts.shared_locked'))
+    else toast.error('Error al eliminar el gasto')
   } finally {
     isSubmitting.value = false
   }

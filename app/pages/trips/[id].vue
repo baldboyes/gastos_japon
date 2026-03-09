@@ -20,6 +20,7 @@
   const router = useRouter()
   const tripId = route.params.id as string
   const isJoinRoute = computed(() => String(route.path || '').endsWith('/join'))
+  const isSidebarlessRoute = computed(() => route.matched.some((m) => (m.meta as any)?.noTripSidebar === true))
 
   const { getTrip, currentTrip } = useTripsNew()
   const { fetchOrganizationData } = useTripOrganizationNew()
@@ -39,10 +40,15 @@
 </script>
 <template>
   <NuxtPage v-if="isJoinRoute" />
+  <div v-else-if="isSidebarlessRoute" class="!bg-neutral-50 min-h-svh flex flex-col">
+    <div class="flex-1 w-full min-w-0 overflow-x-hidden overflow-y-auto">
+      <NuxtPage />
+    </div>
+  </div>
   <SidebarProvider v-else>
     <TripsSidebar />
-    <SidebarInset class="!bg-gray-50 h-svh">
-      <header class="flex h-14 lg:h-20 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-17 px-4 sticky top-0 z-10 border-b-1 border-b-gray-200">
+    <SidebarInset class="!bg-neutral-50 h-svh">
+      <header class="flex h-14 lg:h-20 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-17 px-4 sticky top-0 z-10 border-b-1 border-b-neutral-200">
         <SidebarTrigger class="-ml-1" />
         <div class="h-4 w-px mx-2 bg-black" />
         <div class="flex flex-col" v-if="currentTrip">

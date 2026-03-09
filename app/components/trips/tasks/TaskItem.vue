@@ -19,7 +19,7 @@ const { flights, accommodations, activities, insurances, transports } = useTripO
 const { collaborators } = useTripsNew()
 
 const priorityColor = computed(() => {
-  return TASK_PRIORITIES.find(p => p.value === props.task.priority)?.color || 'bg-gray-100 text-gray-800'
+  return TASK_PRIORITIES.find(p => p.value === props.task.priority)?.color || 'bg-neutral-100 text-neutral-800'
 })
 
 const isCompleted = computed(() => props.task.status === 'completed' || props.task.status === 'cancelled')
@@ -92,16 +92,16 @@ const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
 
 <template>
   <div 
-    class="flex items-start gap-3 p-3 bg-white rounded-lg hover:shadow-sm transition-shadow group border border-transparent hover:border-gray-200 cursor-pointer"
+    class="flex items-start gap-3 p-3 bg-white rounded-lg hover:shadow-sm transition-shadow group border border-transparent hover:border-neutral-200 cursor-pointer"
     :class="{ 'opacity-60': isCompleted }"
     @click="$emit('edit', task)"
   >
-    <button @click.stop="toggleStatus" class="mt-0.5 text-gray-400 hover:text-primary transition-colors shrink-0">
+    <button @click.stop="toggleStatus" class="mt-0.5 text-neutral-400 hover:text-primary transition-colors shrink-0">
       <div v-if="props.task.status === 'completed'" class="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center text-white">
           <CheckCircle2 class="h-3.5 w-3.5" />
       </div>
-      <div v-else-if="props.task.status === 'cancelled'" class="h-5 w-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">✕</div>
-      <div v-else class="h-5 w-5 rounded-full border-2 border-gray-300" :class="{'border-red-400': isOverdue}"></div>
+      <div v-else-if="props.task.status === 'cancelled'" class="h-5 w-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs">✕</div>
+      <div v-else class="h-5 w-5 rounded-full border-2 border-neutral-300" :class="{'border-red-400': isOverdue}"></div>
     </button>
     
     <div class="flex-1 min-w-0">

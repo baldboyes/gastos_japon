@@ -15,32 +15,32 @@
           <div class="flex flex-col items-center gap-1 p-2 bg-blue-50 rounded-lg">
             <div class="text-2xl">💴</div>
             <div class="flex-1">
-              <div class="text-xs text-gray-600">Efectivo</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatAmount(cashTotal) }}</div>
-              <div class="text-xs text-gray-500">{{ cashCount }} {{ cashCount === 1 ? 'gasto' : 'gastos' }}</div>
+              <div class="text-xs text-neutral-600">Efectivo</div>
+              <div class="text-lg font-bold text-neutral-900">{{ formatAmount(cashTotal) }}</div>
+              <div class="text-xs text-neutral-500">{{ cashCount }} {{ cashCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
 
           <div class="flex flex-col items-center gap-1 p-2 bg-purple-50 rounded-lg">
             <div class="text-2xl">💳</div>
             <div class="flex-1">
-              <div class="text-xs text-gray-600">Tarjeta</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatAmount(cardTotal) }}</div>
-              <div class="text-xs text-gray-500">{{ cardCount }} {{ cardCount === 1 ? 'gasto' : 'gastos' }}</div>
+              <div class="text-xs text-neutral-600">Tarjeta</div>
+              <div class="text-lg font-bold text-neutral-900">{{ formatAmount(cardTotal) }}</div>
+              <div class="text-xs text-neutral-500">{{ cardCount }} {{ cardCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
 
           <div class="flex flex-col items-center gap-1 p-2 bg-orange-50 rounded-lg">
             <div class="text-2xl"><img src="/ic.webp" alt="IC" class="w-8 h-8" /></div>
             <div class="flex-1">
-              <div class="text-xs text-gray-600">IC</div>
-              <div class="text-lg font-bold text-gray-900">{{ formatAmount(icTotal) }}</div>
-              <div class="text-xs text-gray-500">{{ icCount }} {{ icCount === 1 ? 'gasto' : 'gastos' }}</div>
+              <div class="text-xs text-neutral-600">IC</div>
+              <div class="text-lg font-bold text-neutral-900">{{ formatAmount(icTotal) }}</div>
+              <div class="text-xs text-neutral-500">{{ icCount }} {{ icCount === 1 ? 'gasto' : 'gastos' }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div v-else class="py-12 text-center text-gray-500">
+      <div v-else class="py-12 text-center text-neutral-500">
         <div class="text-4xl mb-2">💰</div>
         <p class="text-sm">No hay datos para mostrar</p>
       </div>

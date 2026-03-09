@@ -17,16 +17,16 @@
         <!-- Content -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-1">
-            <h3 class="font-semibold text-gray-900 truncate">
+            <h3 class="font-semibold text-neutral-900 truncate">
               {{ expense.placeName }}
             </h3>
-            <div class="flex-shrink-0 font-bold text-gray-900">
+            <div class="flex-shrink-0 font-bold text-neutral-900">
               {{ formattedAmount }}
             </div>
           </div>
           <div class="flex items-center justify-between gap-1">
             <!-- Time and Location -->
-            <div class="flex items-center gap-2 text-sm text-gray-500">
+            <div class="flex items-center gap-2 text-sm text-neutral-500">
               <div class="flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"/>
@@ -50,7 +50,7 @@
             </div>
           </div>
           <!-- Notes (if present) -->
-          <p v-if="expense.notes" class="text-sm text-gray-600 mt-2 line-clamp-2">
+          <p v-if="expense.notes" class="text-sm text-neutral-600 mt-2 line-clamp-2">
             {{ expense.notes }}
           </p>
         </div>

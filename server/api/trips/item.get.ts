@@ -43,12 +43,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid tripId' })
   }
 
-  const emails = extractEmailsFromClaims(sessionClaims)
-  const email = emails[0]
-  if (!email) {
-    throw createError({ statusCode: 400, statusMessage: 'Missing email' })
-  }
-
   const directusUrl = process.env.DIRECTUS_URL || 'https://directus.jizou.io'
   const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || process.env.NUXT_DIRECTUS_ADMIN_TOKEN
   if (!adminToken) {
@@ -59,11 +53,22 @@ export default defineEventHandler(async (event) => {
     .with(staticToken(adminToken))
     .with(rest())
 
-  const users = await adminClient.request(readUsers({
-    filter: { email: { _eq: String(email).trim().toLowerCase() } },
-    fields: ['id', 'email'],
-    limit: 1
-  })) as any[]
+  const emails = extractEmailsFromClaims(sessionClaims)
+  const email = emails[0]
+
+  const users = email
+    ? await adminClient.request(readUsers({
+        filter: { email: { _eq: String(email).trim().toLowerCase() } },
+        fields: ['id', 'email'],
+        limit: 1
+      })).catch(() => []) as any[]
+    : clerkUserId
+      ? await adminClient.request(readUsers({
+          filter: { external_identifier: { _eq: String(clerkUserId) } },
+          fields: ['id', 'email'],
+          limit: 1
+        })).catch(() => []) as any[]
+      : []
 
   const directusUserId = users && users.length > 0 ? users[0].id : null
   if (!directusUserId) {

@@ -7,6 +7,8 @@ import { useExpensesNew } from '~/composables/useExpensesNew'
 import { useTripsNew } from '~/composables/useTripsNew'
 import { useWalletNew } from '~/composables/useWalletNew'
 import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import { useSharedExpenses } from '~/composables/useSharedExpenses'
+import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import type { Expense, PlannedExpense, ExpenseCategory, PaymentMethod, Budget } from '~/types'
 import { getCategoryInfo } from '~/types'
 import type { DateFilterRange } from '~/components/common/DateRangeFilter.vue'
@@ -29,6 +31,16 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '~/components/ui/alert-dialog'
 
 definePageMeta({
   layout: 'dashboard'
@@ -41,7 +53,7 @@ const { t } = useI18n()
 
 // New Composables
 const { expenses: rawExpenses, fetchExpenses, deleteExpense, updateExpense } = useExpensesNew()
-const { currentTrip, getTrip } = useTripsNew() // Use new Trips composable
+const { currentTrip, getTrip, collaborators } = useTripsNew() // Use new Trips composable
 const { 
   cambios, fetchCambios,
   createCambio, deleteCambio, 
@@ -49,6 +61,26 @@ const {
   paymentBreakdown 
 } = useWalletNew()
 const { fetchOrganizationData } = useTripOrganizationNew()
+const { 
+  fetchTripExpenseSplits,
+  fetchTripSettlements,
+  createTripSettlement,
+  updateTripSettlement,
+  deleteTripSettlement
+} = useSharedExpenses()
+const { directusUserId } = useDirectusRepo()
+
+const tripExpenseSplits = ref<any[]>([])
+const tripSettlements = ref<any[]>([])
+
+const refreshSharedData = async (id: number) => {
+  const [splits, settlements] = await Promise.all([
+    fetchTripExpenseSplits(id).catch(() => []),
+    fetchTripSettlements(id).catch(() => [])
+  ])
+  tripExpenseSplits.value = splits as any[]
+  tripSettlements.value = settlements as any[]
+}
 
 // Load data
 onMounted(async () => {
@@ -59,7 +91,8 @@ onMounted(async () => {
       fetchExpenses(id),
       fetchCambios(id),
       fetchOrganizationData(id),
-      getTrip(id) // Ensure currentTrip is populated
+      getTrip(id), // Ensure currentTrip is populated
+      refreshSharedData(id)
     ])
   }
 })
@@ -351,10 +384,10 @@ function handleDrawerSuccess() {
 // STATS LOGIC
 // ------------------------------------------------------------------
 
-const totalSpent = computed(() => expenses.value.reduce((sum, e) => sum + e.amount, 0))
+const totalSpent = computed(() => statsExpenses.value.reduce((sum, e) => sum + e.amount, 0))
 
 const tripDays = computed(() => {
-  const dates = groupByDate(expenses.value, 'timestamp', (d) => getDateString(d))
+  const dates = groupByDate(statsExpenses.value, 'timestamp', (d) => getDateString(d))
   return dates.length
 })
 
@@ -364,10 +397,282 @@ const averageDaily = computed(() => {
 })
 
 const topExpenses = computed(() => {
-  return [...expenses.value]
+  return [...statsExpenses.value]
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5)
 })
+
+const sharedByPerson = computed(() => {
+  const byId = new Map<number, number>()
+  for (const s of sharedSplits.value as any[]) {
+    const uid = Number(s?.trip_user_id ?? 0)
+    if (!uid) continue
+    const amount = Math.round(Number(s?.amount) || 0)
+    byId.set(uid, (byId.get(uid) || 0) + amount)
+  }
+  return Array.from(byId.entries())
+    .map(([tripUserId, amount]) => ({
+      tripUserId,
+      label: participantLabelById.value.get(tripUserId) || String(tripUserId),
+      amount
+    }))
+    .sort((a, b) => b.amount - a.amount)
+})
+
+type TripParticipant = { tripUserId: number; label: string; userId: string | null }
+type SuggestedTransfer = { fromTripUserId: number; toTripUserId: number; amount: number }
+
+const tripParticipants = computed<TripParticipant[]>(() => {
+  const list = Array.isArray(collaborators.value) ? collaborators.value : []
+  return list
+    .map((c: any) => {
+      const tripUserId = Number(c?.relationId ?? 0)
+      if (!tripUserId) return null
+      const first = String(c?.first_name || '').trim()
+      const last = String(c?.last_name || '').trim()
+      const email = String(c?.email || '').trim()
+      const label = (first || last) ? `${first} ${last}`.trim() : (email || String(c?.id || ''))
+      return { tripUserId, label, userId: c?.id ? String(c.id) : null }
+    })
+    .filter(Boolean) as TripParticipant[]
+})
+
+const participantLabelById = computed(() => {
+  const m = new Map<number, string>()
+  for (const p of tripParticipants.value) m.set(p.tripUserId, p.label)
+  return m
+})
+
+const myTripUserId = computed<number | null>(() => {
+  const me = directusUserId.value
+  if (!me) return null
+  const match = tripParticipants.value.find(p => p.userId && p.userId === me)
+  return match?.tripUserId || null
+})
+
+const sharedExpenses = computed(() => expenses.value.filter(e => e.shared))
+const sharedExpenseIdSet = computed(() => new Set(sharedExpenses.value.map(e => Number(e.id)).filter(Boolean)))
+const sharedSplits = computed(() => {
+  const set = sharedExpenseIdSet.value
+  return (tripExpenseSplits.value || []).filter((s: any) => set.has(Number(s?.expense_id)))
+})
+
+const statsScope = ref<'me' | 'trip'>('me')
+
+const statsExpenses = computed<Expense[]>(() => {
+  if (statsScope.value === 'trip') return expenses.value
+  const myId = myTripUserId.value
+  if (!myId) return expenses.value
+
+  const byExpenseId = new Map<number, number>()
+  for (const s of sharedSplits.value as any[]) {
+    if (Number(s?.trip_user_id) !== myId) continue
+    const expenseId = Number(s?.expense_id ?? 0)
+    if (!expenseId) continue
+    byExpenseId.set(expenseId, Math.round(Number(s?.amount) || 0))
+  }
+
+  const me = directusUserId.value
+
+  return expenses.value
+    .map((e: any) => {
+      if (!e.shared) return e as Expense
+      const amount = byExpenseId.get(Number(e.id)) || 0
+      return { ...e, amount } as Expense
+    })
+    .filter((e: any) => {
+      if (e.shared) return (Number(e.amount) || 0) > 0
+      if (!me) return true
+      return String(e.userCreatedId || '') === String(me)
+    })
+})
+
+const balances = computed(() => {
+  const byId = new Map<number, { tripUserId: number; label: string; paid: number; owed: number; net: number }>()
+
+  for (const p of tripParticipants.value) {
+    byId.set(p.tripUserId, { tripUserId: p.tripUserId, label: p.label, paid: 0, owed: 0, net: 0 })
+  }
+
+  for (const e of sharedExpenses.value) {
+    const payer = Number((e as any).paidByTripUserId ?? 0)
+    if (!payer) continue
+    if (!byId.has(payer)) byId.set(payer, { tripUserId: payer, label: participantLabelById.value.get(payer) || String(payer), paid: 0, owed: 0, net: 0 })
+    byId.get(payer)!.paid += Number(e.amount) || 0
+  }
+
+  for (const s of sharedSplits.value as any[]) {
+    const uid = Number(s.trip_user_id ?? 0)
+    if (!uid) continue
+    if (!byId.has(uid)) byId.set(uid, { tripUserId: uid, label: participantLabelById.value.get(uid) || String(uid), paid: 0, owed: 0, net: 0 })
+    byId.get(uid)!.owed += Number(s.amount) || 0
+  }
+
+  const completed = (tripSettlements.value || []).filter((x: any) => x?.settlement_status === 'completed')
+  for (const st of completed as any[]) {
+    const from = Number(st.from_trip_user_id ?? 0)
+    const to = Number(st.to_trip_user_id ?? 0)
+    const amt = Number(st.amount) || 0
+    if (from) {
+      if (!byId.has(from)) byId.set(from, { tripUserId: from, label: participantLabelById.value.get(from) || String(from), paid: 0, owed: 0, net: 0 })
+      byId.get(from)!.paid += amt
+    }
+    if (to) {
+      if (!byId.has(to)) byId.set(to, { tripUserId: to, label: participantLabelById.value.get(to) || String(to), paid: 0, owed: 0, net: 0 })
+      byId.get(to)!.owed += amt
+    }
+  }
+
+  const result = Array.from(byId.values()).map((b) => ({
+    ...b,
+    net: (b.paid || 0) - (b.owed || 0)
+  }))
+
+  return result.sort((a, b) => b.net - a.net)
+})
+
+function computeSuggestedTransfers(rows: { tripUserId: number; net: number }[]): SuggestedTransfer[] {
+  const creditors = rows.filter(r => r.net > 0).map(r => ({ ...r })).sort((a, b) => b.net - a.net)
+  const debtors = rows.filter(r => r.net < 0).map(r => ({ ...r })).sort((a, b) => a.net - b.net)
+  const transfers: SuggestedTransfer[] = []
+
+  let i = 0
+  let j = 0
+  while (i < debtors.length && j < creditors.length) {
+    const debtor = debtors[i]!
+    const creditor = creditors[j]!
+    const amount = Math.min(creditor.net, -debtor.net)
+    if (amount > 0) transfers.push({ fromTripUserId: debtor.tripUserId, toTripUserId: creditor.tripUserId, amount: Math.round(amount) })
+    debtor.net += amount
+    creditor.net -= amount
+    if (Math.abs(debtor.net) < 1e-9) i++
+    if (Math.abs(creditor.net) < 1e-9) j++
+  }
+
+  return transfers.filter(t => t.amount > 0)
+}
+
+const suggestedTransfers = computed(() => computeSuggestedTransfers(balances.value.map(b => ({ tripUserId: b.tripUserId, net: b.net }))))
+const settlementsSorted = computed(() => [...(tripSettlements.value || [])].sort((a: any, b: any) => String(b?.date || '').localeCompare(String(a?.date || ''))))
+const isGeneratingSettlements = ref(false)
+const showRegenerateConfirm = ref(false)
+
+const handleRegisterPayment = async (tx: SuggestedTransfer) => {
+  try {
+    await createTripSettlement(Number(tripId.value), {
+      from_trip_user_id: tx.fromTripUserId as any,
+      to_trip_user_id: tx.toTripUserId as any,
+      amount: tx.amount,
+      date: new Date().toISOString(),
+      settlement_status: 'pending'
+    } as any)
+    await refreshSharedData(Number(tripId.value))
+    toast.success(t('trip_expenses_page.shared.toasts.saved'))
+  } catch (e) {
+    toast.error(t('trip_expenses_page.shared.toasts.error'))
+  }
+}
+
+const handleGeneratePendingSettlements = async () => {
+  if (isGeneratingSettlements.value) return
+  isGeneratingSettlements.value = true
+  try {
+    const nowIso = new Date().toISOString()
+    const pending = (tripSettlements.value || []).filter((s: any) => s?.settlement_status === 'pending')
+    const pendingByPair = new Map<string, any>()
+
+    for (const s of pending) {
+      const from = Number(s?.from_trip_user_id ?? 0)
+      const to = Number(s?.to_trip_user_id ?? 0)
+      if (!from || !to) continue
+      const key = `${from}->${to}`
+      if (!pendingByPair.has(key)) pendingByPair.set(key, s)
+    }
+
+    for (const tx of suggestedTransfers.value) {
+      const from = Number(tx.fromTripUserId)
+      const to = Number(tx.toTripUserId)
+      const amount = Math.round(Number(tx.amount) || 0)
+      if (!from || !to || amount <= 0) continue
+
+      const key = `${from}->${to}`
+      const existing = pendingByPair.get(key)
+      if (!existing?.id) {
+        await createTripSettlement(Number(tripId.value), {
+          from_trip_user_id: from as any,
+          to_trip_user_id: to as any,
+          amount,
+          date: nowIso,
+          settlement_status: 'pending'
+        } as any)
+      }
+    }
+
+    await refreshSharedData(Number(tripId.value))
+    toast.success(t('trip_expenses_page.shared.toasts.generated'))
+  } catch (e) {
+    toast.error(t('trip_expenses_page.shared.toasts.error'))
+  } finally {
+    isGeneratingSettlements.value = false
+  }
+}
+
+const handleConfirmRegeneratePending = async () => {
+  if (isGeneratingSettlements.value) return
+  isGeneratingSettlements.value = true
+  try {
+    const nowIso = new Date().toISOString()
+    const pending = (tripSettlements.value || []).filter((s: any) => s?.settlement_status === 'pending')
+
+    for (const s of pending as any[]) {
+      if (!s?.id) continue
+      await updateTripSettlement(Number(tripId.value), s.id, { settlement_status: 'void' } as any)
+    }
+
+    for (const tx of suggestedTransfers.value) {
+      const from = Number(tx.fromTripUserId)
+      const to = Number(tx.toTripUserId)
+      const amount = Math.round(Number(tx.amount) || 0)
+      if (!from || !to || amount <= 0) continue
+
+      await createTripSettlement(Number(tripId.value), {
+        from_trip_user_id: from as any,
+        to_trip_user_id: to as any,
+        amount,
+        date: nowIso,
+        settlement_status: 'pending'
+      } as any)
+    }
+
+    await refreshSharedData(Number(tripId.value))
+    toast.success(t('trip_expenses_page.shared.toasts.regenerated'))
+  } catch (e) {
+    toast.error(t('trip_expenses_page.shared.toasts.error'))
+  } finally {
+    isGeneratingSettlements.value = false
+    showRegenerateConfirm.value = false
+  }
+}
+
+const handleMarkSettlementCompleted = async (id: number | string) => {
+  try {
+    await updateTripSettlement(Number(tripId.value), id, { settlement_status: 'completed', settled_at: new Date().toISOString() } as any)
+    await refreshSharedData(Number(tripId.value))
+    toast.success(t('trip_expenses_page.shared.toasts.completed'))
+  } catch (e) {
+    toast.error(t('trip_expenses_page.shared.toasts.error'))
+  }
+}
+
+const handleDeleteSettlement = async (id: number | string) => {
+  try {
+    await deleteTripSettlement(Number(tripId.value), id)
+    await refreshSharedData(Number(tripId.value))
+    toast.success(t('trip_expenses_page.shared.toasts.deleted'))
+  } catch (e) {
+    toast.error(t('trip_expenses_page.shared.toasts.error'))
+  }
+}
 </script>
 
 <template>
@@ -375,8 +680,8 @@ const topExpenses = computed(() => {
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">{{ formatAmount(totalAmount) }}</h1>
-        <div class="text-sm text-gray-600">
+        <h1 class="text-3xl font-bold text-neutral-900">{{ formatAmount(totalAmount) }}</h1>
+        <div class="text-sm text-neutral-600">
           {{ totalExpensesCount }} {{ totalExpensesCount === 1 ? $t('trip_expenses_page.labels.expense_singular') : $t('trip_expenses_page.labels.expense_plural') }}
         </div>
       </div>
@@ -386,11 +691,12 @@ const topExpenses = computed(() => {
     </div>
 
     <Tabs v-model="viewMode" class="w-full">
-      <TabsList class="grid w-full grid-cols-4 mb-4">
+      <TabsList class="grid w-full grid-cols-5 mb-4">
         <TabsTrigger value="list">{{ $t('trip_expenses_page.tabs.list') }}</TabsTrigger>
         <TabsTrigger value="map">{{ $t('trip_expenses_page.tabs.map') }}</TabsTrigger>
         <TabsTrigger value="stats">{{ $t('trip_expenses_page.tabs.stats') }}</TabsTrigger>
         <TabsTrigger value="wallet">{{ $t('trip_expenses_page.tabs.wallet') }}</TabsTrigger>
+        <TabsTrigger value="shared">{{ $t('trip_expenses_page.tabs.shared') }}</TabsTrigger>
       </TabsList>
 
       <div v-if="viewMode === 'list' || viewMode === 'map'" class="mb-4">
@@ -414,8 +720,8 @@ const topExpenses = computed(() => {
       </div>
 
       <!-- Results Summary -->
-      <div v-if="viewMode !== 'stats' && viewMode !== 'wallet' && hasFilters && filteredExpenses.length > 0" class="mb-4">
-        <div class="text-sm text-gray-600 bg-teal-50 px-4 py-2 rounded-lg">
+      <div v-if="(viewMode === 'list' || viewMode === 'map') && hasFilters && filteredExpenses.length > 0" class="mb-4">
+        <div class="text-sm text-neutral-600 bg-teal-50 px-4 py-2 rounded-lg">
           {{ $t('trip_expenses_page.results.showing') }} {{ filteredExpenses.length }} {{ filteredExpenses.length === 1 ? $t('trip_expenses_page.results.result_singular') : $t('trip_expenses_page.results.result_plural') }}
           • {{ $t('trip_expenses_page.results.total_prefix') }} {{ formatAmount(filteredTotal) }}
         </div>
@@ -436,7 +742,7 @@ const topExpenses = computed(() => {
 
       <!-- MAP CONTENT -->
       <TabsContent value="map">
-        <div class="h-[60vh] rounded-lg overflow-hidden border border-gray-200">
+        <div class="h-[60vh] rounded-lg overflow-hidden border border-neutral-200">
           <MapsView
             :expenses="filteredExpenses"
             :selected-expense-id="selectedExpense?.id"
@@ -449,8 +755,8 @@ const topExpenses = computed(() => {
       <TabsContent value="stats">
         <div v-if="expenses.length === 0" class="text-center py-12">
           <div class="text-6xl mb-4">📊</div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ $t('trip_expenses_page.stats.empty.title') }}</h2>
-          <p class="text-gray-600 mb-6">
+          <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('trip_expenses_page.stats.empty.title') }}</h2>
+          <p class="text-neutral-600 mb-6">
             {{ $t('trip_expenses_page.stats.empty.subtitle') }}
           </p>
           <Button @click="handleAdd" class="bg-teal-600 h-14 text-lg">
@@ -460,11 +766,24 @@ const topExpenses = computed(() => {
         </div>
 
         <div v-else class="space-y-6">
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm text-neutral-600">{{ $t('trip_expenses_page.stats.scope.label') }}</div>
+            <Select v-model="statsScope">
+              <SelectTrigger class="w-[220px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="me">{{ $t('trip_expenses_page.stats.scope.me') }}</SelectItem>
+                <SelectItem value="trip">{{ $t('trip_expenses_page.stats.scope.trip') }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div class="grid grid-cols-2 gap-4">
             <DashboardStatsCard
               :label="$t('trip_expenses_page.stats.overview.total')"
               :value="formatAmount(totalSpent)"
-              :subtitle="`${expenses.length} ${expenses.length === 1 ? $t('trip_expenses_page.labels.expense_singular') : $t('trip_expenses_page.labels.expense_plural')}`"
+              :subtitle="`${statsExpenses.length} ${statsExpenses.length === 1 ? $t('trip_expenses_page.labels.expense_singular') : $t('trip_expenses_page.labels.expense_plural')}`"
               icon="💰"
               icon-bg-class="bg-teal-100"
             />
@@ -477,9 +796,21 @@ const topExpenses = computed(() => {
             />
           </div>
 
-          <ChartsDailySpending :expenses="expenses" :daily-limit="budget.dailyLimit" />
-          <ChartsCategoryBreakdown :expenses="expenses" />
-          <ChartsPaymentMethod :expenses="expenses" />
+          <Card v-if="sharedByPerson.length > 0">
+            <CardHeader>
+              <CardTitle class="text-lg">{{ $t('trip_expenses_page.stats.shared_by_person.title') }}</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <div v-for="row in sharedByPerson" :key="row.tripUserId" class="flex items-center justify-between p-3 border rounded-md bg-white">
+                <div class="text-sm font-medium text-neutral-900 truncate">{{ row.label }}</div>
+                <div class="text-sm font-bold text-neutral-900">{{ formatAmount(row.amount) }}</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <ChartsDailySpending :expenses="statsExpenses" :daily-limit="budget.dailyLimit" />
+          <ChartsCategoryBreakdown :expenses="statsExpenses" />
+          <ChartsPaymentMethod :expenses="statsExpenses" />
 
           <Card>
             <CardHeader>
@@ -493,18 +824,18 @@ const topExpenses = computed(() => {
                   class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
                   @click="handleExpenseClick(expense)"
                 >
-                  <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-sm font-semibold text-gray-700">
+                  <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-sm font-semibold text-neutral-700">
                     {{ index + 1 }}
                   </div>
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
                       <span>{{ getCategoryInfo(expense.category).icon }}</span>
-                      <span class="text-sm font-medium text-gray-900">{{ expense.placeName }}</span>
+                      <span class="text-sm font-medium text-neutral-900">{{ expense.placeName }}</span>
                     </div>
-                    <div class="text-xs text-gray-600">{{ formatDate(expense.timestamp) }}</div>
+                    <div class="text-xs text-neutral-600">{{ formatDate(expense.timestamp) }}</div>
                   </div>
                   <div class="text-right">
-                    <div class="text-sm font-bold text-gray-900">{{ formatAmount(expense.amount) }}</div>
+                    <div class="text-sm font-bold text-neutral-900">{{ formatAmount(expense.amount) }}</div>
                   </div>
                 </div>
               </div>
@@ -636,6 +967,122 @@ const topExpenses = computed(() => {
           </CardContent>
         </Card>
       </TabsContent>
+
+      <TabsContent value="shared" class="space-y-6">
+        <div v-if="sharedExpenses.length === 0" class="text-center py-12">
+          <div class="text-6xl mb-4">👥</div>
+          <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('trip_expenses_page.shared.empty.title') }}</h2>
+          <p class="text-neutral-600">{{ $t('trip_expenses_page.shared.empty.subtitle') }}</p>
+        </div>
+
+        <div v-else class="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{{ $t('trip_expenses_page.shared.balances_title') }}</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <div v-for="b in balances" :key="b.tripUserId" class="flex items-center justify-between p-3 border rounded-md bg-white">
+                <div class="text-sm font-medium text-neutral-900 truncate">{{ b.label }}</div>
+                <div class="text-right">
+                  <div class="text-sm font-bold" :class="b.net < 0 ? 'text-red-600' : (b.net > 0 ? 'text-green-600' : 'text-neutral-700')">
+                    {{ formatAmount(b.net) }}
+                  </div>
+                  <div class="text-xs text-neutral-500">
+                    {{ formatAmount(b.paid) }} • {{ formatAmount(b.owed) }}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div class="flex items-center justify-between w-full gap-3">
+                <CardTitle>{{ $t('trip_expenses_page.shared.transactions_title') }}</CardTitle>
+                <div class="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    :disabled="suggestedTransfers.length === 0 || isGeneratingSettlements"
+                    @click="handleGeneratePendingSettlements"
+                  >
+                    {{ $t('trip_expenses_page.shared.actions.generate_pending') }}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    :disabled="suggestedTransfers.length === 0 || isGeneratingSettlements"
+                    @click="showRegenerateConfirm = true"
+                  >
+                    {{ $t('trip_expenses_page.shared.actions.regenerate_pending') }}
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <div v-for="tx in suggestedTransfers" :key="`${tx.fromTripUserId}-${tx.toTripUserId}-${tx.amount}`" class="flex items-center justify-between p-3 border rounded-md bg-white">
+                <div class="text-sm text-neutral-900 truncate">
+                  <span class="font-medium">{{ participantLabelById.get(tx.fromTripUserId) || tx.fromTripUserId }}</span>
+                  <span class="text-neutral-500 mx-2">→</span>
+                  <span class="font-medium">{{ participantLabelById.get(tx.toTripUserId) || tx.toTripUserId }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="text-sm font-bold text-neutral-900">{{ formatAmount(tx.amount) }}</div>
+                  <Button size="sm" variant="outline" @click="handleRegisterPayment(tx)">
+                    {{ $t('trip_expenses_page.shared.actions.register_payment') }}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{{ $t('trip_expenses_page.shared.settlements_title') }}</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <div v-if="settlementsSorted.length === 0" class="text-sm text-neutral-600">
+                {{ $t('trip_expenses_page.shared.empty.subtitle') }}
+              </div>
+              <div v-else>
+                <div v-for="s in settlementsSorted" :key="s.id" class="flex items-center justify-between p-3 border rounded-md bg-white">
+                  <div class="space-y-0.5 min-w-0">
+                    <div class="text-sm text-neutral-900 truncate">
+                      <span class="font-medium">{{ participantLabelById.get(Number(s.from_trip_user_id)) || s.from_trip_user_id }}</span>
+                      <span class="text-neutral-500 mx-2">→</span>
+                      <span class="font-medium">{{ participantLabelById.get(Number(s.to_trip_user_id)) || s.to_trip_user_id }}</span>
+                      <span class="text-neutral-500 mx-2">•</span>
+                      <span class="font-bold">{{ formatAmount(Number(s.amount) || 0) }}</span>
+                    </div>
+                    <div class="text-xs text-neutral-500">
+                      {{ new Date(String(s.date)).toLocaleDateString() }} • {{ $t(`trip_expenses_page.shared.status.${s.settlement_status}`) }}
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <Button
+                      v-if="s.settlement_status === 'pending'"
+                      size="sm"
+                      variant="outline"
+                      @click="handleMarkSettlementCompleted(s.id)"
+                    >
+                      {{ $t('trip_expenses_page.shared.actions.mark_completed') }}
+                    </Button>
+                    <Button
+                      v-if="s.settlement_status !== 'completed'"
+                      size="sm"
+                      variant="ghost"
+                      class="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      @click="handleDeleteSettlement(s.id)"
+                    >
+                      {{ $t('trip_expenses_page.shared.actions.delete') }}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
     </Tabs>
 
     <ExpensesDetailDialog
@@ -686,5 +1133,20 @@ const topExpenses = computed(() => {
       :trip-moneda="budget.currency"
       @success="handleDrawerSuccess"
     />
+
+    <AlertDialog :open="showRegenerateConfirm" @update:open="showRegenerateConfirm = $event">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ $t('trip_expenses_page.shared.regenerate.confirm.title') }}</AlertDialogTitle>
+          <AlertDialogDescription>{{ $t('trip_expenses_page.shared.regenerate.confirm.description') }}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{{ $t('trip_expenses_page.shared.regenerate.confirm.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="handleConfirmRegeneratePending">
+            {{ $t('trip_expenses_page.shared.regenerate.confirm.confirm') }}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

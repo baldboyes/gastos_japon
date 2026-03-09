@@ -414,7 +414,7 @@ const handleSubmit = async () => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-[300px] p-0" align="start">
-                    <div class="p-2 border-b border-gray-200">
+                    <div class="p-2 border-b border-neutral-200">
                       <div class="flex items-center px-2 border border-input rounded-md">
                         <Search class="h-4 w-4 text-muted-foreground mr-2" />
                         <input 
@@ -552,7 +552,7 @@ const handleSubmit = async () => {
                 <p v-if="!selectedCountryCode">{{ $t('trip_drawer.itinerary.empty.select_country_first') }}</p>
                 <p v-else>{{ $t('trip_drawer.itinerary.empty.add_cities') }}</p>
               </div>
-              <div v-for="(destino, index) in formData.destinations" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm border space-y-3">
+              <div v-for="(destino, index) in formData.destinations" :key="index" class="p-4 rounded-lg relative bg-neutral-50 shadow-sm border space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                     <div class="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-xs">{{ index + 1 }}</div>
@@ -579,7 +579,7 @@ const handleSubmit = async () => {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent class="w-[300px] p-0" align="start">
-                        <div class="p-2 border-b border-gray-200">
+                        <div class="p-2 border-b border-neutral-200">
                           <div class="flex items-center px-2 border border-input rounded-md">
                             <Search class="h-4 w-4 text-muted-foreground mr-2" />
                             <input 

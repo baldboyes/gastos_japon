@@ -10,6 +10,20 @@
       "low": "低"
     }
   },
+  "common": {
+    "user": {
+      "unknown": "不明なユーザー"
+    }
+  },
+  "errors": {
+    "trips": {
+      "fetch_list": "旅行の読み込みに失敗しました",
+      "fetch_one": "旅行の読み込みに失敗しました",
+      "create": "旅行の作成に失敗しました",
+      "update": "旅行の更新に失敗しました",
+      "delete": "旅行の削除に失敗しました"
+    }
+  },
   "settings": {
     "preferences_drawer": {
       "title": "アプリ設定",
@@ -25,10 +39,30 @@
         "placeholder": "言語を選択...",
         "toast_success": "言語を更新しました",
         "locales": {
-          "en": "英語",
-          "es": "スペイン語",
+          "en": "English",
+          "es": "Español",
           "ja": "日本語"
         }
+      }
+    },
+    "trip_settings_drawer": {
+      "title": "旅行設定",
+      "currency": {
+        "title": "通貨",
+        "description": "支出に使用する通貨を選択してください。"
+      },
+      "daily_budget": {
+        "title": "日次予算",
+        "description": "1日の支出上限を設定します。",
+        "label": "日次上限",
+        "placeholder_amount": "8000",
+        "placeholder_select_currency": "先に通貨を選択してください",
+        "current_prefix": "現在の予算:",
+        "none_configured": "予算未設定",
+        "select_currency_hint": "続行するには通貨を選択してください"
+      },
+      "version": {
+        "label": "バージョン"
       }
     }
   },
@@ -45,6 +79,38 @@
     "expenses": "支出",
     "daily_expenses": "今日の支出",
     "options": "設定"
+  },
+  "expenses": {
+    "shared": {
+      "toggle": "共有の支出",
+      "section_title": "共有の支出",
+      "filter_only": "共有のみ",
+      "badge": "共有の支出",
+      "participants_label": "参加者",
+      "paid_by_label": "支払った人",
+      "split_label": "分割",
+      "split_equal": "均等に分割",
+      "split_custom": "カスタム",
+      "amount_label": "金額",
+      "percentage_label": "割合",
+      "validation": {
+        "no_participants": "少なくとも1人の参加者を選択してください",
+        "amounts_must_match_total": "分割した金額の合計は支出の合計と一致する必要があります",
+        "percentages_must_equal_100": "分割した割合の合計は100%である必要があります"
+      }
+    },
+    "toasts": {
+      "shared_created": "共有の支出を追加しました",
+      "shared_updated": "共有の支出を更新しました",
+      "shared_deleted": "共有の支出を削除しました",
+      "shared_locked": "精算済みの共有支出は変更できません"
+    },
+    "summary": {
+      "title": "共有支出のまとめ",
+      "balances_title": "残高",
+      "transactions_title": "提案される送金",
+      "no_shared_expenses": "この旅行には共有支出がありません"
+    }
   },
   "header": {
     "pricing": "料金",
@@ -209,9 +275,7 @@
       "none": "場所未設定"
     },
     "labels": {
-      "notes": "メモ",
-      "policy": "保険証券",
-      "days": "日数"
+      "notes": "メモ"
     },
     "tasks": {
       "title_prefix": "タスク"
@@ -239,7 +303,9 @@
       "subtitle": "旅行保険を追加して証券をすぐ確認できるようにしましょう。"
     },
     "labels": {
-      "notes": "メモ"
+      "notes": "メモ",
+      "policy": "保険証券",
+      "days": "日数"
     },
     "tasks": {
       "title_prefix": "タスク"
@@ -688,7 +754,8 @@
       "list": "一覧",
       "map": "地図",
       "stats": "統計",
-      "wallet": "財布"
+      "wallet": "ウォレット",
+      "shared": "共有"
     },
     "labels": {
       "expense_singular": "件",
@@ -712,10 +779,18 @@
         "subtitle": "支出を追加すると統計が表示されます",
         "cta": "支出を追加"
       },
+      "scope": {
+        "label": "Show stats as",
+        "me": "My share (split)",
+        "trip": "Trip total"
+      },
       "overview": {
         "total": "合計",
         "daily_average": "1日平均",
         "days_with_expenses_suffix": "支出のある日"
+      },
+      "shared_by_person": {
+        "title": "Shared expenses split"
       },
       "top_expenses": {
         "title": "高額支出"
@@ -771,6 +846,44 @@
         "actions": {
           "save": "登録"
         }
+      }
+    },
+    "shared": {
+      "title": "共有支出のまとめ",
+      "balances_title": "残高",
+      "transactions_title": "提案される送金",
+      "settlements_title": "記録された支払い",
+      "toasts": {
+        "saved": "支払いを記録しました",
+        "generated": "提案された支払いを生成しました",
+        "regenerated": "未処理の支払いを再生成しました",
+        "completed": "支払いを支払済みにしました",
+        "deleted": "支払いを削除しました",
+        "error": "支払いの更新に失敗しました"
+      },
+      "empty": {
+        "title": "共有支出はまだありません",
+        "subtitle": "支出を共有としてマークすると、分割と残高が表示されます"
+      },
+      "actions": {
+        "generate_pending": "未処理の支払いを生成",
+        "regenerate_pending": "支払いを再生成",
+        "register_payment": "支払いを記録",
+        "mark_completed": "支払済みにする",
+        "delete": "削除"
+      },
+      "regenerate": {
+        "confirm": {
+          "title": "未処理の支払いを再生成",
+          "description": "現在の未処理の支払いは無効になり、現在の残高に基づいて再生成されます。完了した支払いは変更されません。",
+          "cancel": "キャンセル",
+          "confirm": "再生成"
+        }
+      },
+      "status": {
+        "pending": "未処理",
+        "completed": "支払済み",
+        "void": "無効"
       }
     }
   },

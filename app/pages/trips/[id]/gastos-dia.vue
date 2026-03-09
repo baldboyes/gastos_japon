@@ -4,6 +4,12 @@
     <div class="flex items-center justify-between gap-8">
       <div class="flex items-center gap-2">
 
+        <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child>
+          <NuxtLink :to="`/es/trips/${tripId}`" class="text-red-600 hover:text-red-800 shrink-0">
+            <LayoutDashboard class="h-6! w-6!" />
+          </NuxtLink>
+        </Button> 
+
         <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child v-if="currentAccommodation">
           <a v-if="currentAccommodation.google_maps_link" :title="$t('trip_daily_expenses_page.actions.directions_prefix') + ' ' + currentAccommodation.name" :href="currentAccommodation.google_maps_link" target="_blank" class="text-indigo-600 hover:text-indigo-800 shrink-0">
             <span class="sr-only">{{ $t('trip_daily_expenses_page.actions.open_maps') }}</span>
@@ -12,7 +18,7 @@
         </Button>
 
       </div>
-      <Sun class="h-8 w-8 text-orange-400" />
+      <WeatherWidget :weather="weather" :loading="weatherLoading" />
     </div>
 
 
@@ -26,7 +32,7 @@
     <!-- Planned Expenses -->
     <div v-if="todaysPlannedExpenses.length > 0">
       <div class="flex items-center justify-between mb-3 w-full">
-        <h2 class="text-lg font-semibold text-gray-700 flex items-center justify-between gap-2 w-full">
+        <h2 class="text-lg font-semibold text-neutral-700 flex items-center justify-between gap-2 w-full">
           <span>{{ $t('trip_daily_expenses_page.planned.title') }}</span>
           <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
         </h2>
@@ -47,8 +53,8 @@
     <div>
       <!--
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-gray-900">{{ currentDate }}</h3>
-        <div class="text-sm font-medium text-gray-600">
+        <h3 class="text-lg font-semibold text-neutral-900">{{ currentDate }}</h3>
+        <div class="text-sm font-medium text-neutral-600">
           Total: {{ formatAmount(todayTotal) }}
         </div>
       </div>
@@ -59,8 +65,8 @@
         class="text-center py-12 px-4"
       >
         <div class="text-6xl mb-4">💸</div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $t('trip_daily_expenses_page.empty.title') }}</h3>
-        <p class="text-sm text-gray-600 mb-6">{{ $t('trip_daily_expenses_page.empty.subtitle') }}</p>
+        <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('trip_daily_expenses_page.empty.title') }}</h3>
+        <p class="text-sm text-neutral-600 mb-6">{{ $t('trip_daily_expenses_page.empty.subtitle') }}</p>
       </div>
 
       <!-- Expense Cards -->
@@ -120,7 +126,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { BedDouble, Sun } from 'lucide-vue-next'
+import { BedDouble, LayoutDashboard } from 'lucide-vue-next'
 import { startOfDay, parseISO } from 'date-fns'
 import {
   AlertDialog,
@@ -132,6 +138,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '~/components/ui/alert-dialog'
+import WeatherWidget from '~/components/weather/Widget.vue'
 import ExpenseDrawer from '~/components/expenses/ExpenseDrawer.vue'
 import DashboardTripDailyBudget from '~/components/dashboard/TripDailyBudget.vue'
 import ExpensesPlannedCard from '~/components/expenses/PlannedCard.vue'
@@ -139,10 +146,12 @@ import ExpensesCard from '~/components/expenses/Card.vue'
 import { useExpensesNew } from '~/composables/useExpensesNew'
 import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
 import { useTripsNew } from '~/composables/useTripsNew'
+import { useTripWeather } from '~/composables/useTripWeather'
 import type { Expense, PlannedExpense, Budget } from '~/types'
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  noTripSidebar: true
 })
 
 const route = useRoute()
@@ -151,13 +160,20 @@ const tripId = computed(() => Number(route.params.id))
 const { expenses, fetchExpenses, updateExpense, deleteExpense } = useExpensesNew()
 const { accommodations, fetchOrganizationData } = useTripOrganizationNew()
 const { currentTrip, getTrip } = useTripsNew()
+const { weather, loading: weatherLoading, loadWeatherForTrip } = useTripWeather()
 
 // Load data
-onMounted(() => {
+onMounted(async () => {
   if (tripId.value && !Number.isNaN(tripId.value)) {
-    getTrip(tripId.value)
+    // Parallel fetch for independent data
     fetchExpenses(tripId.value)
     fetchOrganizationData(tripId.value)
+    
+    // Get trip data and then load weather
+    await getTrip(tripId.value)
+    if (currentTrip.value) {
+      loadWeatherForTrip(currentTrip.value)
+    }
   }
 })
 

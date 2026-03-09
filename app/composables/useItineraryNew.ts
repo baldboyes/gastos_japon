@@ -365,7 +365,7 @@ export const useItineraryNew = () => {
         if (item.type === 'flight' || item.type === 'accommodation') return // handled separately
 
         let icon = Ticket
-        let colorClass = 'bg-gray-100 text-gray-600'
+        let colorClass = 'bg-neutral-100 text-neutral-600'
          
         switch(item.type) {
           case 'transport':

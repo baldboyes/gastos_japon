@@ -201,14 +201,14 @@ const handleImageError = (event: Event) => {
                     </DropdownMenu>
                   </div>
                   <div class="absolute top-4 left-4 pl-1 pr-4 py-1 rounded-full bg-white/50">
-                    <UserAvatar :user="trip.user_created" size="sm" :show-name="true" />
+                    <UserAvatar :user="typeof trip.user_created === 'object' ? trip.user_created : null" size="sm" :show-name="true" />
                   </div>
                   <div class="absolute bottom-4 left-4 flex -space-x-2">
                     <template v-if="trip.collaborators && trip.collaborators.length">
                       <UserAvatar 
                           v-for="collab in trip.collaborators" 
-                          :key="collab.id || collab" 
-                          :user="collab" 
+                          :key="typeof collab === 'object' ? collab.id : collab" 
+                          :user="typeof collab === 'object' ? collab : null" 
                           size="sm"
                       />
                     </template>

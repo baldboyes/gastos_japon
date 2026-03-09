@@ -82,6 +82,7 @@ export interface Expense {
   user_created: string
   date_created: string
   trip_id: number | Trip
+  paid_by_trip_user_id?: number | TripsUser | null
   date: string
   concept: string
   amount: number
@@ -96,6 +97,36 @@ export interface Expense {
   location_lat?: number
   location_lng?: number
   expense_status?: 'real' | 'planned'
+}
+
+export interface ExpenseSplit {
+  id: number
+  status: Status
+  user_created: string
+  date_created: string
+  trip_id: number | Trip
+  expense_id: number | Expense
+  trip_user_id: number | TripsUser
+  amount: number
+  percentage?: number | null
+  settled: boolean
+  settled_at?: string | null
+  note?: string | null
+}
+
+export interface TripSettlement {
+  id: number
+  status: Status
+  user_created: string
+  date_created: string
+  trip_id: number | Trip
+  from_trip_user_id: number | TripsUser
+  to_trip_user_id: number | TripsUser
+  amount: number
+  date: string
+  settlement_status: 'pending' | 'completed' | 'void'
+  settled_at?: string | null
+  note?: string | null
 }
 
 export interface DailyNote {
@@ -248,6 +279,7 @@ export interface Schema {
   accommodations: Accommodation[]
   currency_exchanges: CurrencyExchange[]
   expenses: Expense[]
+  expense_splits: ExpenseSplit[]
   daily_notes: DailyNote[]
   notifications: Notification[]
   insurances: Insurance[]
@@ -257,4 +289,5 @@ export interface Schema {
   trip_invitations: TripInvitation[]
   flights: Flight[]
   tasks: Task[]
+  trip_settlements: TripSettlement[]
 }

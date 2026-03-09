@@ -13,20 +13,20 @@
         <!-- Quick Stats -->
         <div class="grid grid-cols-3 gap-3 pt-4 border-t">
           <div class="text-center">
-            <div class="text-xs text-gray-600 mb-1">Promedio</div>
-            <div class="text-lg font-bold text-gray-900">{{ formatAmount(averageDaily) }}</div>
+            <div class="text-xs text-neutral-600 mb-1">Promedio</div>
+            <div class="text-lg font-bold text-neutral-900">{{ formatAmount(averageDaily) }}</div>
           </div>
           <div class="text-center">
-            <div class="text-xs text-gray-600 mb-1">Día Mayor</div>
+            <div class="text-xs text-neutral-600 mb-1">Día Mayor</div>
             <div class="text-lg font-bold text-orange-600">{{ formatAmount(maxDaily) }}</div>
           </div>
           <div class="text-center">
-            <div class="text-xs text-gray-600 mb-1">Día Menor</div>
+            <div class="text-xs text-neutral-600 mb-1">Día Menor</div>
             <div class="text-lg font-bold text-teal-600">{{ formatAmount(minDaily) }}</div>
           </div>
         </div>
       </div>
-      <div v-else class="py-12 text-center text-gray-500">
+      <div v-else class="py-12 text-center text-neutral-500">
         <div class="text-4xl mb-2">📈</div>
         <p class="text-sm">No hay datos para mostrar</p>
       </div>

@@ -10,6 +10,20 @@
       "low": "Baja"
     }
   },
+  "common": {
+    "user": {
+      "unknown": "Usuario desconocido"
+    }
+  },
+  "errors": {
+    "trips": {
+      "fetch_list": "Error al cargar los viajes",
+      "fetch_one": "Error al cargar el viaje",
+      "create": "Error al crear el viaje",
+      "update": "Error al actualizar el viaje",
+      "delete": "Error al eliminar el viaje"
+    }
+  },
   "settings": {
     "preferences_drawer": {
       "title": "Preferencias de aplicación",
@@ -25,10 +39,30 @@
         "placeholder": "Selecciona un idioma...",
         "toast_success": "Idioma actualizado",
         "locales": {
-          "en": "Inglés",
+          "en": "English",
           "es": "Español",
-          "ja": "Japonés"
+          "ja": "日本語"
         }
+      }
+    },
+    "trip_settings_drawer": {
+      "title": "Configuración del viaje",
+      "currency": {
+        "title": "Moneda",
+        "description": "Selecciona la moneda que utilizarás en tus gastos."
+      },
+      "daily_budget": {
+        "title": "Presupuesto diario",
+        "description": "Establece tu límite de gasto diario.",
+        "label": "Límite diario",
+        "placeholder_amount": "8000",
+        "placeholder_select_currency": "Selecciona una moneda primero",
+        "current_prefix": "Presupuesto actual:",
+        "none_configured": "Sin presupuesto configurado",
+        "select_currency_hint": "Selecciona una moneda para continuar"
+      },
+      "version": {
+        "label": "Versión"
       }
     }
   },
@@ -45,6 +79,38 @@
     "expenses": "Gastos",
     "daily_expenses": "Gastos del día",
     "options": "Opciones"
+  },
+  "expenses": {
+    "shared": {
+      "toggle": "Gasto compartido",
+      "section_title": "Gasto compartido",
+      "filter_only": "Solo compartidos",
+      "badge": "Gasto compartido",
+      "participants_label": "Participantes",
+      "paid_by_label": "Pagado por",
+      "split_label": "Reparto",
+      "split_equal": "Partes iguales",
+      "split_custom": "Personalizado",
+      "amount_label": "Monto",
+      "percentage_label": "Porcentaje",
+      "validation": {
+        "no_participants": "Selecciona al menos un participante",
+        "amounts_must_match_total": "La suma de los montos debe ser igual al total del gasto",
+        "percentages_must_equal_100": "La suma de los porcentajes debe ser 100%"
+      }
+    },
+    "toasts": {
+      "shared_created": "Gasto compartido añadido",
+      "shared_updated": "Gasto compartido actualizado",
+      "shared_deleted": "Gasto compartido eliminado",
+      "shared_locked": "No se puede modificar un gasto compartido ya liquidado"
+    },
+    "summary": {
+      "title": "Resumen de gastos compartidos",
+      "balances_title": "Saldos",
+      "transactions_title": "Transacciones sugeridas",
+      "no_shared_expenses": "No hay gastos compartidos en este viaje"
+    }
   },
   "header": {
     "pricing": "Precios",
@@ -209,9 +275,7 @@
       "none": "Sin ubicación especificada"
     },
     "labels": {
-      "notes": "Notas",
-      "policy": "Póliza",
-      "days": "Días"
+      "notes": "Notas"
     },
     "tasks": {
       "title_prefix": "Tareas"
@@ -239,7 +303,9 @@
       "subtitle": "Añade tu seguro de viaje para tener a mano la póliza."
     },
     "labels": {
-      "notes": "Notas"
+      "notes": "Notas",
+      "policy": "Póliza",
+      "days": "Días"
     },
     "tasks": {
       "title_prefix": "Tareas"
@@ -687,8 +753,9 @@
     "tabs": {
       "list": "Lista",
       "map": "Mapa",
-      "stats": "Stats",
-      "wallet": "Cartera"
+      "stats": "Estadísticas",
+      "wallet": "Cartera",
+      "shared": "Compartidos"
     },
     "labels": {
       "expense_singular": "gasto",
@@ -712,10 +779,18 @@
         "subtitle": "Agrega algunos gastos para ver tus estadísticas",
         "cta": "Agregar gasto"
       },
+      "scope": {
+        "label": "Ver estadísticas como",
+        "me": "Mi parte (reparto)",
+        "trip": "Total del viaje"
+      },
       "overview": {
         "total": "Total",
         "daily_average": "Promedio día",
         "days_with_expenses_suffix": "con gastos"
+      },
+      "shared_by_person": {
+        "title": "Reparto de gastos compartidos"
       },
       "top_expenses": {
         "title": "Gastos más grandes"
@@ -771,6 +846,44 @@
         "actions": {
           "save": "Registrar"
         }
+      }
+    },
+    "shared": {
+      "title": "Resumen de gastos compartidos",
+      "balances_title": "Saldos",
+      "transactions_title": "Transacciones sugeridas",
+      "settlements_title": "Pagos registrados",
+      "toasts": {
+        "saved": "Pago registrado",
+        "generated": "Pagos sugeridos generados",
+        "regenerated": "Pagos pendientes regenerados",
+        "completed": "Pago marcado como realizado",
+        "deleted": "Pago eliminado",
+        "error": "Error al actualizar pagos"
+      },
+      "empty": {
+        "title": "No hay gastos compartidos",
+        "subtitle": "Marca un gasto como compartido para ver el reparto y las deudas"
+      },
+      "actions": {
+        "generate_pending": "Generar pagos pendientes",
+        "regenerate_pending": "Regenerar pagos",
+        "register_payment": "Registrar pago",
+        "mark_completed": "Marcar como pagado",
+        "delete": "Eliminar"
+      },
+      "regenerate": {
+        "confirm": {
+          "title": "Regenerar pagos pendientes",
+          "description": "Se anularán los pagos pendientes actuales y se generarán de nuevo según los saldos actuales. Los pagos marcados como realizados no se modificarán.",
+          "cancel": "Cancelar",
+          "confirm": "Regenerar"
+        }
+      },
+      "status": {
+        "pending": "Pendiente",
+        "completed": "Pagado",
+        "void": "Anulado"
       }
     }
   },

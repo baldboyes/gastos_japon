@@ -352,7 +352,7 @@ watch(isOpen, (isOpened) => {
                      <Button variant="link" size="sm" @click="addEscala">{{ $t('trip_transport_drawer.scales.empty.cta') }}</Button>
                   </div>
 
-                  <div v-for="(escala, index) in formData.stops" :key="index" class="p-4 rounded-lg relative bg-gray-50 shadow-sm">
+                  <div v-for="(escala, index) in formData.stops" :key="index" class="p-4 rounded-lg relative bg-neutral-50 shadow-sm">
                      <div class="flex justify-between items-center pb-6">
                         <span class="font-bold text-sm text-slate-600 flex items-center gap-2">
                            <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs">{{ index + 1 }}</div>

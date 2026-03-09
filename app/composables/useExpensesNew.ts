@@ -26,6 +26,10 @@ export const useExpensesNew = () => {
     },
     paymentMethod: e.payment_method as PaymentMethod,
     shared: e.is_shared,
+    paidByTripUserId: typeof (e as any).paid_by_trip_user_id === 'object'
+      ? Number(((e as any).paid_by_trip_user_id as any)?.id ?? 0) || null
+      : (typeof (e as any).paid_by_trip_user_id === 'number' ? (e as any).paid_by_trip_user_id : null),
+    userCreatedId: (e as any).user_created ? String((e as any).user_created) : undefined,
     status: e.expense_status || 'real',
     // photo: e.photo // TODO: Handle attachments if needed
   })
@@ -45,6 +49,7 @@ export const useExpensesNew = () => {
     }
     if (e.paymentMethod) payload.payment_method = e.paymentMethod
     if (e.shared !== undefined) payload.is_shared = e.shared
+    if (e.paidByTripUserId !== undefined) (payload as any).paid_by_trip_user_id = e.paidByTripUserId
     if (e.status) payload.expense_status = e.status
     return payload
   }
@@ -58,6 +63,23 @@ export const useExpensesNew = () => {
       const client = await getClient()
       const result = await client.request(readItems('expenses', {
         filter: { trip_id: { _eq: Number(tripId) } },
+        fields: [
+          'id',
+          'date',
+          'concept',
+          'amount',
+          'category',
+          'notes',
+          'payment_method',
+          'is_shared',
+          'paid_by_trip_user_id',
+          'expense_status',
+          'location_lat',
+          'location_lng',
+          'city',
+          'prefectura',
+          'user_created'
+        ],
         sort: ['-date']
       }))
       

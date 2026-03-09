@@ -52,7 +52,7 @@ const sortedTasks = computed(() => {
 </script>
 
 <template>
-  <div class="bg-gray-200/75 rounded-2xl overflow-hidden">
+  <div class="bg-neutral-200/75 rounded-2xl overflow-hidden">
     <div class="p-4 flex items-center justify-between">
       <h3 class="font-bold text-slate-800 flex items-center gap-2">
         <ListTodo class="w-4 h-4" />

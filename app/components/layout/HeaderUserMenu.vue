@@ -44,7 +44,7 @@
     <!-- Notifications Drawer -->
     <Drawer>
       <DrawerTrigger as-child>
-        <button class="p-2 text-gray-500 hover:text-gray-700 transition-colors relative hover:cursor-pointer rounded-full hover:bg-gray-100">
+        <button class="p-2 text-neutral-500 hover:text-neutral-700 transition-colors relative hover:cursor-pointer rounded-full hover:bg-neutral-100">
           <Bell class="h-5 w-5" />
           <span v-if="unreadCount > 0" class="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
         </button>
@@ -55,14 +55,14 @@
     <!-- User Menu -->
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
-        <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1.5 rounded-lg transition-colors">
-          <Avatar class="h-8 w-8 rounded-full border border-gray-200">
+        <div class="flex items-center gap-2 cursor-pointer hover:bg-neutral-100 p-1.5 rounded-lg transition-colors">
+          <Avatar class="h-8 w-8 rounded-full border border-neutral-200">
             <AvatarImage :src="user?.imageUrl || ''" :alt="user?.fullName || ''" />
             <AvatarFallback class="rounded-full bg-slate-100 text-slate-600">
               <User class="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
-          <ChevronsUpDown class="ml-auto size-4 text-gray-400 hidden md:block" />
+          <ChevronsUpDown class="ml-auto size-4 text-neutral-400 hidden md:block" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent

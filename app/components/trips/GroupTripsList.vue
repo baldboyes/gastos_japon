@@ -60,7 +60,7 @@
   <div class="w-full py-16 bg-white mt-12">
     <div class="max-w-4xl mx-auto space-y-6 px-4 lg:px-0">
       <div class="pb-8">
-        <small>Contenido patrocinado por: <a href="https://porjapon.com" target="_blank" class="text-pink-800 font-bold">porjapon.com</a></small>
+        <small>Contenido patrocinado por: <a href="https://porjapon.com" target="_blank" class="text-neutral-800 font-bold">porjapon.com</a></small>
       </div>
       <div class="flex justify-between items-center">
         <div>
@@ -107,7 +107,7 @@
             <!-- Info -->
             <div class="flex-1 space-y-3">
               <div>
-                <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                <h3 class="text-xl font-bold text-neutral-900 group-hover:text-primary transition-colors">
                   {{ trip.title }}
                 </h3>
                 <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">

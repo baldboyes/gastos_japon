@@ -272,7 +272,7 @@
             @edit="handleEditTask"
             @add="handleAddTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
+          <div class="bg-neutral-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>

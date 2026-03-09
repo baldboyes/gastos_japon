@@ -25,6 +25,8 @@ export interface Expense {
   location: Location
   paymentMethod: PaymentMethod
   shared: boolean
+  paidByTripUserId?: number | null
+  userCreatedId?: string
   status: 'real' | 'planned' // Added status field
   photo?: string // Optional base64 or URL
 }
@@ -90,7 +92,7 @@ export const CATEGORIES: CategoryInfo[] = [
   { key: 'accommodation', label: 'Alojamiento', icon: '🏨', color: 'bg-purple-400', borderColor: 'border-purple-400' },
   { key: 'entertainment', label: 'Entradas', icon: '⛩️', color: 'bg-pink-400', borderColor: 'border-pink-400' },
   { key: 'shopping', label: 'Compras', icon: '🛍️', color: 'bg-green-400', borderColor: 'border-green-400' },
-  { key: 'other', label: 'Otros', icon: '📦', color: 'bg-gray-400', borderColor: 'border-gray-400' },
+  { key: 'other', label: 'Otros', icon: '📦', color: 'bg-neutral-400', borderColor: 'border-neutral-400' },
 ]
 
 /**

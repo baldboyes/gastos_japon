@@ -3,24 +3,24 @@
     <!-- Empty state -->
     <div v-if="groupedExpenses.length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">📝</div>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ emptyTitle }}</h3>
-      <p class="text-sm text-gray-600">{{ emptyMessage }}</p>
+      <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ emptyTitle }}</h3>
+      <p class="text-sm text-neutral-600">{{ emptyMessage }}</p>
     </div>
 
     <!-- Render only visible items for performance -->
     <div v-else>
       <div v-for="group in visibleGroupedExpenses" :key="group.date" class="space-y-3">
         <!-- Date Header -->
-        <div class="flex items-center justify-between px-2 py-2 bg-gray-100 rounded-lg sticky top-0 z-10">
+        <div class="flex items-center justify-between px-2 py-2 bg-neutral-100 rounded-lg sticky top-0 z-10">
           <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold text-gray-900">
+            <span class="text-sm font-semibold text-neutral-900">
               {{ getRelativeDayLabel(group.date) }}
             </span>
-            <span class="text-xs text-gray-600">
+            <span class="text-xs text-neutral-600">
               {{ formatDate(group.date) }}
             </span>
           </div>
-          <div class="text-sm font-bold text-gray-900">
+          <div class="text-sm font-bold text-neutral-900">
             {{ formattedTotalForDate(getTotalForDate(group.items)) }}
           </div>
         </div>
@@ -58,7 +58,7 @@
           Cargar más ({{ remainingCount }} {{ remainingCount === 1 ? 'día' : 'días' }})
         </Button>
       </div>
-      <div v-else class="text-center mt-6 mb-4 text-sm text-gray-500">
+      <div v-else class="text-center mt-6 mb-4 text-sm text-neutral-500">
         Todos los días cargados
       </div>
     </div>

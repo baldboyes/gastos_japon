@@ -66,7 +66,7 @@ const selectCurrency = (code: Currency) => {
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-[300px] p-0" align="start">
-      <div class="p-2 border-b border-gray-200">
+      <div class="p-2 border-b border-neutral-200">
         <div class="flex items-center px-2 border border-input rounded-md">
           <Search class="h-4 w-4 text-muted-foreground mr-2" />
           <input 

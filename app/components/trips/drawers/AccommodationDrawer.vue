@@ -276,7 +276,7 @@ const locationProxy = computed({
                     :id="`pension-native-${opt.value}`"
                     :checked="(formData.board_basis || []).includes(opt.value)"
                     @change="updatePension(opt.value, $event)"
-                    class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    class="h-4 w-4 rounded border-neutral-300 text-primary focus:ring-primary"
                   />
                   <Label :for="`pension-native-${opt.value}`" class="cursor-pointer">{{ $t(opt.labelKey) }}</Label>
                 </div>

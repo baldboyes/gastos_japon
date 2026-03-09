@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <!-- Header with clear button -->
     <div class="flex items-center justify-between">
-      <h3 class="font-medium text-gray-900">Filtros</h3>
+      <h3 class="font-medium text-neutral-900">Filtros</h3>
       <Button
         v-if="hasActiveFilters"
         variant="ghost"
@@ -27,7 +27,7 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
         >
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.3-4.3"/>
@@ -44,13 +44,13 @@
 
     <!-- Date Filter -->
     <div>
-      <Label class="text-xs mb-1.5 block text-gray-500">Fecha</Label>
+      <Label class="text-xs mb-1.5 block text-neutral-500">Fecha</Label>
       <DateRangeFilter :model-value="dateRange" @date-change="handleDateChange" />
     </div>
 
     <!-- Category Filter -->
     <div>
-      <Label class="text-xs mb-1.5 block text-gray-500">Categoría</Label>
+      <Label class="text-xs mb-1.5 block text-neutral-500">Categoría</Label>
       <Select :model-value="category" @update:model-value="handleCategoryChange">
         <SelectTrigger class="w-full bg-white">
           <SelectValue placeholder="Categorías" />
@@ -70,7 +70,7 @@
 
     <!-- Payment Method Filter -->
     <div>
-      <Label class="text-xs mb-1.5 block text-gray-500">Método de pago</Label>
+      <Label class="text-xs mb-1.5 block text-neutral-500">Método de pago</Label>
       <Select :model-value="payment" @update:model-value="handlePaymentChange">
         <SelectTrigger class="w-full bg-white">
           <SelectValue placeholder="Métodos de pago" />
@@ -85,10 +85,10 @@
     </div>
 
     <!-- Shared Filter Checkbox -->
-    <div class="flex items-center space-x-2 px-3 py-2 rounded-md border bg-white hover:bg-gray-50 transition-colors cursor-pointer" @click="toggleSharedFilter">
+    <div class="flex items-center space-x-2 px-3 py-2 rounded-md border bg-white hover:bg-neutral-50 transition-colors cursor-pointer" @click="toggleSharedFilter">
       <div
         class="size-4 shrink-0 rounded-[4px] border shadow-xs transition-all flex items-center justify-center"
-        :class="shared ? 'bg-teal-600 border-teal-600' : 'bg-white border-gray-300'"
+        :class="shared ? 'bg-teal-600 border-teal-600' : 'bg-white border-neutral-300'"
       >
         <svg
           v-if="shared"
@@ -106,14 +106,15 @@
         </svg>
       </div>
       <div class="text-sm font-medium flex items-center gap-1.5 pointer-events-none select-none">
-        <span class="text-lg">⭐</span>
-        <span>Solo destacados</span>
+        <span class="text-lg">👥</span>
+        <span>{{ $t('expenses.shared.filter_only') }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { CATEGORIES } from '~/types'
 import type { DateFilterRange } from '~/components/common/DateRangeFilter.vue'
 import DateRangeFilter from '~/components/common/DateRangeFilter.vue'

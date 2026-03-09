@@ -202,7 +202,7 @@
                           <CardContent class="md:px-6 flex items-center justify-between">
                             <div class="flex items-center gap-2 md:gap-4">
                               <!-- Logo Aerolínea -->
-                              <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 p-1">
+                              <div class="h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-md border border-neutral-200 p-1">
                                 <img 
                                   v-if="getAirlineLogo(escala.airline)" 
                                   :src="getAirlineLogo(escala.airline)" 
@@ -267,7 +267,7 @@
             @edit="handleEditTask"
             @add="handleAddTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
+          <div class="bg-neutral-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>

@@ -167,7 +167,7 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
         <div class="flex items-center justify-between z-50 absolute">
           <h3 class="text-lg font-semibold text-slate-800">Plan</h3>
         </div>
-        <div class="sticky -top-8 h-8 bg-gray-50 z-40"></div>
+        <div class="sticky -top-8 h-8 bg-neutral-50 z-40"></div>
         <TextEditor 
           v-model="note" 
           placeholder="Escribe aquí tus notas, diario o recordatorios para este día..." 

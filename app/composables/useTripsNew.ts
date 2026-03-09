@@ -1,8 +1,10 @@
 import { readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk'
 import type { Trip } from '~/types/directus'
+import { useI18n } from '#imports'
 
 export const useTripsNew = () => {
   const { getClient, directusUserId } = useDirectusRepo()
+  const { t } = useI18n()
   const trips = useState<Trip[]>('trips-new', () => [])
   const currentTrip = useState<Trip | null>('current-trip-new', () => null)
   const collaborators = useState<any[]>('trip-collaborators-new', () => [])
@@ -27,16 +29,20 @@ export const useTripsNew = () => {
     error.value = null
     try {
       const client = await getClient()
-      
+
+      const apiRes = await $fetch('/api/trips/my', { method: 'GET' }).catch(() => null) as any
+      if (Array.isArray(apiRes?.trips)) {
+        trips.value = apiRes.trips as Trip[]
+        return
+      }
+
       const result = await client.request(readItems('trips', {
         sort: ['-start_date'],
-        fields: [
-          '*',
-          'user_created'
-        ]
+        fields: ['*', 'user_created']
       }))
-      
+
       const baseTrips = Array.isArray(result) ? result as any[] : []
+
       const enriched = await Promise.all(baseTrips.map(async (trip: any) => {
         const collabRes = await $fetch('/api/trips/collaborators', {
           method: 'GET',
@@ -49,15 +55,15 @@ export const useTripsNew = () => {
 
         return {
           ...trip,
-          user_created: owner || trip.user_created,
+          user_created: owner || null,
           collaborators: collaboratorsForCard
         }
       }))
 
       trips.value = enriched as Trip[]
     } catch (e: any) {
-      console.error('Error fetching trips (new):', e)
-      error.value = e.message || 'Error al cargar los viajes'
+      console.error(e)
+      error.value = e?.message || String(t('errors.trips.fetch_list'))
       trips.value = []
     } finally {
       loading.value = false
@@ -82,8 +88,8 @@ export const useTripsNew = () => {
         await fetchCollaborators(id)
         return res?.trip
       } catch (fallbackError: any) {
-        console.error('Error fetching trip (new):', e)
-        error.value = e.message || 'Error al cargar el viaje'
+        console.error(e)
+        error.value = e?.message || String(t('errors.trips.fetch_one'))
         throw e
       }
     } finally {
@@ -101,13 +107,18 @@ export const useTripsNew = () => {
       
       if (result) {
         const newTrip = result as Trip
-        // Association logic with Clerk user ID if needed, typically handled by Directus user_created automatically if token is present
         trips.value.unshift(newTrip)
+        if (directusUserId.value && newTrip?.id) {
+          await $fetch('/api/trips/associate', {
+            method: 'POST',
+            body: { tripId: newTrip.id, userId: directusUserId.value }
+          }).catch(() => null)
+        }
         return result
       }
     } catch (e: any) {
-      console.error('Error creating trip (new):', e)
-      error.value = e.message || 'Error al crear el viaje'
+      console.error(e)
+      error.value = e?.message || String(t('errors.trips.create'))
       throw e
     } finally {
       loading.value = false
@@ -130,8 +141,8 @@ export const useTripsNew = () => {
       }
       return result
     } catch (e: any) {
-      console.error('Error updating trip (new):', e)
-      error.value = e.message || 'Error al actualizar el viaje'
+      console.error(e)
+      error.value = e?.message || String(t('errors.trips.update'))
       throw e
     } finally {
       loading.value = false
@@ -149,8 +160,8 @@ export const useTripsNew = () => {
         currentTrip.value = null
       }
     } catch (e: any) {
-      console.error('Error deleting trip (new):', e)
-      error.value = e.message || 'Error al eliminar el viaje'
+      console.error(e)
+      error.value = e?.message || String(t('errors.trips.delete'))
       throw e
     } finally {
       loading.value = false

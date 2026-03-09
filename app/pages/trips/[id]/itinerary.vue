@@ -96,7 +96,7 @@ const handleCreateExpense = async () => {
 </script>
 
 <template>
-  <div>
+  <div class="pt-2">
     <ItineraryDaysSwiper 
       :days="daysWithEvents" 
       :selectedDate="selectedDate" 

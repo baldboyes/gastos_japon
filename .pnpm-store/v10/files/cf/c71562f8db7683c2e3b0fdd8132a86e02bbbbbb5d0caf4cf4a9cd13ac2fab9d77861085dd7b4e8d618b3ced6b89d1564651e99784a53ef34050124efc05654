@@ -2564,17 +2564,17 @@ function createVFSHandler(nitro) {
       const subpath = [...path, fname];
       const key = subpath.join("/");
       const encodedUrl = encodeURIComponent(key);
-      const linkClass = url === `/${encodedUrl}` ? "bg-gray-700 text-white" : "hover:bg-gray-800 text-gray-200";
+      const linkClass = url === `/${encodedUrl}` ? "bg-neutral-700 text-white" : "hover:bg-neutral-800 text-neutral-200";
       return Object.keys(value).length === 0 ? `
             <li class="flex flex-nowrap">
-              <a href="/_vfs/${encodedUrl}" class="w-full text-sm px-2 py-1 border-b border-gray-10 ${linkClass}">
+              <a href="/_vfs/${encodedUrl}" class="w-full text-sm px-2 py-1 border-b border-neutral-10 ${linkClass}">
                 ${fname}
               </a>
             </li>
             ` : `
             <li>
               <details ${url.startsWith(`/${encodedUrl}`) ? "open" : ""}>
-                <summary class="w-full text-sm px-2 py-1 border-b border-gray-10 hover:bg-gray-800 text-gray-200">
+                <summary class="w-full text-sm px-2 py-1 border-b border-neutral-10 hover:bg-neutral-800 text-neutral-200">
                   ${fname}
                 </summary>
                 <ul class="ml-4">

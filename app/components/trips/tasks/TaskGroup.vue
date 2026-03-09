@@ -46,7 +46,7 @@ const entityLabel = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-3 bg-gray-200/75 rounded-2xl pt-4 px-4">
+  <div class="space-y-3 bg-neutral-200/75 rounded-2xl pt-4 px-4">
     <div class="flex items-center justify-between">
     
       <div class="flex items-center gap-2">

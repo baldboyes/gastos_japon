@@ -236,7 +236,7 @@
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2">
-                                <BaggageClaim class="h-5 w-5 text-gray-500" />
+                                <BaggageClaim class="h-5 w-5 text-neutral-500" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -248,7 +248,7 @@
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2">
-                                <Bath class="h-5 w-5 text-gray-500" />
+                                <Bath class="h-5 w-5 text-neutral-500" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -260,8 +260,8 @@
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2 flex items-center gap-6">
-                                <Coffee v-if="a.board_basis?.includes('breakfast')" class="h-5 w-5 text-gray-500" />
-                                <Utensils v-if="a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')" class="h-5 w-5 text-gray-500" />
+                                <Coffee v-if="a.board_basis?.includes('breakfast')" class="h-5 w-5 text-neutral-500" />
+                                <Utensils v-if="a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')" class="h-5 w-5 text-neutral-500" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -312,7 +312,7 @@
             @edit="handleEditTask"
             @add="handleAddTask"
           />
-          <div class="bg-gray-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
+          <div class="bg-neutral-200/75 rounded-2xl overflow-hidden mt-4 h-[80px] w-full flex items-center justify-center">
             &nbsp;
           </div>
         </div>
