@@ -21,7 +21,6 @@
       <WeatherWidget :weather="weather" :loading="weatherLoading" />
     </div>
 
-
     <!-- Daily Budget Card -->
     <DashboardTripDailyBudget 
       :daily-limit="budget.dailyLimit"
