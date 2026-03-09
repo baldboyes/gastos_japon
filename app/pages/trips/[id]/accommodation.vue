@@ -63,10 +63,8 @@
     return tasks.value.filter(t => {
       // Check direct entity type
       if (t.entity_type === 'accommodation' || t.entity_type === 'accommodations') return true
-      
       // Check group entity type if task doesn't have it set directly
       if (!t.entity_type && t.task_group === 'Alojamientos') return true
-      
       return false
     })
   })
