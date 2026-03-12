@@ -1,0 +1,55 @@
+{
+  "trip_luggage_page": {
+    "title": "荷物",
+    "subtitle": "各バッグの持ち物リストを作成します。",
+    "suitcases": {
+      "title": "バッグ",
+      "empty_title": "バッグがまだありません",
+      "empty_subtitle": "バッグを追加してリストを作り始めましょう。"
+    },
+    "suitcase": {
+      "create_title": "新しいバッグ",
+      "add_button": "バッグを追加",
+      "name_label": "名前",
+      "name_placeholder": "例: 機内持ち込み",
+      "type_label": "種類",
+      "type_placeholder": "種類を選択",
+      "types": {
+        "checked": "受託手荷物",
+        "carry_on": "機内持ち込み",
+        "backpack": "バックパック",
+        "other": "その他"
+      },
+      "delete": {
+        "title": "このバッグを削除しますか？",
+        "description": "このバッグ内のアイテムもすべて削除されます。",
+        "cancel": "キャンセル",
+        "confirm": "削除"
+      }
+    },
+    "items": {
+      "title": "リスト",
+      "empty": "このバッグにはまだアイテムがありません。",
+      "reorder_hint": "ドラッグして並べ替えます。",
+      "drag_handle": "ドラッグして並べ替え",
+      "move_hint": "ドロップしてこのバッグへ移動します。",
+      "quantity_decrease": "数量を減らす",
+      "quantity_increase": "数量を増やす",
+      "add_button": "追加",
+      "name_label": "アイテム",
+      "name_placeholder": "例: Tシャツ",
+      "quantity_label": "数量",
+      "quantity_placeholder": "1",
+      "delete_button": "削除"
+    },
+    "toasts": {
+      "suitcase_created": "バッグを作成しました",
+      "suitcase_deleted": "バッグを削除しました",
+      "item_added": "アイテムを追加しました",
+      "item_updated": "アイテムを更新しました",
+      "item_deleted": "アイテムを削除しました",
+      "order_saved": "並び順を保存しました",
+      "error": "エラーが発生しました"
+    }
+  }
+}

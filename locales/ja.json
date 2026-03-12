@@ -77,7 +77,8 @@
     "insurance": "保険",
     "travelers": "旅行者",
     "expenses": "支出",
-    "daily_expenses": "今日の支出",
+    "luggage": "荷物",
+    "daily_expenses": "旅行モード",
     "options": "設定"
   },
   "expenses": {
@@ -321,6 +322,108 @@
     "title": "タスク",
     "subtitle": "旅行の予定とやることを整理します。"
   },
+  "trip_tasks_board": {
+    "search_label": "検索",
+    "search_placeholder": "タスクを検索...",
+    "status_label": "状態",
+    "status_placeholder": "状態",
+    "status_all": "すべて",
+    "status_pending": "未着手",
+    "status_in_progress": "進行中",
+    "status_completed": "完了",
+    "status_cancelled": "キャンセル",
+    "priority_label": "優先度",
+    "priority_placeholder": "優先度",
+    "priority_all": "すべて",
+    "new_task": "新しいタスク",
+    "add": "追加",
+    "loading": "タスクを読み込み中...",
+    "no_results": "現在のフィルターではタスクが見つかりません。",
+    "group_empty": "このグループにはタスクがありません。",
+    "confirm_delete": "タスクを削除しますか？"
+  },
+  "trip_task_modal": {
+    "new_title": "新しいタスク",
+    "edit_title": "タスクを編集",
+    "title_label": "タイトル",
+    "title_placeholder": "チケットを購入...",
+    "description_label": "説明",
+    "description_placeholder": "追加の詳細...",
+    "priority_label": "優先度",
+    "status_label": "状態",
+    "select_placeholder": "選択...",
+    "due_date_label": "期限",
+    "assigned_to_label": "担当者",
+    "unassigned": "未割り当て",
+    "group_label": "タスクグループ",
+    "group_placeholder": "グループを選択...",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "saving": "保存中...",
+    "confirm_delete": "このタスクを削除してもよろしいですか？",
+    "groups": {
+      "general": "一般",
+      "flights": "フライト",
+      "accommodation": "宿泊",
+      "transport": "交通",
+      "activities": "アクティビティ",
+      "insurance": "保険"
+    }
+  },
+  "trip_luggage_page": {
+    "title": "荷物",
+    "subtitle": "各バッグの持ち物リストを作成します。",
+    "suitcases": {
+      "title": "バッグ",
+      "empty_title": "バッグがまだありません",
+      "empty_subtitle": "バッグを追加してリストを作り始めましょう。"
+    },
+    "suitcase": {
+      "create_title": "新しいバッグ",
+      "add_button": "バッグを追加",
+      "name_label": "名前",
+      "name_placeholder": "例: 機内持ち込み",
+      "type_label": "種類",
+      "type_placeholder": "種類を選択",
+      "types": {
+        "checked": "受託手荷物",
+        "carry_on": "機内持ち込み",
+        "backpack": "バックパック",
+        "other": "その他"
+      },
+      "delete": {
+        "title": "このバッグを削除しますか？",
+        "description": "このバッグ内のアイテムもすべて削除されます。",
+        "cancel": "キャンセル",
+        "confirm": "削除"
+      }
+    },
+    "items": {
+      "title": "リスト",
+      "empty": "このバッグにはまだアイテムがありません。",
+      "reorder_hint": "ドラッグして並べ替えます。",
+      "drag_handle": "ドラッグして並べ替え",
+      "move_hint": "ドロップしてこのバッグへ移動します。",
+      "quantity_decrease": "数量を減らす",
+      "quantity_increase": "数量を増やす",
+      "add_button": "追加",
+      "name_label": "アイテム",
+      "name_placeholder": "例: Tシャツ",
+      "quantity_label": "数量",
+      "quantity_placeholder": "1",
+      "delete_button": "削除"
+    },
+    "toasts": {
+      "suitcase_created": "バッグを作成しました",
+      "suitcase_deleted": "バッグを削除しました",
+      "item_added": "アイテムを追加しました",
+      "item_updated": "アイテムを更新しました",
+      "item_deleted": "アイテムを削除しました",
+      "order_saved": "順序を保存しました",
+      "error": "エラーが発生しました"
+    }
+  },
   "trip_transport_page": {
     "title": "交通",
     "subtitle": "電車、パス、移動手段。",
@@ -479,7 +582,9 @@
       "breakfast": "朝食",
       "lunch": "昼食",
       "dinner": "夕食",
-      "full_board": "フルボード"
+      "full_board": "フルボード",
+      "half_board": "ハーフボード",
+      "none": "なし"
     },
     "status": {
       "paid": "支払済み",

@@ -17,8 +17,8 @@ const resolvedTo = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="resolvedTo" class="flex items-center gap-2 font-bold text-xl text-slate-900 transition-all duration-300">
-    <img src="/icon-192x192.png" alt="Logo" class="size-8 transition-transform duration-300" :class="{ 'scale-110': compact }" />
+  <NuxtLink :to="resolvedTo" class="flex items-center font-bold text-xl text-slate-900 transition-all duration-300" :class="compact ? 'gap-0 ml-2 mt-3' : 'gap-2 -ml-2 -mt-1'">
+    <img src="/icon-192x192.png" alt="Logo" class="size-8 transition-transform duration-300" />
     <span 
       class="truncate font-semibold text-xl transition-all duration-300 origin-left text-red-400"
       :class="[

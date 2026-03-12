@@ -4,6 +4,7 @@ export type ExpenseCategory = 'food' | 'transport' | 'accommodation' | 'entertai
 export type PaymentMethod = 'cash' | 'card' | 'ic'
 export type TripUserRole = 'owner' | 'editor' | 'read_only'
 export type TripInvitationStatus = 'pending' | 'accepted' | 'revoked'
+export type SuitcaseType = 'checked' | 'carry_on' | 'backpack' | 'other'
 
 export interface DirectusFile {
   id: string
@@ -210,6 +211,30 @@ export interface Trip {
   expenses?: number[] | Expense[]
 }
 
+export interface Suitcase {
+  id: number
+  status: Status
+  user_created: string
+  date_created: string
+  trip_id: number | Trip
+  type: SuitcaseType
+  name: string
+  sort?: number
+  items?: number[] | SuitcaseItem[]
+}
+
+export interface SuitcaseItem {
+  id: number
+  status: Status
+  user_created: string
+  date_created: string
+  suitcase_id: number | Suitcase
+  name: string
+  quantity: number
+  packed: boolean
+  sort?: number
+}
+
 export interface TripsUser {
   id: number
   trip_id: number | Trip
@@ -290,4 +315,6 @@ export interface Schema {
   flights: Flight[]
   tasks: Task[]
   trip_settlements: TripSettlement[]
+  suitcases: Suitcase[]
+  suitcase_items: SuitcaseItem[]
 }

@@ -5,7 +5,7 @@
       <div class="flex items-center gap-2">
 
         <Button variant="ghost" size="icon" class="h-10 w-10 p-0" as-child>
-          <NuxtLink :to="`/es/trips/${tripId}`" class="text-red-600 hover:text-red-800 shrink-0">
+          <NuxtLink :to="`/es/trips/${tripId}`" class="text-red-400 hover:text-red-600 shrink-0 transition-colors duration-300">
             <LayoutDashboard class="h-6! w-6!" />
           </NuxtLink>
         </Button> 

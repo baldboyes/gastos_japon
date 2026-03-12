@@ -13,6 +13,8 @@ import { DateTimePicker } from '~/components/ui/date-time-picker'
 import { useTripTasksNew } from '~/composables/useTripTasksNew'
 import { useTripsNew } from '~/composables/useTripsNew'
 import { useDirectusRepo } from '~/composables/useDirectusRepo'
+import { tv } from 'tailwind-variants'
+import { Trash2, Save } from 'lucide-vue-next'
 
 const props = defineProps<{
   open: boolean
@@ -28,6 +30,7 @@ const emit = defineEmits(['update:open', 'saved', 'delete'])
 const { createTask, updateTask, deleteTask, tasksByGroup } = useTripTasksNew()
 const { collaborators, currentTrip } = useTripsNew() // Use collaborators instead of travelers if travelers doesn't exist
 const { directusUserId } = useDirectusRepo()
+const { t } = useI18n()
 
 const formData = ref<Partial<Task>>({
   title: '',
@@ -83,21 +86,42 @@ watch(() => props.open, (isOpen) => {
         formData.value.assigned_to = undefined
       }
 
-      formData.value.due_date = toIsoLocal((formData.value as any).due_date) || null
+      formData.value.due_date = toIsoLocal((formData.value as any).due_date) || undefined
     } else {
       formData.value = {
         title: '',
         description: '',
         priority: 'medium',
         status: 'pending',
-        due_date: '',
+        due_date: undefined,
         task_group: props.defaultGroupId,
         assigned_to: directusUserId.value || undefined, // Default to current user
         entity_type: props.defaultEntityType as any,
         entity_id: props.defaultEntityId,
-        due_date: null
       }
     }
+  }
+})
+
+const dueDateModel = computed<string | undefined>({
+  get: () => {
+    const v: any = (formData.value as any).due_date
+    return v ? String(v) : undefined
+  },
+  set: (v) => {
+    ;(formData.value as any).due_date = v || undefined
+  }
+})
+
+const assignedToModel = computed<string>({
+  get: () => {
+    const v: any = (formData.value as any).assigned_to
+    if (!v) return 'unassigned'
+    if (typeof v === 'object') return String(v.id || 'unassigned')
+    return String(v)
+  },
+  set: (v) => {
+    ;(formData.value as any).assigned_to = v === 'unassigned' ? undefined : String(v)
   }
 })
 
@@ -107,14 +131,14 @@ const handleSave = async () => {
     const assignedToRaw: any = (formData.value as any).assigned_to
     const assignedTo = assignedToRaw && typeof assignedToRaw === 'object'
       ? String(assignedToRaw.id || '')
-      : (assignedToRaw === null ? null : (assignedToRaw ? String(assignedToRaw) : null))
+      : (assignedToRaw ? String(assignedToRaw) : null)
 
     const payload: Partial<Task> = {
       title: formData.value.title,
       description: formData.value.description,
       priority: formData.value.priority,
       status: formData.value.status,
-      due_date: toIsoLocal(formData.value.due_date),
+      due_date: toIsoLocal(formData.value.due_date) || undefined,
       task_group: formData.value.task_group,
       assigned_to: assignedTo as any,
       entity_type: formData.value.entity_type,
@@ -136,7 +160,7 @@ const handleSave = async () => {
 }
 
 const handleDelete = async () => {
-  if (!props.task || !confirm('¿Estás seguro de eliminar esta tarea?')) return
+  if (!props.task || !confirm(String(t('trip_task_modal.confirm_delete')))) return
   
   isLoading.value = true
   try {
@@ -149,79 +173,90 @@ const handleDelete = async () => {
     isLoading.value = false
   }
 }
+
+const styles = computed(() => taskModalStyles())
+
+const taskModalStyles = tv({
+  slots: {
+    content: 'h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl',
+    header: 'w-full max-w-3xl mx-auto px-4',
+    scrollArea: 'flex-1 h-[calc(90vh-180px)] px-0 pb-0',
+    body: 'w-full max-w-3xl mx-auto px-4 grid gap-4 py-4',
+    field: 'grid gap-2',
+    grid2: 'grid grid-cols-2 gap-4',
+    footer: 'w-full max-w-3xl mx-auto px-4 flex justify-between sm:justify-between',
+    actions: 'flex gap-2',
+  }
+})
 </script>
 
 <template>
   <Drawer v-model:open="isOpen">
-    <DrawerContent class="h-[90vh] flex flex-col fixed bottom-0 left-0 right-0 w-full mx-auto rounded-xl">
-      <DrawerHeader class="w-full max-w-3xl mx-auto px-4">
-        <DrawerTitle>{{ isEditing ? 'Editar Tarea' : 'Nueva Tarea' }}</DrawerTitle>
+    <DrawerContent :class="styles.content()">
+      <DrawerHeader :class="styles.header()">
+        <DrawerTitle>{{ isEditing ? t('trip_task_modal.edit_title') : t('trip_task_modal.new_title') }}</DrawerTitle>
       </DrawerHeader>
 
-      <ScrollArea class="flex-1 h-[calc(90vh-180px)] px-0 pb-0">
-        <div class="w-full max-w-3xl mx-auto px-4 grid gap-4 py-4">
-        <div class="grid gap-2">
-          <Label htmlFor="title">Título</Label>
-          <Input id="title" v-model="formData.title" placeholder="Comprar billetes..." :disabled="isCompleted" />
+      <ScrollArea :class="styles.scrollArea()">
+        <div :class="styles.body()">
+        <div :class="styles.field()">
+          <Label htmlFor="title">{{ t('trip_task_modal.title_label') }}</Label>
+          <Input id="title" v-model="formData.title" :placeholder="String(t('trip_task_modal.title_placeholder'))" :disabled="isCompleted" />
         </div>
         
-        <div class="grid gap-2">
-          <Label htmlFor="description">Descripción</Label>
-          <Textarea id="description" v-model="formData.description" placeholder="Detalles adicionales..." :disabled="isCompleted" />
+        <div :class="styles.field()">
+          <Label htmlFor="description">{{ t('trip_task_modal.description_label') }}</Label>
+          <Textarea id="description" v-model="formData.description" :placeholder="String(t('trip_task_modal.description_placeholder'))" :disabled="isCompleted" />
         </div>
         
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid gap-2">
-            <Label>Prioridad</Label>
+        <div :class="styles.grid2()">
+          <div :class="styles.field()">
+            <Label>{{ t('trip_task_modal.priority_label') }}</Label>
             <Select v-model="formData.priority" :disabled="isCompleted">
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona..." />
+                <SelectValue :placeholder="String(t('trip_task_modal.select_placeholder'))" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="p in TASK_PRIORITIES" :key="p.value" :value="p.value">
-                  {{ p.label }}
+                  {{ t(`tasks.priority.${p.value}`) }}
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div class="grid gap-2">
-            <Label>Estado</Label>
+          <div :class="styles.field()">
+            <Label>{{ t('trip_task_modal.status_label') }}</Label>
             <Select v-model="formData.status" :disabled="isCompleted">
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona..." />
+                <SelectValue :placeholder="String(t('trip_task_modal.select_placeholder'))" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="s in TASK_STATUSES" :key="s.value" :value="s.value">
-                  {{ s.label }}
+                  {{ t(`trip_tasks_board.status_${s.value}`) }}
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         
-        <div class="grid gap-2">
-          <Label htmlFor="due_date">Fecha Límite</Label>
+        <div :class="styles.field()">
+          <Label htmlFor="due_date">{{ t('trip_task_modal.due_date_label') }}</Label>
           <DateTimePicker
-            v-model="formData.due_date as any"
+            v-model="dueDateModel"
             :min="currentTrip?.start_date || undefined"
             :max="currentTrip?.end_date || undefined"
             full-width
           />
         </div>
 
-        <div class="grid gap-2">
-          <Label>Asignado a</Label>
-          <Select 
-            :model-value="(formData.assigned_to ?? 'unassigned') as any" 
-            @update:model-value="(v) => formData.assigned_to = v === 'unassigned' ? null : String(v)" 
-            :disabled="isCompleted"
-          >
+        <div :class="styles.field()">
+          <Label>{{ t('trip_task_modal.assigned_to_label') }}</Label>
+          <Select v-model="assignedToModel" :disabled="isCompleted">
             <SelectTrigger>
-              <SelectValue placeholder="Sin asignar" />
+              <SelectValue :placeholder="String(t('trip_task_modal.unassigned'))" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="unassigned">Sin asignar</SelectItem>
+              <SelectItem value="unassigned">{{ t('trip_task_modal.unassigned') }}</SelectItem>
               <SelectItem v-for="t in travelers" :key="t.id" :value="String(t.id)">
                 {{ t.first_name }} {{ t.last_name }}
               </SelectItem>
@@ -229,41 +264,43 @@ const handleDelete = async () => {
           </Select>
         </div>
         
-        <div class="grid gap-2">
-          <Label>Grupo de Tareas</Label>
+        <div :class="styles.field()">
+          <Label>{{ t('trip_task_modal.group_label') }}</Label>
           <Select 
             v-model="formData.task_group" 
             :disabled="isCompleted"
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona un grupo..." />
+              <SelectValue :placeholder="String(t('trip_task_modal.group_placeholder'))" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="General">General</SelectItem>
-              <SelectItem value="Vuelos">Vuelos</SelectItem>
-              <SelectItem value="Alojamientos">Alojamientos</SelectItem>
-              <SelectItem value="Transporte">Transporte</SelectItem>
-              <SelectItem value="Actividades">Actividades</SelectItem>
-              <SelectItem value="Seguros">Seguros</SelectItem>
+              <SelectItem value="General">{{ t('trip_task_modal.groups.general') }}</SelectItem>
+              <SelectItem value="Vuelos">{{ t('trip_task_modal.groups.flights') }}</SelectItem>
+              <SelectItem value="Alojamientos">{{ t('trip_task_modal.groups.accommodation') }}</SelectItem>
+              <SelectItem value="Transporte">{{ t('trip_task_modal.groups.transport') }}</SelectItem>
+              <SelectItem value="Actividades">{{ t('trip_task_modal.groups.activities') }}</SelectItem>
+              <SelectItem value="Seguros">{{ t('trip_task_modal.groups.insurance') }}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         </div>
       </ScrollArea>
 
-      <DrawerFooter class="w-full max-w-3xl mx-auto px-4 flex justify-between sm:justify-between">
-        <Button 
-          v-if="isEditing" 
-          variant="destructive" 
-          @click="handleDelete"
-          :disabled="isLoading"
-        >
-          Eliminar
-        </Button>
-        <div class="flex gap-2">
-          <Button variant="outline" @click="isOpen = false">Cancelar</Button>
-          <Button @click="handleSave" :disabled="isLoading || !formData.title">
-            {{ isLoading ? 'Guardando...' : 'Guardar' }}
+      <DrawerFooter :class="styles.footer()">
+        <div :class="styles.actions()">
+
+          <Button 
+            v-if="isEditing" 
+            variant="destructive" 
+            @click="handleDelete"
+            :disabled="isLoading"
+          >
+            <Trash2 class="w-4 h-4" />
+            {{ t('trip_task_modal.delete') }}
+          </Button>
+          <Button @click="handleSave" :disabled="isLoading || !formData.title" class="w-full">
+            <Save class="w-4 h-4" />
+            {{ isLoading ? t('trip_task_modal.saving') : t('trip_task_modal.save') }}
           </Button>
         </div>
       </DrawerFooter>

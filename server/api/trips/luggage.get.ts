@@ -1,0 +1,120 @@
+import { createDirectus, rest, readItems, readUsers, staticToken } from '@directus/sdk'
+
+const extractEmailsFromClaims = (claims: any): string[] => {
+  const out = new Set<string>()
+  const push = (v: any) => {
+    if (typeof v === 'string' && v.includes('@')) out.add(v.trim().toLowerCase())
+  }
+
+  if (!claims || typeof claims !== 'object') return []
+
+  push((claims as any).email)
+  push((claims as any).primary_email)
+  push((claims as any).primaryEmail)
+  push((claims as any).email_address)
+
+  const emails = (claims as any).email_addresses
+  if (Array.isArray(emails)) {
+    for (const e of emails) {
+      if (typeof e === 'string') push(e)
+      else push(e?.email_address)
+    }
+  }
+
+  return Array.from(out)
+}
+
+export default defineEventHandler(async (event) => {
+  const authValue = (event.context as any).auth
+  const authContext = typeof authValue === 'function'
+    ? await authValue()
+    : authValue
+  const { userId: clerkUserId, sessionClaims } = authContext || {}
+
+  if (!clerkUserId) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  const query = getQuery(event)
+  const tripIdRaw = query.tripId
+  const tripId = typeof tripIdRaw === 'string' ? Number(tripIdRaw) : Array.isArray(tripIdRaw) ? Number(tripIdRaw[0]) : Number(tripIdRaw)
+
+  if (!Number.isFinite(tripId) || tripId <= 0) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid tripId' })
+  }
+
+  const directusUrl = process.env.DIRECTUS_URL || 'https://directus.jizou.io'
+  const adminToken = process.env.DIRECTUS_ADMIN_TOKEN || process.env.NUXT_DIRECTUS_ADMIN_TOKEN
+  if (!adminToken) {
+    throw createError({ statusCode: 500, statusMessage: 'Missing DIRECTUS_ADMIN_TOKEN' })
+  }
+
+  const adminClient = createDirectus(directusUrl)
+    .with(staticToken(adminToken))
+    .with(rest())
+
+  const emails = extractEmailsFromClaims(sessionClaims)
+  const email = emails[0]
+
+  const users = email
+    ? await adminClient.request(readUsers({
+        filter: { email: { _eq: String(email).trim().toLowerCase() } },
+        fields: ['id', 'email'],
+        limit: 1
+      })).catch(() => []) as any[]
+    : clerkUserId
+      ? await adminClient.request(readUsers({
+          filter: { external_identifier: { _eq: String(clerkUserId) } },
+          fields: ['id', 'email'],
+          limit: 1
+        })).catch(() => []) as any[]
+      : []
+
+  const directusUserId = users && users.length > 0 ? users[0].id : null
+  if (!directusUserId) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+  }
+
+  const ownerLink = await adminClient.request(readItems('trips', {
+    filter: { id: { _eq: tripId }, user_created: { _eq: directusUserId } },
+    fields: ['id'],
+    limit: 1
+  })).catch(() => []) as any[]
+
+  const isOwner = ownerLink && ownerLink.length > 0
+  if (!isOwner) {
+    const links = await adminClient.request(readItems('trips_users', {
+      filter: { _and: [{ trip_id: { _eq: tripId } }, { directus_user_id: { _eq: directusUserId } }] },
+      fields: ['id'],
+      limit: 1
+    })).catch(() => []) as any[]
+
+    const ok = links && links.length > 0
+    if (!ok) {
+      throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+    }
+  }
+
+  const result = await adminClient.request(readItems('suitcases', {
+    filter: { trip_id: { _eq: tripId } },
+    fields: [
+      'id',
+      'status',
+      'trip_id',
+      'type',
+      'name',
+      'sort',
+      'items.id',
+      'items.status',
+      'items.suitcase_id',
+      'items.name',
+      'items.quantity',
+      'items.packed',
+      'items.sort'
+    ],
+    sort: ['sort', 'id'],
+    limit: -1
+  } as any))
+
+  return { suitcases: Array.isArray(result) ? result : [] }
+})

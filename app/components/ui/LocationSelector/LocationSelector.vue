@@ -237,7 +237,7 @@ const performSearch = async (query: string, autoFill: boolean) => {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid-cols-1 md:grid-cols-2 gap-4 !hidden">
       <!-- Prefecture Select -->
       <div class="space-y-2">
         <Label>Prefectura</Label>

@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { cn } from '@/lib/utils'
-import { useSidebar } from './utils'
+  import { computed } from 'vue'
+  import { cn } from '@/lib/utils'
+  import { useSidebar } from './utils'
 
-const props = defineProps<{
-  class?: string
-  collapsible?: 'offcanvas' | 'icon' | 'none'
-  side?: 'left' | 'right'
-  variant?: 'sidebar' | 'floating' | 'inset'
-}>()
+  const props = defineProps<{
+    class?: string
+    collapsible?: 'offcanvas' | 'icon' | 'none'
+    side?: 'left' | 'right'
+    variant?: 'sidebar' | 'floating' | 'inset'
+  }>()
 
-const { state, open, setOpen, isMobile, openMobile, setOpenMobile } = useSidebar()
+  const { state, open, setOpen, isMobile, openMobile, setOpenMobile } = useSidebar()
 
-const sidebarState = computed(() => state.value)
+  const sidebarState = computed(() => state.value)
 </script>
 
 <template>
@@ -51,7 +51,7 @@ const sidebarState = computed(() => state.value)
       )"
     >
       <div
-        class="flex h-full w-full flex-col bg-sidebar group-data-[collapsible=icon]:overflow-hidden"
+        class="flex h-full w-full flex-col bg-sidebar overflow-hidden"
       >
         <slot />
       </div>

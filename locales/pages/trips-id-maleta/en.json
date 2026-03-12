@@ -1,0 +1,49 @@
+{
+  "trip_luggage_page": {
+    "title": "Luggage",
+    "subtitle": "Create packing lists for each bag.",
+    "suitcases": {
+      "title": "Bags",
+      "empty_title": "No bags yet",
+      "empty_subtitle": "Add a bag to start building your list."
+    },
+    "suitcase": {
+      "create_title": "New bag",
+      "add_button": "Add bag",
+      "name_label": "Name",
+      "name_placeholder": "e.g. Carry-on",
+      "type_label": "Type",
+      "type_placeholder": "Select a type",
+      "types": {
+        "checked": "Checked bag",
+        "carry_on": "Carry-on",
+        "backpack": "Backpack",
+        "other": "Other"
+      },
+      "delete": {
+        "title": "Delete this bag?",
+        "description": "This will also delete all items inside this bag.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
+    },
+    "items": {
+      "title": "List",
+      "empty": "No items yet in this bag.",
+      "add_button": "Add",
+      "name_label": "Item",
+      "name_placeholder": "e.g. T-shirts",
+      "quantity_label": "Quantity",
+      "quantity_placeholder": "1",
+      "delete_button": "Delete"
+    },
+    "toasts": {
+      "suitcase_created": "Bag created",
+      "suitcase_deleted": "Bag deleted",
+      "item_added": "Item added",
+      "item_updated": "Item updated",
+      "item_deleted": "Item deleted",
+      "error": "Something went wrong"
+    }
+  }
+}

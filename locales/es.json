@@ -77,7 +77,8 @@
     "insurance": "Seguros",
     "travelers": "Viajeros",
     "expenses": "Gastos",
-    "daily_expenses": "Gastos del día",
+    "luggage": "Maleta",
+    "daily_expenses": "Modo viaje",
     "options": "Opciones"
   },
   "expenses": {
@@ -321,6 +322,108 @@
     "title": "Tareas",
     "subtitle": "Organiza las actividades y pendientes de tu viaje."
   },
+  "trip_tasks_board": {
+    "search_label": "Buscar",
+    "search_placeholder": "Buscar tareas...",
+    "status_label": "Estado",
+    "status_placeholder": "Estado",
+    "status_all": "Todos",
+    "status_pending": "Pendiente",
+    "status_in_progress": "En progreso",
+    "status_completed": "Completada",
+    "status_cancelled": "Cancelada",
+    "priority_label": "Prioridad",
+    "priority_placeholder": "Prioridad",
+    "priority_all": "Todas",
+    "new_task": "Nueva",
+    "add": "Añadir",
+    "loading": "Cargando tareas...",
+    "no_results": "No se encontraron tareas con los filtros actuales.",
+    "group_empty": "No hay tareas en este grupo.",
+    "confirm_delete": "¿Eliminar tarea?"
+  },
+  "trip_task_modal": {
+    "new_title": "Nueva tarea",
+    "edit_title": "Editar tarea",
+    "title_label": "Título",
+    "title_placeholder": "Comprar billetes...",
+    "description_label": "Descripción",
+    "description_placeholder": "Detalles adicionales...",
+    "priority_label": "Prioridad",
+    "status_label": "Estado",
+    "select_placeholder": "Selecciona...",
+    "due_date_label": "Fecha límite",
+    "assigned_to_label": "Asignado a",
+    "unassigned": "Sin asignar",
+    "group_label": "Grupo de tareas",
+    "group_placeholder": "Selecciona un grupo...",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "confirm_delete": "¿Estás seguro de eliminar esta tarea?",
+    "groups": {
+      "general": "General",
+      "flights": "Vuelos",
+      "accommodation": "Alojamientos",
+      "transport": "Transporte",
+      "activities": "Actividades",
+      "insurance": "Seguros"
+    }
+  },
+  "trip_luggage_page": {
+    "title": "Maleta",
+    "subtitle": "Crea listas de cosas para llevar en cada maleta.",
+    "suitcases": {
+      "title": "Maletas",
+      "empty_title": "Aún no tienes maletas",
+      "empty_subtitle": "Añade una maleta para empezar a crear tu lista."
+    },
+    "suitcase": {
+      "create_title": "Nueva maleta",
+      "add_button": "Añadir maleta",
+      "name_label": "Nombre",
+      "name_placeholder": "Ej: Maleta de mano",
+      "type_label": "Tipo",
+      "type_placeholder": "Selecciona un tipo",
+      "types": {
+        "checked": "Maleta facturada",
+        "carry_on": "Maleta de mano",
+        "backpack": "Mochila",
+        "other": "Otra"
+      },
+      "delete": {
+        "title": "¿Eliminar esta maleta?",
+        "description": "Se eliminarán también todos los ítems dentro de esta maleta.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar"
+      }
+    },
+    "items": {
+      "title": "Lista",
+      "empty": "Aún no has añadido ítems a esta maleta.",
+      "reorder_hint": "Arrastra para reordenar.",
+      "drag_handle": "Arrastrar para reordenar",
+      "move_hint": "Suelta para mover a esta maleta.",
+      "quantity_decrease": "Disminuir cantidad",
+      "quantity_increase": "Aumentar cantidad",
+      "add_button": "Añadir",
+      "name_label": "Ítem",
+      "name_placeholder": "Ej: Camisetas de manga corta",
+      "quantity_label": "Cantidad",
+      "quantity_placeholder": "1",
+      "delete_button": "Eliminar"
+    },
+    "toasts": {
+      "suitcase_created": "Maleta creada",
+      "suitcase_deleted": "Maleta eliminada",
+      "item_added": "Ítem añadido",
+      "item_updated": "Ítem actualizado",
+      "item_deleted": "Ítem eliminado",
+      "order_saved": "Orden guardado",
+      "error": "Ha ocurrido un error"
+    }
+  },
   "trip_transport_page": {
     "title": "Transporte",
     "subtitle": "Trenes, pases y traslados internos.",
@@ -479,7 +582,9 @@
       "breakfast": "Desayuno",
       "lunch": "Comida",
       "dinner": "Cena",
-      "full_board": "Pensión completa"
+      "full_board": "Pensión completa",
+      "half_board": "Media pensión",
+      "none": "Ninguna"
     },
     "status": {
       "paid": "Pagado",
