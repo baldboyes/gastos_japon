@@ -192,7 +192,17 @@
       "notes": "Notas"
     },
     "room": {
-      "single": "1 habitación individual"
+      "single": "1 habitación individual",
+      "count": "0 habitaciones|1 habitación|{count} habitaciones",
+      "unknown": "Habitación no especificada",
+      "types": {
+        "single": "Individual",
+        "double": "Doble",
+        "triple": "Triple",
+        "twin": "Twin",
+        "quadruple": "Cuádruple",
+        "shared": "Compartida"
+      }
     },
     "empty": {
       "title": "No hay alojamientos registrados",
@@ -381,9 +391,19 @@
     },
     "suitcase": {
       "create_title": "Nueva maleta",
-      "add_button": "Añadir maleta",
+      "add_button": "Añadir",
       "name_label": "Nombre",
       "name_placeholder": "Ej: Maleta de mano",
+      "actions": {
+        "edit": "Editar",
+        "delete": "Eliminar"
+      },
+      "edit": {
+        "title": "Editar maleta",
+        "description": "Actualiza el nombre de esta maleta.",
+        "cancel": "Cancelar",
+        "save": "Guardar"
+      },
       "type_label": "Tipo",
       "type_placeholder": "Selecciona un tipo",
       "types": {
@@ -417,6 +437,7 @@
     "toasts": {
       "suitcase_created": "Maleta creada",
       "suitcase_deleted": "Maleta eliminada",
+      "suitcase_updated": "Maleta actualizada",
       "item_added": "Ítem añadido",
       "item_updated": "Ítem actualizado",
       "item_deleted": "Ítem eliminado",
@@ -554,6 +575,7 @@
       "name": "Nombre del alojamiento",
       "check_in": "Entrada",
       "check_out": "Salida",
+      "rooms": "Habitaciones",
       "location": "Ubicación / Dirección",
       "total_price": "Precio total",
       "currency": "Moneda",
@@ -586,6 +608,14 @@
       "half_board": "Media pensión",
       "none": "Ninguna"
     },
+    "room_types": {
+      "single": "Individual",
+      "double": "Doble",
+      "triple": "Triple",
+      "twin": "Twin",
+      "quadruple": "Cuádruple",
+      "shared": "Compartida"
+    },
     "status": {
       "paid": "Pagado",
       "pending": "Pendiente",
@@ -593,7 +623,22 @@
       "refunded": "Reembolsado"
     },
     "actions": {
+      "add_room": "Añadir habitación",
+      "remove_room": "Eliminar",
       "save": "Guardar"
+    },
+    "rooms": {
+      "title": "Habitaciones",
+      "item_title": "Habitación",
+      "fields": {
+        "room_count": "Cantidad",
+        "room_type": "Tipo",
+        "private_bath": "Baño privado"
+      },
+      "placeholders": {
+        "room_count": "Ej: 1",
+        "room_type": "Selecciona tipo"
+      }
     },
     "tasks": {
       "title_prefix": "Tareas",

@@ -12,6 +12,22 @@ export interface DirectusFile {
   url: string
 }
 
+export interface AccommodationRoom {
+  id: number
+  accommodation_id: number | Accommodation
+  room_type?: string
+  room_count?: number
+  is_private_bath?: boolean
+  board_basis?: string[]
+}
+
+export interface AccommodationRoomEntry {
+  room_type?: string
+  room_count?: number
+  is_private_bath?: boolean
+  board_basis?: string[]
+}
+
 export interface Activity {
   id: number
   status: Status
@@ -46,6 +62,9 @@ export interface Accommodation {
   address?: string
   check_in?: string
   check_out?: string
+  room_type?: string
+  room_count?: number
+  rooms?: AccommodationRoomEntry[]
   price: number
   payment_status: PaymentStatus
   prefecture?: string
@@ -302,6 +321,7 @@ export interface Task {
 export interface Schema {
   activities: Activity[]
   accommodations: Accommodation[]
+  accommodation_rooms: AccommodationRoom[]
   currency_exchanges: CurrencyExchange[]
   expenses: Expense[]
   expense_splits: ExpenseSplit[]

@@ -123,6 +123,67 @@
     const d2 = new Date(end)
     return Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
   }
+
+  const knownRoomTypes = new Set(['single', 'double', 'triple', 'twin', 'quadruple', 'shared'])
+
+  const normalizeRooms = (a: any) => {
+    const rooms = Array.isArray(a?.rooms) ? a.rooms : []
+    if (rooms.length > 0) return rooms
+    if (a?.room_type || a?.room_count || a?.board_basis || a?.is_private) {
+      return [
+        {
+          room_type: a.room_type ? a.room_type : 'unknown',
+          room_count: a.room_count ?? 1,
+          is_private_bath: Boolean(a.is_private),
+          board_basis: Array.isArray(a.board_basis) ? a.board_basis : []
+        }
+      ]
+    }
+    return []
+  }
+
+  const getRoomTypeKey = (roomType?: string | null) => {
+    const normalized = String(roomType || '').trim()
+    if (!normalized) return null
+    if (!knownRoomTypes.has(normalized)) return null
+    return `accommodation_page.room.types.${normalized}`
+  }
+
+  const getRoomTotalCount = (a: any) => {
+    const rooms = normalizeRooms(a)
+    return rooms.reduce((acc: number, r: any) => acc + (Number(r.room_count) || 0), 0)
+  }
+
+  const getRoomGroups = (a: any) => {
+    const rooms = normalizeRooms(a)
+    const map = new Map<string, number>()
+    rooms.forEach((r: any) => {
+      const type = String(r.room_type || '').trim() || 'unknown'
+      const count = Number(r.room_count) || 0
+      map.set(type, (map.get(type) || 0) + count)
+    })
+    return Array.from(map.entries())
+      .filter(([, count]) => count > 0)
+      .map(([type, count]) => ({ type, count }))
+  }
+
+  const getBoardBasisSet = (a: any) => {
+    const rooms = normalizeRooms(a)
+    const set = new Set<string>()
+    rooms.forEach((r: any) => {
+      if (Array.isArray(r.board_basis)) {
+        r.board_basis.forEach((v: any) => {
+          if (v) set.add(String(v))
+        })
+      }
+    })
+    return set
+  }
+
+  const hasPrivateBath = (a: any) => {
+    const rooms = normalizeRooms(a)
+    return rooms.some((r: any) => Boolean(r.is_private_bath))
+  }
 </script>
 
 <template>
@@ -206,7 +267,26 @@
                     </div>
                     <div class="flex items-center gap-2">
                       <BedSingle class="h-4 w-4 text-slate-400" />
-                      <span>{{ $t('accommodation_page.room.single') }}</span>
+                      <span v-if="getRoomGroups(a).length">
+                        {{ $tc('accommodation_page.room.count', { count: getRoomTotalCount(a) }) }}
+                        <template v-for="(g, idx) in getRoomGroups(a)" :key="g.type">
+                          <template v-if="idx === 0"> • </template>
+                          <template v-else> • </template>
+                          {{ g.count }}×
+                          <template v-if="getRoomTypeKey(g.type)">
+                            {{ $t(getRoomTypeKey(g.type) as string) }}
+                          </template>
+                          <template v-else-if="g.type === 'unknown'">
+                            {{ $t('accommodation_page.room.unknown') }}
+                          </template>
+                          <template v-else>
+                            {{ g.type }}
+                          </template>
+                        </template>
+                      </span>
+                      <span v-else>
+                        {{ $t('accommodation_page.room.single') }}
+                      </span>
                     </div>
                     <div class="flex items-center justify-between gap-4">
                       <div class="flex items-center justify-start gap-1">
@@ -242,7 +322,7 @@
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="a.is_private">
+                        <TooltipProvider v-if="hasPrivateBath(a)">
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2">
@@ -254,19 +334,19 @@
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <TooltipProvider v-if="a.board_basis?.includes('breakfast') || a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')">
+                        <TooltipProvider v-if="getBoardBasisSet(a).has('breakfast') || getBoardBasisSet(a).has('half_board') || getBoardBasisSet(a).has('full_board')">
                           <Tooltip>
                             <TooltipTrigger as-child>
                               <div class="p-2 flex items-center gap-6">
-                                <Coffee v-if="a.board_basis?.includes('breakfast')" class="h-5 w-5 text-neutral-500" />
-                                <Utensils v-if="a.board_basis?.includes('half_board') || a.board_basis?.includes('full_board')" class="h-5 w-5 text-neutral-500" />
+                                <Coffee v-if="getBoardBasisSet(a).has('breakfast')" class="h-5 w-5 text-neutral-500" />
+                                <Utensils v-if="getBoardBasisSet(a).has('half_board') || getBoardBasisSet(a).has('full_board')" class="h-5 w-5 text-neutral-500" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p class="flex gap-2">
-                                <span v-if="a.board_basis?.includes('breakfast')">{{ $t('accommodation_page.meals.breakfast') }}</span>
-                                <span v-if="a.board_basis?.includes('half_board')">{{ $t('accommodation_page.meals.half_board') }}</span>
-                                <span v-if="a.board_basis?.includes('full_board')">{{ $t('accommodation_page.meals.full_board') }}</span>
+                                <span v-if="getBoardBasisSet(a).has('breakfast')">{{ $t('accommodation_page.meals.breakfast') }}</span>
+                                <span v-if="getBoardBasisSet(a).has('half_board')">{{ $t('accommodation_page.meals.half_board') }}</span>
+                                <span v-if="getBoardBasisSet(a).has('full_board')">{{ $t('accommodation_page.meals.full_board') }}</span>
                               </p>
                             </TooltipContent>
                           </Tooltip>

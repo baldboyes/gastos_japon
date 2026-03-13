@@ -157,7 +157,7 @@ const handleCreateExpense = async () => {
             <Textarea v-model="expenseForm.notes" />
           </div>
           <div class="flex items-center space-x-2">
-            <Checkbox :checked="expenseForm.shared" @update:checked="expenseForm.shared = $event" />
+            <Checkbox v-model="expenseForm.shared" />
             <Label>{{ $t('trip_itinerary_page.expense_modal.fields.shared') }}</Label>
           </div>
         </div>

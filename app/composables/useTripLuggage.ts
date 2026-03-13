@@ -40,6 +40,14 @@ export const useTripLuggage = () => {
     })
   }
 
+  const updateSuitcaseById = async (payload: { tripId: number, id: number, updates: Partial<Pick<Suitcase, 'name' | 'type'>> }) => {
+    const res = await $fetch('/api/trips/luggage/suitcases', {
+      method: 'PATCH',
+      body: { tripId: payload.tripId, id: payload.id, ...payload.updates }
+    }) as any
+    return res?.suitcase
+  }
+
   const createSuitcaseItem = async (payload: { tripId: number, suitcaseId: number, name: string, quantity: number }) => {
     const res = await $fetch('/api/trips/luggage/items', {
       method: 'POST',
@@ -75,6 +83,7 @@ export const useTripLuggage = () => {
     fetchSuitcases,
     createSuitcase,
     deleteSuitcaseById,
+    updateSuitcaseById,
     createSuitcaseItem,
     updateSuitcaseItem,
     deleteSuitcaseItemById

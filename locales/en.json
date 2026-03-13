@@ -192,7 +192,17 @@
       "notes": "Notes"
     },
     "room": {
-      "single": "1 single room"
+      "single": "1 single room",
+      "count": "0 rooms|1 room|{count} rooms",
+      "unknown": "Room not specified",
+      "types": {
+        "single": "Single",
+        "double": "Double",
+        "triple": "Triple",
+        "twin": "Twin",
+        "quadruple": "Quadruple",
+        "shared": "Shared"
+      }
     },
     "empty": {
       "title": "No accommodations yet",
@@ -384,6 +394,16 @@
       "add_button": "Add",
       "name_label": "Name",
       "name_placeholder": "e.g. Carry-on",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "edit": {
+        "title": "Edit bag",
+        "description": "Update the name of this bag.",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
       "type_label": "Type",
       "type_placeholder": "Select a type",
       "types": {
@@ -417,6 +437,7 @@
     "toasts": {
       "suitcase_created": "Bag created",
       "suitcase_deleted": "Bag deleted",
+      "suitcase_updated": "Bag updated",
       "item_added": "Item added",
       "item_updated": "Item updated",
       "item_deleted": "Item deleted",
@@ -554,6 +575,7 @@
       "name": "Accommodation name",
       "check_in": "Check-in",
       "check_out": "Check-out",
+      "rooms": "Rooms",
       "location": "Location / Address",
       "total_price": "Total price",
       "currency": "Currency",
@@ -586,6 +608,14 @@
       "half_board": "Half board",
       "none": "None"
     },
+    "room_types": {
+      "single": "Single",
+      "double": "Double",
+      "triple": "Triple",
+      "twin": "Twin",
+      "quadruple": "Quadruple",
+      "shared": "Shared"
+    },
     "status": {
       "paid": "Paid",
       "pending": "Pending",
@@ -593,7 +623,22 @@
       "refunded": "Refunded"
     },
     "actions": {
+      "add_room": "Add room",
+      "remove_room": "Remove",
       "save": "Save"
+    },
+    "rooms": {
+      "title": "Rooms",
+      "item_title": "Room",
+      "fields": {
+        "room_count": "Quantity",
+        "room_type": "Type",
+        "private_bath": "Private bathroom"
+      },
+      "placeholders": {
+        "room_count": "e.g. 1",
+        "room_type": "Select type"
+      }
     },
     "tasks": {
       "title_prefix": "Tasks",

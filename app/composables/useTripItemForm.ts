@@ -54,7 +54,11 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
     activeModal.value = true
   }
 
-  const handleSave = async (payloadProcessor?: (data: T) => any, onSuccess?: () => void) => {
+  const handleSave = async (
+    payloadProcessor?: (data: T) => any,
+    onSuccess?: (result: any) => void,
+    opts?: { resetOnSuccess?: boolean }
+  ) => {
     try {
       // Prepare payload: allow custom processing or use default copy
       let payload = payloadProcessor ? payloadProcessor(formData.value) : { ...formData.value }
@@ -71,20 +75,21 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
       // @ts-ignore
       delete payload.date_updated
 
+      let result: any = null
+
       if (formData.value.id) {
-         await updateAction(formData.value.id, payload)
+         result = await updateAction(formData.value.id, payload)
          toast.success(`${itemLabel} actualizado`)
       } else {
-         await createAction(payload)
+         result = await createAction(payload)
          toast.success(`${itemLabel} creado`)
       }
       
       activeModal.value = false
-      resetForm()
+      if (opts?.resetOnSuccess !== false) resetForm()
 
-      if (onSuccess) {
-        onSuccess()
-      }
+      if (onSuccess) onSuccess(result)
+      return result
     } catch (e: any) {
       console.error(`Error saving ${itemLabel}:`, e)
       
@@ -101,6 +106,7 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
       }
       
       toast.error(errorMessage)
+      return null
     }
   }
 

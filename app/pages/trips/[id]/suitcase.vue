@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { Backpack, Plus, Trash2, Loader2, GripVertical, Minus } from 'lucide-vue-next'
+import { Backpack, Plus, Trash2, Loader2, GripVertical, Minus, MoreVertical, Pencil } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import type { Suitcase, SuitcaseItem, SuitcaseType } from '~/types/directus'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
@@ -12,6 +12,7 @@ import { Badge } from '~/components/ui/badge'
 import { Checkbox } from '~/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~/components/ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +42,7 @@ const {
   fetchSuitcases,
   createSuitcase,
   deleteSuitcaseById,
+  updateSuitcaseById,
   createSuitcaseItem,
   updateSuitcaseItem,
   deleteSuitcaseItemById
@@ -50,6 +52,11 @@ const isCreateSuitcaseOpen = ref(false)
 const newSuitcaseName = ref('')
 const newSuitcaseType = ref<SuitcaseType | ''>('')
 const isSubmittingSuitcase = ref(false)
+
+const isEditSuitcaseOpen = ref(false)
+const editSuitcaseId = ref<number | null>(null)
+const editSuitcaseName = ref('')
+const isSubmittingSuitcaseEdit = ref(false)
 
 const newItemBySuitcase = reactive<Record<number, { name: string, quantity: number }>>({})
 const busyItemIds = ref<Set<number>>(new Set())
@@ -69,7 +76,7 @@ const normalizedSuitcases = computed(() => {
   return list.map((s) => {
     const itemsRaw = (s as any)?.items
     const items = Array.isArray(itemsRaw) ? (itemsRaw as SuitcaseItem[]) : []
-    const sortedItems = [...items].sort((a, b) => (Number(a.sort ?? 0) - Number(b.sort ?? 0)) || (a.id - b.id))
+    const sortedItems = [...items].sort((a, b) => (Number(a.sort ?? Number.MAX_SAFE_INTEGER) - Number(b.sort ?? Number.MAX_SAFE_INTEGER)) || (a.id - b.id))
     return { ...(s as Suitcase), items: sortedItems }
   })
 })
@@ -78,13 +85,17 @@ const canCreateSuitcase = computed(() => {
   return Boolean(String(newSuitcaseName.value || '').trim()) && Boolean(newSuitcaseType.value)
 })
 
+const canEditSuitcase = computed(() => {
+  return Boolean(editSuitcaseId.value) && Boolean(String(editSuitcaseName.value || '').trim())
+})
+
 const getSuitcaseItems = (s: Suitcase) => {
   const itemsRaw = (s as any)?.items
   return Array.isArray(itemsRaw) ? (itemsRaw as SuitcaseItem[]) : []
 }
 
 const sortItems = (items: SuitcaseItem[]) => {
-  return [...items].sort((a, b) => (Number(a.sort ?? 0) - Number(b.sort ?? 0)) || (a.id - b.id))
+  return [...items].sort((a, b) => (Number(a.sort ?? Number.MAX_SAFE_INTEGER) - Number(b.sort ?? Number.MAX_SAFE_INTEGER)) || (a.id - b.id))
 }
 
 const refresh = async () => {
@@ -126,6 +137,31 @@ const removeSuitcase = async (id: number) => {
     await refresh()
   } catch {
     toast.error(String(t('trip_luggage_page.toasts.error')))
+  }
+}
+
+const openEditSuitcase = (s: Suitcase) => {
+  editSuitcaseId.value = s.id
+  editSuitcaseName.value = String(s.name || '').trim()
+  isEditSuitcaseOpen.value = true
+}
+
+const submitEditSuitcase = async () => {
+  if (!canEditSuitcase.value) return
+  isSubmittingSuitcaseEdit.value = true
+  try {
+    await updateSuitcaseById({
+      tripId: tripId.value,
+      id: editSuitcaseId.value as number,
+      updates: { name: String(editSuitcaseName.value || '').trim() }
+    })
+    toast.success(String(t('trip_luggage_page.toasts.suitcase_updated')))
+    isEditSuitcaseOpen.value = false
+    await refresh()
+  } catch {
+    toast.error(String(t('trip_luggage_page.toasts.error')))
+  } finally {
+    isSubmittingSuitcaseEdit.value = false
   }
 }
 
@@ -277,16 +313,16 @@ const moveBetweenSuitcases = async (fromSuitcaseId: number, toSuitcaseId: number
   const nextInsertAt = insertAt === -1 ? toItems.length : insertAt
   toItems.splice(nextInsertAt, 0, moved)
 
-  fromItems.forEach((it, idx) => { (it as any).sort = idx })
-  toItems.forEach((it, idx) => { (it as any).sort = idx })
+  fromItems.forEach((it, idx) => { (it as any).sort = idx + 1 })
+  toItems.forEach((it, idx) => { (it as any).sort = idx + 1 })
   ;(fromSuitcase as any).items = fromItems
   ;(toSuitcase as any).items = toItems
 
   const changes: Array<{ id: number, sort: number, suitcaseId?: number }> = [
-    ...fromItems.map(it => ({ id: it.id, sort: Number(it.sort ?? 0) })),
+    ...fromItems.map(it => ({ id: it.id, sort: Number(it.sort ?? 1) })),
     ...toItems.map(it => ({
       id: it.id,
-      sort: Number(it.sort ?? 0),
+      sort: Number(it.sort ?? 1),
       suitcaseId: it.id === moved.id ? toSuitcaseId : undefined
     }))
   ]
@@ -306,10 +342,10 @@ const moveWithinSuitcaseToEnd = async (suitcaseId: number, draggedItemId: number
   const [moved] = items.splice(from, 1)
   if (!moved) return
   items.push(moved)
-  items.forEach((it, idx) => { (it as any).sort = idx })
+  items.forEach((it, idx) => { (it as any).sort = idx + 1 })
   ;(suitcase as any).items = items
 
-  await persistItemOrder(items.map(it => ({ id: it.id, sort: Number(it.sort ?? 0) })))
+  await persistItemOrder(items.map(it => ({ id: it.id, sort: Number(it.sort ?? 1) })))
 }
 
 const reorderItems = async (suitcaseId: number, draggedItemId: number, targetItemId: number) => {
@@ -326,10 +362,10 @@ const reorderItems = async (suitcaseId: number, draggedItemId: number, targetIte
   const [moved] = items.splice(from, 1)
   if (!moved) return
   items.splice(to, 0, moved)
-  items.forEach((it, idx) => { (it as any).sort = idx })
+  items.forEach((it, idx) => { (it as any).sort = idx + 1 })
   ;(suitcase as any).items = items
 
-  await persistItemOrder(items.map(it => ({ id: it.id, sort: Number(it.sort ?? 0) })))
+  await persistItemOrder(items.map(it => ({ id: it.id, sort: Number(it.sort ?? 1) })))
 }
 
 const onDrop = async (suitcaseId: number, targetItemId: number, e: DragEvent) => {
@@ -377,7 +413,7 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
           <Backpack class="h-5 w-5" />
         </div>
         <div>
-          <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_luggage_page.title') }}</h2>
+          <h2 class="text-2xl font-bold tracking-tight">{{ $t('trip_luggage_page.suitcases.title') }}</h2>
           <p class="text-muted-foreground hidden md:block">{{ $t('trip_luggage_page.subtitle') }}</p>
         </div>
       </div>
@@ -432,11 +468,36 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog :open="isEditSuitcaseOpen" @update:open="isEditSuitcaseOpen = $event">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{{ $t('trip_luggage_page.suitcase.edit.title') }}</DialogTitle>
+            <DialogDescription>{{ $t('trip_luggage_page.suitcase.edit.description') }}</DialogDescription>
+          </DialogHeader>
+
+          <div class="space-y-2">
+            <Label for="edit_suitcase_name">{{ $t('trip_luggage_page.suitcase.name_label') }}</Label>
+            <Input
+              id="edit_suitcase_name"
+              v-model="editSuitcaseName"
+              :placeholder="$t('trip_luggage_page.suitcase.name_placeholder')"
+              @keyup.enter="submitEditSuitcase"
+            />
+          </div>
+
+          <DialogFooter class="sm:justify-end">
+            <Button variant="outline" @click="isEditSuitcaseOpen = false">{{ $t('trip_luggage_page.suitcase.edit.cancel') }}</Button>
+            <Button @click="submitEditSuitcase" :disabled="!canEditSuitcase || isSubmittingSuitcaseEdit">
+              <Loader2 v-if="isSubmittingSuitcaseEdit" class="mr-2 h-4 w-4 animate-spin" />
+              {{ $t('trip_luggage_page.suitcase.edit.save') }}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
 
     <div class="space-y-3">
-      <h3 class="text-lg font-semibold">{{ $t('trip_luggage_page.suitcases.title') }}</h3>
-
       <div v-if="loading" class="text-sm text-muted-foreground flex items-center gap-2">
         <Loader2 class="h-4 w-4 animate-spin" />
         <span>{{ $t('trip_luggage_page.suitcases.title') }}</span>
@@ -447,7 +508,7 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
         <p class="text-sm text-muted-foreground mt-1">{{ $t('trip_luggage_page.suitcases.empty_subtitle') }}</p>
       </div>
 
-      <div v-else class="grid gap-4 md:grid-cols-2">
+      <div v-else class="grid gap-4 xl:grid-cols-2">
         <Card
           v-for="s in normalizedSuitcases"
           :key="s.id"
@@ -458,30 +519,42 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
         >
           <CardHeader class="pb-3">
             <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
+              <div class="min-w-0 flex items-center gap-2">
                 <CardTitle class="text-base leading-tight truncate">{{ s.name }}</CardTitle>
-                <div class="mt-2">
-                  <Badge variant="secondary">{{ suitcaseTypeLabel(s.type) }}</Badge>
-                </div>
+                <Badge variant="secondary">{{ suitcaseTypeLabel(s.type) }}</Badge>
               </div>
 
-              <AlertDialog>
-                <AlertDialogTrigger as-child>
-                  <Button variant="ghost" size="sm" class="text-red-600 hover:text-red-700 hover:bg-red-50">
-                    <Trash2 class="h-4 w-4" />
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button variant="ghost" size="sm" class="h-8 w-8 px-0">
+                    <MoreVertical class="h-4 w-4" />
                   </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{{ $t('trip_luggage_page.suitcase.delete.title') }}</AlertDialogTitle>
-                    <AlertDialogDescription>{{ $t('trip_luggage_page.suitcase.delete.description') }}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{{ $t('trip_luggage_page.suitcase.delete.cancel') }}</AlertDialogCancel>
-                    <AlertDialogAction @click="removeSuitcase(s.id)">{{ $t('trip_luggage_page.suitcase.delete.confirm') }}</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem @click="openEditSuitcase(s)">
+                    <Pencil class="mr-2 h-4 w-4" />
+                    {{ $t('trip_luggage_page.suitcase.actions.edit') }}
+                  </DropdownMenuItem>
+                  <AlertDialog>
+                    <AlertDialogTrigger as-child>
+                      <DropdownMenuItem class="text-red-600 focus:text-red-600">
+                        <Trash2 class="mr-2 h-4 w-4" />
+                        {{ $t('trip_luggage_page.suitcase.actions.delete') }}
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{{ $t('trip_luggage_page.suitcase.delete.title') }}</AlertDialogTitle>
+                        <AlertDialogDescription>{{ $t('trip_luggage_page.suitcase.delete.description') }}</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{{ $t('trip_luggage_page.suitcase.delete.cancel') }}</AlertDialogCancel>
+                        <AlertDialogAction @click="removeSuitcase(s.id)">{{ $t('trip_luggage_page.suitcase.delete.confirm') }}</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardHeader>
 
@@ -518,8 +591,8 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
                     'flex items-center gap-3 rounded-md border border-input bg-white px-3 py-2',
                     dragOver?.suitcaseId === s.id && dragOver?.itemId === it.id ? 'ring-2 ring-primary/40' : ''
                   ]"
-                  @dragover.prevent="onDragOver(s.id, it.id)"
-                  @drop.prevent="onDrop(s.id, it.id, $event)"
+                  @dragover.stop.prevent="onDragOver(s.id, it.id)"
+                  @drop.stop.prevent="onDrop(s.id, it.id, $event)"
                 >
                   <button
                     type="button"
@@ -533,9 +606,9 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
                   </button>
 
                   <Checkbox
-                    :checked="it.packed"
+                    :model-value="it.packed"
                     :disabled="isItemBusy(it.id)"
-                    @update:checked="togglePacked(it, $event)"
+                    @update:modelValue="togglePacked(it, $event)"
                   />
 
                   <div class="flex-1 min-w-0">
@@ -577,8 +650,8 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
             </div>
 
             <div class="rounded-md border border-input bg-slate-50 p-3 space-y-3">
-              <div class="grid grid-cols-1 gap-3">
-                <div class="space-y-1.5">
+              <div class="grid grid-cols-[1fr_auto_auto] gap-3">
+                <div class="space-y-1.5 min-w-0">
                   <Label :for="`item_name_${s.id}`">{{ $t('trip_luggage_page.items.name_label') }}</Label>
                   <Input
                     :id="`item_name_${s.id}`"
@@ -587,26 +660,22 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
                     @keyup.enter="addItem(s.id)"
                   />
                 </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="space-y-1.5">
-                    <Label :for="`item_qty_${s.id}`">{{ $t('trip_luggage_page.items.quantity_label') }}</Label>
-                    <Input
-                      :id="`item_qty_${s.id}`"
-                      v-model.number="ensureNewItemState(s.id).quantity"
-                      type="number"
-                      min="0"
-                      :placeholder="$t('trip_luggage_page.items.quantity_placeholder')"
-                      @keyup.enter="addItem(s.id)"
-                    />
-                  </div>
-
-                  <div class="flex items-end">
-                    <Button class="w-full" @click="addItem(s.id)">
-                      <Plus class="h-4 w-4" />
-                      {{ $t('trip_luggage_page.items.add_button') }}
-                    </Button>
-                  </div>
+                <div class="space-y-1.5 w-fit">
+                  <Label :for="`item_qty_${s.id}`">{{ $t('trip_luggage_page.items.quantity_label') }}</Label>
+                  <Input
+                    :id="`item_qty_${s.id}`"
+                    v-model.number="ensureNewItemState(s.id).quantity"
+                    class="w-24"
+                    type="number"
+                    min="0"
+                    :placeholder="$t('trip_luggage_page.items.quantity_placeholder')"
+                    @keyup.enter="addItem(s.id)"
+                  />
+                </div>
+                <div class="flex items-end w-fit">
+                  <Button class="w-8" @click="addItem(s.id)">
+                    <Plus class="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>

@@ -191,7 +191,7 @@ export const useTripOrganizationNew = () => {
       const res = await client.request(updateItem(collection as any, id, item)) as any
       
       const index = state.value.findIndex((i: any) => i.id === id)
-      if (index !== -1) state.value[index] = res
+      if (index !== -1) state.value[index] = { ...(state.value[index] || {}), ...(res || {}) }
       return res
     } catch (e) {
       console.error(`Error updating ${collection}:`, e)

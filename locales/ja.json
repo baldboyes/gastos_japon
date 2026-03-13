@@ -192,7 +192,17 @@
       "notes": "メモ"
     },
     "room": {
-      "single": "シングルルーム1室"
+      "single": "シングルルーム1室",
+      "count": "0部屋|1部屋|{count}部屋",
+      "unknown": "部屋情報なし",
+      "types": {
+        "single": "シングル",
+        "double": "ダブル",
+        "triple": "トリプル",
+        "twin": "ツイン",
+        "quadruple": "4人部屋",
+        "shared": "相部屋"
+      }
     },
     "empty": {
       "title": "宿泊情報がありません",
@@ -384,6 +394,16 @@
       "add_button": "バッグを追加",
       "name_label": "名前",
       "name_placeholder": "例: 機内持ち込み",
+      "actions": {
+        "edit": "編集",
+        "delete": "削除"
+      },
+      "edit": {
+        "title": "バッグを編集",
+        "description": "このバッグの名前を更新します。",
+        "cancel": "キャンセル",
+        "save": "保存"
+      },
       "type_label": "種類",
       "type_placeholder": "種類を選択",
       "types": {
@@ -417,6 +437,7 @@
     "toasts": {
       "suitcase_created": "バッグを作成しました",
       "suitcase_deleted": "バッグを削除しました",
+      "suitcase_updated": "バッグを更新しました",
       "item_added": "アイテムを追加しました",
       "item_updated": "アイテムを更新しました",
       "item_deleted": "アイテムを削除しました",
@@ -554,6 +575,7 @@
       "name": "宿泊名",
       "check_in": "チェックイン",
       "check_out": "チェックアウト",
+      "rooms": "部屋",
       "location": "場所 / 住所",
       "total_price": "合計金額",
       "currency": "通貨",
@@ -586,6 +608,14 @@
       "half_board": "ハーフボード",
       "none": "なし"
     },
+    "room_types": {
+      "single": "シングル",
+      "double": "ダブル",
+      "triple": "トリプル",
+      "twin": "ツイン",
+      "quadruple": "4人部屋",
+      "shared": "相部屋"
+    },
     "status": {
       "paid": "支払済み",
       "pending": "未払い",
@@ -593,7 +623,22 @@
       "refunded": "返金済み"
     },
     "actions": {
+      "add_room": "部屋を追加",
+      "remove_room": "削除",
       "save": "保存"
+    },
+    "rooms": {
+      "title": "部屋",
+      "item_title": "部屋",
+      "fields": {
+        "room_count": "数",
+        "room_type": "タイプ",
+        "private_bath": "専用バスルーム"
+      },
+      "placeholders": {
+        "room_count": "例: 1",
+        "room_type": "タイプを選択"
+      }
     },
     "tasks": {
       "title_prefix": "タスク",

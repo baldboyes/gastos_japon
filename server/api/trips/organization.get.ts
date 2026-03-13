@@ -102,6 +102,5 @@ export default defineEventHandler(async (event) => {
     adminClient.request(readItems('activities', queryFor('start_date'))).catch(() => []) as any,
     adminClient.request(readItems('insurances', queryFor('start_date'))).catch(() => []) as any
   ])
-
   return { flights, accommodations, transports, activities, insurances }
 })
