@@ -498,17 +498,18 @@ const onDropEmpty = async (suitcaseId: number, e: DragEvent) => {
     </div>
 
     <div class="space-y-3">
+      <!--
       <div v-if="loading" class="text-sm text-muted-foreground flex items-center gap-2">
         <Loader2 class="h-4 w-4 animate-spin" />
         <span>{{ $t('trip_luggage_page.suitcases.title') }}</span>
       </div>
-
-      <div v-else-if="normalizedSuitcases.length === 0" class="rounded-lg border border-input bg-white p-6">
+      -->
+      <div v-if="normalizedSuitcases.length === 0" class="rounded-lg border border-input bg-white p-6">
         <p class="font-medium">{{ $t('trip_luggage_page.suitcases.empty_title') }}</p>
         <p class="text-sm text-muted-foreground mt-1">{{ $t('trip_luggage_page.suitcases.empty_subtitle') }}</p>
       </div>
 
-      <div v-else class="grid gap-4 xl:grid-cols-2">
+      <div class="grid gap-4 xl:grid-cols-2">
         <Card
           v-for="s in normalizedSuitcases"
           :key="s.id"
