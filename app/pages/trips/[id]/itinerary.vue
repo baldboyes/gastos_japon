@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
 import ItineraryDaysSwiper from '~/components/itinerary/ItineraryDaysSwiper.vue'
+import ItineraryDaysRail from '~/components/itinerary/ItineraryDaysRail.vue'
 import ItineraryDayList from '~/components/itinerary/ItineraryDayList.vue'
 import type { ExpenseCategory, PaymentMethod } from '~/types'
 
@@ -34,6 +35,8 @@ const {
   selectedDayDetails,
   selectDate
 } = useItineraryNew()
+
+const dayNavMode = useState<'swiper' | 'rail'>('itinerary-day-nav-mode', () => 'rail')
 
 // Expense State
 const isExpenseDialogOpen = ref(false)
@@ -96,18 +99,52 @@ const handleCreateExpense = async () => {
 </script>
 
 <template>
-  <div class="pt-2">
-    <ItineraryDaysSwiper 
-      :days="daysWithEvents" 
-      :selectedDate="selectedDate" 
-      @select="selectDate"
-    />
-    <ItineraryDayList 
-      :events="selectedDayDetails" 
-      :date="selectedDate"
-      :tripId="tripId"
-      @create-expense="isExpenseDialogOpen = true"
-    />
+  <div class="overflow-visible">
+    <div class="absolute top-24 right-2 px-4 z-50">
+      <div class="inline-flex rounded-lg border bg-white p-1">
+        <Button
+          size="sm"
+          :variant="dayNavMode === 'swiper' ? 'default' : 'ghost'"
+          @click="dayNavMode = 'swiper'"
+        >
+          {{ $t('trip_itinerary_page.view.swiper') }}
+        </Button>
+        <Button
+          size="sm"
+          :variant="dayNavMode === 'rail' ? 'default' : 'ghost'"
+          @click="dayNavMode = 'rail'"
+        >
+          {{ $t('trip_itinerary_page.view.sidebar') }}
+        </Button>
+      </div>
+    </div>
+    <div>
+      <ItineraryDaysSwiper
+        v-if="dayNavMode === 'swiper'"
+        :days="daysWithEvents"
+        :selectedDate="selectedDate"
+        @select="selectDate"
+      />
+      <div  class="flex gap-4">
+        <div
+          v-if="dayNavMode === 'rail'"
+          class="w-full lg:w-72 lg:shrink-0 lg:sticky lg:top-0 lg:h-[calc(100vh-100px)] pl-4"
+        >
+          <ItineraryDaysRail
+            class="lg:h-full"
+            :days="daysWithEvents"
+            :selectedDate="selectedDate"
+            @select="selectDate"
+          />
+        </div>
+        <ItineraryDayList 
+          :events="selectedDayDetails" 
+          :date="selectedDate"
+          :tripId="tripId"
+          @create-expense="isExpenseDialogOpen = true"
+        />
+      </div>
+    </div>
     <!-- Modal Nuevo Gasto -->
     <Dialog v-model:open="isExpenseDialogOpen">
       <DialogContent class="sm:max-w-[500px]">

@@ -849,6 +849,10 @@
     }
   },
   "trip_itinerary_page": {
+    "view": {
+      "swiper": "Carrusel",
+      "sidebar": "Lista"
+    },
     "expense_modal": {
       "title": "Nuevo gasto diario",
       "description": "Registra un gasto menor (comida, metro, etc).",

@@ -849,6 +849,10 @@
     }
   },
   "trip_itinerary_page": {
+    "view": {
+      "swiper": "Carousel",
+      "sidebar": "Sidebar"
+    },
     "expense_modal": {
       "title": "New daily expense",
       "description": "Log a small expense (food, metro, etc).",

@@ -92,6 +92,8 @@ export const useItineraryNew = () => {
                title: a.name, 
                status, 
                duration,
+               check_in: a.check_in,
+               check_out: a.check_out,
                type: 'accommodation', 
                colorClass: 'bg-slate-800 text-white', 
                icon: BedDouble 
@@ -120,6 +122,8 @@ export const useItineraryNew = () => {
                 title: t.name, 
                 status, 
                 duration,
+                start_date: t.start_date,
+                end_date: t.end_date,
                 type: 'pass', 
                 colorClass: 'bg-green-600 text-white', 
                 icon: Ticket 

@@ -849,6 +849,10 @@
     }
   },
   "trip_itinerary_page": {
+    "view": {
+      "swiper": "カルーセル",
+      "sidebar": "サイドバー"
+    },
     "expense_modal": {
       "title": "日次支出を追加",
       "description": "小さな支出（食事、地下鉄など）を記録します。",
