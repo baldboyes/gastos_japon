@@ -15,6 +15,7 @@ import { useTripsNew } from '~/composables/useTripsNew'
 import { useDirectusRepo } from '~/composables/useDirectusRepo'
 import { tv } from 'tailwind-variants'
 import { Trash2, Save } from 'lucide-vue-next'
+import { cn } from '~/lib/utils'
 
 const props = defineProps<{
   open: boolean
@@ -57,6 +58,12 @@ const toIsoLocal = (v: any): string | null => {
   const h = String(d.getHours()).padStart(2, '0')
   const min = String(d.getMinutes()).padStart(2, '0')
   return `${y}-${m}-${da}T${h}:${min}`
+}
+
+const getPriorityDotClass = (priority: string) => {
+  const color = TASK_PRIORITIES.find(p => p.value === priority)?.color || ''
+  const bg = color.split(' ').find(c => c.startsWith('bg-'))
+  return bg || 'bg-muted'
 }
 
 const isEditing = computed(() => !!props.task)
@@ -218,7 +225,8 @@ const taskModalStyles = tv({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="p in TASK_PRIORITIES" :key="p.value" :value="p.value">
-                  {{ t(`tasks.priority.${p.value}`) }}
+                  <span :class="cn('inline-block size-2.5 rounded-full', getPriorityDotClass(p.value))" />
+                  <span>{{ t(`tasks.priority.${p.value}`) }}</span>
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -264,7 +272,7 @@ const taskModalStyles = tv({
           </Select>
         </div>
         
-        <div :class="styles.field()">
+        <div :class="styles.field()" class="hidden">
           <Label>{{ t('trip_task_modal.group_label') }}</Label>
           <Select 
             v-model="formData.task_group" 

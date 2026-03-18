@@ -30,6 +30,29 @@
     description: 'No te compliques y descubre nuestros viajes organizados.'
   })
 
+  const parseTripStartDate = (value: string) => {
+    const direct = new Date(value)
+    if (!Number.isNaN(direct.getTime())) return direct
+
+    const normalized = value.trim()
+    const match = normalized.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/)
+    if (match) {
+      const day = Number(match[1])
+      const month = Number(match[2])
+      const year = Number(match[3])
+      const date = new Date(year, month - 1, day)
+      if (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
+      ) {
+        return date
+      }
+    }
+
+    return new Date(0)
+  }
+
   // Función para obtener viajes en grupo
   const fetchGroupTrips = async () => {
     loading.value = true
@@ -41,7 +64,12 @@
         throw new Error('Error al cargar viajes en grupo')
       }
       const data = await response.json()
-      trips.value = data
+      const list = Array.isArray(data) ? data : []
+      trips.value = list.slice().sort((a, b) => {
+        const aDate = parseTripStartDate(a.inicio)
+        const bDate = parseTripStartDate(b.inicio)
+        return aDate.getTime() - bDate.getTime()
+      })
     } catch (err) {
       console.error('Error fetching group trips:', err)
       error.value = 'No se pudieron cargar los viajes en grupo'

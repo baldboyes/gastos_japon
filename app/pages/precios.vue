@@ -12,8 +12,8 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
         <!-- Free Plan -->
         <div class="border border-slate-200 rounded-2xl p-8 bg-white shadow-sm flex flex-col">
-          <h3 class="text-xl font-bold mb-2">{{ $t('pricing_page.plans.tomodachi.name') }}</h3>
-          <div class="text-3xl font-bold mb-6">{{ $t('pricing_page.plans.tomodachi.price') }}</div>
+          <h3 class="text-lg xl:text-xl font-bold mb-2 transition-all duration-300">{{ $t('pricing_page.plans.tomodachi.name') }}</h3>
+          <div class="text-2xl xl:text-3xl transition-all duration-300 font-bold mb-6">{{ $t('pricing_page.plans.tomodachi.price') }}</div>
           <ul class="space-y-3 mb-8 flex-1 text-left">
             <li class="flex items-center gap-2 text-sm text-slate-600">
               <span class="w-2 h-2 rounded-full bg-green-500"></span>
@@ -30,8 +30,8 @@
         <!-- Pro Plan Placeholder -->
         <div class="border-2 border-red-400 rounded-2xl p-8 bg-white shadow-md flex flex-col relative overflow-hidden scale-110 hover:scale-112 transition-transform duration-300">
           <div class="absolute top-4 right-4 bg-red-400 text-white text-xs px-2 py-1 rounded">{{ $t('pricing_page.plans.nomada.badge') }}</div>
-          <h3 class="text-xl font-bold mb-2">{{ $t('pricing_page.plans.nomada.name') }}</h3>
-          <div class="text-3xl font-bold mb-6">{{ $t('pricing_page.plans.nomada.price') }}</div>
+          <h3 class="text-lg xl:text-xl font-bold mb-2 transition-all duration-300">{{ $t('pricing_page.plans.nomada.name') }}</h3>
+          <div class="text-2xl xl:text-3xl transition-all duration-300 font-bold mb-6">{{ $t('pricing_page.plans.nomada.price') }}</div>
           <ul class="space-y-3 mb-8 flex-1 text-left">
             <li class="flex items-center gap-2 text-sm text-slate-600">
               <span class="w-2 h-2 rounded-full bg-slate-400"></span>
@@ -47,8 +47,8 @@
         
           <!-- Team Plan Placeholder -->
           <div class="border border-slate-200 rounded-2xl p-8 bg-white shadow-sm flex flex-col">
-          <h3 class="text-xl font-bold mb-2">{{ $t('pricing_page.plans.agency.name') }}</h3>
-          <div class="text-3xl font-bold mb-6">{{ $t('pricing_page.plans.agency.price') }}</div>
+          <h3 class="text-lg xl:text-xl font-bold mb-2 transition-all duration-300">{{ $t('pricing_page.plans.agency.name') }}</h3>
+          <div class="text-2xl xl:text-3xl transition-all duration-300 font-bold mb-6">{{ $t('pricing_page.plans.agency.price') }}</div>
           <ul class="space-y-3 mb-8 flex-1 text-left">
             <li class="flex items-center gap-2 text-sm text-slate-600">
               <span class="w-2 h-2 rounded-full bg-slate-400"></span>

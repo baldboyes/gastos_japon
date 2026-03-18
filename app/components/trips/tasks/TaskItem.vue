@@ -18,9 +18,11 @@ const emit = defineEmits(['update:status', 'edit'])
 const { flights, accommodations, activities, insurances, transports } = useTripOrganizationNew()
 const { collaborators } = useTripsNew()
 
-const priorityColor = computed(() => {
-  return TASK_PRIORITIES.find(p => p.value === props.task.priority)?.color || 'bg-neutral-100 text-neutral-800'
-})
+const getPriorityDotClass = (priority: string) => {
+  const color = TASK_PRIORITIES.find(p => p.value === priority)?.color || ''
+  const bg = color.split(' ').find(c => c.startsWith('bg-'))
+  return bg || 'bg-muted'
+}
 
 const isCompleted = computed(() => props.task.status === 'completed' || props.task.status === 'cancelled')
 const isCancelled = computed(() => props.task.status === 'cancelled')
@@ -56,6 +58,20 @@ const assignedUser = computed<DirectusUser | null>(() => {
   if (typeof v === 'string') return userById.value.get(v) || null
   return null
 })
+
+const normalizeUserForAvatar = (u: DirectusUser | null) => {
+  if (!u) return null
+  return {
+    ...u,
+    first_name: u.first_name ?? undefined,
+    last_name: u.last_name ?? undefined,
+    avatar: (u as any).avatar ?? undefined,
+    avatar_url: (u as any).avatar_url ?? undefined,
+  }
+}
+
+const creatorUserForAvatar = computed(() => normalizeUserForAvatar(creatorUser.value))
+const assignedUserForAvatar = computed(() => normalizeUserForAvatar(assignedUser.value))
 
 const showAssigned = computed(() => !!assignedUser.value && (!creatorUser.value || assignedUser.value.id !== creatorUser.value.id))
 const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
@@ -101,7 +117,7 @@ const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
           <CheckCircle2 class="h-3.5 w-3.5" />
       </div>
       <div v-else-if="props.task.status === 'cancelled'" class="h-5 w-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs">✕</div>
-      <div v-else class="h-5 w-5 rounded-full border-2 border-neutral-300" :class="{'border-red-400': isOverdue}"></div>
+      <div v-else class="h-5 w-5 rounded-full border-2 border-neutral-300" :class="{ 'border-red-400': isOverdue }"></div>
     </button>
     
     <div class="flex-1 min-w-0">
@@ -111,14 +127,9 @@ const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
         </h4>
         <div class="flex items-center gap-2 shrink-0">
           <div 
-              v-if="task.priority !== 'medium' && !isCompleted" 
-              class="w-2 h-2 rounded-full shrink-0" 
-              :class="{
-                  'bg-red-500': task.priority === 'urgent',
-                  'bg-orange-400': task.priority === 'high',
-                  'bg-blue-400': task.priority === 'low'
-              }"
-              :title="$t('tasks.priority.' + task.priority)"
+              v-if="!isCompleted" 
+              :class="cn('w-2 h-2 rounded-full shrink-0', getPriorityDotClass(task.priority))"
+              :title="String($t('tasks.priority.' + task.priority))"
           ></div>
         </div>
       </div>
@@ -139,9 +150,9 @@ const showCreator = computed(() => !!creatorUser.value && !!assignedUser.value)
             </div>
         </div>
         <div v-if="showCreator || showAssigned" class="flex items-center gap-1">
-          <UserAvatar v-if="showCreator" :user="creatorUser" size="sm" />
+          <UserAvatar v-if="showCreator" :user="creatorUserForAvatar" size="sm" />
           <ArrowRight v-if="showCreator && showAssigned" class="h-3 w-3 text-muted-foreground" />
-          <UserAvatar v-if="showAssigned" :user="assignedUser" size="sm" />
+          <UserAvatar v-if="showAssigned" :user="assignedUserForAvatar" size="sm" />
         </div>
       </div>
     </div>

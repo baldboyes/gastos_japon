@@ -65,7 +65,7 @@ const sortedTasks = computed(() => {
         </Button>
       </div>
     </div>
-    <ScrollArea class="w-full h-[300px] lg:h-[calc(100vh-300px)] min-h-[450px]">
+    <ScrollArea class="w-full h-[300px] lg:h-[calc(100vh-220px)] min-h-[450px]">
       <div class="p-4">
         <div v-if="sortedTasks.length > 0" class="space-y-2">
           <TaskItem 

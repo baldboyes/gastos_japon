@@ -340,7 +340,7 @@ const handleImageError = (event: Event) => {
 
       </SignedIn>
     </div>
-    <!-- Viajes en Grupo - Componente autónomo -->
+    <!-- Viajes patrocinados -->
     <GroupTripsList />
   </div>
 </template>
