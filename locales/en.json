@@ -888,6 +888,10 @@
       "directions_prefix": "Directions to",
       "open_maps": "Open Google Maps link"
     },
+    "tabs": {
+      "expenses": "Expenses",
+      "itinerary": "Itinerary"
+    },
     "planned": {
       "title": "Planned expenses"
     },

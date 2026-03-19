@@ -26,8 +26,8 @@ onMounted(async () => {
     // Add custom save handler
     const toolbarOptions = [
       ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote', 'code-block'],
-      [{ 'header': 1 }, { 'header': 2 }],
+      ['blockquote'],
+      [{ 'header': 1 }, { 'header': 2 }, { 'header': 3 }, { 'header': 4 }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
       [{ 'color': [] }, { 'background': [] }],
       ['link', 'image'],
@@ -88,11 +88,13 @@ onBeforeUnmount(() => {
         </span>
         <span class="ql-formats">
           <button class="ql-blockquote"></button>
-          <button class="ql-code-block"></button>
+          <!--<button class="ql-code-block"></button>-->
         </span>
         <span class="ql-formats">
           <button class="ql-header" value="1"></button>
           <button class="ql-header" value="2"></button>
+          <button class="ql-header" value="3"></button>
+          <button class="ql-header" value="4"></button>
         </span>
         <span class="ql-formats">
           <button class="ql-list" value="ordered"></button>

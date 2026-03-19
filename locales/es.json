@@ -888,6 +888,10 @@
       "directions_prefix": "Cómo llegar a",
       "open_maps": "Abrir enlace de Google Maps"
     },
+    "tabs": {
+      "expenses": "Gastos",
+      "itinerary": "Itinerario"
+    },
     "planned": {
       "title": "Gastos previstos"
     },

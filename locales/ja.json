@@ -888,6 +888,10 @@
       "directions_prefix": "行き方:",
       "open_maps": "Googleマップを開く"
     },
+    "tabs": {
+      "expenses": "Expenses",
+      "itinerary": "Itinerary"
+    },
     "planned": {
       "title": "予定の支出"
     },

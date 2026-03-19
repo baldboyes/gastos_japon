@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-screen-sm mx-auto px-4 py-6 space-y-6">
+  <div class="max-w-screen-sm mx-auto px-4 py-6 flex flex-col gap-6 h-svh overflow-hidden">
 
     <div class="flex items-center justify-between gap-8">
       <div class="flex items-center gap-2">
@@ -28,57 +28,68 @@
       :expenses="todayExpenses"
     />
 
-    <!-- Planned Expenses -->
-    <div v-if="todaysPlannedExpenses.length > 0">
-      <div class="flex items-center justify-between mb-3 w-full">
-        <h2 class="text-lg font-semibold text-neutral-700 flex items-center justify-between gap-2 w-full">
-          <span>{{ $t('trip_daily_expenses_page.planned.title') }}</span>
-          <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
-        </h2>
-      </div>
-      <div class="space-y-2">
-        <ExpensesPlannedCard
-          v-for="planned in todaysPlannedExpenses"
-          :key="planned.id"
-          :planned-expense="planned"
-          :currency="budget.currency || undefined"
-          @click="handlePlannedExpenseClick"
-          @delete="handleDeletePlanned"
-        />
-      </div>
-    </div>
+    <Tabs v-model="viewMode" class="w-full flex-1 min-h-0">
+      <TabsList class="grid w-full grid-cols-2">
+        <TabsTrigger value="expenses">{{ $t('trip_daily_expenses_page.tabs.expenses') }}</TabsTrigger>
+        <TabsTrigger value="itinerary">{{ $t('trip_daily_expenses_page.tabs.itinerary') }}</TabsTrigger>
+      </TabsList>
 
-    <!-- Today's Expenses -->
-    <div>
-      <!--
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-neutral-900">{{ currentDate }}</h3>
-        <div class="text-sm font-medium text-neutral-600">
-          Total: {{ formatAmount(todayTotal) }}
+      <TabsContent value="expenses" class="space-y-6 flex-1 min-h-0 overflow-y-auto pb-24">
+        <!-- Planned Expenses -->
+        <div v-if="todaysPlannedExpenses.length > 0">
+          <div class="flex items-center justify-between mb-3 w-full">
+            <h2 class="text-lg font-semibold text-neutral-700 flex items-center justify-between gap-2 w-full">
+              <span>{{ $t('trip_daily_expenses_page.planned.title') }}</span>
+              <Badge variant="secondary" class="ml-1">{{ todaysPlannedExpenses.length }}</Badge>
+            </h2>
+          </div>
+          <div class="space-y-2">
+            <ExpensesPlannedCard
+              v-for="planned in todaysPlannedExpenses"
+              :key="planned.id"
+              :planned-expense="planned"
+              :currency="budget.currency || undefined"
+              @click="handlePlannedExpenseClick"
+              @delete="handleDeletePlanned"
+            />
+          </div>
         </div>
-      </div>
-      -->
-      <!-- Empty State -->
-      <div
-        v-if="todayExpenses.length === 0"
-        class="text-center py-12 px-4"
-      >
-        <div class="text-6xl mb-4">💸</div>
-        <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('trip_daily_expenses_page.empty.title') }}</h3>
-        <p class="text-sm text-neutral-600 mb-6">{{ $t('trip_daily_expenses_page.empty.subtitle') }}</p>
-      </div>
 
-      <!-- Expense Cards -->
-      <div v-else class="space-y-3">
-        <ExpensesCard
-          v-for="expense in todayExpenses"
-          :key="expense.id"
-          :expense="expense"
-          :currency="budget.currency || undefined"
-          @click="handleExpenseClick"
+        <!-- Today's Expenses -->
+        <div>
+          <!-- Empty State -->
+          <div
+            v-if="todayExpenses.length === 0"
+            class="text-center py-12 px-4"
+          >
+            <div class="text-6xl mb-4">💸</div>
+            <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('trip_daily_expenses_page.empty.title') }}</h3>
+            <p class="text-sm text-neutral-600 mb-6">{{ $t('trip_daily_expenses_page.empty.subtitle') }}</p>
+          </div>
+
+          <!-- Expense Cards -->
+          <div v-else class="space-y-3">
+            <ExpensesCard
+              v-for="expense in todayExpenses"
+              :key="expense.id"
+              :expense="expense"
+              :currency="budget.currency || undefined"
+              @click="handleExpenseClick"
+            />
+          </div>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="itinerary" class="flex-1 min-h-0 overflow-y-auto pb-24">
+        <ItineraryDayList
+          :events="todayItineraryEvents"
+          :date="todayDate"
+          :trip-id="tripId"
+          notes-mode="read"
+          @create-expense="handleAdd"
         />
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
 
     <!-- Floating Action Button -->
     <div class="fixed bottom-6 right-6 z-50">
@@ -121,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -142,8 +153,12 @@ import ExpenseDrawer from '~/components/expenses/ExpenseDrawer.vue'
 import DashboardTripDailyBudget from '~/components/dashboard/TripDailyBudget.vue'
 import ExpensesPlannedCard from '~/components/expenses/PlannedCard.vue'
 import ExpensesCard from '~/components/expenses/Card.vue'
+import ItineraryDayList from '~/components/itinerary/ItineraryDayList.vue'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 import { useExpensesNew } from '~/composables/useExpensesNew'
+import { useItineraryNew } from '~/composables/useItineraryNew'
 import { useTripOrganizationNew } from '~/composables/useTripOrganizationNew'
+import { useTripTasksNew } from '~/composables/useTripTasksNew'
 import { useTripsNew } from '~/composables/useTripsNew'
 import { useTripWeather } from '~/composables/useTripWeather'
 import type { Expense, PlannedExpense, Budget } from '~/types'
@@ -158,15 +173,21 @@ const tripId = computed(() => Number(route.params.id))
 
 const { expenses, fetchExpenses, updateExpense, deleteExpense } = useExpensesNew()
 const { accommodations, fetchOrganizationData } = useTripOrganizationNew()
+const { fetchTasks } = useTripTasksNew()
 const { currentTrip, getTrip } = useTripsNew()
 const { weather, loading: weatherLoading, loadWeatherForTrip } = useTripWeather()
+const { selectedDate, selectedDayDetails, selectDate } = useItineraryNew()
+
+const viewMode = ref<'expenses' | 'itinerary'>('expenses')
 
 // Load data
 onMounted(async () => {
   if (tripId.value && !Number.isNaN(tripId.value)) {
-    // Parallel fetch for independent data
-    fetchExpenses(tripId.value)
-    fetchOrganizationData(tripId.value)
+    await Promise.all([
+      fetchExpenses(tripId.value),
+      fetchOrganizationData(tripId.value),
+      fetchTasks(tripId.value)
+    ])
     
     // Get trip data and then load weather
     await getTrip(tripId.value)
@@ -204,6 +225,12 @@ const todayString = computed(() => {
   return `${year}-${month}-${day}`
 })
 
+const todayDate = computed(() => startOfDay(parseISO(todayString.value)))
+
+watch(todayString, () => {
+  selectDate(todayDate.value)
+}, { immediate: true })
+
 const todayExpenses = computed(() => {
   return expenses.value
     .filter(e => e.status !== 'planned' && e.timestamp.startsWith(todayString.value))
@@ -219,17 +246,23 @@ const todaysPlannedExpenses = computed(() => {
     } as unknown as PlannedExpense))
 })
 
+const todayItineraryEvents = computed(() => {
+  return selectedDayDetails.value.filter(e => e.type !== 'expense')
+})
+
 
 // Drawer state
 const showExpenseDrawer = ref(false)
 const expenseToEdit = ref<Expense | null>(null)
 
 function handleAdd() {
+  viewMode.value = 'expenses'
   expenseToEdit.value = null
   showExpenseDrawer.value = true
 }
 
 function handleExpenseClick(expense: Expense) {
+  viewMode.value = 'expenses'
   expenseToEdit.value = expense
   showExpenseDrawer.value = true
 }

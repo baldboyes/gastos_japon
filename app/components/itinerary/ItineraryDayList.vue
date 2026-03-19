@@ -7,12 +7,14 @@ import { Button } from '~/components/ui/button'
 import { Plus, Save, ArrowRight, Clock } from 'lucide-vue-next'
 import { TextEditor } from '~/components/ui/TextEditor'
 import { useDayNotesNew } from '~/composables/useDayNotesNew'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import { sanitizeHtml } from '~/utils/sanitize-html'
 
 const props = defineProps<{
   events: any[]
   date: Date
   tripId?: string | number
+  notesMode?: 'edit' | 'read'
 }>()
 
 const emit = defineEmits<{
@@ -22,6 +24,7 @@ const emit = defineEmits<{
 const { note, loading: noteLoading, saving: noteSaving, fetchNote, saveNote } = useDayNotesNew()
 
 const loadNote = () => {
+  if (!import.meta.client) return
   if (props.tripId && props.date) {
     fetchNote(props.tripId, props.date)
   }
@@ -38,10 +41,12 @@ watch(() => props.date, loadNote, { immediate: true })
 const getDayLabel = (date: Date) => format(date, 'd', { locale: es })
 const getDayName = (date: Date) => format(date, 'EEEE', { locale: es })
 const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
+
+const sanitizedNoteHtml = computed(() => sanitizeHtml(note.value))
 </script>
 
 <template>
-  <div class="flex-1 p-4 md:p-8 relative">
+  <div class="flex-1 py-4 md:p-8 relative">
     <div class="max-w-3xl mx-auto space-y-6">
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold flex items-center gap-2">
@@ -168,7 +173,14 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
           <h3 class="text-lg font-semibold text-slate-800">Plan</h3>
         </div>
         <div class="sticky -top-8 h-8 bg-neutral-50 z-40"></div>
+        <div
+          id="itinerary"
+          v-if="props.notesMode === 'read'"
+          class="py-3 text-sm text-slate-700 leading-6"
+          v-html="sanitizedNoteHtml"
+        ></div>
         <TextEditor 
+          v-else
           v-model="note" 
           placeholder="Escribe aquí tus notas, diario o recordatorios para este día..." 
           :read-only="noteLoading"
@@ -180,3 +192,46 @@ const getMonthLabel = (date: Date) => format(date, 'MMM', { locale: es })
     </div>
   </div>
 </template>
+
+<style scoped>
+#itinerary :deep(h1) {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+#itinerary :deep(h2) {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+#itinerary :deep(h3) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+#itinerary :deep(h4) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+#itinerary :deep(blockquote) {
+  border-left: 3px solid #e2e8f0;
+  padding-left: 12px;
+  color: #475569;
+  font-style: italic;
+  margin: 12px 0;
+}
+
+#itinerary :deep(a) {
+  color: oklch(70.4% 0.191 22.216);
+  text-decoration: underline;
+}
+#itinerary :deep(a:hover) {
+  color: oklch(65.763% 0.2162 24.609);
+}
+</style>
