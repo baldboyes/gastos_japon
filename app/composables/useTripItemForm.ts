@@ -67,6 +67,8 @@ export function useTripItemForm<T extends { id?: number, moneda: string, precio?
       // @ts-ignore
       delete payload.adjuntos
       // @ts-ignore
+      delete payload.id
+      // @ts-ignore
       delete payload.user_created
       // @ts-ignore
       delete payload.user_updated

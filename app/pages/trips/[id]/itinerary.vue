@@ -100,7 +100,7 @@ const handleCreateExpense = async () => {
 
 <template>
   <div class="overflow-visible">
-    <div class="absolute top-24 right-2 px-4 z-50">
+    <div class="absolute top-24 right-2 px-4 z-50 hidden md:block">
       <div class="inline-flex rounded-lg border bg-white p-1">
         <Button
           size="sm"
@@ -120,7 +120,14 @@ const handleCreateExpense = async () => {
     </div>
     <div>
       <ItineraryDaysSwiper
+        class="md:hidden"
+        :days="daysWithEvents"
+        :selectedDate="selectedDate"
+        @select="selectDate"
+      />
+      <ItineraryDaysSwiper
         v-if="dayNavMode === 'swiper'"
+        class="hidden md:block"
         :days="daysWithEvents"
         :selectedDate="selectedDate"
         @select="selectDate"
@@ -128,7 +135,7 @@ const handleCreateExpense = async () => {
       <div  class="flex gap-4">
         <div
           v-if="dayNavMode === 'rail'"
-          class="w-full lg:w-72 lg:shrink-0 lg:sticky lg:top-0 lg:h-[calc(100vh-100px)] pl-4"
+          class="hidden md:block w-full lg:w-72 lg:shrink-0 lg:sticky lg:top-0 lg:h-[calc(100vh-100px)] pl-4"
         >
           <ItineraryDaysRail
             class="lg:h-full"

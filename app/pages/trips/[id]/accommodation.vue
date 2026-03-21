@@ -214,7 +214,7 @@
                   <CardTitle class="text-lg">{{ a.name }}</CardTitle>
                   <div class="flex items-center gap-2">
                     <span :class="cn('text-base font-bold px-1.5 pt-0.5 pb-0 rounded border uppercase tracking-wide', getPaymentStatusPillClass(a.payment_status || 'pending'))">
-                      {{ formatCurrency(a.price || 0, a.currency) }}
+                      {{ formatCurrency(a.currency === 'JPY' ? (a.price || 0) : ((a.price || 0) / 100), a.currency) }}
                     </span>
                   </div>
                 </div>

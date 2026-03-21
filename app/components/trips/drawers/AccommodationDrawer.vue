@@ -170,6 +170,11 @@ watch(() => props.itemToEdit, (newItem) => {
   if (newItem) {
     handleEdit(newItem)
     ensureRooms()
+    const currency = String((formData.value as any).currency || '')
+    const price = (formData.value as any).price
+    if (currency && currency !== 'JPY' && typeof price === 'number') {
+      ;(formData.value as any).price = (price / 100).toFixed(2)
+    }
   } else {
     handleCreate()
     ensureRooms()
@@ -190,6 +195,40 @@ const normalizeRoomCount = (val: any) => {
     return Number.isFinite(parsed) ? parsed : null
   }
   return null
+}
+
+const parseHumanNumber = (val: any) => {
+  if (val === null || val === undefined) return null
+  if (typeof val === 'number') return Number.isFinite(val) ? val : null
+  if (typeof val !== 'string') return null
+
+  const raw = val.trim().replace(/\s+/g, '')
+  if (!raw) return null
+
+  const dotThousandsCommaDecimal = /^\d{1,3}(\.\d{3})+(,\d+)?$/.test(raw)
+  const commaThousandsDotDecimal = /^\d{1,3}(,\d{3})+(\.\d+)?$/.test(raw)
+
+  let normalized = raw
+
+  if (dotThousandsCommaDecimal) {
+    normalized = normalized.replace(/\./g, '').replace(',', '.')
+  } else if (commaThousandsDotDecimal) {
+    normalized = normalized.replace(/,/g, '')
+  } else if (normalized.includes('.') && !normalized.includes(',')) {
+    const dotThousands = /^\d{1,3}(\.\d{3})+$/.test(normalized)
+    normalized = dotThousands ? normalized.replace(/\./g, '') : normalized
+  } else if (normalized.includes(',') && !normalized.includes('.')) {
+    const commaThousands = /^\d{1,3}(,\d{3})+$/.test(normalized)
+    normalized = commaThousands ? normalized.replace(/,/g, '') : normalized.replace(',', '.')
+  } else if (normalized.includes('.') && normalized.includes(',')) {
+    const lastDot = normalized.lastIndexOf('.')
+    const lastComma = normalized.lastIndexOf(',')
+    if (lastComma > lastDot) normalized = normalized.replace(/\./g, '').replace(',', '.')
+    else normalized = normalized.replace(/,/g, '')
+  }
+
+  const parsed = Number(normalized)
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 const computeAccommodationFromRooms = (rooms: any[]) => {
@@ -221,21 +260,28 @@ const computeAccommodationFromRooms = (rooms: any[]) => {
 const saveAccommodation = async () => {
   ensureRooms()
   const result = await handleSave((data) => {
-    ;(data as any).trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
-    const rooms = (((data as any).rooms || []) as any[]).map(r => ({
+    const payload = JSON.parse(JSON.stringify(data || {})) as any
+    payload.trip_id = typeof props.tripId === 'string' ? parseInt(props.tripId) : props.tripId
+    const currency = String(payload.currency || 'JPY')
+    const parsedPrice = parseHumanNumber(payload.price) ?? 0
+    payload.price = currency === 'JPY'
+      ? Math.round(parsedPrice)
+      : Math.round(parsedPrice * 100)
+    const rooms = (((payload.rooms || []) as any[])).map(r => ({
       ...r,
       room_count: normalizeRoomCount(r.room_count) ?? 1,
       board_basis: Array.isArray(r.board_basis) ? r.board_basis : []
     }))
 
     const computed = computeAccommodationFromRooms(rooms)
-    ;(data as any).room_count = computed.totalCount
-    ;(data as any).room_type = computed.roomType
-    ;(data as any).is_private = computed.hasPrivate
-    ;(data as any).board_basis = computed.boardBasis
+    payload.room_count = computed.totalCount
+    payload.room_type = computed.roomType
+    payload.is_private = computed.hasPrivate
+    payload.board_basis = computed.boardBasis
 
-    ;(data as any).rooms = rooms
-    return data
+    delete payload.rooms
+    delete payload.attachments
+    return payload
   }, undefined, { resetOnSuccess: false })
 
   if (!result?.id) return
@@ -405,9 +451,9 @@ const locationProxy = computed({
               <div>
                 <Label>{{ $t('trip_accommodation_drawer.fields.total_price') }}</Label>
                 <Input 
-                  type="number" 
+                  type="text" 
+                  inputmode="decimal"
                   v-model="formData.price" 
-                  :step="formData.currency === 'JPY' ? '1' : '0.01'" 
                 />
               </div>
               <div>
